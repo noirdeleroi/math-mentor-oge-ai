@@ -106,7 +106,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemma-3-4b-it',
+        model: 'qwen/qwen3-32b',
         messages: [
           {
             role: 'system',
