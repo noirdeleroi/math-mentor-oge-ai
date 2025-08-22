@@ -1,7 +1,11 @@
 {
-  "functions": {
-    "api/**/*.ts": {
-      "maxDuration": 60
+  "rewrites": [
+    {
+      "source": "/api/process-query",
+      "destination": "https://kbaazksvkvnafrwtmkcw.supabase.co/functions/v1/process-user-query",
+      "headers": {
+        "x-accel-buffering": "no"
+      }
     }
-  }
+  ]
 }
