@@ -1,48 +1,42 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type'
 };
-
-Deno.serve(async (req) => {
+Deno.serve(async (req)=>{
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, {
       headers: corsHeaders
     });
   }
-  
   try {
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
-    
     // Get OpenRouter API key from Supabase secrets
     const openrouterApiKey = Deno.env.get('OPENROUTER_API_KEY');
     if (!openrouterApiKey) {
       throw new Error('OPENROUTER_API_KEY not found in environment variables');
     }
-    
     // Parse request body
     const { user_id, course_id = 1, target_score, weekly_hours, school_grade, date_string = '29 may 2026', number_of_words } = await req.json();
     console.log(`Processing task call for user: ${user_id}`);
-    
     // Calculate days to exam
     const examDate = new Date(date_string);
     const today = new Date();
     const daysToExam = Math.ceil((examDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-    
     let studentProgress = '';
-    
     // Get student progress if course_id is 1
     if (course_id === 1) {
       console.log('Fetching student progress...');
       try {
         const { data: progressData, error: progressError } = await supabase.functions.invoke('student-progress-calculate', {
-          body: { user_id }
+          body: {
+            user_id
+          }
         });
         if (progressError) {
           console.error('Error fetching student progress:', progressError);
@@ -65,7 +59,6 @@ Deno.serve(async (req) => {
         studentProgress = '[]'; // Use empty array as fallback
       }
     }
-    
     // Get student hardcoded task
     let student_hardcoded_task = '';
     console.log(`Checking conditions for ogemath-task-hardcode: course_id=${course_id}, studentProgress exists=${!!studentProgress}, studentProgress length=${typeof studentProgress === 'string' ? studentProgress.length : 'undefined'}`);
@@ -107,6 +100,7 @@ Deno.serve(async (req) => {
           student_hardcoded_task = 'Не удалось сгенерировать задание';
         } else {
           console.log('ogemath-task-hardcode completed successfully');
+          console.log('Raw output from ogemath-task-hardcode function:', JSON.stringify(taskData, null, 2)); // Log the raw data
           student_hardcoded_task = JSON.stringify(taskData, null, 2);
         }
       } catch (error) {
@@ -119,23 +113,15 @@ Deno.serve(async (req) => {
       console.log(`- no studentProgress: ${!studentProgress}`);
       console.log(`- studentProgress is error: ${studentProgress === 'Не удалось загрузить прогресс студента' || studentProgress === 'Ошибка при загрузке прогресса студента'}`);
     }
-    
     // NEW: Get progress difference logic with null checks
-    let final_json: any[] | null = null;
-    let retrieved_hardcode_task: string | null = null;
-
+    let final_json = null;
+    let retrieved_hardcode_task = null;
     // Get progress difference for any course_id (not just course_id === 1)
     try {
       // 1. Get most recent hardcode_task from stories_and_telegram
-      const { data: storiesData, error: storiesError } = await supabase
-        .from('stories_and_telegram')
-        .select('hardcode_task, created_at')
-        .eq('user_id', user_id)
-        .eq('course_id', course_id)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .single();
-
+      const { data: storiesData, error: storiesError } = await supabase.from('stories_and_telegram').select('hardcode_task, created_at').eq('user_id', user_id).eq('course_id', course_id).order('created_at', {
+        ascending: false
+      }).limit(1).single();
       if (storiesError) {
         console.error(`Error fetching stories_and_telegram: ${storiesError.message}`);
         // Set both variables to null if we can't get hardcode_task
@@ -147,24 +133,16 @@ Deno.serve(async (req) => {
         retrieved_hardcode_task = null;
       } else {
         retrieved_hardcode_task = storiesData.hardcode_task;
-        
         if (!storiesData.created_at) {
           // No timestamp available
           final_json = null;
           retrieved_hardcode_task = null;
         } else {
           const task_timestamp = new Date(storiesData.created_at);
-          
           // 2. Get most recent raw_data from mastery_snapshots
-          const { data: recentMasteryData, error: recentMasteryError } = await supabase
-            .from('mastery_snapshots')
-            .select('raw_data, run_timestamp')
-            .eq('user_id', user_id)
-            .eq('course_id', course_id)
-            .order('run_timestamp', { ascending: false })
-            .limit(1)
-            .single();
-
+          const { data: recentMasteryData, error: recentMasteryError } = await supabase.from('mastery_snapshots').select('raw_data, run_timestamp').eq('user_id', user_id).eq('course_id', course_id).order('run_timestamp', {
+            ascending: false
+          }).limit(1).single();
           if (recentMasteryError) {
             console.error(`Error fetching recent mastery_snapshot: ${recentMasteryError.message}`);
             final_json = null;
@@ -174,19 +152,11 @@ Deno.serve(async (req) => {
             final_json = null;
             retrieved_hardcode_task = null;
           } else {
-            const recentRawData: any[] = recentMasteryData.raw_data || [];
-
+            const recentRawData = recentMasteryData.raw_data || [];
             // 3. Get most recent raw_data before task_timestamp from mastery_snapshots
-            const { data: previousMasteryData, error: previousMasteryError } = await supabase
-              .from('mastery_snapshots')
-              .select('raw_data, run_timestamp')
-              .eq('user_id', user_id)
-              .eq('course_id', course_id)
-              .lt('run_timestamp', task_timestamp.toISOString())
-              .order('run_timestamp', { ascending: false })
-              .limit(1)
-              .single();
-
+            const { data: previousMasteryData, error: previousMasteryError } = await supabase.from('mastery_snapshots').select('raw_data, run_timestamp').eq('user_id', user_id).eq('course_id', course_id).lt('run_timestamp', task_timestamp.toISOString()).order('run_timestamp', {
+              ascending: false
+            }).limit(1).single();
             if (previousMasteryError) {
               console.error(`Error fetching previous mastery_snapshot: ${previousMasteryError.message}`);
               final_json = null;
@@ -196,64 +166,43 @@ Deno.serve(async (req) => {
               final_json = null;
               retrieved_hardcode_task = null;
             } else {
-              const previousRawData: any[] = previousMasteryData.raw_data || [];
-
+              const previousRawData = previousMasteryData.raw_data || [];
               // Calculate progress_diff by subtracting values
-              const progress_diff: any[] = [];
-              
+              const progress_diff = [];
               // Create a map of previous data for quick lookup
-              const previousMap = new Map<string, any>();
-              previousRawData.forEach(item => {
+              const previousMap = new Map();
+              previousRawData.forEach((item)=>{
                 // Create a unique key based on the non-prob properties
-                const key = Object.keys(item)
-                  .filter(k => k !== 'prob')
-                  .map(k => `${k}:${item[k]}`)
-                  .join('|');
+                const key = Object.keys(item).filter((k)=>k !== 'prob').map((k)=>`${k}:${item[k]}`).join('|');
                 previousMap.set(key, item);
               });
-
               // Calculate differences
-              recentRawData.forEach(recentItem => {
-                const key = Object.keys(recentItem)
-                  .filter(k => k !== 'prob')
-                  .map(k => `${k}:${recentItem[k]}`)
-                  .join('|');
-                
+              recentRawData.forEach((recentItem)=>{
+                const key = Object.keys(recentItem).filter((k)=>k !== 'prob').map((k)=>`${k}:${recentItem[k]}`).join('|');
                 const previousItem = previousMap.get(key);
-                const diffItem = { ...recentItem }; // Copy all properties
-                
+                const diffItem = {
+                  ...recentItem
+                }; // Copy all properties
                 if (previousItem) {
                   diffItem.prob = recentItem.prob - previousItem.prob;
                 } else {
                   diffItem.prob = recentItem.prob; // If no previous value, use current value
                 }
-                
                 progress_diff.push(diffItem);
               });
-
               // Add items that were in previous but not in recent (with negative values)
-              previousRawData.forEach(prevItem => {
-                const key = Object.keys(prevItem)
-                  .filter(k => k !== 'prob')
-                  .map(k => `${k}:${prevItem[k]}`)
-                  .join('|');
-                
-                if (!recentRawData.some(recentItem => 
-                  Object.keys(recentItem)
-                    .filter(k => k !== 'prob')
-                    .map(k => `${k}:${recentItem[k]}`)
-                    .join('|') === key
-                )) {
-                  const newItem = { ...prevItem, prob: 0 - prevItem.prob };
+              previousRawData.forEach((prevItem)=>{
+                const key = Object.keys(prevItem).filter((k)=>k !== 'prob').map((k)=>`${k}:${prevItem[k]}`).join('|');
+                if (!recentRawData.some((recentItem)=>Object.keys(recentItem).filter((k)=>k !== 'prob').map((k)=>`${k}:${recentItem[k]}`).join('|') === key)) {
+                  const newItem = {
+                    ...prevItem,
+                    prob: 0 - prevItem.prob
+                  };
                   progress_diff.push(newItem);
                 }
               });
-
               // Sort by absolute value of prob in descending order and take top 30
-              const sorted_progress_diff = progress_diff
-                .sort((a, b) => Math.abs(b.prob) - Math.abs(a.prob))
-                .slice(0, 30);
-
+              const sorted_progress_diff = progress_diff.sort((a, b)=>Math.abs(b.prob) - Math.abs(a.prob)).slice(0, 30);
               final_json = sorted_progress_diff;
             }
           }
@@ -266,7 +215,6 @@ Deno.serve(async (req) => {
       retrieved_hardcode_task = null;
     }
     // END NEW: Progress difference logic with null checks
-    
     // NEW: Log the content of final_json for debugging
     if (final_json) {
       console.log('Final JSON content (top 10 items):', JSON.stringify(final_json.slice(0, 10), null, 2));
@@ -275,7 +223,6 @@ Deno.serve(async (req) => {
       console.log('Final JSON is null - no progress difference data available');
     }
     // END NEW: Log final_json content
-    
     // Get task context from oge_entrypage_rag table
     console.log(`Fetching task context for course_id: ${course_id}`);
     const { data: ragData, error: ragError } = await supabase.from('oge_entrypage_rag').select('task_context').eq('id', course_id).single();
@@ -284,20 +231,18 @@ Deno.serve(async (req) => {
       throw new Error('Failed to fetch task context');
     }
     const prompt1 = ragData.task_context || '';
-    
     // Filter student progress to remove skill elements
     let filteredStudentProgress = studentProgress;
     if (studentProgress && course_id === 1) {
       try {
         const progressArray = JSON.parse(studentProgress);
-        const filteredProgress = progressArray.filter((item) => !item.hasOwnProperty('навык'));
+        const filteredProgress = progressArray.filter((item)=>!item.hasOwnProperty('навык'));
         filteredStudentProgress = JSON.stringify(filteredProgress, null, 2);
       } catch (error) {
         console.error('Error filtering student progress:', error);
-        // Keep original if filtering fails
+      // Keep original if filtering fails
       }
     }
-    
     // Construct the full prompt
     const prompt = prompt1 + `
 Твой ответ должен иметь длину до ${number_of_words} слов.
@@ -332,7 +277,6 @@ ${daysToExam}
 {ПРОГРЕСС_СТУДЕНТА}:
 ${filteredStudentProgress}
 `;
-    
     console.log('Making OpenRouter API call...');
     // Make OpenRouter API call
     const headers = {
@@ -340,7 +284,7 @@ ${filteredStudentProgress}
       "Content-Type": "application/json"
     };
     const data = {
-      "model": "x-ai/grok-3-mini",
+      "model": "google/gemini-2.5-flash-lite-preview-09-2025",
       "messages": [
         {
           "role": "system",
@@ -352,24 +296,21 @@ ${filteredStudentProgress}
         }
       ],
       "max_tokens": 40000,
-      "temperature": 0.6
+      "temperature": 0.4
     };
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: headers,
       body: JSON.stringify(data)
     });
-    
     if (!response.ok) {
       const errorText = await response.text();
       console.error(`OpenRouter API error: ${response.status} ${response.statusText}`, errorText);
       throw new Error(`OpenRouter API error: ${response.status} ${response.statusText}`);
     }
-    
     const responseData = await response.json();
     const aiResponse = responseData.choices?.[0]?.message?.content || "Не удалось получить ответ от ИИ";
     console.log('Successfully generated AI response');
-    
     // Insert hardcode_task to stories_and_telegram table if it exists
     if (student_hardcoded_task && course_id === 1) {
       console.log('Saving hardcode task to database...');
@@ -386,7 +327,6 @@ ${filteredStudentProgress}
         console.log('Hardcode task saved successfully');
       }
     }
-    
     return new Response(JSON.stringify({
       response: aiResponse,
       metadata: {
