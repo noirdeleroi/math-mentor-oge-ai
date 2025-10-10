@@ -5,36 +5,38 @@ import rehypeKatex from 'rehype-katex';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 
-// Math delimiter normalization functions
+// Math delimiter normalization functions (safe: function replacers so `$` isn't special)
 const normalizeMathDelimiters = (input: string): string => {
-  let normalized = input;
-  
+  let s = input;
+
+  const toDisplay = (_: string, m: string) => `$$${m}$$`;
+  const toInline  = (_: string, m: string) => `$${m}$`;
+
   // \[...\]  →  $$...$$
-  normalized = normalized.replace(/\\\[([\s\S]*?)\\\]/g, '$$$$$1$$$$');
-  
+  s = s.replace(/\\\[([\s\S]*?)\\\]/g, toDisplay);
+
   // \(...\)  →  $...$
-  normalized = normalized.replace(/\\\(([\s\S]*?)\\\)/g, '$$$1$$');
-  
+  s = s.replace(/\\\(([\s\S]*?)\\\)/g, toInline);
+
   // [math]...[/math] → $$...$$
-  normalized = normalized.replace(/\[math\]([\s\S]*?)\[\/math\]/g, '$$$$$1$$$$');
-  
+  s = s.replace(/\[math\]([\s\S]*?)\[\/math\]/g, toDisplay);
+
   // (math)...(math) → $$...$$
-  normalized = normalized.replace(/\(math\)([\s\S]*?)\(math\)/g, '$$$$$1$$$$');
-  
+  s = s.replace(/\(math\)([\s\S]*?)\(math\)/g, toDisplay);
+
   // {math}...{/math} → $$...$$
-  normalized = normalized.replace(/\{math\}([\s\S]*?)\{\/math\}/g, '$$$$$1$$$$');
-  
+  s = s.replace(/\{math\}([\s\S]*?)\{\/math\}/g, toDisplay);
+
   // <math>...</math> → $$...$$
-  normalized = normalized.replace(/<math>([\s\S]*?)<\/math>/g, '$$$$$1$$$$');
-  
+  s = s.replace(/<math>([\s\S]*?)<\/math>/g, toDisplay);
+
   // <m>...</m> → $...$  (inline)
-  normalized = normalized.replace(/<m>([\s\S]*?)<\/m>/g, '$$$1$$');
-  
+  s = s.replace(/<m>([\s\S]*?)<\/m>/g, toInline);
+
   // Optional heuristic: [...] → $$...$$ when it looks like LaTeX
-  normalized = normalized.replace(/\[([^\]]*(?:frac|sqrt|sum|int|lim)[^\]]*)\]/g, '$$$$$1$$$$');
+  s = s.replace(/\[([^\]]*(?:frac|sqrt|sum|int|lim)[^\]]*)\]/g, toDisplay);
 
-
-  return normalized;
+  return s;
 };
 
 // LaTeX content sanitization
@@ -43,18 +45,16 @@ const sanitizeLatex = (input: string): string => {
   return input.replace(/\\%/g, '%').replace(/\{\{/g, '{').replace(/\}\}/g, '}');
 };
 
-
-
 interface ChatRenderer2Props {
   text: string;
   isUserMessage?: boolean;
   className?: string;
 }
 
-const ChatRenderer2 = ({ 
-  text, 
-  isUserMessage = false, 
-  className = "" 
+const ChatRenderer2 = ({
+  text,
+  isUserMessage = false,
+  className = ""
 }: ChatRenderer2Props) => {
   // Preprocess the text to normalize delimiters and sanitize LaTeX
   const processedText = useMemo(() => {
@@ -71,9 +71,9 @@ const ChatRenderer2 = ({
         components={{
           p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
           a: ({ href, children }) => (
-            <a 
-              href={href} 
-              target="_blank" 
+            <a
+              href={href}
+              target="_blank"
               rel="noopener noreferrer"
               className={`underline hover:no-underline ${
                 isUserMessage ? 'text-blue-100 hover:text-white' : 'text-blue-600 hover:text-blue-800'
@@ -89,16 +89,16 @@ const ChatRenderer2 = ({
             const isInline = !className?.includes('language-');
             return isInline ? (
               <code className={`px-1 py-0.5 rounded text-sm font-mono ${
-                isUserMessage 
-                  ? 'bg-white/20 text-blue-100' 
+                isUserMessage
+                  ? 'bg-white/20 text-blue-100'
                   : 'bg-gray-100 text-gray-800'
               }`}>
                 {children}
               </code>
             ) : (
               <pre className={`p-3 rounded-lg text-sm overflow-x-auto ${
-                isUserMessage 
-                  ? 'bg-white/20 text-blue-100' 
+                isUserMessage
+                  ? 'bg-white/20 text-blue-100'
                   : 'bg-gray-100 text-gray-800'
               }`}>
                 <code>{children}</code>
@@ -107,8 +107,8 @@ const ChatRenderer2 = ({
           },
           blockquote: ({ children }) => (
             <blockquote className={`pl-4 border-l-4 italic my-2 ${
-              isUserMessage 
-                ? 'border-blue-200 text-blue-100' 
+              isUserMessage
+                ? 'border-blue-200 text-blue-100'
                 : 'border-gray-300 text-gray-600'
             }`}>
               {children}
