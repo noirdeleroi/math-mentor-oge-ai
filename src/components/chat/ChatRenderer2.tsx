@@ -1,31 +1,21 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
-import rehypeMathjax from "rehype-mathjax/chtml"; // use MathJax (CommonHTML output)
 
-// --- Normalize math delimiters (optional) ---
+// --- Helpers for math delimiters (optional) ---
 const normalizeMathDelimiters = (input: string): string => {
   let s = input;
   const toDisplay = (_: string, m: string) => `$$${m}$$`;
   const toInline = (_: string, m: string) => `$${m}$`;
-
-  // Convert MathJax-style delimiters to remark-math friendly
-  s = s.replace(/\\\[([\s\S]*?)\\\]/g, toDisplay); // \[...\] → $$...$$
-  s = s.replace(/\\\(([\s\S]*?)\\\)/g, toInline);  // \(...\) → $...$
-  s = s.replace(/\[math\]([\s\S]*?)\[\/math\]/g, toDisplay);
-  s = s.replace(/\(math\)([\s\S]*?)\(math\)/g, toDisplay);
-  s = s.replace(/\{math\}([\s\S]*?)\{\/math\}/g, toDisplay);
-  s = s.replace(/<math>([\s\S]*?)<\/math>/g, toDisplay);
-  s = s.replace(/<m>([\s\S]*?)<\/m>/g, toInline);
+  s = s.replace(/\\\[([\s\S]*?)\\\]/g, toDisplay);
+  s = s.replace(/\\\(([\s\S]*?)\\\)/g, toInline);
   return s;
 };
-
-// --- Clean up malformed LaTeX ---
 const sanitizeLatex = (input: string): string =>
   input.replace(/\\%/g, "%").replace(/\{\{/g, "{").replace(/\}\}/g, "}");
 
-// --- Component props ---
+// --- Component ---
 interface ChatRenderer2Props {
   text: string;
   isUserMessage?: boolean;
@@ -37,19 +27,39 @@ const ChatRenderer2 = ({
   isUserMessage = false,
   className = "",
 }: ChatRenderer2Props) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // normalize text once
   const processedText = useMemo(() => {
     let processed = normalizeMathDelimiters(text);
     processed = sanitizeLatex(processed);
     return processed;
   }, [text]);
 
+  // ⬇️ Safely typeset after React paints
+  useEffect(() => {
+    const root = containerRef.current;
+    if (!root) return;
+
+    // wait a microtick so React finishes all commits
+    const handle = setTimeout(() => {
+      // @ts-ignore
+      if (window.MathJax?.typesetPromise) {
+        // only typeset this subtree
+        // @ts-ignore
+        window.MathJax.typesetPromise([root]).catch((err: any) =>
+          console.error("MathJax typeset error:", err)
+        );
+      }
+    }, 10);
+
+    return () => clearTimeout(handle);
+  }, [processedText]);
+
   return (
-    <div className={className} data-message="chat-content">
+    <div ref={containerRef} className={className} data-message="chat-content">
       <ReactMarkdown
-        // remark plugins: GitHub markdown + math
         remarkPlugins={[remarkGfm, remarkMath]}
-        // rehype plugins: render MathJax, safe (no raw HTML)
-        rehypePlugins={[[rehypeMathjax, {}]]}
         components={{
           p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
           a: ({ href, children }) => (
