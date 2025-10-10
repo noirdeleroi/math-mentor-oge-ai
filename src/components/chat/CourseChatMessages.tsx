@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { type Message } from "@/contexts/ChatContext";
 import CourseChatMessage from "./CourseChatMessage";
 import TypingIndicator from "./TypingIndicator";
-import { ChevronDown } from "lucide-react";
+
 import { kaTeXManager } from "@/hooks/useMathJaxInitializer";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,7 +18,6 @@ interface CourseChatMessagesProps {
 const CourseChatMessages = ({ messages, isTyping, onLoadMoreHistory, isLoadingHistory, hasMoreHistory }: CourseChatMessagesProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [showScrollButton, setShowScrollButton] = useState(false);
   const [isUserScrolledUp, setIsUserScrolledUp] = useState(false);
   const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
   const lastMessageCountRef = useRef(messages.length);
@@ -74,10 +73,6 @@ const CourseChatMessages = ({ messages, isTyping, onLoadMoreHistory, isLoadingHi
     });
   };
 
-  const handleScrollToBottomClick = () => {
-    scrollToUserMessage();
-  };
-
   const isNearBottom = () => {
     if (!containerRef.current) return false;
     const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
@@ -87,7 +82,6 @@ const CourseChatMessages = ({ messages, isTyping, onLoadMoreHistory, isLoadingHi
   const handleScroll = () => {
     if (containerRef.current) {
       const nearBottom = isNearBottom();
-      setShowScrollButton(!nearBottom && messages.length > 0);
       
       // Update auto-scroll behavior based on user's scroll position
       if (nearBottom) {
@@ -213,19 +207,6 @@ const CourseChatMessages = ({ messages, isTyping, onLoadMoreHistory, isLoadingHi
         </div>
       </div>
 
-      {/* Floating scroll-to-bottom button */}
-      {showScrollButton && (
-        <button
-          onClick={handleScrollToBottomClick}
-          className="absolute bottom-4 right-4 w-12 h-12 bg-gradient-to-br from-[#f59e0b] to-[#10b981]
-                     hover:from-[#fbbf24] hover:to-[#34d399] text-white rounded-full shadow-lg 
-                     transform transition-all duration-300 ease-in-out hover:scale-105 
-                     hover:shadow-xl hover:shadow-emerald-500/30 animate-fade-in z-10"
-          aria-label="Scroll to user's last message"
-        >
-          <ChevronDown className="w-5 h-5 mx-auto" />
-        </button>
-      )}
     </div>
   );
 };
