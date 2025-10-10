@@ -1255,7 +1255,7 @@ const OgemathMock = () => {
                     <div className="mt-3">
                       <strong>Оценка:</strong>
                       <div className="mt-1 p-3 bg-blue-50 rounded text-sm">
-                        {reviewResult.photoFeedback}
+                        <MathRenderer text={reviewResult.photoFeedback} compiler="mathjax" />
                       </div>
                     </div>
                   )}
