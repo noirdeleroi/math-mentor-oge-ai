@@ -11,27 +11,30 @@ interface ChatRenderer2Props {
   className?: string;
 }
 
+/** Decode minimal HTML entities so math like x&gt;1 renders as x>1 */
+const decodeEntities = (s: string) =>
+  (s || '')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'");
+
 /**
  * Normalize LaTeX delimiters for KaTeX/remark-math:
- *  - \[ ... \]   -> $$ ... $$
- *  - \( ... \)   -> $ ... $
- *
- * IMPORTANT: use function replacers to avoid "$1" style bugs.
+ *  - \[ ... \]   -> $$ ... $$   (block)
+ *  - \( ... \)   -> $ ... $     (inline)
+ * Use function replacers so we never produce "$1".
  */
 const normalizeForKaTeX = (input: string): string => {
-  if (!input) return '';
-  let s = input;
+  let s = decodeEntities(input);
 
-  // If your LLM sometimes HTML-escapes ampersands, unescape them
-  // so things like \log_{2} don’t become \log_{2} with &amp;.
-  s = s.replace(/&amp;/g, '&');
-
-  // Display math: \[...\] -> $$...$$ (surround with newlines so remark-math treats it as block)
+  // Display math: \[...\] -> $$...$$ (with blank lines so it's parsed as block)
   s = s.replace(/\\\[([\s\S]*?)\\\]/g, (_m, g1) => `\n\n$$${g1}$$\n\n`);
+
   // Inline math: \(...\) -> $...$
   s = s.replace(/\\\(([\s\S]*?)\\\)/g, (_m, g1) => `$${g1}$`);
 
-  // DO NOT add any other heuristics. They cause "$1" issues.
   return s;
 };
 
@@ -45,10 +48,11 @@ const ChatRenderer2 = ({
   return (
     <div className={className} data-message="chat-content">
       <ReactMarkdown
-        // Parse markdown & math. singleDollarTextMath allows $...$ inline.
+        // Math first, then GFM is fine
         remarkPlugins={[[remarkMath, { singleDollarTextMath: true }], remarkGfm]}
-        // Render the math with KaTeX. Do not throw; just render what we can.
         rehypePlugins={[[rehypeKatex, { throwOnError: false, strict: false }]]}
+        // Important: we do NOT enable rehypeRaw; we want Markdown + KaTeX only
+        skipHtml
         components={{
           p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
           a: ({ href, children }) => (
