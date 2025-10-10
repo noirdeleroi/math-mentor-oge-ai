@@ -11,28 +11,37 @@ interface ChatRenderer2Props {
   className?: string;
 }
 
-/** Decode minimal HTML entities so math like x&gt;1 renders as x>1 */
-const decodeEntities = (s: string) =>
-  (s || '')
+/** Robust entity decoder so &gt; &lt; &amp; etc. are converted BEFORE KaTeX sees them */
+const decodeEntities = (s: string) => {
+  if (!s) return '';
+  // Use the browser’s HTML parser when available
+  if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+    const ta = document.createElement('textarea');
+    ta.innerHTML = s;
+    return ta.value;
+  }
+  // SSR-safe fallback (covers the common ones)
+  return s
     .replace(/&amp;/g, '&')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
     .replace(/&#39;/g, "'");
+};
 
 /**
  * Normalize LaTeX delimiters for KaTeX/remark-math:
- *  - \[ ... \]   -> $$ ... $$   (block)
- *  - \( ... \)   -> $ ... $     (inline)
- * Use function replacers so we never produce "$1".
+ *   \[ ... \]  ->  $$ ... $$   (block)
+ *   \( ... \)  ->  $  ...  $   (inline)
+ * Use function replacers so we never generate "$1".
  */
 const normalizeForKaTeX = (input: string): string => {
   let s = decodeEntities(input);
 
-  // Display math: \[...\] -> $$...$$ (with blank lines so it's parsed as block)
+  // Display math: ensure blank lines so remark-math treats it as block
   s = s.replace(/\\\[([\s\S]*?)\\\]/g, (_m, g1) => `\n\n$$${g1}$$\n\n`);
 
-  // Inline math: \(...\) -> $...$
+  // Inline math
   s = s.replace(/\\\(([\s\S]*?)\\\)/g, (_m, g1) => `$${g1}$`);
 
   return s;
@@ -48,10 +57,9 @@ const ChatRenderer2 = ({
   return (
     <div className={className} data-message="chat-content">
       <ReactMarkdown
-        // Math first, then GFM is fine
         remarkPlugins={[[remarkMath, { singleDollarTextMath: true }], remarkGfm]}
         rehypePlugins={[[rehypeKatex, { throwOnError: false, strict: false }]]}
-        // Important: we do NOT enable rehypeRaw; we want Markdown + KaTeX only
+        // Keep HTML disabled so raw tags don't interfere with math parsing
         skipHtml
         components={{
           p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
