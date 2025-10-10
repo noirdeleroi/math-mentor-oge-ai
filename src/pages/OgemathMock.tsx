@@ -744,7 +744,6 @@ const OgemathMock = () => {
   // Phase 1: Process questions 1-19 immediately
   const processPhase1Results = async () => {
     if (!user) return null;
-    setLoading(true);
     try {
       const { data: profile } = await supabase
         .from('profiles')
@@ -826,11 +825,9 @@ const OgemathMock = () => {
         totalTimeSpent: totalTimeSpent
       };
 
-      setLoading(false);
       return stats;
     } catch (error) {
       console.error('Error in processPhase1Results:', error);
-      setLoading(false);
       return null;
     }
   };
