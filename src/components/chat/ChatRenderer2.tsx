@@ -8,30 +8,31 @@ import remarkMath from 'remark-math';
 // Math delimiter normalization functions
 const normalizeMathDelimiters = (input: string): string => {
   let normalized = input;
-
-  // Replace \[...\] with $$...$$ for display math (LaTeX standard)
-  normalized = normalized.replace(/\\\[([\s\S]*?)\\\]/g, '$$$$1$$');
-
-  // Replace \(...\) with $...$ for inline math (LaTeX standard)
+  
+  // \[...\]  →  $$...$$
+  normalized = normalized.replace(/\\\[([\s\S]*?)\\\]/g, '$$$$$1$$$$');
+  
+  // \(...\)  →  $...$
   normalized = normalized.replace(/\\\(([\s\S]*?)\\\)/g, '$$$1$$');
-
-  // Replace [math]...[/math] with $$...$$
-  normalized = normalized.replace(/\[math\]([\s\S]*?)\[\/math\]/g, '$$$$1$$');
-
-  // Replace (math)...(math) with $$...$$ for display math
-  normalized = normalized.replace(/\(math\)([\s\S]*?)\(math\)/g, '$$$$1$$');
-
-  // Replace {math}...{/math} with $$...$$ for display math
-  normalized = normalized.replace(/\{math\}([\s\S]*?)\{\/math\]/g, '$$$$1$$');
-
-  // Replace <math>...</math> with $$...$$ for display math
-  normalized = normalized.replace(/<math>([\s\S]*?)<\/math>/g, '$$$$1$$');
-
-  // Replace <m>...</m> with $...$ for inline math
+  
+  // [math]...[/math] → $$...$$
+  normalized = normalized.replace(/\[math\]([\s\S]*?)\[\/math\]/g, '$$$$$1$$$$');
+  
+  // (math)...(math) → $$...$$
+  normalized = normalized.replace(/\(math\)([\s\S]*?)\(math\)/g, '$$$$$1$$$$');
+  
+  // {math}...{/math} → $$...$$
+  normalized = normalized.replace(/\{math\}([\s\S]*?)\{\/math\}/g, '$$$$$1$$$$');
+  
+  // <math>...</math> → $$...$$
+  normalized = normalized.replace(/<math>([\s\S]*?)<\/math>/g, '$$$$$1$$$$');
+  
+  // <m>...</m> → $...$  (inline)
   normalized = normalized.replace(/<m>([\s\S]*?)<\/m>/g, '$$$1$$');
+  
+  // Optional heuristic: [...] → $$...$$ when it looks like LaTeX
+  normalized = normalized.replace(/\[([^\]]*(?:frac|sqrt|sum|int|lim)[^\]]*)\]/g, '$$$$$1$$$$');
 
-  // Replace various other bracket patterns for display math
-  normalized = normalized.replace(/\[([^\]]*(?:frac|sqrt|sum|int|lim)[^\]]*)\]/g, '$$$$1$$');
 
   return normalized;
 };
