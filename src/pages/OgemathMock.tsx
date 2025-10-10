@@ -913,7 +913,7 @@ const OgemathMock = () => {
         
         if (!questionData) continue;
         
-        let isCorrect = false;
+        let isCorrect: boolean | null = null;
         let feedback = "";
         let scores = 0;
         let attempted = false;
@@ -939,14 +939,15 @@ const OgemathMock = () => {
             scores = 0;
             isCorrect = analysisResult.raw_output !== 'False';
           }
-        } else if (activityRecord) {
-          // Use student_activity data
-          attempted = activityRecord.finished_or_not;
-          isCorrect = activityRecord.is_correct || false;
+        } else if (activityRecord && activityRecord.finished_or_not) {
+          // Use student_activity data only if the attempt was finished
+          attempted = true;
+          isCorrect = activityRecord.is_correct ?? null;
           scores = activityRecord.scores_fipi || 0;
         }
 
-        if (isCorrect) {
+        // Count as correct only if attempted and correct
+        if (attempted && isCorrect === true) {
           part2Correct++;
         }
 
@@ -954,13 +955,15 @@ const OgemathMock = () => {
         if (resultIndex >= 0) {
           updatedResults[resultIndex] = {
             ...updatedResults[resultIndex],
-            isCorrect,
+            isCorrect: attempted ? isCorrect : null,
             photoFeedback: feedback || undefined,
             photoScores: scores,
             attempted,
-            userAnswer: analysisResult 
-              ? JSON.stringify({ userAnswer: 'Развернутый ответ', score: scores })
-              : updatedResults[resultIndex].userAnswer
+            userAnswer: attempted 
+              ? (analysisResult 
+                  ? JSON.stringify({ userAnswer: 'Развернутый ответ', score: scores })
+                  : updatedResults[resultIndex].userAnswer)
+              : ''
           };
         }
       }
@@ -1248,8 +1251,8 @@ const OgemathMock = () => {
                 <div className="grid grid-cols-5 gap-2">
                   {Array.from({ length: 25 }, (_, index) => {
                     const result = examResults[index];
-                    const isAttempted = result?.attempted !== false;
-                    const isCorrect = isAttempted ? result?.isCorrect : null;
+                    const isAttempted = result?.attempted === true;
+                    const isCorrect = result?.isCorrect;
                     const isLoadingQuestion = part2Loading && index >= 19;
 
                     return (
@@ -1259,9 +1262,9 @@ const OgemathMock = () => {
                         className={`h-12 ${
                           isLoadingQuestion
                             ? 'bg-yellow-50 border-yellow-400 hover:bg-yellow-100 text-yellow-700'
-                            : isCorrect === true
+                            : isAttempted && isCorrect === true
                             ? 'bg-green-100 border-green-500 hover:bg-green-200 text-green-800'
-                            : isCorrect === false
+                            : isAttempted && isCorrect === false
                             ? 'bg-red-100 border-red-500 hover:bg-red-200 text-red-800'
                             : 'bg-gray-100 border-gray-400 hover:bg-gray-200 text-gray-600'
                         }`}
@@ -1271,7 +1274,7 @@ const OgemathMock = () => {
                         <div className="text-center">
                           <div className="font-semibold">{index + 1}</div>
                           <div className="text-xs">
-                            {isLoadingQuestion ? '⏳' : isCorrect === true ? '✓' : isCorrect === false ? '✗' : '—'}
+                            {isLoadingQuestion ? '⏳' : isAttempted ? (isCorrect === true ? '✓' : '✗') : '—'}
                           </div>
                         </div>
                       </Button>
