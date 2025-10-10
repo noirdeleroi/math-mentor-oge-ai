@@ -86,9 +86,6 @@ const OgemathMock = () => {
   // Question navigation menu state
   const [showQuestionMenu, setShowQuestionMenu] = useState(false);
 
-  // Part 2 loading state for questions 20-25
-  const [part2Loading, setPart2Loading] = useState(false);
-
   const currentQuestion = questions[currentQuestionIndex];
   const isPhotoQuestion = currentQuestion?.problem_number_type && currentQuestion.problem_number_type >= 20;
 
@@ -728,22 +725,13 @@ const OgemathMock = () => {
 
   const handleFinishExam = async () => {
     setExamFinished(true);
-    
-    // Phase 1: Process questions 1-19 immediately
-    const phase1Stats = await processPhase1Results();
-    if (phase1Stats) setExamStats(phase1Stats);
-    
-    // Phase 2: Process questions 20-25 with polling
-    setPart2Loading(true);
-    const phase2Stats = await processPhase2Results();
-    setPart2Loading(false);
-    
-    if (phase2Stats) setExamStats(phase2Stats);
+    const stats = await processExamResults();
+    if (stats) setExamStats(stats);
   };
 
-  // Phase 1: Process questions 1-19 immediately
-  const processPhase1Results = async () => {
+  const processExamResults = async () => {
     if (!user) return null;
+    setLoading(true);
     try {
       const { data: profile } = await supabase
         .from('profiles')
@@ -753,244 +741,160 @@ const OgemathMock = () => {
 
       const currentExamId = profile?.exam_id || examId;
 
-      const { data: activityData, error: activityError } = await supabase
-        .from('student_activity')
-        .select('*')
+      const { data: analysisResults, error: analysisError } = await supabase
+        .from('photo_analysis_outputs')
+        .select('question_id, raw_output, problem_number, analysis_type, openrouter_check, created_at')
         .eq('user_id', user.id)
-        .eq('course_id', '1')
-        .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
+        .eq('exam_id', currentExamId)
         .order('created_at', { ascending: false });
 
-      if (activityError) {
-        console.error('Error fetching activity data:', activityError);
+      if (analysisError) {
+        console.error('Error fetching analysis results:', analysisError);
+        toast.error('Ошибка при получении результатов анализа');
+        setLoading(false);
         return null;
       }
 
-      const results: ExamResult[] = [];
-
-      // Process only questions 1-19
-      for (let i = 0; i < Math.min(19, questions.length); i++) {
-        const question = questions[i];
-        const activity = activityData?.find((a: any) => a.question_id === question.question_id);
-        
-        const userAnswer = activity?.is_correct !== null ? 
-          (activity.is_correct ? question.answer : 'Неправильный ответ') : '';
-        
-        results.push({
-          questionIndex: i,
-          questionId: question.question_id,
-          isCorrect: activity?.is_correct ?? null,
-          userAnswer: userAnswer,
-          correctAnswer: question.answer,
-          problemText: question.problem_text,
-          solutionText: question.solution_text || '',
-          timeSpent: activity?.duration_answer || 0,
-          attempted: activity?.is_correct !== null,
-          problemNumber: question.problem_number_type || (i + 1)
-        });
-      }
-
-      // Initialize questions 20-25 as loading/unattempted
-      for (let i = 19; i < questions.length; i++) {
-        const question = questions[i];
-        results.push({
-          questionIndex: i,
-          questionId: question.question_id,
-          isCorrect: null,
-          userAnswer: '',
-          correctAnswer: question.answer,
-          problemText: question.problem_text,
-          solutionText: question.solution_text || '',
-          timeSpent: 0,
-          attempted: false,
-          problemNumber: question.problem_number_type || (i + 1)
-        });
-      }
-
-      setExamResults(results);
-
-      // Calculate stats for phase 1 only
-      const part1Results = results.slice(0, 19);
-      const part1Correct = part1Results.filter(r => r.isCorrect === true).length;
-      const totalTimeSpent = part1Results.reduce((sum, r) => sum + r.timeSpent, 0);
-
-      const stats = {
-        totalCorrect: part1Correct,
-        totalQuestions: 25,
-        percentage: Math.round((part1Correct / 19) * 100),
-        part1Correct: part1Correct,
-        part1Total: 19,
-        part2Correct: 0,
-        part2Total: 6,
-        totalTimeSpent: totalTimeSpent
-      };
-
-      return stats;
-    } catch (error) {
-      console.error('Error in processPhase1Results:', error);
-      return null;
-    }
-  };
-
-  // Polling function to check for photo analysis results
-  const pollForPhotoResults = async (currentExamId: string, maxAttempts = 2, intervalMs = 2000) => {
-    // Wait for photo analysis to complete (4 seconds total)
-    for (let attempt = 0; attempt < maxAttempts; attempt++) {
-      console.log(`Waiting for photo analysis, attempt ${attempt + 1}/${maxAttempts}`);
-      await new Promise(resolve => setTimeout(resolve, intervalMs));
-    }
-
-    // Fetch whatever photo results are available
-    const { data: analysisResults, error: analysisError } = await supabase
-      .from('photo_analysis_outputs')
-      .select('question_id, raw_output, problem_number, openrouter_check')
-      .eq('user_id', user!.id)
-      .eq('exam_id', currentExamId)
-      .order('created_at', { ascending: false });
-
-    if (analysisError) {
-      console.error('Error fetching analysis results:', analysisError);
-      return [];
-    }
-
-    // Filter to keep only the most recent entry for each problem_number
-    const latestResultsByProblemNumber = new Map<string, any>();
-    if (analysisResults) {
-      for (const result of analysisResults) {
-        const problemNum = result.problem_number;
-        if (problemNum && !latestResultsByProblemNumber.has(problemNum)) {
-          latestResultsByProblemNumber.set(problemNum, result);
+      // Filter to keep only the most recent entry for each problem_number
+      const latestResultsByProblemNumber = new Map<string, any>();
+      if (analysisResults) {
+        for (const result of analysisResults) {
+          const problemNum = result.problem_number;
+          if (problemNum && !latestResultsByProblemNumber.has(problemNum)) {
+            latestResultsByProblemNumber.set(problemNum, result);
+          }
         }
       }
-    }
 
-    const filteredResults = Array.from(latestResultsByProblemNumber.values());
-    console.log(`Found ${filteredResults.length} photo analysis results for questions 20-25`);
-    return filteredResults;
-  };
+      const filteredResults = Array.from(latestResultsByProblemNumber.values());
 
-  // Phase 2: Process questions 20-25 with polling
-  const processPhase2Results = async () => {
-    if (!user) return null;
-    
-    try {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('exam_id')
-        .eq('user_id', user.id)
-        .single();
-
-      const currentExamId = profile?.exam_id || examId;
-
-      // Poll for photo results
-      const photoResults = await pollForPhotoResults(currentExamId);
-      
-      // Also fetch student_activity for questions 20-25
-      const questions2025 = questions.slice(19, 25);
-      const { data: activityData } = await supabase
-        .from('student_activity')
-        .select('*')
-        .eq('user_id', user.id)
-        .in('question_id', questions2025.map(q => q.question_id));
+      if (filteredResults.length > 0) {
+        setPhotoFeedback(JSON.stringify(filteredResults));
+      }
 
       const questionAnswers = new Map<string, { answer: string; problemText: string; index: number }>();
       questions.forEach((q, index) => {
         questionAnswers.set(q.question_id, { answer: q.answer, problemText: q.problem_text, index });
       });
-      
-      // Create maps for quick lookup
-      const photoResultsMap = new Map(photoResults.map(r => [r.question_id, r]));
-      const activityMap = new Map((activityData || []).map(a => [a.question_id, a]));
 
       const updatedResults = [...examResults];
+      let totalCorrect = 0;
+      let part1Correct = 0;
       let part2Correct = 0;
+      const part1Total = 19;
+      const part2Total = 6;
+      const totalQuestions = 25;
 
-      // Process questions 20-25
-      for (const question of questions2025) {
-        const analysisResult = photoResultsMap.get(question.question_id);
-        const activityRecord = activityMap.get(question.question_id);
-        const questionData = questionAnswers.get(question.question_id);
-        
-        if (!questionData) continue;
-        
-        let isCorrect: boolean | null = null;
-        let feedback = "";
-        let scores = 0;
-        let attempted = false;
+      if (filteredResults.length > 0) {
+        for (const analysisResult of filteredResults) {
+          if (!analysisResult.question_id || !analysisResult.problem_number) {
+            console.warn('Skipping invalid analysis result:', analysisResult);
+            continue;
+          }
 
-        // Priority: Use photo analysis if available, otherwise use student_activity
-        if (analysisResult) {
-          // Has photo analysis result
-          attempted = true;
-          try {
-            const feedbackData = JSON.parse(analysisResult.raw_output);
-            if (feedbackData.review && typeof feedbackData.scores === 'number') {
-              feedback = feedbackData.review;
-              scores = feedbackData.scores;
-              isCorrect = feedbackData.scores >= 2;
-            } else {
+          const problemNumber = parseInt(analysisResult.problem_number);
+          const questionData = questionAnswers.get(analysisResult.question_id);
+          if (!questionData) continue;
+
+          let isCorrect = false;
+          let feedback = "";
+          let scores = 0;
+
+          if (problemNumber >= 20) {
+            try {
+              const feedbackData = JSON.parse(analysisResult.raw_output);
+              if (feedbackData.review && typeof feedbackData.scores === 'number') {
+                feedback = feedbackData.review;
+                scores = feedbackData.scores;
+                isCorrect = feedbackData.scores >= 2;
+              } else {
+                feedback = analysisResult.raw_output;
+                scores = 0;
+                isCorrect = false;
+              }
+            } catch (parseError) {
+              console.error('Error parsing stored analysis:', parseError);
               feedback = analysisResult.raw_output;
               scores = 0;
-              isCorrect = false;
+              isCorrect = analysisResult.raw_output !== 'False';
             }
-          } catch (parseError) {
-            console.error('Error parsing photo analysis:', parseError);
-            feedback = analysisResult.raw_output;
-            scores = 0;
-            isCorrect = analysisResult.raw_output !== 'False';
+
+            if (isCorrect) {
+              part2Correct++;
+              totalCorrect++;
+            }
+          } else {
+            // Part 1 (1–19) — prefer openrouter_check if present ("true"/"false" as TEXT)
+            const raw = (analysisResult as any).openrouter_check as string | null | undefined;
+            const orCheck: boolean | null =
+              typeof raw === "string"
+                ? (raw.trim().toLowerCase() === "true" ? true : raw.trim().toLowerCase() === "false" ? false : null)
+                : null;
+
+            if (orCheck === true || orCheck === false) {
+              isCorrect = orCheck;
+              feedback = isCorrect ? "Правильно (AI проверка)" : "Неправильно (AI проверка)";
+            } else {
+              const userAnswerStored = analysisResult.raw_output as string;
+              const correctAnswer = questionData.answer;
+
+              if (userAnswerStored === 'False') {
+                isCorrect = false;
+                feedback = "Вопрос пропущен";
+              } else {
+                if (isNumeric(correctAnswer)) {
+                  const sanitizedUserAnswer = sanitizeNumericAnswer(userAnswerStored);
+                  const sanitizedCorrectAnswer = sanitizeNumericAnswer(correctAnswer);
+                  isCorrect = sanitizedUserAnswer === sanitizedCorrectAnswer;
+                  feedback = isCorrect ? "Правильно" : "Неправильно";
+                } else {
+                  const userAnswerLower = userAnswerStored.toString().toLowerCase().trim();
+                  const correctAnswerLower = correctAnswer.toString().toLowerCase().trim();
+                  isCorrect = userAnswerLower === correctAnswerLower;
+                  feedback = isCorrect ? "Правильно" : "Неправильно";
+                }
+              }
+            }
+
+            if (isCorrect) {
+              part1Correct++;
+              totalCorrect++;
+            }
           }
-        } else if (activityRecord && activityRecord.finished_or_not) {
-          // Use student_activity data only if the attempt was finished
-          attempted = true;
-          isCorrect = activityRecord.is_correct ?? null;
-          scores = activityRecord.scores_fipi || 0;
-        }
 
-        // Count as correct only if attempted and correct
-        if (attempted && isCorrect === true) {
-          part2Correct++;
-        }
-
-        const resultIndex = updatedResults.findIndex(r => r && r.questionId === question.question_id);
-        if (resultIndex >= 0) {
-          updatedResults[resultIndex] = {
-            ...updatedResults[resultIndex],
-            isCorrect: attempted ? isCorrect : null,
-            photoFeedback: feedback || undefined,
-            photoScores: scores,
-            attempted,
-            userAnswer: attempted 
-              ? (analysisResult 
-                  ? JSON.stringify({ userAnswer: 'Развернутый ответ', score: scores })
-                  : updatedResults[resultIndex].userAnswer)
-              : ''
-          };
+          const resultIndex = updatedResults.findIndex(r => r && r.questionId === analysisResult.question_id);
+          if (resultIndex >= 0) {
+            updatedResults[resultIndex] = {
+              ...updatedResults[resultIndex],
+              isCorrect,
+              photoFeedback: feedback,
+              photoScores: scores,
+              attempted: true
+            };
+          }
         }
       }
 
       setExamResults(updatedResults);
 
-      // Calculate updated total stats
-      const part1Correct = examStats?.part1Correct || 0;
-      const totalCorrect = part1Correct + part2Correct;
-      const percentage = Math.round((totalCorrect / 25) * 100);
+      const percentage = Math.round((totalCorrect / totalQuestions) * 100);
+      toast.success(`Экзамен завершен! Результат: ${totalCorrect}/${totalQuestions} (${percentage}%)`);
 
-      const finalStats = {
+      return {
         totalCorrect,
-        totalQuestions: 25,
+        totalQuestions,
         percentage,
-        part1Correct: part1Correct,
-        part1Total: 19,
-        part2Correct: part2Correct,
-        part2Total: 6,
+        part1Correct,
+        part1Total,
+        part2Correct,
+        part2Total,
         totalTimeSpent: elapsedTime
       };
-
-      toast.success(`Экзамен завершен! Результат: ${totalCorrect}/25 (${percentage}%)`);
-      return finalStats;
     } catch (error) {
-      console.error('Error in processPhase2Results:', error);
-      return examStats; // Return existing stats on error
+      console.error('Error processing exam results:', error);
+      return null;
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -1215,17 +1119,8 @@ const OgemathMock = () => {
               <Card>
                 <CardHeader><CardTitle>Часть 2 (20-25)</CardTitle></CardHeader>
                 <CardContent>
-                  {part2Loading ? (
-                    <div className="flex items-center justify-center py-4">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
-                      <span className="ml-3 text-gray-600">Обработка...</span>
-                    </div>
-                  ) : (
-                    <>
-                      <div className="text-2xl font-bold text-purple-600">{examStats.part2Correct}/{examStats.part2Total}</div>
-                      <p className="text-gray-600">Повышенный уровень</p>
-                    </>
-                  )}
+                  <div className="text-2xl font-bold text-purple-600">{examStats.part2Correct}/{examStats.part2Total}</div>
+                  <p className="text-gray-600">Повышенный уровень</p>
                 </CardContent>
               </Card>
 
@@ -1251,31 +1146,25 @@ const OgemathMock = () => {
                 <div className="grid grid-cols-5 gap-2">
                   {Array.from({ length: 25 }, (_, index) => {
                     const result = examResults[index];
-                    const isAttempted = result?.attempted === true;
-                    const isCorrect = result?.isCorrect;
-                    const isLoadingQuestion = part2Loading && index >= 19;
+                    const isAttempted = result?.attempted !== false;
+                    const isCorrect = isAttempted ? result?.isCorrect : null;
 
                     return (
                       <Button
                         key={index}
                         variant="outline"
                         className={`h-12 ${
-                          isLoadingQuestion
-                            ? 'bg-yellow-50 border-yellow-400 hover:bg-yellow-100 text-yellow-700'
-                            : isAttempted && isCorrect === true
+                          isCorrect === true
                             ? 'bg-green-100 border-green-500 hover:bg-green-200 text-green-800'
-                            : isAttempted && isCorrect === false
+                            : isCorrect === false
                             ? 'bg-red-100 border-red-500 hover:bg-red-200 text-red-800'
                             : 'bg-gray-100 border-gray-400 hover:bg-gray-200 text-gray-600'
                         }`}
-                        onClick={() => !isLoadingQuestion && handleGoToQuestion(index)}
-                        disabled={isLoadingQuestion}
+                        onClick={() => handleGoToQuestion(index)}
                       >
                         <div className="text-center">
                           <div className="font-semibold">{index + 1}</div>
-                          <div className="text-xs">
-                            {isLoadingQuestion ? '⏳' : isAttempted ? (isCorrect === true ? '✓' : '✗') : '—'}
-                          </div>
+                          <div className="text-xs">{isCorrect === true ? '✓' : isCorrect === false ? '✗' : '—'}</div>
                         </div>
                       </Button>
                     );
