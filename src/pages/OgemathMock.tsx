@@ -725,6 +725,9 @@ const OgemathMock = () => {
 
   const handleFinishExam = async () => {
     setExamFinished(true);
+    // Add a small delay to ensure the last question's data is saved to the database
+    // This is especially important for question 20-25 which use background photo analysis
+    await new Promise(resolve => setTimeout(resolve, 1000));
     const stats = await processExamResults();
     if (stats) setExamStats(stats);
   };
