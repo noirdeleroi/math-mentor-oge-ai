@@ -743,7 +743,7 @@ const OgemathMock = () => {
 
       const { data: analysisResults, error: analysisError } = await supabase
         .from('photo_analysis_outputs')
-        .select('question_id, raw_output, problem_number, analysis_type, openrouter_check')
+        .select('question_id, raw_output, problem_number, analysis_type, openrouter_check, created_at')
         .eq('user_id', user.id)
         .eq('exam_id', currentExamId)
         .order('created_at', { ascending: false });
@@ -755,8 +755,21 @@ const OgemathMock = () => {
         return null;
       }
 
+      // Filter to keep only the most recent entry for each problem_number
+      const latestResultsByProblemNumber = new Map<string, any>();
       if (analysisResults) {
-        setPhotoFeedback(JSON.stringify(analysisResults));
+        for (const result of analysisResults) {
+          const problemNum = result.problem_number;
+          if (problemNum && !latestResultsByProblemNumber.has(problemNum)) {
+            latestResultsByProblemNumber.set(problemNum, result);
+          }
+        }
+      }
+
+      const filteredResults = Array.from(latestResultsByProblemNumber.values());
+
+      if (filteredResults.length > 0) {
+        setPhotoFeedback(JSON.stringify(filteredResults));
       }
 
       const questionAnswers = new Map<string, { answer: string; problemText: string; index: number }>();
@@ -772,8 +785,8 @@ const OgemathMock = () => {
       const part2Total = 6;
       const totalQuestions = 25;
 
-      if (analysisResults) {
-        for (const analysisResult of analysisResults as any[]) {
+      if (filteredResults.length > 0) {
+        for (const analysisResult of filteredResults) {
           if (!analysisResult.question_id || !analysisResult.problem_number) {
             console.warn('Skipping invalid analysis result:', analysisResult);
             continue;
