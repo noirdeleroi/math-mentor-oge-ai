@@ -439,20 +439,20 @@ const SkillPracticeQuiz: React.FC<SkillPracticeQuizProps> = ({ skill, onBackToAr
             </AlertDialogDescription>
           </AlertDialogHeader>
           
-          <div className="text-center space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 bg-blue-50 rounded-lg">
-                <div className="text-2xl font-bold text-blue-600">{correctAnswers}</div>
-                <div className="text-sm text-blue-700">из {questions.length}</div>
+          <div className="text-center space-y-3 my-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="p-4 bg-blue-50 rounded-lg border-2 border-blue-100">
+                <div className="text-3xl font-bold text-blue-600">{correctAnswers}</div>
+                <div className="text-xs text-blue-700">из {questions.length}</div>
               </div>
-              <div className="p-4 bg-purple-50 rounded-lg">
-                <div className="text-2xl font-bold text-purple-600">{score}%</div>
-                <div className="text-sm text-purple-700">точность</div>
+              <div className="p-4 bg-purple-50 rounded-lg border-2 border-purple-100">
+                <div className="text-3xl font-bold text-purple-600">{score}%</div>
+                <div className="text-xs text-purple-700">точность</div>
               </div>
             </div>
           </div>
 
-          <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+          <AlertDialogFooter className="flex-col gap-3 w-full">
             {correctAnswers < 3 && (
               <AlertDialogAction
                 onClick={() => {
@@ -462,14 +462,14 @@ const SkillPracticeQuiz: React.FC<SkillPracticeQuizProps> = ({ skill, onBackToAr
                   setSelectedAnswer('');
                   setShowResult(false);
                 }}
-                className="bg-orange-600 hover:bg-orange-700"
+                className="w-full bg-orange-600 hover:bg-orange-700"
               >
                 <RotateCcw className="w-4 h-4 mr-2" />
-                Попробовать еще раз
+                попробовать еще раз
               </AlertDialogAction>
             )}
-            <AlertDialogAction onClick={onBackToArticle}>
-              Вернуться к статье
+            <AlertDialogAction onClick={onBackToArticle} className="w-full">
+              назад к модулю
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
