@@ -322,7 +322,24 @@ const OgeMath = () => {
       });
       return;
     }
+
+    const userMessageText = "Создать задание";
+    const courseId = "1";
+    
     try {
+      // Add user message to chat
+      const userMessage: Message = {
+        id: Date.now(),
+        text: userMessageText,
+        isUser: true,
+        timestamp: new Date()
+      };
+      addMessage(userMessage);
+
+      // Show typing animation
+      setIsTyping(true);
+
+      // Call create-task edge function
       const {
         data,
         error
@@ -331,18 +348,51 @@ const OgeMath = () => {
           user_id: user.id
         }
       });
+
       if (error) throw error;
+
+      // Task created successfully
+      const successMessageText = "Задание создано";
+      
+      // Add AI response to chat
+      const aiMessage: Message = {
+        id: Date.now() + 1,
+        text: successMessageText,
+        isUser: false,
+        timestamp: new Date()
+      };
+      addMessage(aiMessage);
+
+      // Save complete chat log with response
+      await saveChatLog(userMessageText, successMessageText, courseId);
+
       toast({
         title: "Задание создано",
         description: "Персональное задание успешно создано!"
       });
     } catch (error) {
       console.error('Error creating task:', error);
+      
+      // Add error message to chat
+      const errorMessageText = "Ошибка при создании задания";
+      const errorMessage: Message = {
+        id: Date.now() + 1,
+        text: errorMessageText,
+        isUser: false,
+        timestamp: new Date()
+      };
+      addMessage(errorMessage);
+
+      // Save error response to chat_logs
+      await saveChatLog(userMessageText, errorMessageText, courseId);
+
       toast({
         title: "Ошибка",
         description: "Не удалось создать задание",
         variant: "destructive"
       });
+    } finally {
+      setIsTyping(false);
     }
   };
   return <div className="flex h-[calc(100vh-68px)] w-full bg-background overflow-hidden">
