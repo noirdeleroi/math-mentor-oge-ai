@@ -836,66 +836,40 @@ const OgemathMock = () => {
   };
 
   // Polling function to check for photo analysis results
-  const pollForPhotoResults = async (currentExamId: string, maxAttempts = 5, intervalMs = 2000) => {
+  const pollForPhotoResults = async (currentExamId: string, maxAttempts = 2, intervalMs = 2000) => {
+    // Wait for photo analysis to complete (4 seconds total)
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
-      console.log(`Polling for photo results, attempt ${attempt + 1}/${maxAttempts}`);
-      
-      const { data: analysisResults, error: analysisError } = await supabase
-        .from('photo_analysis_outputs')
-        .select('question_id, raw_output, problem_number, openrouter_check')
-        .eq('user_id', user!.id)
-        .eq('exam_id', currentExamId)
-        .order('created_at', { ascending: false });
-
-      if (analysisError) {
-        console.error('Error fetching analysis results:', analysisError);
-      }
-
-      // Filter to keep only the most recent entry for each problem_number
-      const latestResultsByProblemNumber = new Map<string, any>();
-      if (analysisResults) {
-        for (const result of analysisResults) {
-          const problemNum = result.problem_number;
-          if (problemNum && !latestResultsByProblemNumber.has(problemNum)) {
-            latestResultsByProblemNumber.set(problemNum, result);
-          }
-        }
-      }
-
-      const filteredResults = Array.from(latestResultsByProblemNumber.values());
-
-      // Check if we have all 6 results for questions 20-25
-      if (filteredResults.length >= 6) {
-        console.log('All photo results found!');
-        return filteredResults;
-      }
-
-      // If not last attempt, wait before retrying
-      if (attempt < maxAttempts - 1) {
-        console.log(`Waiting ${intervalMs}ms before next attempt...`);
-        await new Promise(resolve => setTimeout(resolve, intervalMs));
-      }
+      console.log(`Waiting for photo analysis, attempt ${attempt + 1}/${maxAttempts}`);
+      await new Promise(resolve => setTimeout(resolve, intervalMs));
     }
 
-    // Return whatever we have after max attempts
-    const { data: finalResults } = await supabase
+    // Fetch whatever photo results are available
+    const { data: analysisResults, error: analysisError } = await supabase
       .from('photo_analysis_outputs')
       .select('question_id, raw_output, problem_number, openrouter_check')
       .eq('user_id', user!.id)
       .eq('exam_id', currentExamId)
       .order('created_at', { ascending: false });
 
-    const latestByProblem = new Map<string, any>();
-    if (finalResults) {
-      for (const result of finalResults) {
+    if (analysisError) {
+      console.error('Error fetching analysis results:', analysisError);
+      return [];
+    }
+
+    // Filter to keep only the most recent entry for each problem_number
+    const latestResultsByProblemNumber = new Map<string, any>();
+    if (analysisResults) {
+      for (const result of analysisResults) {
         const problemNum = result.problem_number;
-        if (problemNum && !latestByProblem.has(problemNum)) {
-          latestByProblem.set(problemNum, result);
+        if (problemNum && !latestResultsByProblemNumber.has(problemNum)) {
+          latestResultsByProblemNumber.set(problemNum, result);
         }
       }
     }
 
-    return Array.from(latestByProblem.values());
+    const filteredResults = Array.from(latestResultsByProblemNumber.values());
+    console.log(`Found ${filteredResults.length} photo analysis results for questions 20-25`);
+    return filteredResults;
   };
 
   // Phase 2: Process questions 20-25 with polling
@@ -911,69 +885,85 @@ const OgemathMock = () => {
 
       const currentExamId = profile?.exam_id || examId;
 
-      // Poll for results
+      // Poll for photo results
       const photoResults = await pollForPhotoResults(currentExamId);
-
-      if (!photoResults || photoResults.length === 0) {
-        console.warn('No photo results found after polling');
-        return examStats; // Return existing stats
-      }
+      
+      // Also fetch student_activity for questions 20-25
+      const questions2025 = questions.slice(19, 25);
+      const { data: activityData } = await supabase
+        .from('student_activity')
+        .select('*')
+        .eq('user_id', user.id)
+        .in('question_id', questions2025.map(q => q.question_id));
 
       const questionAnswers = new Map<string, { answer: string; problemText: string; index: number }>();
       questions.forEach((q, index) => {
         questionAnswers.set(q.question_id, { answer: q.answer, problemText: q.problem_text, index });
       });
+      
+      // Create maps for quick lookup
+      const photoResultsMap = new Map(photoResults.map(r => [r.question_id, r]));
+      const activityMap = new Map((activityData || []).map(a => [a.question_id, a]));
 
       const updatedResults = [...examResults];
       let part2Correct = 0;
 
-      for (const analysisResult of photoResults) {
-        if (!analysisResult.question_id || !analysisResult.problem_number) {
-          console.warn('Skipping invalid analysis result:', analysisResult);
-          continue;
-        }
-
-        const problemNumber = parseInt(analysisResult.problem_number);
-        if (problemNumber < 20) continue; // Only process questions 20-25
-
-        const questionData = questionAnswers.get(analysisResult.question_id);
+      // Process questions 20-25
+      for (const question of questions2025) {
+        const analysisResult = photoResultsMap.get(question.question_id);
+        const activityRecord = activityMap.get(question.question_id);
+        const questionData = questionAnswers.get(question.question_id);
+        
         if (!questionData) continue;
-
+        
         let isCorrect = false;
         let feedback = "";
         let scores = 0;
+        let attempted = false;
 
-        try {
-          const feedbackData = JSON.parse(analysisResult.raw_output);
-          if (feedbackData.review && typeof feedbackData.scores === 'number') {
-            feedback = feedbackData.review;
-            scores = feedbackData.scores;
-            isCorrect = feedbackData.scores >= 2;
-          } else {
+        // Priority: Use photo analysis if available, otherwise use student_activity
+        if (analysisResult) {
+          // Has photo analysis result
+          attempted = true;
+          try {
+            const feedbackData = JSON.parse(analysisResult.raw_output);
+            if (feedbackData.review && typeof feedbackData.scores === 'number') {
+              feedback = feedbackData.review;
+              scores = feedbackData.scores;
+              isCorrect = feedbackData.scores >= 2;
+            } else {
+              feedback = analysisResult.raw_output;
+              scores = 0;
+              isCorrect = false;
+            }
+          } catch (parseError) {
+            console.error('Error parsing photo analysis:', parseError);
             feedback = analysisResult.raw_output;
             scores = 0;
-            isCorrect = false;
+            isCorrect = analysisResult.raw_output !== 'False';
           }
-        } catch (parseError) {
-          console.error('Error parsing stored analysis:', parseError);
-          feedback = analysisResult.raw_output;
-          scores = 0;
-          isCorrect = analysisResult.raw_output !== 'False';
+        } else if (activityRecord) {
+          // Use student_activity data
+          attempted = activityRecord.finished_or_not;
+          isCorrect = activityRecord.is_correct || false;
+          scores = activityRecord.scores_fipi || 0;
         }
 
         if (isCorrect) {
           part2Correct++;
         }
 
-        const resultIndex = updatedResults.findIndex(r => r && r.questionId === analysisResult.question_id);
+        const resultIndex = updatedResults.findIndex(r => r && r.questionId === question.question_id);
         if (resultIndex >= 0) {
           updatedResults[resultIndex] = {
             ...updatedResults[resultIndex],
             isCorrect,
-            photoFeedback: feedback,
+            photoFeedback: feedback || undefined,
             photoScores: scores,
-            attempted: true,
-            userAnswer: JSON.stringify({ userAnswer: 'Развернутый ответ', score: scores })
+            attempted,
+            userAnswer: analysisResult 
+              ? JSON.stringify({ userAnswer: 'Развернутый ответ', score: scores })
+              : updatedResults[resultIndex].userAnswer
           };
         }
       }
