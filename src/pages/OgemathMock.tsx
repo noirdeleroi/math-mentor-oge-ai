@@ -86,6 +86,9 @@ const OgemathMock = () => {
   // Question navigation menu state
   const [showQuestionMenu, setShowQuestionMenu] = useState(false);
 
+  // Part 2 loading state for questions 20-25
+  const [part2Loading, setPart2Loading] = useState(false);
+
   const currentQuestion = questions[currentQuestionIndex];
   const isPhotoQuestion = currentQuestion?.problem_number_type && currentQuestion.problem_number_type >= 20;
 
@@ -725,14 +728,21 @@ const OgemathMock = () => {
 
   const handleFinishExam = async () => {
     setExamFinished(true);
-    // Add a small delay to ensure the last question's data is saved to the database
-    // This is especially important for question 20-25 which use background photo analysis
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    const stats = await processExamResults();
-    if (stats) setExamStats(stats);
+    
+    // Phase 1: Process questions 1-19 immediately
+    const phase1Stats = await processPhase1Results();
+    if (phase1Stats) setExamStats(phase1Stats);
+    
+    // Phase 2: Process questions 20-25 with polling
+    setPart2Loading(true);
+    const phase2Stats = await processPhase2Results();
+    setPart2Loading(false);
+    
+    if (phase2Stats) setExamStats(phase2Stats);
   };
 
-  const processExamResults = async () => {
+  // Phase 1: Process questions 1-19 immediately
+  const processPhase1Results = async () => {
     if (!user) return null;
     setLoading(true);
     try {
@@ -744,18 +754,101 @@ const OgemathMock = () => {
 
       const currentExamId = profile?.exam_id || examId;
 
+      const { data: activityData, error: activityError } = await supabase
+        .from('student_activity')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('course_id', '1')
+        .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
+        .order('created_at', { ascending: false });
+
+      if (activityError) {
+        console.error('Error fetching activity data:', activityError);
+        return null;
+      }
+
+      const results: ExamResult[] = [];
+
+      // Process only questions 1-19
+      for (let i = 0; i < Math.min(19, questions.length); i++) {
+        const question = questions[i];
+        const activity = activityData?.find((a: any) => a.question_id === question.question_id);
+        
+        const userAnswer = activity?.is_correct !== null ? 
+          (activity.is_correct ? question.answer : 'Неправильный ответ') : '';
+        
+        results.push({
+          questionIndex: i,
+          questionId: question.question_id,
+          isCorrect: activity?.is_correct ?? null,
+          userAnswer: userAnswer,
+          correctAnswer: question.answer,
+          problemText: question.problem_text,
+          solutionText: question.solution_text || '',
+          timeSpent: activity?.duration_answer || 0,
+          attempted: activity?.is_correct !== null,
+          problemNumber: question.problem_number_type || (i + 1)
+        });
+      }
+
+      // Initialize questions 20-25 as loading/unattempted
+      for (let i = 19; i < questions.length; i++) {
+        const question = questions[i];
+        results.push({
+          questionIndex: i,
+          questionId: question.question_id,
+          isCorrect: null,
+          userAnswer: '',
+          correctAnswer: question.answer,
+          problemText: question.problem_text,
+          solutionText: question.solution_text || '',
+          timeSpent: 0,
+          attempted: false,
+          problemNumber: question.problem_number_type || (i + 1)
+        });
+      }
+
+      setExamResults(results);
+
+      // Calculate stats for phase 1 only
+      const part1Results = results.slice(0, 19);
+      const part1Correct = part1Results.filter(r => r.isCorrect === true).length;
+      const totalTimeSpent = part1Results.reduce((sum, r) => sum + r.timeSpent, 0);
+
+      const stats = {
+        totalCorrect: part1Correct,
+        totalQuestions: 25,
+        percentage: Math.round((part1Correct / 19) * 100),
+        part1Correct: part1Correct,
+        part1Total: 19,
+        part2Correct: 0,
+        part2Total: 6,
+        totalTimeSpent: totalTimeSpent
+      };
+
+      setLoading(false);
+      return stats;
+    } catch (error) {
+      console.error('Error in processPhase1Results:', error);
+      setLoading(false);
+      return null;
+    }
+  };
+
+  // Polling function to check for photo analysis results
+  const pollForPhotoResults = async (currentExamId: string, maxAttempts = 5, intervalMs = 2000) => {
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      console.log(`Polling for photo results, attempt ${attempt + 1}/${maxAttempts}`);
+      
       const { data: analysisResults, error: analysisError } = await supabase
         .from('photo_analysis_outputs')
-        .select('question_id, raw_output, problem_number, analysis_type, openrouter_check, created_at')
-        .eq('user_id', user.id)
+        .select('question_id, raw_output, problem_number, openrouter_check')
+        .eq('user_id', user!.id)
         .eq('exam_id', currentExamId)
         .order('created_at', { ascending: false });
 
       if (analysisError) {
         console.error('Error fetching analysis results:', analysisError);
-        toast.error('Ошибка при получении результатов анализа');
-        setLoading(false);
-        return null;
       }
 
       // Filter to keep only the most recent entry for each problem_number
@@ -771,8 +864,59 @@ const OgemathMock = () => {
 
       const filteredResults = Array.from(latestResultsByProblemNumber.values());
 
-      if (filteredResults.length > 0) {
-        setPhotoFeedback(JSON.stringify(filteredResults));
+      // Check if we have all 6 results for questions 20-25
+      if (filteredResults.length >= 6) {
+        console.log('All photo results found!');
+        return filteredResults;
+      }
+
+      // If not last attempt, wait before retrying
+      if (attempt < maxAttempts - 1) {
+        console.log(`Waiting ${intervalMs}ms before next attempt...`);
+        await new Promise(resolve => setTimeout(resolve, intervalMs));
+      }
+    }
+
+    // Return whatever we have after max attempts
+    const { data: finalResults } = await supabase
+      .from('photo_analysis_outputs')
+      .select('question_id, raw_output, problem_number, openrouter_check')
+      .eq('user_id', user!.id)
+      .eq('exam_id', currentExamId)
+      .order('created_at', { ascending: false });
+
+    const latestByProblem = new Map<string, any>();
+    if (finalResults) {
+      for (const result of finalResults) {
+        const problemNum = result.problem_number;
+        if (problemNum && !latestByProblem.has(problemNum)) {
+          latestByProblem.set(problemNum, result);
+        }
+      }
+    }
+
+    return Array.from(latestByProblem.values());
+  };
+
+  // Phase 2: Process questions 20-25 with polling
+  const processPhase2Results = async () => {
+    if (!user) return null;
+    
+    try {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('exam_id')
+        .eq('user_id', user.id)
+        .single();
+
+      const currentExamId = profile?.exam_id || examId;
+
+      // Poll for results
+      const photoResults = await pollForPhotoResults(currentExamId);
+
+      if (!photoResults || photoResults.length === 0) {
+        console.warn('No photo results found after polling');
+        return examStats; // Return existing stats
       }
 
       const questionAnswers = new Map<string, { answer: string; problemText: string; index: number }>();
@@ -781,123 +925,82 @@ const OgemathMock = () => {
       });
 
       const updatedResults = [...examResults];
-      let totalCorrect = 0;
-      let part1Correct = 0;
       let part2Correct = 0;
-      const part1Total = 19;
-      const part2Total = 6;
-      const totalQuestions = 25;
 
-      if (filteredResults.length > 0) {
-        for (const analysisResult of filteredResults) {
-          if (!analysisResult.question_id || !analysisResult.problem_number) {
-            console.warn('Skipping invalid analysis result:', analysisResult);
-            continue;
-          }
+      for (const analysisResult of photoResults) {
+        if (!analysisResult.question_id || !analysisResult.problem_number) {
+          console.warn('Skipping invalid analysis result:', analysisResult);
+          continue;
+        }
 
-          const problemNumber = parseInt(analysisResult.problem_number);
-          const questionData = questionAnswers.get(analysisResult.question_id);
-          if (!questionData) continue;
+        const problemNumber = parseInt(analysisResult.problem_number);
+        if (problemNumber < 20) continue; // Only process questions 20-25
 
-          let isCorrect = false;
-          let feedback = "";
-          let scores = 0;
+        const questionData = questionAnswers.get(analysisResult.question_id);
+        if (!questionData) continue;
 
-          if (problemNumber >= 20) {
-            try {
-              const feedbackData = JSON.parse(analysisResult.raw_output);
-              if (feedbackData.review && typeof feedbackData.scores === 'number') {
-                feedback = feedbackData.review;
-                scores = feedbackData.scores;
-                isCorrect = feedbackData.scores >= 2;
-              } else {
-                feedback = analysisResult.raw_output;
-                scores = 0;
-                isCorrect = false;
-              }
-            } catch (parseError) {
-              console.error('Error parsing stored analysis:', parseError);
-              feedback = analysisResult.raw_output;
-              scores = 0;
-              isCorrect = analysisResult.raw_output !== 'False';
-            }
+        let isCorrect = false;
+        let feedback = "";
+        let scores = 0;
 
-            if (isCorrect) {
-              part2Correct++;
-              totalCorrect++;
-            }
+        try {
+          const feedbackData = JSON.parse(analysisResult.raw_output);
+          if (feedbackData.review && typeof feedbackData.scores === 'number') {
+            feedback = feedbackData.review;
+            scores = feedbackData.scores;
+            isCorrect = feedbackData.scores >= 2;
           } else {
-            // Part 1 (1–19) — prefer openrouter_check if present ("true"/"false" as TEXT)
-            const raw = (analysisResult as any).openrouter_check as string | null | undefined;
-            const orCheck: boolean | null =
-              typeof raw === "string"
-                ? (raw.trim().toLowerCase() === "true" ? true : raw.trim().toLowerCase() === "false" ? false : null)
-                : null;
-
-            if (orCheck === true || orCheck === false) {
-              isCorrect = orCheck;
-              feedback = isCorrect ? "Правильно (AI проверка)" : "Неправильно (AI проверка)";
-            } else {
-              const userAnswerStored = analysisResult.raw_output as string;
-              const correctAnswer = questionData.answer;
-
-              if (userAnswerStored === 'False') {
-                isCorrect = false;
-                feedback = "Вопрос пропущен";
-              } else {
-                if (isNumeric(correctAnswer)) {
-                  const sanitizedUserAnswer = sanitizeNumericAnswer(userAnswerStored);
-                  const sanitizedCorrectAnswer = sanitizeNumericAnswer(correctAnswer);
-                  isCorrect = sanitizedUserAnswer === sanitizedCorrectAnswer;
-                  feedback = isCorrect ? "Правильно" : "Неправильно";
-                } else {
-                  const userAnswerLower = userAnswerStored.toString().toLowerCase().trim();
-                  const correctAnswerLower = correctAnswer.toString().toLowerCase().trim();
-                  isCorrect = userAnswerLower === correctAnswerLower;
-                  feedback = isCorrect ? "Правильно" : "Неправильно";
-                }
-              }
-            }
-
-            if (isCorrect) {
-              part1Correct++;
-              totalCorrect++;
-            }
+            feedback = analysisResult.raw_output;
+            scores = 0;
+            isCorrect = false;
           }
+        } catch (parseError) {
+          console.error('Error parsing stored analysis:', parseError);
+          feedback = analysisResult.raw_output;
+          scores = 0;
+          isCorrect = analysisResult.raw_output !== 'False';
+        }
 
-          const resultIndex = updatedResults.findIndex(r => r && r.questionId === analysisResult.question_id);
-          if (resultIndex >= 0) {
-            updatedResults[resultIndex] = {
-              ...updatedResults[resultIndex],
-              isCorrect,
-              photoFeedback: feedback,
-              photoScores: scores,
-              attempted: true
-            };
-          }
+        if (isCorrect) {
+          part2Correct++;
+        }
+
+        const resultIndex = updatedResults.findIndex(r => r && r.questionId === analysisResult.question_id);
+        if (resultIndex >= 0) {
+          updatedResults[resultIndex] = {
+            ...updatedResults[resultIndex],
+            isCorrect,
+            photoFeedback: feedback,
+            photoScores: scores,
+            attempted: true,
+            userAnswer: JSON.stringify({ userAnswer: 'Развернутый ответ', score: scores })
+          };
         }
       }
 
       setExamResults(updatedResults);
 
-      const percentage = Math.round((totalCorrect / totalQuestions) * 100);
-      toast.success(`Экзамен завершен! Результат: ${totalCorrect}/${totalQuestions} (${percentage}%)`);
+      // Calculate updated total stats
+      const part1Correct = examStats?.part1Correct || 0;
+      const totalCorrect = part1Correct + part2Correct;
+      const percentage = Math.round((totalCorrect / 25) * 100);
 
-      return {
+      const finalStats = {
         totalCorrect,
-        totalQuestions,
+        totalQuestions: 25,
         percentage,
-        part1Correct,
-        part1Total,
-        part2Correct,
-        part2Total,
+        part1Correct: part1Correct,
+        part1Total: 19,
+        part2Correct: part2Correct,
+        part2Total: 6,
         totalTimeSpent: elapsedTime
       };
+
+      toast.success(`Экзамен завершен! Результат: ${totalCorrect}/25 (${percentage}%)`);
+      return finalStats;
     } catch (error) {
-      console.error('Error processing exam results:', error);
-      return null;
-    } finally {
-      setLoading(false);
+      console.error('Error in processPhase2Results:', error);
+      return examStats; // Return existing stats on error
     }
   };
 
@@ -1122,8 +1225,17 @@ const OgemathMock = () => {
               <Card>
                 <CardHeader><CardTitle>Часть 2 (20-25)</CardTitle></CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-purple-600">{examStats.part2Correct}/{examStats.part2Total}</div>
-                  <p className="text-gray-600">Повышенный уровень</p>
+                  {part2Loading ? (
+                    <div className="flex items-center justify-center py-4">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+                      <span className="ml-3 text-gray-600">Обработка...</span>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="text-2xl font-bold text-purple-600">{examStats.part2Correct}/{examStats.part2Total}</div>
+                      <p className="text-gray-600">Повышенный уровень</p>
+                    </>
+                  )}
                 </CardContent>
               </Card>
 
@@ -1151,23 +1263,29 @@ const OgemathMock = () => {
                     const result = examResults[index];
                     const isAttempted = result?.attempted !== false;
                     const isCorrect = isAttempted ? result?.isCorrect : null;
+                    const isLoadingQuestion = part2Loading && index >= 19;
 
                     return (
                       <Button
                         key={index}
                         variant="outline"
                         className={`h-12 ${
-                          isCorrect === true
+                          isLoadingQuestion
+                            ? 'bg-yellow-50 border-yellow-400 hover:bg-yellow-100 text-yellow-700'
+                            : isCorrect === true
                             ? 'bg-green-100 border-green-500 hover:bg-green-200 text-green-800'
                             : isCorrect === false
                             ? 'bg-red-100 border-red-500 hover:bg-red-200 text-red-800'
                             : 'bg-gray-100 border-gray-400 hover:bg-gray-200 text-gray-600'
                         }`}
-                        onClick={() => handleGoToQuestion(index)}
+                        onClick={() => !isLoadingQuestion && handleGoToQuestion(index)}
+                        disabled={isLoadingQuestion}
                       >
                         <div className="text-center">
                           <div className="font-semibold">{index + 1}</div>
-                          <div className="text-xs">{isCorrect === true ? '✓' : isCorrect === false ? '✗' : '—'}</div>
+                          <div className="text-xs">
+                            {isLoadingQuestion ? '⏳' : isCorrect === true ? '✓' : isCorrect === false ? '✗' : '—'}
+                          </div>
                         </div>
                       </Button>
                     );
