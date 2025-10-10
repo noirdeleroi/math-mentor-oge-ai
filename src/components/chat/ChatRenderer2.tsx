@@ -11,16 +11,16 @@ interface ChatRenderer2Props {
   className?: string;
 }
 
-/** Robust entity decoder so &gt; &lt; &amp; etc. are converted BEFORE KaTeX sees them */
+/** Decode HTML entities BEFORE KaTeX sees the string */
 const decodeEntities = (s: string) => {
   if (!s) return '';
-  // Use the browser’s HTML parser when available
-  if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+  // Browser path (decodes everything, including numeric entities)
+  if (typeof document !== 'undefined') {
     const ta = document.createElement('textarea');
     ta.innerHTML = s;
     return ta.value;
   }
-  // SSR-safe fallback (covers the common ones)
+  // SSR fallback: cover the common ones
   return s
     .replace(/&amp;/g, '&')
     .replace(/&lt;/g, '<')
@@ -31,16 +31,15 @@ const decodeEntities = (s: string) => {
 
 /**
  * Normalize LaTeX delimiters for KaTeX/remark-math:
- *   \[ ... \]  ->  $$ ... $$   (block)
- *   \( ... \)  ->  $  ...  $   (inline)
- * Use function replacers so we never generate "$1".
+ *  - \[ ... \]   →  $$ ... $$  (block; with blank lines for remark-math)
+ *  - \( ... \)   →  $  ...  $  (inline)
+ * Use function replacers so we never create the "$1" bug.
  */
 const normalizeForKaTeX = (input: string): string => {
   let s = decodeEntities(input);
 
-  // Display math: ensure blank lines so remark-math treats it as block
+  // Display math
   s = s.replace(/\\\[([\s\S]*?)\\\]/g, (_m, g1) => `\n\n$$${g1}$$\n\n`);
-
   // Inline math
   s = s.replace(/\\\(([\s\S]*?)\\\)/g, (_m, g1) => `$${g1}$`);
 
@@ -59,7 +58,7 @@ const ChatRenderer2 = ({
       <ReactMarkdown
         remarkPlugins={[[remarkMath, { singleDollarTextMath: true }], remarkGfm]}
         rehypePlugins={[[rehypeKatex, { throwOnError: false, strict: false }]]}
-        // Keep HTML disabled so raw tags don't interfere with math parsing
+        // Keep raw HTML disabled so tags don’t fight the math parser
         skipHtml
         components={{
           p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
@@ -76,48 +75,4 @@ const ChatRenderer2 = ({
             </a>
           ),
           ul: ({ children }) => <ul className="list-disc list-inside mb-2 space-y-1">{children}</ul>,
-          ol: ({ children }) => <ol className="list-decimal list-inside mb-2 space-y-1">{children}</ol>,
-          li: ({ children }) => <li className="mb-1">{children}</li>,
-          code: ({ children, className }) => {
-            const isInline = !className?.includes('language-');
-            return isInline ? (
-              <code
-                className={`px-1 py-0.5 rounded text-sm font-mono ${
-                  isUserMessage ? 'bg-white/20 text-blue-100' : 'bg-gray-100 text-gray-800'
-                }`}
-              >
-                {children}
-              </code>
-            ) : (
-              <pre
-                className={`p-3 rounded-lg text-sm overflow-x-auto ${
-                  isUserMessage ? 'bg-white/20 text-blue-100' : 'bg-gray-100 text-gray-800'
-                }`}
-              >
-                <code>{children}</code>
-              </pre>
-            );
-          },
-          blockquote: ({ children }) => (
-            <blockquote
-              className={`pl-4 border-l-4 italic my-2 ${
-                isUserMessage ? 'border-blue-200 text-blue-100' : 'border-gray-300 text-gray-600'
-              }`}
-            >
-              {children}
-            </blockquote>
-          ),
-          h1: ({ children }) => <h1 className="text-xl font-bold mb-2">{children}</h1>,
-          h2: ({ children }) => <h2 className="text-lg font-bold mb-2">{children}</h2>,
-          h3: ({ children }) => <h3 className="text-md font-bold mb-2">{children}</h3>,
-          strong: ({ children }) => <strong className="font-bold">{children}</strong>,
-          em: ({ children }) => <em className="italic">{children}</em>,
-        }}
-      >
-        {processed}
-      </ReactMarkdown>
-    </div>
-  );
-};
-
-export default ChatRenderer2;
+          ol: ({ children }) => <ol className=
