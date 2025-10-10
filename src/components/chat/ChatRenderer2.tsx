@@ -75,7 +75,7 @@ const ChatRenderer2 = ({
               target="_blank" 
               rel="noopener noreferrer"
               className={`underline hover:no-underline ${
-                isUserMessage ? 'text-blue-600 hover:text-blue-800' : 'text-blue-600 hover:text-blue-800'
+                isUserMessage ? 'text-blue-100 hover:text-white' : 'text-blue-600 hover:text-blue-800'
               }`}
             >
               {children}
@@ -89,7 +89,7 @@ const ChatRenderer2 = ({
             return isInline ? (
               <code className={`px-1 py-0.5 rounded text-sm font-mono ${
                 isUserMessage 
-                  ? 'bg-gray-200 text-gray-800' 
+                  ? 'bg-white/20 text-blue-100' 
                   : 'bg-gray-100 text-gray-800'
               }`}>
                 {children}
@@ -97,7 +97,7 @@ const ChatRenderer2 = ({
             ) : (
               <pre className={`p-3 rounded-lg text-sm overflow-x-auto ${
                 isUserMessage 
-                  ? 'bg-gray-200 text-gray-800' 
+                  ? 'bg-white/20 text-blue-100' 
                   : 'bg-gray-100 text-gray-800'
               }`}>
                 <code>{children}</code>
@@ -107,7 +107,7 @@ const ChatRenderer2 = ({
           blockquote: ({ children }) => (
             <blockquote className={`pl-4 border-l-4 italic my-2 ${
               isUserMessage 
-                ? 'border-gray-400 text-gray-700' 
+                ? 'border-blue-200 text-blue-100' 
                 : 'border-gray-300 text-gray-600'
             }`}>
               {children}
