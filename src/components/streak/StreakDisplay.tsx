@@ -8,6 +8,7 @@ import { User, ChevronDown } from 'lucide-react';
 import { EnergyPointsHeaderAnimation } from './EnergyPointsHeaderAnimation';
 import { getCurrentEnergyPoints } from '@/services/energyPoints';
 import { getBadgeForPoints, getPointsLabel } from '@/utils/streakBadges';
+import { Link, useNavigate } from 'react-router-dom'; // add Link
 
 interface StreakData {
   weeklyGoalPoints: number;
