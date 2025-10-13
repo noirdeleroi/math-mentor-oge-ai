@@ -25,6 +25,10 @@ const LearningLayout: React.FC = () => {
   // Detect current course from route
   const currentCourse = getCourseFromRoute(location.pathname);
   
+  console.log('[LearningLayout] Current pathname:', location.pathname);
+  console.log('[LearningLayout] Current course:', currentCourse);
+  console.log('[LearningLayout] Course numericId:', currentCourse?.numericId);
+  
   // Course mapping
   const courseMap = [
     { course_id: 1, name: "Математика ОГЭ", route: "/ogemath" },

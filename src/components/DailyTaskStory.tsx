@@ -42,6 +42,8 @@ export const DailyTaskStory: React.FC<DailyTaskStoryProps> = ({ courseId }) => {
     async function fetchData() {
       if (!user) return;
       
+      console.log('[DailyTaskStory] courseId prop:', courseId);
+      
       try {
         // Fetch avatar and tutor name from profiles
         const { data: profile } = await supabase
