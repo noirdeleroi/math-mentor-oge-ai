@@ -21,7 +21,11 @@ interface StoryData {
   created_at: string;
 }
 
-export const DailyTaskStory = () => {
+interface DailyTaskStoryProps {
+  courseId?: string | null;
+}
+
+export const DailyTaskStory: React.FC<DailyTaskStoryProps> = ({ courseId }) => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
@@ -57,11 +61,17 @@ export const DailyTaskStory = () => {
           setTutorName(profile.tutor_name);
         }
 
-        // Fetch latest story for this user
-        const { data: stories } = await supabase
+        // Fetch latest story for this user, filtered by course_id if provided
+        let query = supabase
           .from('stories_and_telegram')
           .select('upload_id, task, created_at, seen, hardcode_task, previously_failed_topics')
-          .eq('user_id', user.id)
+          .eq('user_id', user.id);
+        
+        if (courseId) {
+          query = query.eq('course_id', courseId);
+        }
+        
+        const { data: stories } = await query
           .order('created_at', { ascending: false })
           .limit(1);
 
@@ -105,7 +115,7 @@ export const DailyTaskStory = () => {
     }
 
     fetchData();
-  }, [user]);
+  }, [user, courseId]);
 
   // Helper function to convert tutor name to genitive case for Russian grammar
   const getTutorNameGenitive = (name: string) => {
@@ -139,6 +149,53 @@ export const DailyTaskStory = () => {
 
   // Don't render if no avatar URL
   if (!avatarUrl) return null;
+  
+  // Show default message if no course_id provided
+  if (!courseId) {
+    return (
+      <>
+        <div className="flex justify-center">
+          <div
+            className="w-12 h-12 rounded-full overflow-hidden cursor-pointer transition-all duration-200 hover:scale-105 border-2 border-muted"
+            onClick={handleOpen}
+          >
+            <div className="w-full h-full rounded-full overflow-hidden bg-background">
+              <img
+                src={avatarUrl}
+                alt={`${tutorName} Avatar`}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+        </div>
+
+        {isOpen && ReactDOM.createPortal(
+          <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-[9999] p-4">
+            <div className="relative w-full max-w-md bg-gradient-to-br from-background to-muted rounded-3xl overflow-hidden shadow-2xl p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 rounded-full overflow-hidden">
+                  <img
+                    src={avatarUrl}
+                    alt={`${tutorName} Avatar`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <span className="font-semibold text-foreground text-lg">{tutorName}</span>
+                <button
+                  className="ml-auto w-10 h-10 rounded-full bg-black/20 hover:bg-black/40 flex items-center justify-center text-white transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <p className="text-foreground text-center">Привет! Пока для тебя нет заданий.</p>
+            </div>
+          </div>,
+          document.body
+        )}
+      </>
+    );
+  }
 
   return (
     <>
