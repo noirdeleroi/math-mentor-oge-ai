@@ -33,7 +33,7 @@ export const Sidebar = () => {
               className={`w-full justify-start ${
                 isActive(item.path) 
                   ? "bg-primary/10 text-primary font-medium" 
-                  : "text-muted-foreground hover:text-foreground"
+                  : "text-muted-foreground hover:text-yellow-500"
               }`}
               onClick={() => navigate(item.path)}
             >
@@ -57,7 +57,7 @@ export const Sidebar = () => {
               className={`w-full justify-start ${
                 isActive(item.path) 
                   ? "bg-primary/10 text-primary font-medium" 
-                  : "text-muted-foreground hover:text-foreground"
+                  : "text-muted-foreground hover:text-yellow-500"
               }`}
               onClick={() => navigate(item.path)}
             >
