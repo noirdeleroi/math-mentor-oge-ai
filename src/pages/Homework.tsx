@@ -210,30 +210,32 @@ const Homework = () => {
   // -------- Text selection handlers ----------
   useEffect(() => {
     if (!isSelecterActive) return;
-
-    const handleTextSelection = () => {
-      const selection = window.getSelection();
-      if (!selection || selection.rangeCount === 0) return;
-
+  
+    const pickSelection = () => {
       const text = getSelectedTextWithMath();
       if (text.trim().length > 0) {
-        if (!mountedRef.current) return;
         setSelectedText(text);
-        const range = selection.getRangeAt(0);
-        const rect = range.getBoundingClientRect();
-        setSelectionPosition({ x: rect.left + rect.width / 2, y: rect.top - 10 });
+        const sel = window.getSelection();
+        if (sel && sel.rangeCount) {
+          const rect = sel.getRangeAt(0).getBoundingClientRect();
+          setSelectionPosition({ x: rect.left + rect.width / 2, y: rect.top - 10 });
+        }
       }
     };
-
-    const handleMouseUp = () => setTimeout(handleTextSelection, 10);
-
+  
+    const handleMouseUp = () => setTimeout(pickSelection, 10);
+  
     document.addEventListener('mouseup', handleMouseUp);
     document.addEventListener('touchend', handleMouseUp);
+    document.addEventListener('selectionchange', pickSelection); // 👈 new
+  
     return () => {
       document.removeEventListener('mouseup', handleMouseUp);
       document.removeEventListener('touchend', handleMouseUp);
+      document.removeEventListener('selectionchange', pickSelection); // 👈 cleanup
     };
-  }, [isSelecterActive]);
+  }, [isSelecterActive, reviewMode]); // 👈 add reviewMode
+
 
   const closeSelectionPopup = () => {
     setSelectedText('');
