@@ -25,6 +25,18 @@ const LearningLayout: React.FC = () => {
   // Detect current course from route
   const currentCourse = getCourseFromRoute(location.pathname);
   
+  // Course mapping
+  const courseMap = [
+    { course_id: 1, name: "Математика ОГЭ", route: "/ogemath" },
+    { course_id: 2, name: "Математика ЕГЭ (Базовый уровень)", route: "/egemathbasic" },
+    { course_id: 3, name: "Математика ЕГЭ (Профильный уровень)", route: "/egemathprof" }
+  ];
+  
+  // Get user's enrolled courses
+  const enrolledCourses = profile?.courses
+    ? courseMap.filter(course => profile.courses.includes(course.course_id))
+    : [];
+  
   const [energyPointsAnimation, setEnergyPointsAnimation] = useState({ isVisible: false, points: 0 });
 
   // Set up global trigger for energy points animation
@@ -90,16 +102,23 @@ const LearningLayout: React.FC = () => {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56 bg-background/95 backdrop-blur-lg border border-border z-50">
                 <DropdownMenuItem asChild>
-                  <Link to="/mydb3" className="cursor-pointer">
+                  <Link to="/mydb3" className="cursor-pointer hover:bg-gradient-to-r hover:from-gold hover:to-sage hover:text-white">
                     Курсы
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link to="/profile" className="cursor-pointer">
+                  <Link to="/profile" className="cursor-pointer hover:bg-gradient-to-r hover:from-gold hover:to-sage hover:text-white">
                     Профиль
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-red-600 focus:text-red-600">
+                {enrolledCourses.map((course) => (
+                  <DropdownMenuItem key={course.course_id} asChild>
+                    <Link to={course.route} className="cursor-pointer hover:bg-gradient-to-r hover:from-gold hover:to-sage hover:text-white">
+                      {course.name}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+                <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-red-600 hover:bg-gradient-to-r hover:from-gold hover:to-sage hover:text-white focus:text-red-600">
                   Выйти
                 </DropdownMenuItem>
               </DropdownMenuContent>

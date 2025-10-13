@@ -12,6 +12,7 @@ export interface Profile {
   updated_at?: string;
   telegram_code?: number;
   telegram_user_id?: number;
+  courses?: number[];
 }
 
 export const useProfile = () => {
