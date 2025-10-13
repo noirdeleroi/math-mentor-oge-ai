@@ -115,8 +115,8 @@ const Homework = () => {
 
   useEffect(() => { mountedRef.current = true; return () => { mountedRef.current = false; }; }, []);
 
-  // Initialize MathJax selection
-  useMathJaxSelection();
+  // Initialize MathJax selection - reinitialize when reviewMode changes
+  useMathJaxSelection({ root: reviewMode ? '#solution-box' : undefined });
 
   const loadHomeworkData = async () => {
     if (!user) return;
