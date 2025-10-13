@@ -1112,32 +1112,37 @@ const Homework = () => {
             <Card>
               <CardContent className="p-4">
                 <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-12 gap-1.5">
-                  {allQuestionResults.map((result, index) => (
-                    <Card
-                      key={result.question.id}
-                      className={cn(
-                        "cursor-pointer transition-all hover:scale-105",
-                        result.isCorrect ? "border-green-500/50 bg-green-500/5" : "border-red-500/50 bg-red-500/5",
-                        currentQuestionIndex === index && "ring-2 ring-gold"
-                      )}
-                      onClick={() => {
-                        setCurrentQuestionIndex(index);
-                        setTimeout(() => {
-                          document.getElementById('solution-box')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        }, 100);
-                      }}
-                    >
-                      <CardContent className="p-1.5 text-center">
-                        <div className="text-xs font-bold mb-0.5">№{index + 1}</div>
-                        <div className="text-[10px] font-medium mb-1 text-muted-foreground">
-                          {result.type === 'mcq' ? 'MCQ' : 'FIPI'}
-                        </div>
-                        {result.isCorrect
-                          ? <Check className="w-3 h-3 text-green-600 mx-auto" />
-                          : <X className="w-3 h-3 text-red-600 mx-auto" />}
-                      </CardContent>
-                    </Card>
-                  ))}
+                  {[...allQuestionResults]
+                    .sort((a, b) => a.type === 'mcq' && b.type === 'frq' ? -1 : a.type === 'frq' && b.type === 'mcq' ? 1 : 0)
+                    .map((result, index) => {
+                      const originalIndex = allQuestionResults.indexOf(result);
+                      return (
+                        <Card
+                          key={result.question.id}
+                          className={cn(
+                            "cursor-pointer transition-all hover:scale-105",
+                            result.isCorrect ? "border-green-500/50 bg-green-500/5" : "border-red-500/50 bg-red-500/5",
+                            currentQuestionIndex === originalIndex && "ring-2 ring-gold"
+                          )}
+                          onClick={() => {
+                            setCurrentQuestionIndex(originalIndex);
+                            setTimeout(() => {
+                              document.getElementById('solution-box')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }, 100);
+                          }}
+                        >
+                          <CardContent className="p-1.5 text-center">
+                            <div className="text-xs font-bold mb-0.5">№{originalIndex + 1}</div>
+                            <div className="text-[10px] font-medium mb-1 text-muted-foreground">
+                              {result.type === 'mcq' ? 'MCQ' : 'FIPI'}
+                            </div>
+                            {result.isCorrect
+                              ? <Check className="w-3 h-3 text-green-600 mx-auto" />
+                              : <X className="w-3 h-3 text-red-600 mx-auto" />}
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
                 </div>
               </CardContent>
             </Card>
