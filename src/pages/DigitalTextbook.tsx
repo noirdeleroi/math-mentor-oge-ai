@@ -569,6 +569,17 @@ const DigitalTextbook = () => {
             К программе
           </Button>
           
+          {/* Platform Link */}
+          <Link to="/cellard-lp2">
+            <Button
+              variant="ghost"
+              className="w-full justify-start text-white hover:bg-yellow-500/10 hover:text-yellow-400"
+            >
+              <Target className="mr-2 h-4 w-4" />
+              Платформа
+            </Button>
+          </Link>
+          
           <Button
             onClick={toggleSelecter}
             variant={isSelecting ? "default" : "ghost"}
