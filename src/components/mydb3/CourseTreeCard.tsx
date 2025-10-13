@@ -381,9 +381,9 @@ export const CourseTreeCard: React.FC<CourseTreeCardProps> = ({
                           {/* Topic progress bar */}
                         {topic.number && topicProgress[topic.number] !== undefined && (
                           <div className="mt-1">
-                            <div className="w-full bg-gray-200 rounded-full h-1.5">
+                            <div className="w-full bg-black rounded-full h-1.5">
                               <div 
-                                className="bg-gradient-to-r from-yellow-500 to-emerald-500 h-1.5 rounded-full transition-all duration-300" 
+                                className="bg-orange-500 h-1.5 rounded-full transition-all duration-300" 
                                 style={{ width: `${topicProgress[topic.number]}%` }}
                               />
                             </div>
