@@ -299,6 +299,16 @@ export const CourseTreeCard: React.FC<CourseTreeCardProps> = ({
           </div>
         </div>
         
+        {/* Start Button */}
+        <Button 
+          onClick={() => onStart(course.id)}
+          className="w-full bg-blue-600 hover:bg-blue-700 mt-3"
+          size="sm"
+        >
+          <Play className="w-4 h-4 mr-2" />
+          Начать изучение
+        </Button>
+        
         {/* Progress Bar */}
         <div className="mt-4">
           <div className="flex items-center justify-between text-sm mb-2">
@@ -395,16 +405,6 @@ export const CourseTreeCard: React.FC<CourseTreeCardProps> = ({
             )}
           </ScrollArea>
         </div>
-        
-        {/* Action Button */}
-        <Button 
-          onClick={() => onStart(course.id)}
-          className="w-full bg-blue-600 hover:bg-blue-700"
-          size="sm"
-        >
-          <Play className="w-4 h-4 mr-2" />
-          Начать изучение
-        </Button>
       </CardContent>
     </Card>
   );
