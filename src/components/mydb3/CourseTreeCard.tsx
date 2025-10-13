@@ -364,7 +364,7 @@ export const CourseTreeCard: React.FC<CourseTreeCardProps> = ({
                           <h4 className={`text-sm font-medium leading-tight ${
                             topic.isCurrent 
                               ? 'text-blue-700 font-semibold' 
-                              : 'text-blue-600 hover:underline cursor-pointer'
+                              : 'text-gray-700'
                           }`}>
                             {topic.name}
                           </h4>
