@@ -153,7 +153,7 @@ const MyDb3 = () => {
               <h1 className="text-2xl font-bold">Мои курсы</h1>
               <Button 
                 onClick={handleOpenDeleteModal}
-                className="bg-gradient-to-r from-yellow-500 to-emerald-500 hover:shadow-lg text-white"
+                className="bg-black hover:bg-gradient-to-r hover:from-yellow-500 hover:to-emerald-500 hover:shadow-lg text-white"
               >
                 Редактировать курсы
               </Button>
