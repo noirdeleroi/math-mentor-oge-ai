@@ -382,17 +382,6 @@ export const CourseTreeCard: React.FC<CourseTreeCardProps> = ({
                           {/* Hidden topic number for data purposes */}
                           <span className="sr-only">{topic.number}</span>
                         </div>
-                        
-                        {/* Resume button for current topic */}
-                        {topic.isCurrent && (
-                          <Button 
-                            size="sm"
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1 text-xs font-medium"
-                            onClick={() => onStart(course.id)}
-                          >
-                            Продолжить
-                          </Button>
-                        )}
                       </div>
                     );
                   })}
