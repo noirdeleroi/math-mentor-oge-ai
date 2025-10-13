@@ -106,23 +106,23 @@ const LearningLayout: React.FC = () => {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56 bg-background/95 backdrop-blur-lg border border-border z-50">
                 <DropdownMenuItem asChild>
-                  <Link to="/mydb3" className="cursor-pointer hover:bg-gradient-to-r hover:from-gold hover:to-sage hover:text-white">
+                  <Link to="/mydb3" className="cursor-pointer hover:bg-gradient-to-r hover:from-gold/30 hover:to-sage/30 hover:text-black">
                     Курсы
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link to="/profile" className="cursor-pointer hover:bg-gradient-to-r hover:from-gold hover:to-sage hover:text-white">
+                  <Link to="/profile" className="cursor-pointer hover:bg-gradient-to-r hover:from-gold/30 hover:to-sage/30 hover:text-black">
                     Профиль
                   </Link>
                 </DropdownMenuItem>
                 {enrolledCourses.map((course) => (
                   <DropdownMenuItem key={course.course_id} asChild>
-                    <Link to={course.route} className="cursor-pointer hover:bg-gradient-to-r hover:from-gold hover:to-sage hover:text-white">
+                    <Link to={course.route} className="cursor-pointer hover:bg-gradient-to-r hover:from-gold/30 hover:to-sage/30 hover:text-black">
                       {course.name}
                     </Link>
                   </DropdownMenuItem>
                 ))}
-                <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-red-600 hover:bg-gradient-to-r hover:from-gold hover:to-sage hover:text-white focus:text-red-600">
+                <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-red-600 hover:bg-gradient-to-r hover:from-gold/30 hover:to-sage/30 hover:text-red-600 focus:text-red-600">
                   Выйти
                 </DropdownMenuItem>
               </DropdownMenuContent>
