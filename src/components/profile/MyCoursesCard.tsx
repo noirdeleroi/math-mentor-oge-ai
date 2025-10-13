@@ -90,7 +90,7 @@ export const MyCoursesCard = () => {
             <Button
               key={course.course_id}
               onClick={() => navigate(course.route)}
-              className="w-full bg-black text-white hover:bg-gradient-to-r hover:from-yellow-500 hover:to-emerald-500 justify-start"
+              className="w-full bg-black text-white hover:bg-gradient-to-r hover:from-yellow-500 hover:to-emerald-500 hover:text-black justify-start transition-all duration-300"
             >
               <GraduationCap className="w-4 h-4 mr-2" />
               {course.name}
