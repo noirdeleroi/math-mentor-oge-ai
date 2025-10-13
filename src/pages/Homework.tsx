@@ -1111,7 +1111,7 @@ const Homework = () => {
 
             <Card>
               <CardContent className="p-4">
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2">
+                <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-12 gap-1.5">
                   {allQuestionResults.map((result, index) => (
                     <Card
                       key={result.question.id}
@@ -1127,11 +1127,14 @@ const Homework = () => {
                         }, 100);
                       }}
                     >
-                      <CardContent className="p-2 text-center">
-                        <div className="text-sm font-bold mb-1">№{index + 1}</div>
+                      <CardContent className="p-1.5 text-center">
+                        <div className="text-xs font-bold mb-0.5">№{index + 1}</div>
+                        <div className="text-[10px] font-medium mb-1 text-muted-foreground">
+                          {result.type === 'mcq' ? 'MCQ' : 'FIPI'}
+                        </div>
                         {result.isCorrect
-                          ? <Check className="w-4 h-4 text-green-600 mx-auto" />
-                          : <X className="w-4 h-4 text-red-600 mx-auto" />}
+                          ? <Check className="w-3 h-3 text-green-600 mx-auto" />
+                          : <X className="w-3 h-3 text-red-600 mx-auto" />}
                       </CardContent>
                     </Card>
                   ))}
