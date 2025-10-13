@@ -1109,31 +1109,35 @@ const Homework = () => {
               </CardContent>
             </Card>
 
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2">
-              {allQuestionResults.map((result, index) => (
-                <Card
-                  key={result.question.id}
-                  className={cn(
-                    "cursor-pointer transition-all hover:scale-105",
-                    result.isCorrect ? "border-green-500/50 bg-green-500/5" : "border-red-500/50 bg-red-500/5",
-                    currentQuestionIndex === index && "ring-2 ring-gold"
-                  )}
-                  onClick={() => {
-                    setCurrentQuestionIndex(index);
-                    setTimeout(() => {
-                      document.getElementById('solution-box')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }, 100);
-                  }}
-                >
-                  <CardContent className="p-2 text-center">
-                    <div className="text-sm font-bold mb-1">№{index + 1}</div>
-                    {result.isCorrect
-                      ? <Check className="w-4 h-4 text-green-600 mx-auto" />
-                      : <X className="w-4 h-4 text-red-600 mx-auto" />}
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+            <Card>
+              <CardContent className="p-4">
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2">
+                  {allQuestionResults.map((result, index) => (
+                    <Card
+                      key={result.question.id}
+                      className={cn(
+                        "cursor-pointer transition-all hover:scale-105",
+                        result.isCorrect ? "border-green-500/50 bg-green-500/5" : "border-red-500/50 bg-red-500/5",
+                        currentQuestionIndex === index && "ring-2 ring-gold"
+                      )}
+                      onClick={() => {
+                        setCurrentQuestionIndex(index);
+                        setTimeout(() => {
+                          document.getElementById('solution-box')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }, 100);
+                      }}
+                    >
+                      <CardContent className="p-2 text-center">
+                        <div className="text-sm font-bold mb-1">№{index + 1}</div>
+                        {result.isCorrect
+                          ? <Check className="w-4 h-4 text-green-600 mx-auto" />
+                          : <X className="w-4 h-4 text-red-600 mx-auto" />}
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
 
             {allQuestionResults[currentQuestionIndex] && (
               <Card id="solution-box">
