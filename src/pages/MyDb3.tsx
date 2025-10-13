@@ -78,24 +78,95 @@ const MyDb3 = () => {
 **Начинай заниматься прямо сейчас. Ты быстро привыкнешь к платформе, и обучение станет проще и интереснее каждый день!**
 **Здесь ты можешь готовиться к экзаменам легко, интересно и эффективно!**`;
 
-    // First, enroll courses in database
+    // First-lesson story "task" text
+    const firstLessonTask = `Привет! Рад тебя видеть на нашем занятии. У нас сегодня интересная
+работа по плану, чтобы уверенно двигаться к твоей цели — **18 баллам**
+на экзамене.
+
+Поскольку это наше первое занятие (или не было данных о прошлом), мы
+пока не можем проанализировать ошибки, но это отлично, так как мы
+начинаем с чистого листа! Весь твой текущий прогресс низкий (2%), что
+совершенно нормально — впереди много времени (целых 229 дней!), чтобы
+всё наверстать, работая по 8 часов в неделю.
+
+### 🎯 План на сегодня (1 час)
+
+Сегодня мы закладываем фундамент. Наша задача — освоить самые базовые
+арифметические навыки.
+
+#### 1. Повторение (0 минут)
+Поскольку прошлых ошибок нет, мы сразу переходим к плану. Помни: даже
+самые простые темы (как сегодня) — это основа для сложных задач в
+будущем.
+
+#### 2. Изучение новых тем (40 минут)
+
+Мы сфокусируемся на первых двух блоках:
+
+*   **1.1 Натуральные и целые числа:** Повторим, что такое натуральные
+числа (для счета) и целые числа (считаем и отрицательные). Это важно
+для правильной записи ответов.
+*   **1.2 Дроби и проценты:** Вспомним, как работают обыкновенные
+дроби, и как легко переводить проценты в десятичные дроби. Эти навыки
+понадобятся практически везде!
+
+Работай с теорией в учебнике по этим темам и решай простые примеры.
+
+#### 3. Практика по ФИПИ (20 минут)
+
+На данный момент, поскольку ты только начинаешь, мы не будем брать
+сложные задачи ФИПИ (номера 1-25). Мы сосредоточимся на теории. Как
+только ты уверенно решишь базовые примеры по темам 1.1 и 1.2 из
+учебника, тогда перейдем к задачам, связанным с этими темами
+(например, задачи №6 и №7).
+
+**Твоя миссия сегодня:** Убедиться, что ты одинаково легко оперируешь
+целыми числами (включая отрицательные) и любыми дробями.
+
+Не торопись! Если что-то непонятно в теории, обязательно напиши мне в
+чат, и мы разберем это подробно. Успехов с первым шагом!`;
+
+    // JSON payloads for stories_and_telegram (store as strings if columns are text)
+    const hardcodeTaskObj = {
+      "темы для изучения": ["1.1", "1.2"],
+      "навыки с наибольшей важностью для выбранных тем": [1,2,3,4,5,6,7,8,9],
+      "Задачи ФИПИ для тренировки": [],
+      "навыки для подтягивания": []
+    };
+
+    const previouslyFailedObj = {
+      "time_task": null,
+      "time_mastery": null,
+      "темы с ошибками": []
+    };
+
+    const previousHomeworkQuestionIdsObj = {
+      "MCQ": [],
+      "FIPI": []
+    };
+
+    const resultOfPrevHomeworkCompletion: unknown[] = [];
+    const studentActivitySessionResults: unknown[] = [];
+
+    // Enroll courses in database + insert welcome chat + insert first story
     for (const courseId of courseIds) {
-      const courseNumber = courseIdToNumber[courseId];
-      
-      // Get current courses from profiles
+      const courseNumber = courseIdToNumber[courseId]; // 1 | 2 | 3
+
+      // Get current user
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
+      // Fetch profile.courses
       const { data: profile } = await supabase
         .from('profiles')
         .select('courses')
         .eq('user_id', user.id)
         .single();
 
-      const currentCourseNumbers = profile?.courses || [];
+      const currentCourseNumbers: number[] = profile?.courses || [];
       const newCourseNumbers = [...currentCourseNumbers, courseNumber];
-      
-      // Update database
+
+      // Update profile with new course
       await supabase
         .from('profiles')
         .update({ courses: newCourseNumbers })
@@ -117,7 +188,7 @@ const MyDb3 = () => {
       try {
         await supabase.from('chat_logs').insert({
           user_id: user.id,
-          course_id: courseNumber.toString(),
+          course_id: courseNumber.toString(), // text
           user_message: 'Описание страниц на платформе',
           response: welcomeMessage,
           time_of_user_message: new Date().toISOString(),
@@ -126,6 +197,28 @@ const MyDb3 = () => {
       } catch (error) {
         console.error('Error inserting welcome message:', error);
       }
+
+      // --- NEW: Insert initial story into stories_and_telegram ---
+      try {
+        const uploadId = Math.floor(100000 + Math.random() * 900000); // random 6 digits
+
+        await supabase.from('stories_and_telegram').insert({
+          user_id: user.id,
+          course_id: courseNumber.toString(),            // text column
+          upload_id: uploadId,                            // 6-digit number
+          seen: 0,                                        // not seen
+          task: firstLessonTask,                          // long task text
+          hardcode_task: JSON.stringify(hardcodeTaskObj), // store JSON as string
+          previously_failed_topics: JSON.stringify(previouslyFailedObj),
+          previous_homework_question_ids: JSON.stringify(previousHomeworkQuestionIdsObj),
+          result_of_prev_homework_completion: JSON.stringify(resultOfPrevHomeworkCompletion),
+          student_activity_session_results: JSON.stringify(studentActivitySessionResults)
+          // created_at will use default NOW() if your table has it
+        });
+      } catch (error) {
+        console.error('Error inserting initial story:', error);
+      }
+      // --- END NEW ---
     }
     
     // Close modal and start wizard flow
@@ -236,17 +329,17 @@ const MyDb3 = () => {
                   
                   {/* Add course card */}
                   <div className="flex items-center justify-center min-h-[300px] border-2 border-dashed border-muted-foreground/20 rounded-lg">
-                  <div className="text-center">
-                    <Button
-                      onClick={handleOpenAddModal}
-                      variant="outline"
-                      size="lg"
-                      className="w-20 h-20 rounded-full border-2 border-dashed border-yellow-500/30 hover:border-yellow-500 hover:bg-yellow-500/5 transition-all duration-200 mb-4"
-                    >
-                      <Plus className="w-8 h-8 text-yellow-600" />
-                    </Button>
-                    <p className="text-muted-foreground">Добавить другой курс</p>
-                  </div>
+                    <div className="text-center">
+                      <Button
+                        onClick={handleOpenAddModal}
+                        variant="outline"
+                        size="lg"
+                        className="w-20 h-20 rounded-full border-2 border-dashed border-yellow-500/30 hover:border-yellow-500 hover:bg-yellow-500/5 transition-all duration-200 mb-4"
+                      >
+                        <Plus className="w-8 h-8 text-yellow-600" />
+                      </Button>
+                      <p className="text-muted-foreground">Добавить другой курс</p>
+                    </div>
                   </div>
                 </div>
               </div>
