@@ -242,7 +242,7 @@ export const CourseTreeCard: React.FC<CourseTreeCardProps> = ({
       <CardHeader className="pb-4">
         <div>
           <CardTitle 
-            className="text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-400 hover:to-emerald-400 cursor-pointer transition-all"
+            className="text-lg font-semibold text-gray-900 hover:text-gray-700 cursor-pointer transition-colors"
             onClick={() => onStart(course.id)}
           >
             {course.title}
