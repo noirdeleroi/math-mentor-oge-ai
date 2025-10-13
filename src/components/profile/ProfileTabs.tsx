@@ -74,6 +74,16 @@ export const ProfileTabs = ({ userData, userName, userEmail, joinedDate, lastAct
         <MessageSquare className="w-5 h-5 mr-2" />
         Курсы
       </Button>
+
+      {/* Подписки Button */}
+      <Button
+        onClick={() => navigate('/subscribe')}
+        size="lg"
+        className="w-48 bg-gradient-to-br from-[#f59e0b] to-[#10b981] hover:from-[#fbbf24] hover:to-[#34d399] text-white shadow-xl text-lg py-6 px-8 rounded-xl transform transition-all duration-200 hover:scale-105"
+      >
+        <MessageSquare className="w-5 h-5 mr-2" />
+        Подписки
+      </Button>
     </div>
 
       {/* Tab Content */}
