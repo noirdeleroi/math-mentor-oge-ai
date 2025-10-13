@@ -1109,30 +1109,34 @@ const Homework = () => {
               </CardContent>
             </Card>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2">
               {allQuestionResults.map((result, index) => (
                 <Card
                   key={result.question.id}
                   className={cn(
                     "cursor-pointer transition-all hover:scale-105",
-                    result.isCorrect ? "border-green-500 bg-green-500/10" : "border-red-500 bg-red-500/10",
-                    currentQuestionIndex === index && "ring-2 ring-primary"
+                    result.isCorrect ? "border-green-500/50 bg-green-500/5" : "border-red-500/50 bg-red-500/5",
+                    currentQuestionIndex === index && "ring-2 ring-gold"
                   )}
-                  onClick={() => setCurrentQuestionIndex(index)}
+                  onClick={() => {
+                    setCurrentQuestionIndex(index);
+                    setTimeout(() => {
+                      document.getElementById('solution-box')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 100);
+                  }}
                 >
-                  <CardContent className="p-4 text-center">
-                    <div className="text-lg font-bold mb-1">№{index + 1}</div>
-                    <div className="text-sm text-muted-foreground">{result.type === 'mcq' ? 'MCQ' : 'FIPI'}</div>
+                  <CardContent className="p-2 text-center">
+                    <div className="text-sm font-bold mb-1">№{index + 1}</div>
                     {result.isCorrect
-                      ? <Check className="w-6 h-6 text-green-600 mx-auto mt-2" />
-                      : <X className="w-6 h-6 text-red-600 mx-auto mt-2" />}
+                      ? <Check className="w-4 h-4 text-green-600 mx-auto" />
+                      : <X className="w-4 h-4 text-red-600 mx-auto" />}
                   </CardContent>
                 </Card>
               ))}
             </div>
 
             {allQuestionResults[currentQuestionIndex] && (
-              <Card>
+              <Card id="solution-box">
                 <CardHeader>
                   <CardTitle>Вопрос {currentQuestionIndex + 1} из {totalQuestions}</CardTitle>
                   <Badge className={allQuestionResults[currentQuestionIndex].isCorrect ? "bg-green-500" : "bg-red-500"}>
