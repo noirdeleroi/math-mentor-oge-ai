@@ -411,6 +411,10 @@ const OgeMath = () => {
             Платформа
           </Button>
           
+          <Button onClick={() => navigate('/textbook')} variant="ghost" className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
+            Учебник
+          </Button>
+          
           <Button onClick={handleProgressClick} variant="ghost" className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
             Прогресс
           </Button>
