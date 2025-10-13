@@ -1212,6 +1212,9 @@ const Homework = () => {
                       onClick={() => {
                         setIsSelecterActive(!isSelecterActive);
                         if (isSelecterActive) closeSelectionPopup();
+                        setTimeout(() => {
+                          document.getElementById('solution-box')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }, 100);
                       }}
                       variant={isSelecterActive ? "default" : "outline"}
                       className={cn("flex items-center gap-2", isSelecterActive && "bg-purple-600 hover:bg-purple-700")}
@@ -1494,6 +1497,9 @@ const Homework = () => {
                         onClick={() => {
                           setIsSelecterActive(!isSelecterActive);
                           if (isSelecterActive) closeSelectionPopup();
+                          setTimeout(() => {
+                            document.getElementById('solution-box')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                          }, 100);
                         }}
                         variant={isSelecterActive ? "default" : "outline"}
                         className={cn("flex items-center gap-2", isSelecterActive && "bg-purple-600 hover:bg-purple-700")}
