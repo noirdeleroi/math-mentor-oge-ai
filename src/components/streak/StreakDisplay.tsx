@@ -145,11 +145,13 @@ export const StreakDisplay = () => {
           className="flex items-center gap-3 text-sm text-white hover:opacity-80 transition-opacity duration-200 px-2"
         >
           <div className="flex items-center gap-1">
+            <span className="text-base">📅</span>
             <span className="font-medium">{streakData.currentStreak}</span>
             <span className="text-base">🔥</span>
           </div>
-          <div className="font-medium">
-            {Math.round(streakData.energyPoints)}
+          <div className="flex items-center gap-1">
+            <span className="text-base">🔥</span>
+            <span className="font-medium">{Math.round(streakData.energyPoints)}</span>
           </div>
           <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${showDropdown ? 'rotate-180' : ''}`} />
         </button>
