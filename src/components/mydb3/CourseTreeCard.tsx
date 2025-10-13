@@ -242,7 +242,7 @@ export const CourseTreeCard: React.FC<CourseTreeCardProps> = ({
       <CardHeader className="pb-4">
         <div>
           <CardTitle 
-            className="text-lg font-semibold text-blue-700 hover:text-blue-800 cursor-pointer transition-colors"
+            className="text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-400 hover:to-emerald-400 cursor-pointer transition-all"
             onClick={() => onStart(course.id)}
           >
             {course.title}
@@ -250,7 +250,7 @@ export const CourseTreeCard: React.FC<CourseTreeCardProps> = ({
           <div className="flex items-center gap-2 mt-1">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <span className="text-sm text-blue-600 hover:underline cursor-pointer">
+                <span className="text-sm text-yellow-600 hover:text-yellow-700 hover:underline cursor-pointer">
                   Всего ({topics.length})
                 </span>
               </DropdownMenuTrigger>
@@ -268,26 +268,26 @@ export const CourseTreeCard: React.FC<CourseTreeCardProps> = ({
                       onClick={() => setCurrentTopicIndex(index)}
                     >
                       <div className={`w-8 h-8 rounded-full ${colorClass} flex items-center justify-center flex-shrink-0 ${
-                        isCurrent ? 'ring-2 ring-blue-400 ring-offset-1' : ''
+                        isCurrent ? 'ring-2 ring-yellow-500 ring-offset-1' : ''
                       }`}>
                         <IconComponent className="w-4 h-4 text-white" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className={`text-sm font-medium ${
-                          isCurrent ? 'text-blue-700' : 'text-gray-900'
+                          isCurrent ? 'text-yellow-700' : 'text-gray-900'
                         }`}>
                           {topic.name}
                         </div>
                         <div className="text-xs text-gray-500 mb-1">{topic.number}</div>
                         <div className="w-full bg-gray-200 rounded-full h-1">
                           <div 
-                            className="bg-blue-500 h-1 rounded-full transition-all duration-300" 
+                            className="bg-gradient-to-r from-yellow-500 to-emerald-500 h-1 rounded-full transition-all duration-300" 
                             style={{ width: `${progress}%` }}
                           />
                         </div>
                       </div>
                       {isCurrent && (
-                        <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700">
+                        <Badge variant="secondary" className="text-xs bg-yellow-100 text-yellow-700">
                           Current
                         </Badge>
                       )}
@@ -302,7 +302,7 @@ export const CourseTreeCard: React.FC<CourseTreeCardProps> = ({
         {/* Start Button */}
         <Button 
           onClick={() => onStart(course.id)}
-          className="w-full bg-blue-600 hover:bg-blue-700 mt-3"
+          className="w-full bg-gradient-to-r from-yellow-500 to-emerald-500 hover:shadow-lg text-white mt-3"
           size="sm"
         >
           <Play className="w-4 h-4 mr-2" />
@@ -362,32 +362,32 @@ export const CourseTreeCard: React.FC<CourseTreeCardProps> = ({
                     
                     return (
                       <div key={`${topic.number}-${topic.originalIndex}`} className="flex items-center gap-4 relative z-10">
-                        {/* Topic Icon */}
-                        <div className={`w-12 h-12 rounded-full ${colorClass} flex items-center justify-center flex-shrink-0 ${
-                          topic.isCurrent ? 'ring-2 ring-blue-500 ring-offset-2' : ''
-                        }`}>
-                          <IconComponent className="w-6 h-6 text-white" />
+                      {/* Topic Icon */}
+                      <div className={`w-12 h-12 rounded-full ${colorClass} flex items-center justify-center flex-shrink-0 ${
+                        topic.isCurrent ? 'ring-2 ring-yellow-500 ring-offset-2' : ''
+                      }`}>
+                        <IconComponent className="w-6 h-6 text-white" />
                         </div>
                         
-                        {/* Topic Content */}
-                        <div className="flex-1 min-w-0">
-                          <h4 className={`text-sm font-medium leading-tight ${
-                            topic.isCurrent 
-                              ? 'text-blue-700 font-semibold' 
-                              : 'text-gray-700'
-                          }`}>
-                            {topic.name}
-                          </h4>
+                      {/* Topic Content */}
+                      <div className="flex-1 min-w-0">
+                        <h4 className={`text-sm font-medium leading-tight ${
+                          topic.isCurrent 
+                            ? 'text-yellow-700 font-semibold' 
+                            : 'text-gray-700'
+                        }`}>
+                          {topic.name}
+                        </h4>
                           {/* Topic progress bar */}
-                          {topic.number && topicProgress[topic.number] !== undefined && (
-                            <div className="mt-1">
-                              <div className="w-full bg-gray-200 rounded-full h-1.5">
-                                <div 
-                                  className="bg-blue-500 h-1.5 rounded-full transition-all duration-300" 
-                                  style={{ width: `${topicProgress[topic.number]}%` }}
-                                />
-                              </div>
+                        {topic.number && topicProgress[topic.number] !== undefined && (
+                          <div className="mt-1">
+                            <div className="w-full bg-gray-200 rounded-full h-1.5">
+                              <div 
+                                className="bg-gradient-to-r from-yellow-500 to-emerald-500 h-1.5 rounded-full transition-all duration-300" 
+                                style={{ width: `${topicProgress[topic.number]}%` }}
+                              />
                             </div>
+                          </div>
                           )}
                           {/* Hidden topic number for data purposes */}
                           <span className="sr-only">{topic.number}</span>

@@ -153,7 +153,7 @@ const MyDb3 = () => {
               <h1 className="text-2xl font-bold">Мои курсы</h1>
               <Button 
                 onClick={handleOpenDeleteModal}
-                className="bg-blue-600 hover:bg-blue-700"
+                className="bg-gradient-to-r from-yellow-500 to-emerald-500 hover:shadow-lg text-white"
               >
                 Редактировать курсы
               </Button>
@@ -167,9 +167,9 @@ const MyDb3 = () => {
                       onClick={handleOpenAddModal}
                       variant="outline"
                       size="lg"
-                      className="w-32 h-32 rounded-full border-2 border-dashed border-muted-foreground/30 hover:border-primary/50 hover:bg-primary/5 transition-all duration-200"
+                      className="w-32 h-32 rounded-full border-2 border-dashed border-yellow-500/30 hover:border-yellow-500 hover:bg-yellow-500/5 transition-all duration-200"
                     >
-                      <Plus className="w-12 h-12 text-muted-foreground" />
+                      <Plus className="w-12 h-12 text-yellow-600" />
                     </Button>
                 </div>
                 <p className="text-muted-foreground text-lg">Добавить другой курс</p>
@@ -193,9 +193,9 @@ const MyDb3 = () => {
                       onClick={handleOpenAddModal}
                       variant="outline"
                       size="lg"
-                      className="w-20 h-20 rounded-full border-2 border-dashed border-muted-foreground/30 hover:border-primary/50 hover:bg-primary/5 transition-all duration-200 mb-4"
+                      className="w-20 h-20 rounded-full border-2 border-dashed border-yellow-500/30 hover:border-yellow-500 hover:bg-yellow-500/5 transition-all duration-200 mb-4"
                     >
-                      <Plus className="w-8 h-8 text-muted-foreground" />
+                      <Plus className="w-8 h-8 text-yellow-600" />
                     </Button>
                     <p className="text-muted-foreground">Добавить другой курс</p>
                   </div>
