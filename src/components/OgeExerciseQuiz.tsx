@@ -565,6 +565,18 @@ const OgeExerciseQuiz: React.FC<OgeExerciseQuizProps> = ({
                   </div>
                 ))}
               </div>
+              
+              {/* Link to Digital Textbook */}
+              <div className="mt-3 pt-3 border-t border-navy/10">
+                <a 
+                  href={`/digital-textbook?skill=${questions[currentQuestionIndex].skills}`}
+                  className="inline-flex items-center gap-2 text-sm text-sage hover:text-gold transition-colors font-medium group"
+                >
+                  <BookOpen className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                  <span>Изучить этот навык подробнее в учебнике</span>
+                  <span className="text-gold">→</span>
+                </a>
+              </div>
             </div>
           )}
         </CardContent>
