@@ -8,7 +8,6 @@ export const Sidebar = () => {
   const location = useLocation();
 
   const menuItems = [
-    { icon: Book, label: 'Курсы', path: '/mydb3' },
     { icon: User, label: 'Профиль', path: '/profile' },
   ];
 
