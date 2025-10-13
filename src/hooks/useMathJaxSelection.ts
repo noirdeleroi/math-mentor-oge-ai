@@ -10,12 +10,19 @@ export const useMathJaxSelection = (opts?: { root?: HTMLElement | string }) => {
   const rafId = useRef<number | null>(null);
 
   useEffect(() => {
+    console.log('[useMathJaxSelection] useEffect triggered, opts?.root:', opts?.root);
+    
     const getRoot = (): HTMLElement | Document => {
-      if (!opts?.root) return document;
+      if (!opts?.root) {
+        console.log('[useMathJaxSelection] No root specified, using document');
+        return document;
+      }
       if (typeof opts.root === 'string') {
         const el = document.querySelector(opts.root);
+        console.log('[useMathJaxSelection] Root selector:', opts.root, 'Found element:', el);
         return (el as HTMLElement) ?? document;
       }
+      console.log('[useMathJaxSelection] Using HTMLElement root:', opts.root);
       return opts.root;
     };
 
@@ -26,6 +33,7 @@ export const useMathJaxSelection = (opts?: { root?: HTMLElement | string }) => {
     };
 
     const markWithinRange = (range: Range, root: HTMLElement | Document) => {
+      console.log('[useMathJaxSelection] markWithinRange called, root:', root);
       // Fast-path: walk from the common ancestor and climb to nearest mjx-container.
       const doc = root instanceof Document ? root : document;
       const containers = new Set<HTMLElement>();
@@ -66,20 +74,24 @@ export const useMathJaxSelection = (opts?: { root?: HTMLElement | string }) => {
         if (range.intersectsNode(el)) containers.add(el);
       }
 
+      console.log('[useMathJaxSelection] Found', containers.size, 'mjx-container elements to highlight');
       containers.forEach(el => el.classList.add('mjx-selected'));
     };
 
     const compute = () => {
       rafId.current = null;
       const root = getRoot();
+      console.log('[useMathJaxSelection] compute() called, root:', root);
       clearHighlights(root);
 
       const sel = (root instanceof Document ? root : document).getSelection?.();
+      console.log('[useMathJaxSelection] Selection:', sel, 'Range count:', sel?.rangeCount);
       if (!sel || sel.rangeCount === 0) return;
 
       // Mark for each range (Firefox can have multiple)
       for (let i = 0; i < sel.rangeCount; i++) {
         const range = sel.getRangeAt(i);
+        console.log('[useMathJaxSelection] Range', i, 'collapsed:', range.collapsed);
         if (!range.collapsed) {
           markWithinRange(range, root);
         }
