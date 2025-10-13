@@ -147,7 +147,7 @@ export const StreakDisplay = () => {
           <div className="flex items-center gap-1">
             <span className="text-base">📅</span>
             <span className="font-medium">{streakData.currentStreak}</span>
-            <span className="text-base">🔥</span>
+
           </div>
           <div className="flex items-center gap-1">
             <span className="text-base">🔥</span>
