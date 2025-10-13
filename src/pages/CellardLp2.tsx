@@ -328,27 +328,24 @@ const CellardLp2: React.FC = () => {
       {/* Modules */}
       <section id="modules" className="pt-24 pb-20 relative">
         <div className="relative z-20 max-w-7xl mx-auto px-4">
-          <div className="mb-16">
-            {/* Back button */}
+          <div className="text-center mb-16 relative">
+            {/* Back button - positioned to the left */}
             <Button
               variant="ghost"
               size="sm"
               onClick={() => navigate("/ogemath")}
-              className="mb-4 hover:bg-white/20 text-white"
+              className="absolute left-0 top-0 hover:bg-white/20 text-white"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Назад к странице чата
             </Button>
             
-            {/* Title section */}
-            <div className="text-center">
-              <h2 className="font-display text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-yellow-500 to-emerald-500 text-transparent bg-clip-text">
-                Путь к успеху
-              </h2>
-              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-                Пройди все 9 модулей и стань мастером математики. Каждый модуль содержит теорию, практику и интерактивные задания.
-              </p>
-            </div>
+            <h2 className="font-display text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-yellow-500 to-emerald-500 text-transparent bg-clip-text">
+              Путь к успеху
+            </h2>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              Пройди все 9 модулей и стань мастером математики. Каждый модуль содержит теорию, практику и интерактивные задания.
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
