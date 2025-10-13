@@ -9,6 +9,7 @@ import { getBadgeForPoints } from "@/utils/streakBadges";
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from "@/hooks/use-toast";
+import { MyCoursesCard } from "./MyCoursesCard";
 
 interface ProfileInfoTabProps {
   userName: string;
@@ -107,46 +108,52 @@ export const ProfileInfoTab = ({ userName, userEmail, joinedDate, lastActivityDa
 
   return (
     <div className="space-y-6">
-      <Card className="p-6 bg-white shadow-md rounded-xl border-0">
-        <div className="flex flex-col items-center text-center mb-6">
-          <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center mb-4 overflow-hidden">
-            {avatarUrl ? (
-              <img 
-                src={avatarUrl} 
-                alt="Profile picture" 
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <User className="h-12 w-12 text-primary" />
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-gray-800">{userName}</h1>
-            <div className="flex items-center gap-1 px-2 py-1 bg-primary/10 rounded-full">
-              <span className="text-xl">{earnedBadge.emoji}</span>
-              <span className="text-xs font-semibold text-primary">{earnedBadge.name}</span>
+      <div className="grid grid-cols-2 gap-6">
+        {/* Profile Card - Left Half */}
+        <Card className="p-6 bg-white shadow-md rounded-xl border-0">
+          <div className="flex flex-col items-center text-center mb-6">
+            <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center mb-4 overflow-hidden">
+              {avatarUrl ? (
+                <img 
+                  src={avatarUrl} 
+                  alt="Profile picture" 
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <User className="h-12 w-12 text-primary" />
+              )}
             </div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-2xl font-bold text-gray-800">{userName}</h1>
+              <div className="flex items-center gap-1 px-2 py-1 bg-primary/10 rounded-full">
+                <span className="text-xl">{earnedBadge.emoji}</span>
+                <span className="text-xs font-semibold text-primary">{earnedBadge.name}</span>
+              </div>
+            </div>
+            <p className="text-gray-600">{userEmail}</p>
+            {profile?.bio && (
+              <p className="text-sm text-gray-500 mt-2 max-w-xs">{profile.bio}</p>
+            )}
+            <div className="flex items-center gap-2 text-sm text-gray-500 mt-2">
+              <span>Присоединился: {joinedDate}</span>
+              <span>•</span>
+              <span>Последняя активность: {lastActivityDate}</span>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsEditing(true)}
+              className="mt-3"
+            >
+              <Edit2 className="w-4 h-4 mr-1" />
+              Редактировать
+            </Button>
           </div>
-          <p className="text-gray-600">{userEmail}</p>
-          {profile?.bio && (
-            <p className="text-sm text-gray-500 mt-2 max-w-xs">{profile.bio}</p>
-          )}
-          <div className="flex items-center gap-2 text-sm text-gray-500 mt-2">
-            <span>Присоединился: {joinedDate}</span>
-            <span>•</span>
-            <span>Последняя активность: {lastActivityDate}</span>
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setIsEditing(true)}
-            className="mt-3"
-          >
-            <Edit2 className="w-4 h-4 mr-1" />
-            Редактировать
-          </Button>
-        </div>
-      </Card>
+        </Card>
+
+        {/* My Courses Card - Right Half */}
+        <MyCoursesCard />
+      </div>
 
       {/* Telegram Bot Integration */}
       <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200 shadow-lg rounded-xl overflow-hidden">
