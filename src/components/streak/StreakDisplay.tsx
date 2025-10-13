@@ -189,11 +189,6 @@ export const StreakDisplay = () => {
             
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-foreground">Недельная цель</span>
-              <span className="text-sm text-muted-foreground">{streakData.weeklyGoalPoints} {getPointsLabel(streakData.weeklyGoalPoints)}</span>
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-foreground">Энергетические очки</span>
               <span className="text-sm text-muted-foreground">{streakData.energyPoints} / {streakData.weeklyGoalPoints}</span>
             </div>
             
