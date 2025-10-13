@@ -2,6 +2,9 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { animate } from "animejs";
 import p5 from "p5";
+import { ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
 import { moduleImgs } from "@/lib/assets";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -307,14 +310,6 @@ const CellardLp2: React.FC = () => {
       <nav className="fixed top-0 w-full z-30 backdrop-blur-lg bg-[#1a1f36]/80 border-b border-yellow-500/20">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link 
-              to="/ogemath" 
-              className="text-sm hover:text-yellow-500 transition-colors flex items-center gap-2"
-            >
-              ← Назад к странице чата
-            </Link>
-          </div>
-          <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-br from-yellow-500 to-emerald-500 rounded-lg flex items-center justify-center">
               <span className="text-[#1a1f36] font-bold text-xl">M</span>
             </div>
@@ -333,6 +328,19 @@ const CellardLp2: React.FC = () => {
       {/* Modules */}
       <section id="modules" className="pt-24 pb-20 relative">
         <div className="relative z-20 max-w-7xl mx-auto px-4">
+          {/* Header with back button */}
+          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center mb-8">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate("/ogemath")}
+              className="mr-4 hover:bg-white/20 text-white"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Назад к странице чата
+            </Button>
+          </motion.div>
+
           <div className="text-center mb-16">
             <h2 className="font-display text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-yellow-500 to-emerald-500 text-transparent bg-clip-text">
               Путь к успеху
