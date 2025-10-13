@@ -164,11 +164,11 @@ const TopicPage: React.FC = () => {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => navigate("/cellard-lp2")}
+            onClick={() => navigate(`/module/${moduleSlug}`)}
             className="mr-4 hover:bg-white/20 text-white"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Назад к карте
+            Назад к модулю
           </Button>
           <div className="flex-1">
             <h1 className="text-2xl sm:text-3xl font-bold font-display bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent">
