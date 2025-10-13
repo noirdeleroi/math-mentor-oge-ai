@@ -1,44 +1,122 @@
-export const ProfileTabs = ({ userData, userName, userEmail, joinedDate, lastActivityDate }: ProfileTabsProps) => {
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+import { ActivityTab } from "./ActivityTab";
+import { AchievementsTab } from "./AchievementsTab";
+import { SettingsTab } from "./SettingsTab";
+import { TeacherTab } from "./TeacherTab";
+import { StreakSettings } from "../streak/StreakSettings";
+import { ProfileInfoTab } from "./ProfileInfoTab";
+import HowToTab from "./HowToTab";
+
+import { Button } from "@/components/ui/button";
+import {
+  User,
+  Flame,
+  Activity,
+  GraduationCap,
+  Award,
+  Settings,
+  MessageSquare,
+} from "lucide-react";
+
+interface ProfileTabsProps {
+  userData: {
+    streakDays: number;
+    recentActivity: Array<{
+      date: string;
+      activity: string;
+      type: string;
+    }>;
+    achievements: Array<{
+      id: number;
+      name: string;
+      description: string;
+      date: string;
+      completed: boolean;
+    }>;
+  };
+  userName: string;
+  userEmail: string;
+  joinedDate: string;
+  lastActivityDate?: string;
+}
+
+export const ProfileTabs: React.FC<ProfileTabsProps> = ({
+  userData,
+  userName,
+  userEmail,
+  joinedDate,
+  lastActivityDate,
+}) => {
   const navigate = useNavigate();
-  
+
   return (
     <Tabs defaultValue="profile" orientation="vertical" className="w-full flex gap-6">
-      {/* Vertical Tab List with Button */}
+      {/* Left rail: vertical tabs + buttons */}
       <div className="flex flex-col gap-4">
         <TabsList className="flex flex-col h-fit w-48 bg-white shadow-md rounded-xl p-2 gap-1">
-          <TabsTrigger value="profile" className="w-full justify-start gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+          <TabsTrigger
+            value="profile"
+            className="w-full justify-start gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          >
             <User className="h-4 w-4" />
             Профиль
           </TabsTrigger>
-          <TabsTrigger value="guide" className="w-full justify-start gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+
+          <TabsTrigger
+            value="guide"
+            className="w-full justify-start gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          >
             <User className="h-4 w-4" />
             Как пользоваться
           </TabsTrigger>
-          <TabsTrigger value="streak" className="w-full justify-start gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+
+          <TabsTrigger
+            value="streak"
+            className="w-full justify-start gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          >
             <Flame className="h-4 w-4" />
             Серии
           </TabsTrigger>
-          <TabsTrigger value="activity" className="w-full justify-start gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+
+          <TabsTrigger
+            value="activity"
+            className="w-full justify-start gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          >
             <Activity className="h-4 w-4" />
             Активность
           </TabsTrigger>
-          <TabsTrigger value="teacher" className="w-full justify-start gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+
+          <TabsTrigger
+            value="teacher"
+            className="w-full justify-start gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          >
             <GraduationCap className="h-4 w-4" />
             Преподаватель
           </TabsTrigger>
-          <TabsTrigger value="achievements" className="w-full justify-start gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+
+          <TabsTrigger
+            value="achievements"
+            className="w-full justify-start gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          >
             <Award className="h-4 w-4" />
             Достижения
           </TabsTrigger>
-          <TabsTrigger value="settings" className="w-full justify-start gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+
+          <TabsTrigger
+            value="settings"
+            className="w-full justify-start gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          >
             <Settings className="h-4 w-4" />
             Настройки
           </TabsTrigger>
         </TabsList>
 
-        {/* Курсы Button */}
+        {/* Курсы */}
         <Button
-          onClick={() => navigate('/mydb3')}
+          onClick={() => navigate("/mydb3")}
           size="lg"
           className="w-48 bg-gradient-to-br from-[#f59e0b] to-[#10b981] hover:from-[#fbbf24] hover:to-[#34d399] text-white shadow-xl text-lg py-6 px-8 rounded-xl transform transition-all duration-200 hover:scale-105"
         >
@@ -46,9 +124,9 @@ export const ProfileTabs = ({ userData, userName, userEmail, joinedDate, lastAct
           Курсы
         </Button>
 
-        {/* Подписки Button */}
+        {/* Подписки */}
         <Button
-          onClick={() => navigate('/subscribe')}
+          onClick={() => navigate("/subscribe")}
           size="lg"
           className="w-48 bg-gradient-to-br from-[#f59e0b] to-[#10b981] hover:from-[#fbbf24] hover:to-[#34d399] text-white shadow-xl text-lg py-6 px-8 rounded-xl transform transition-all duration-200 hover:scale-105"
         >
@@ -57,10 +135,10 @@ export const ProfileTabs = ({ userData, userName, userEmail, joinedDate, lastAct
         </Button>
       </div>
 
-      {/* Tab Content */}
+      {/* Right: tab panels */}
       <div className="flex-1">
         <TabsContent value="profile" className="bg-white rounded-xl shadow-md p-6 border-0 mt-0">
-          <ProfileInfoTab 
+          <ProfileInfoTab
             userName={userName}
             userEmail={userEmail}
             joinedDate={joinedDate}
@@ -68,12 +146,12 @@ export const ProfileTabs = ({ userData, userName, userEmail, joinedDate, lastAct
           />
         </TabsContent>
 
-        <TabsContent value="streak" className="bg-white rounded-xl shadow-md p-6 border-0 mt-0">
-          <StreakSettings />
-        </TabsContent>
-
         <TabsContent value="guide" className="bg-white rounded-xl shadow-md p-6 border-0 mt-0">
           <HowToTab />
+        </TabsContent>
+
+        <TabsContent value="streak" className="bg-white rounded-xl shadow-md p-6 border-0 mt-0">
+          <StreakSettings />
         </TabsContent>
 
         <TabsContent value="activity" className="bg-white rounded-xl shadow-md p-6 border-0 mt-0">
