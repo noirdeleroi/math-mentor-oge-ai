@@ -174,12 +174,13 @@ const OgeExerciseQuiz: React.FC<OgeExerciseQuizProps> = ({
     } else {
       setShowFinalResults(true);
       
-      // If this is a module test and user passed (8+ correct answers), boost low mastery skills
       const correctCount = answers.filter(Boolean).length;
+      
+      // If this is a module test and user passed (8+ correct answers), boost low mastery skills
       if (isModuleTest && correctCount >= 8 && moduleTopics.length > 0 && user) {
         setBoostingSkills(true);
         try {
-          console.log('Calling boost-low-mastery-skills function...');
+          console.log('Calling boost-low-mastery-skills function for module test...');
           const { data, error } = await supabase.functions.invoke('boost-low-mastery-skills', {
             body: {
               user_id: user.id,
@@ -201,6 +202,42 @@ const OgeExerciseQuiz: React.FC<OgeExerciseQuizProps> = ({
           }
         } catch (error) {
           console.error('Error calling boost function:', error);
+        } finally {
+          setBoostingSkills(false);
+        }
+      }
+      
+      // Boost low mastery skills for topic tests if score is high enough (5/6 or better)
+      const totalCount = questions.length;
+      const percentage = (correctCount / totalCount) * 100;
+      
+      if (user && !isModuleTest && percentage >= 83 && questions[0]?.problem_number_type) {
+        setBoostingSkills(true);
+        try {
+          const topicId = questions[0].problem_number_type;
+          console.log(`Boosting skills for topic ${topicId} with score ${correctCount}/${totalCount}`);
+          
+          const { data, error } = await supabase.functions.invoke('boost-low-mastery-skills', {
+            body: {
+              user_id: user.id,
+              topic_id: topicId,
+              course_id: courseId
+            }
+          });
+          
+          if (error) {
+            console.error('Error boosting skills:', error);
+          } else {
+            console.log('Topic skills boost result:', data);
+            if (data?.boosted_skills && data.boosted_skills.length > 0) {
+              toast({
+                title: "Прогресс обновлен! 🎉",
+                description: `Улучшено понимание для ${data.boosted_skills.length} навыков!`,
+              });
+            }
+          }
+        } catch (error) {
+          console.error('Error calling boost-low-mastery-skills:', error);
         } finally {
           setBoostingSkills(false);
         }

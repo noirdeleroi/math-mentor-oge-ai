@@ -3,7 +3,8 @@ import { corsHeaders } from '../_shared/cors.ts';
 
 interface RequestBody {
   user_id: string;
-  topics: string[];
+  topics?: string[];
+  topic_id?: string;
   course_id: string;
 }
 
@@ -19,13 +20,13 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const { user_id, topics, course_id }: RequestBody = await req.json();
+    const { user_id, topics, topic_id, course_id }: RequestBody = await req.json();
 
     // Validate required parameters
-    if (!user_id || !topics || topics.length === 0 || !course_id) {
+    if (!user_id || (!topics && !topic_id) || !course_id) {
       return new Response(
         JSON.stringify({
-          error: 'Missing required parameters: user_id, topics, course_id'
+          error: 'Missing required parameters: user_id, (topics or topic_id), course_id'
         }),
         {
           status: 400,
@@ -34,14 +35,23 @@ Deno.serve(async (req) => {
       );
     }
 
-    console.log(`Boosting low mastery skills for user ${user_id}, topics ${topics.join(', ')}, course ${course_id}`);
+    // Determine which topics to process
+    let topicsToProcess: string[] = [];
+    if (topic_id) {
+      topicsToProcess = [topic_id];
+      console.log(`Boosting low mastery skills for user ${user_id}, topic ${topic_id}, course ${course_id}`);
+    } else if (topics) {
+      topicsToProcess = topics;
+      console.log(`Boosting low mastery skills for user ${user_id}, topics ${topics.join(', ')}, course ${course_id}`);
+    }
 
     // Step 1: Fetch topic-skill mapping from json_files table
+    // Use id=10 for course_id="2" (OGE), id=1 for others
+    const jsonFileId = course_id === "2" ? 10 : 1;
     const { data: jsonData, error: jsonError } = await supabaseClient
       .from('json_files')
       .select('content')
-      .eq('id', 1)
-      .eq('course_id', course_id)
+      .eq('id', jsonFileId)
       .single();
 
     if (jsonError || !jsonData) {
@@ -63,7 +73,7 @@ Deno.serve(async (req) => {
 
     // Step 2: Get all skill IDs for the specified topics
     const allSkills = new Set<number>();
-    for (const topic of topics) {
+    for (const topic of topicsToProcess) {
       const skills = topicSkillMapping[topic];
       if (skills && Array.isArray(skills)) {
         skills.forEach(skill => allSkills.add(skill));
@@ -71,7 +81,7 @@ Deno.serve(async (req) => {
     }
 
     const skillIds = Array.from(allSkills);
-    console.log(`Found ${skillIds.length} unique skills for topics ${topics.join(', ')}: ${skillIds.join(', ')}`);
+    console.log(`Found ${skillIds.length} unique skills for topics ${topicsToProcess.join(', ')}: ${skillIds.join(', ')}`);
 
     if (skillIds.length === 0) {
       return new Response(
@@ -121,12 +131,12 @@ Deno.serve(async (req) => {
       
       console.log(`Skill ${entity_id}: alpha=${alpha}, beta=${beta}, mastery=${masteryProbability.toFixed(3)}`);
 
-      if (masteryProbability <= 0.2) {
-        console.log(`Boosting skill ${entity_id} (mastery=${masteryProbability.toFixed(3)} <= 0.2)`);
+      if (masteryProbability <= 0.29) {
+        console.log(`Boosting skill ${entity_id} (mastery=${masteryProbability.toFixed(3)} <= 0.29)`);
         
         const updatePromise = supabaseClient
           .from('student_mastery')
-          .update({ alpha: 11, beta: 40, updated_at: new Date().toISOString() })
+          .update({ alpha: 17, beta: 40, updated_at: new Date().toISOString() })
           .eq('user_id', user_id)
           .eq('course_id', course_id)
           .eq('entity_type', 'skill')

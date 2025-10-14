@@ -13,6 +13,7 @@ export interface OgeQuestion {
   solutiontextexpanded?: string;
   skills: number;
   difficulty: number;
+  problem_number_type?: string;
 }
 
 export const getQuestionsBySkills = async (skills: number[], count: number = 4): Promise<OgeQuestion[]> => {
