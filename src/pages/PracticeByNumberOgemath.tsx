@@ -1185,10 +1185,14 @@ const PracticeByNumberOgemath = () => {
                         Вы можете записать ответ в любом виде -- главное, чтобы он был математически верным.
                       </div>
                       <div className="text-xs">
-                        <div className="font-medium mb-1">Примеры:</div>
-                        <div>корень из трёх,</div>
-                        <div>интервал от 0 до 5</div>
+                        <div className="font-medium mb-1">Примеры ответа:</div>
+                        <ul className="list-disc ml-5 space-y-1 text-gray-700">
+                          <li><em>корень из трёх</em></li>
+                          <li><em>интервал от 0 до 5</em></li>
+                          <li><em>3 см</em></li>
+                        </ul>
                       </div>
+
                     </div>
                   )}
 
