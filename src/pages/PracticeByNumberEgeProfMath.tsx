@@ -557,13 +557,13 @@ const PracticeByNumberEgeProfMath = () => {
   const questionNumbers = Array.from({ length: 19 }, (_, i) => (i + 1).toString());
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen text-white relative" style={{ background: "linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)" }}>
       {/* Navigation Bar */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="bg-white/10 backdrop-blur border-b border-white/20">
         <div className="container mx-auto px-4 py-3">
           <div className="flex justify-start">
             <Link to="/egemathprof-practice">
-              <Button className="bg-gradient-to-r from-yellow-200 to-yellow-300 hover:from-yellow-300 hover:to-yellow-400 text-black shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
+              <Button className="bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-400 hover:to-emerald-400 text-[#1a1f36] shadow-lg transition-all duration-200 font-medium">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Назад
               </Button>
@@ -572,20 +572,28 @@ const PracticeByNumberEgeProfMath = () => {
         </div>
       </div>
 
-      <div className="pt-8 container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 relative z-10">
         <div className="max-w-4xl mx-auto">
-          <div className="flex justify-between items-center mb-8">
-            <div>
-              <h1 className="text-4xl font-bold text-gray-900 mb-2">Практика по номеру вопроса</h1>
-              <p className="text-lg text-gray-600">Выберите номер вопроса (1-19) для практики всех задач этого типа</p>
+          {/* Header with Back Button */}
+          <div className="relative text-center mb-16">
+            {/* Back Button - positioned to the left */}
+            <div className="absolute left-0 top-0">
+              <Link to="/egemathprof-practice">
+                <Button variant="ghost" size="sm" className="hover:bg-white/20 text-white">
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Назад
+                </Button>
+              </Link>
             </div>
-            {user && <StreakDisplay />}
+            
+            <h1 className="text-4xl md:text-5xl font-display font-bold mb-6 bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent">Практика по номеру</h1>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">Выберите номер вопроса (1-19) для практики всех задач этого типа</p>
           </div>
 
           {/* Question Number Selection */}
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle>Выберите номер вопроса</CardTitle>
+          <Card className="mb-6 bg-white/95 backdrop-blur border border-white/20 rounded-2xl shadow-xl">
+            <CardHeader className="border-b border-white/20">
+              <CardTitle className="text-[#1a1f36]">Выберите номер вопроса</CardTitle>
             </CardHeader>
             <CardContent>
               <Select value={selectedNumber} onValueChange={handleNumberSelect}>
@@ -605,18 +613,18 @@ const PracticeByNumberEgeProfMath = () => {
 
           {/* Question Content */}
           {selectedNumber && questions.length > 0 && currentQuestion && (
-            <Card className="mb-6">
-              <CardHeader>
-                <CardTitle className="flex justify-between items-center">
+            <Card className="mb-6 bg-white/95 backdrop-blur border border-white/20 rounded-2xl shadow-xl">
+              <CardHeader className="border-b border-white/20">
+                <CardTitle className="flex justify-between items-center text-[#1a1f36]">
                   <span>Вопрос {selectedNumber} ({currentQuestionIndex + 1} из {questions.length})</span>
-                  <span className="text-sm font-normal text-gray-500">
+                  <span className="text-sm font-normal text-gray-600">
                     ID: {currentQuestion.question_id}
                   </span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Problem Text */}
-                <div className="prose max-w-none">
+                <div className="prose max-w-none text-[#1a1f36]">
                   <MathRenderer text={currentQuestion.problem_text || "Текст задачи не найден"} compiler="mathjax" />
                 </div>
 
@@ -632,12 +640,12 @@ const PracticeByNumberEgeProfMath = () => {
                           placeholder="Введите ваш ответ (или прикрепите фото)"
                           disabled={isAnswered}
                           onKeyPress={(e) => e.key === 'Enter' && !isAnswered && checkAnswer()}
-                          className="flex-1"
+                          className="flex-1 bg-white border-gray-300 text-[#1a1f36] placeholder:text-gray-500"
                         />
                         <Button
                           onClick={checkAnswer}
                           disabled={isAnswered || !userAnswer.trim()}
-                          className="min-w-32"
+                          className="min-w-32 bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36] shadow-md font-medium disabled:opacity-50 transition-all"
                         >
                           <CheckCircle className="w-4 h-4 mr-2" />
                           Проверить
@@ -646,7 +654,7 @@ const PracticeByNumberEgeProfMath = () => {
                       <Button
                         variant="outline"
                         onClick={handlePhotoAttachment}
-                        className="w-full"
+                        className="w-full border-[#1a1f36]/30 text-[#1a1f36] hover:bg-gray-100"
                         disabled={isAnswered}
                       >
                         <Camera className="w-4 h-4 mr-2" />
@@ -661,12 +669,12 @@ const PracticeByNumberEgeProfMath = () => {
                         placeholder="Введите ваш ответ"
                         disabled={isAnswered}
                         onKeyPress={(e) => e.key === 'Enter' && !isAnswered && checkAnswer()}
-                        className="flex-1"
+                        className="flex-1 bg-white border-gray-300 text-[#1a1f36] placeholder:text-gray-500"
                       />
                       <Button
                         onClick={checkAnswer}
                         disabled={isAnswered || !userAnswer.trim()}
-                        className="min-w-32"
+                        className="min-w-32 bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36] shadow-md font-medium disabled:opacity-50 transition-all"
                       >
                         <CheckCircle className="w-4 h-4 mr-2" />
                         Проверить
@@ -713,7 +721,7 @@ const PracticeByNumberEgeProfMath = () => {
                   <Button
                     variant="outline"
                     onClick={handleShowSolution}
-                    className="flex-1"
+                    className="flex-1 border-[#1a1f36]/30 text-[#1a1f36] hover:bg-gray-100"
                   >
                     <BookOpen className="w-4 h-4 mr-2" />
                     Показать решение
@@ -723,14 +731,14 @@ const PracticeByNumberEgeProfMath = () => {
                     <Button
                       variant="outline"
                       onClick={skipQuestion}
-                      className="flex-1"
+                      className="flex-1 border-[#1a1f36]/30 text-[#1a1f36] hover:bg-gray-100"
                     >
                       Пропустить
                     </Button>
                   )}
                   
                   {isAnswered && currentQuestionIndex < questions.length - 1 && (
-                    <Button onClick={nextQuestion} className="flex-1">
+                    <Button onClick={nextQuestion} className="flex-1 bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36] shadow-md font-medium transition-all">
                       <ArrowRight className="w-4 h-4 mr-2" />
                       Следующий вопрос
                     </Button>
@@ -739,12 +747,12 @@ const PracticeByNumberEgeProfMath = () => {
 
                 {/* Solution */}
                 {showSolution && currentQuestion.solution_text && (
-                  <Card className="bg-blue-50 border-blue-200">
-                    <CardHeader>
+                  <Card className="bg-blue-50/50 backdrop-blur border border-blue-200/50 rounded-2xl shadow-md">
+                    <CardHeader className="border-b border-blue-200/50">
                       <CardTitle className="text-blue-800">Решение</CardTitle>
                     </CardHeader>
-                    <CardContent>
-                      <div className="prose max-w-none">
+                    <CardContent className="pt-4">
+                      <div className="prose max-w-none text-[#1a1f36]">
                         <MathRenderer text={currentQuestion.solution_text} compiler="mathjax" />
                       </div>
                     </CardContent>
@@ -756,15 +764,15 @@ const PracticeByNumberEgeProfMath = () => {
 
           {/* Results Summary */}
           {selectedNumber && questions.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Статистика</CardTitle>
+            <Card className="bg-white/95 backdrop-blur border border-white/20 rounded-2xl shadow-xl">
+              <CardHeader className="border-b border-white/20">
+                <CardTitle className="text-[#1a1f36]">Статистика</CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-gray-600">
+              <CardContent className="pt-4">
+                <p className="text-gray-700">
                   Найдено {questions.length} вопросов для номера {selectedNumber}
                 </p>
-                {loading && <p className="text-blue-600">Загрузка...</p>}
+                {loading && <p className="text-blue-600 mt-2">Загрузка...</p>}
               </CardContent>
             </Card>
           )}

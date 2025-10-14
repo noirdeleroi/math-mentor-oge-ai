@@ -494,34 +494,71 @@ const PracticeByNumberEgeBasicMath = () => {
   const questionNumbers = Array.from({ length: 21 }, (_, i) => (i + 1).toString());
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        <div className={`max-w-6xl mx-auto flex gap-4 ${practiceStarted ? 'justify-center' : ''}`}>
-          <div className={`${practiceStarted ? 'hidden' : 'flex-shrink-0 pt-2'}`}>
+    <div className="min-h-screen text-white relative" style={{ background: "linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)" }}>
+      {/* Navigation Bar */}
+      <div className="bg-white/10 backdrop-blur border-b border-white/20">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex justify-start">
             <Link to="/egemathbasic">
-              <Button variant="outline">
+              <Button className="bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-400 hover:to-emerald-400 text-[#1a1f36] shadow-lg transition-all duration-200 font-medium">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Назад
               </Button>
             </Link>
           </div>
-          
-          <div className={`${practiceStarted ? 'w-full max-w-3xl' : 'flex-1 max-w-4xl'}`}>
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 py-8 relative z-10">
+        <div className={`max-w-6xl mx-auto ${practiceStarted ? 'flex justify-center' : ''}`}>
+          <div className={`${practiceStarted ? 'w-full max-w-3xl' : 'w-full max-w-4xl mx-auto'}`}>
+
+          {/* Header with Back Button */}
+          <div className="relative text-center mb-16">
+            {/* Back Button - positioned to the left */}
+            <div className="absolute left-0 top-0">
+              {practiceStarted ? (
+                <Button 
+                  onClick={handleBackToSelection}
+                  variant="ghost"
+                  size="sm"
+                  className="hover:bg-white/20 text-white"
+                >
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  К выбору вопросов
+                </Button>
+              ) : (
+                <Link to="/egemathbasic">
+                  <Button variant="ghost" size="sm" className="hover:bg-white/20 text-white">
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Назад
+                  </Button>
+                </Link>
+              )}
+            </div>
+            
+            <h1 className="text-4xl md:text-5xl font-display font-bold mb-6 bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent">
+              Практика по номеру
+            </h1>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              Выберите номер(а) (1–21) для тренировки задач выбранного типа
+            </p>
+          </div>
 
           {!practiceStarted ? (
             /* Question Selection Interface */
             <div className="space-y-6">
               {/* Question Groups */}
-              <Card>
+              <Card className="bg-white/95 backdrop-blur border border-white/20 rounded-2xl shadow-xl">
                 <CardHeader>
-                  <CardTitle>Группы вопросов</CardTitle>
+                  <CardTitle className="text-[#1a1f36]">Группы вопросов</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 gap-3">
                     <Button
                       variant="outline"
                       onClick={() => toggleQuestionGroup('all')}
-                      className="p-4 h-auto text-center"
+                      className="p-4 h-auto text-center border-[#1a1f36]/30 text-[#1a1f36] font-medium hover:bg-gray-100 active:bg-gradient-to-r active:from-yellow-500/20 active:to-emerald-500/20 active:text-black transition-all"
                     >
                       Все вопросы
                     </Button>
@@ -530,9 +567,9 @@ const PracticeByNumberEgeBasicMath = () => {
               </Card>
 
               {/* Individual Numbers */}
-              <Card>
+              <Card className="bg-white/95 backdrop-blur border border-white/20 rounded-2xl shadow-xl">
                 <CardHeader>
-                  <CardTitle>Отдельные номера</CardTitle>
+                  <CardTitle className="text-[#1a1f36]">Отдельные номера</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-7 md:grid-cols-10 gap-3">
@@ -541,7 +578,11 @@ const PracticeByNumberEgeBasicMath = () => {
                         key={num}
                         variant={selectedNumbers.includes(num) ? "default" : "outline"}
                         onClick={() => toggleIndividualNumber(num)}
-                        className="p-3 h-auto"
+                        className={`p-3 h-auto font-medium transition-all ${
+                          selectedNumbers.includes(num)
+                            ? 'bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36] border-0 shadow-sm'
+                            : 'border-[#1a1f36]/30 text-[#1a1f36] hover:bg-gray-100 active:bg-gradient-to-r active:from-yellow-500/20 active:to-emerald-500/20'
+                        }`}
                       >
                         {num}
                       </Button>
@@ -555,7 +596,7 @@ const PracticeByNumberEgeBasicMath = () => {
                 <Button
                   onClick={handleStartPractice}
                   disabled={selectedNumbers.length === 0}
-                  className="px-8 py-3 text-lg"
+                  className="px-8 py-3 text-lg bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36] shadow-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                 >
                   Начать практику
                 </Button>
@@ -563,9 +604,9 @@ const PracticeByNumberEgeBasicMath = () => {
 
               {/* Selection Summary */}
               {selectedNumbers.length > 0 && (
-                <Card>
+                <Card className="bg-white/95 backdrop-blur border border-white/20 rounded-2xl shadow-xl">
                   <CardContent className="pt-6">
-                    <p>
+                    <p className="text-[#1a1f36]">
                       <strong>Выбрано номеров:</strong> {selectedNumbers.join(', ')}
                     </p>
                   </CardContent>
@@ -576,27 +617,28 @@ const PracticeByNumberEgeBasicMath = () => {
             /* Practice Interface */
             questions.length > 0 && currentQuestion ? (
             <div>
-              <div className="mb-4 flex justify-center">
+              <div className="mb-6 flex justify-center">
                 <Button 
                   onClick={handleBackToSelection}
                   variant="outline"
+                  className="bg-white/10 backdrop-blur border-white/30 text-white hover:bg-white/20 hover:border-yellow-500/50 transition-all"
                 >
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   К выбору вопросов
                 </Button>
               </div>
-              <Card className="mb-6 mx-auto">
-              <CardHeader>
-                <CardTitle className="flex justify-between items-center">
+              <Card className="mb-6 mx-auto bg-white/95 backdrop-blur border border-white/20 rounded-2xl shadow-xl">
+              <CardHeader className="border-b border-white/20">
+                <CardTitle className="flex justify-between items-center text-[#1a1f36]">
                   <span>Вопрос №{currentQuestion.problem_number_type} ({currentQuestionIndex + 1} из {questions.length})</span>
-                  <span className="text-sm font-normal text-gray-500">
+                  <span className="text-sm font-normal text-gray-600">
                     ID: {currentQuestion.question_id}
                   </span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Problem Text */}
-                <div className="prose max-w-none">
+                <div className="prose max-w-none text-[#1a1f36]">
                   <MathRenderer text={currentQuestion.problem_text || "Текст задачи не найден"} compiler="mathjax" />
                 </div>
 
@@ -609,12 +651,12 @@ const PracticeByNumberEgeBasicMath = () => {
                       placeholder="Введите ваш ответ"
                       disabled={isAnswered || solutionViewedBeforeAnswer}
                       onKeyPress={(e) => e.key === 'Enter' && !isAnswered && !solutionViewedBeforeAnswer && checkAnswer()}
-                      className="w-full max-w-md"
+                      className="w-full max-w-md bg-white border-gray-300 text-[#1a1f36] placeholder:text-gray-500"
                     />
                     <Button
                       onClick={checkAnswer}
                       disabled={isAnswered || solutionViewedBeforeAnswer || !userAnswer.trim()}
-                      className="min-w-32"
+                      className="min-w-32 bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36] shadow-md font-medium disabled:opacity-50 transition-all"
                     >
                       <CheckCircle className="w-4 h-4 mr-2" />
                       Проверить
@@ -680,7 +722,7 @@ const PracticeByNumberEgeBasicMath = () => {
                   <Button
                     variant="outline"
                     onClick={handleShowSolution}
-                    className="flex-1 min-w-32"
+                    className="flex-1 min-w-32 border-[#1a1f36]/30 text-[#1a1f36] hover:bg-gray-100"
                   >
                     <BookOpen className="w-4 h-4 mr-2" />
                     Показать решение
@@ -690,14 +732,14 @@ const PracticeByNumberEgeBasicMath = () => {
                     <Button
                       variant="outline"
                       onClick={skipQuestion}
-                      className="flex-1 min-w-32"
+                      className="flex-1 min-w-32 border-[#1a1f36]/30 text-[#1a1f36] hover:bg-gray-100"
                     >
                       Пропустить
                     </Button>
                   )}
                   
                   {isAnswered && currentQuestionIndex < questions.length - 1 && (
-                    <Button onClick={nextQuestion} className="flex-1 min-w-32">
+                    <Button onClick={nextQuestion} className="flex-1 min-w-32 bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36] shadow-md font-medium transition-all">
                       <ArrowRight className="w-4 h-4 mr-2" />
                       Следующий вопрос
                     </Button>
@@ -706,12 +748,12 @@ const PracticeByNumberEgeBasicMath = () => {
 
                 {/* Solution */}
                 {showSolution && currentQuestion.solution_text && (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Решение</CardTitle>
+                  <Card className="bg-blue-50/50 backdrop-blur border border-blue-200/50 rounded-2xl shadow-md">
+                    <CardHeader className="border-b border-blue-200/50">
+                      <CardTitle className="text-blue-800">Решение</CardTitle>
                     </CardHeader>
-                    <CardContent>
-                      <div className="prose max-w-none">
+                    <CardContent className="pt-4">
+                      <div className="prose max-w-none text-[#1a1f36]">
                         <MathRenderer text={currentQuestion.solution_text} compiler="mathjax" />
                       </div>
                     </CardContent>
@@ -725,15 +767,15 @@ const PracticeByNumberEgeBasicMath = () => {
 
           {/* Results Summary */}
           {practiceStarted && questions.length > 0 && (
-            <Card className="mx-auto">
-              <CardHeader>
-                <CardTitle>Статистика</CardTitle>
+            <Card className="mx-auto bg-white/95 backdrop-blur border border-white/20 rounded-2xl shadow-xl">
+              <CardHeader className="border-b border-white/20">
+                <CardTitle className="text-[#1a1f36]">Статистика</CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-gray-600">
+              <CardContent className="pt-4">
+                <p className="text-gray-700">
                   Найдено {questions.length} вопросов для выбранных номеров
                 </p>
-                {loading && <p className="text-blue-600">Загрузка...</p>}
+                {loading && <p className="text-blue-600 mt-2">Загрузка...</p>}
               </CardContent>
             </Card>
           )}

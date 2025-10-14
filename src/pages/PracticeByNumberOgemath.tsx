@@ -862,66 +862,78 @@ const PracticeByNumberOgemath = () => {
   const questionNumbers = Array.from({ length: 25 }, (_, i) => (i + 1).toString());
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-6xl mx-auto flex gap-4">
-          <div className="flex-shrink-0 pt-2">
-            {practiceStarted ? (
-              <Button 
-                onClick={handleBackToSelection}
-                variant="outline"
-                className="hover:!bg-gradient-to-r hover:from-gold/30 hover:to-sage/30 hover:!text-black active:!bg-yellow-500"
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                К выбору вопросов
-              </Button>
-            ) : (
-              <Link to="/ogemath-practice">
-                <Button variant="outline" className="hover:!bg-gradient-to-r hover:from-gold/30 hover:to-sage/30 hover:!text-black active:!bg-yellow-500">
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Назад
+    <div className="min-h-screen text-white relative" style={{ background: "linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)" }}>
+      <div className="container mx-auto px-4 py-8 relative z-10">
+        <div className="max-w-6xl mx-auto">
+          <div className="max-w-4xl mx-auto">
+
+          {/* Header with Back Button */}
+          <div className="relative text-center mb-16">
+            {/* Back Button - positioned to the left */}
+            <div className="absolute left-0 top-0">
+              {practiceStarted ? (
+                <Button 
+                  onClick={handleBackToSelection}
+                  variant="ghost"
+                  size="sm"
+                  className="hover:bg-white/20 text-white"
+                >
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  К выбору вопросов
                 </Button>
-              </Link>
-            )}
+              ) : (
+                <Link to="/ogemath-practice">
+                  <Button variant="ghost" size="sm" className="hover:bg-white/20 text-white">
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Назад
+                  </Button>
+                </Link>
+              )}
+            </div>
+            
+            <h1 className="text-4xl md:text-5xl font-display font-bold mb-6 bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent">
+              Практика по номеру
+            </h1>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              Выберите номер(а) для тренировки задач выбранного типа
+            </p>
           </div>
-          
-          <div className="flex-1 max-w-4xl">
 
           {!practiceStarted ? (
             /* Question Selection Interface */
             <div className="space-y-6">
               {/* Question Groups */}
-              <Card>
+              <Card className="bg-white/95 backdrop-blur border border-white/20 rounded-2xl shadow-xl">
                 <CardHeader>
-                  <CardTitle>Группы вопросов</CardTitle>
+                  <CardTitle className="text-[#1a1f36]">Группы вопросов</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     <Button
                       variant="outline"
                       onClick={() => toggleQuestionGroup('all')}
-                      className="p-4 h-auto text-center hover:!bg-gradient-to-r hover:from-gold/30 hover:to-sage/30 hover:!text-black active:!bg-yellow-500"
+                      className="p-4 h-auto text-center border-[#1a1f36]/30 text-[#1a1f36] font-medium hover:bg-gray-100 active:bg-gradient-to-r active:from-yellow-500/20 active:to-emerald-500/20 active:text-black transition-all"
                     >
                       Все вопросы
                     </Button>
                     <Button
                       variant="outline"
                       onClick={() => toggleQuestionGroup('part1')}
-                      className="p-4 h-auto text-center hover:!bg-gradient-to-r hover:from-gold/30 hover:to-sage/30 hover:!text-black active:!bg-yellow-500"
+                      className="p-4 h-auto text-center border-[#1a1f36]/30 text-[#1a1f36] font-medium hover:bg-gray-100 active:bg-gradient-to-r active:from-yellow-500/20 active:to-emerald-500/20 active:text-black transition-all"
                     >
                       Часть 1
                     </Button>
                     <Button
                       variant="outline"
                       onClick={() => toggleQuestionGroup('part2_algebra')}
-                      className="p-4 h-auto text-center hover:!bg-gradient-to-r hover:from-gold/30 hover:to-sage/30 hover:!text-black active:!bg-yellow-500"
+                      className="p-4 h-auto text-center border-[#1a1f36]/30 text-[#1a1f36] font-medium hover:bg-gray-100 active:bg-gradient-to-r active:from-yellow-500/20 active:to-emerald-500/20 active:text-black transition-all"
                     >
                       Часть 2 Алгебра
                     </Button>
                     <Button
                       variant="outline"
                       onClick={() => toggleQuestionGroup('part2_geometry')}
-                      className="p-4 h-auto text-center hover:!bg-gradient-to-r hover:from-gold/30 hover:to-sage/30 hover:!text-black active:!bg-yellow-500"
+                      className="p-4 h-auto text-center border-[#1a1f36]/30 text-[#1a1f36] font-medium hover:bg-gray-100 active:bg-gradient-to-r active:from-yellow-500/20 active:to-emerald-500/20 active:text-black transition-all"
                     >
                       Часть 2 Геометрия
                     </Button>
@@ -930,9 +942,9 @@ const PracticeByNumberOgemath = () => {
               </Card>
 
               {/* Individual Numbers */}
-              <Card>
+              <Card className="bg-white/95 backdrop-blur border border-white/20 rounded-2xl shadow-xl">
                 <CardHeader>
-                  <CardTitle>Отдельные номера</CardTitle>
+                  <CardTitle className="text-[#1a1f36]">Отдельные номера</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -958,12 +970,12 @@ const PracticeByNumberOgemath = () => {
                                 setSelectedNumbers(prev => [...new Set([...prev, ...group])]);
                               }
                             }}
-                            className={`p-3 h-auto ${
+                            className={`p-3 h-auto font-medium transition-all ${
                               selectedNumbers.includes('1') && selectedNumbers.includes('2') && 
                               selectedNumbers.includes('3') && selectedNumbers.includes('4') && 
                               selectedNumbers.includes('5')
-                                ? 'bg-yellow-500 hover:bg-yellow-600'
-                                : 'hover:!bg-gradient-to-r hover:from-gold/30 hover:to-sage/30 hover:!text-black'
+                                ? 'bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36] border-0 shadow-sm'
+                                : 'border-[#1a1f36]/30 text-[#1a1f36] hover:bg-gray-100 active:bg-gradient-to-r active:from-yellow-500/20 active:to-emerald-500/20'
                             }`}
                           >
                             1-5
@@ -975,10 +987,10 @@ const PracticeByNumberOgemath = () => {
                               key={num}
                               variant={selectedNumbers.includes(num.toString()) ? "default" : "outline"}
                               onClick={() => toggleIndividualNumber(num.toString())}
-                              className={`p-3 h-auto ${
+                              className={`p-3 h-auto font-medium ${
                                 selectedNumbers.includes(num.toString())
-                                  ? 'bg-yellow-500 hover:bg-yellow-600'
-                                  : 'hover:!bg-gradient-to-r hover:from-gold/30 hover:to-sage/30 hover:!text-black'
+                                  ? 'bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36] border-0 shadow-sm'
+                                  : 'border-[#1a1f36]/30 text-[#1a1f36] hover:bg-gray-100 active:bg-gradient-to-r active:from-yellow-500/20 active:to-emerald-500/20'
                               }`}
                             >
                               {num}
@@ -996,10 +1008,10 @@ const PracticeByNumberOgemath = () => {
                               key={num}
                               variant={selectedNumbers.includes(num.toString()) ? "default" : "outline"}
                               onClick={() => toggleIndividualNumber(num.toString())}
-                              className={`p-3 h-auto ${
+                              className={`p-3 h-auto font-medium ${
                                 selectedNumbers.includes(num.toString())
-                                  ? 'bg-yellow-500 hover:bg-yellow-600'
-                                  : 'hover:!bg-gradient-to-r hover:from-gold/30 hover:to-sage/30 hover:!text-black'
+                                  ? 'bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36] border-0 shadow-sm'
+                                  : 'border-[#1a1f36]/30 text-[#1a1f36] hover:bg-gray-100 active:bg-gradient-to-r active:from-yellow-500/20 active:to-emerald-500/20'
                               }`}
                             >
                               {num}
@@ -1022,10 +1034,10 @@ const PracticeByNumberOgemath = () => {
                               key={num}
                               variant={selectedNumbers.includes(num.toString()) ? "default" : "outline"}
                               onClick={() => toggleIndividualNumber(num.toString())}
-                              className={`p-3 h-auto ${
+                              className={`p-3 h-auto font-medium ${
                                 selectedNumbers.includes(num.toString())
-                                  ? 'bg-yellow-500 hover:bg-yellow-600'
-                                  : 'hover:!bg-gradient-to-r hover:from-gold/30 hover:to-sage/30 hover:!text-black'
+                                  ? 'bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36] border-0 shadow-sm'
+                                  : 'border-[#1a1f36]/30 text-[#1a1f36] hover:bg-gray-100 active:bg-gradient-to-r active:from-yellow-500/20 active:to-emerald-500/20'
                               }`}
                             >
                               {num}
@@ -1043,10 +1055,10 @@ const PracticeByNumberOgemath = () => {
                               key={num}
                               variant={selectedNumbers.includes(num.toString()) ? "default" : "outline"}
                               onClick={() => toggleIndividualNumber(num.toString())}
-                              className={`p-3 h-auto ${
+                              className={`p-3 h-auto font-medium ${
                                 selectedNumbers.includes(num.toString())
-                                  ? 'bg-yellow-500 hover:bg-yellow-600'
-                                  : 'hover:!bg-gradient-to-r hover:from-gold/30 hover:to-sage/30 hover:!text-black'
+                                  ? 'bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36] border-0 shadow-sm'
+                                  : 'border-[#1a1f36]/30 text-[#1a1f36] hover:bg-gray-100 active:bg-gradient-to-r active:from-yellow-500/20 active:to-emerald-500/20'
                               }`}
                             >
                               {num}
@@ -1064,7 +1076,7 @@ const PracticeByNumberOgemath = () => {
                 <Button
                   onClick={handleStartPractice}
                   disabled={selectedNumbers.length === 0}
-                  className={`px-8 py-3 text-lg ${selectedNumbers.length > 0 ? 'bg-yellow-500 hover:bg-yellow-600' : ''}`}
+                  className="px-8 py-3 text-lg bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36] shadow-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                 >
                   Начать практику
                 </Button>
@@ -1072,9 +1084,9 @@ const PracticeByNumberOgemath = () => {
 
               {/* Selection Summary */}
               {selectedNumbers.length > 0 && (
-                <Card>
+                <Card className="bg-white/95 backdrop-blur border border-white/20 rounded-2xl shadow-xl">
                   <CardContent className="pt-6">
-                    <p>
+                    <p className="text-[#1a1f36]">
                       <strong>Выбрано номеров:</strong> {selectedNumbers.join(', ')}
                     </p>
                   </CardContent>
@@ -1100,14 +1112,15 @@ const PracticeByNumberOgemath = () => {
           ) : (
             /* Practice Interface */
             questions.length > 0 && currentQuestion ? (
-            <Card className="mb-6">
-              <CardHeader>
-                  <CardTitle className="flex justify-between items-center">
+            <Card className="mb-6 bg-white/95 backdrop-blur border border-white/20 rounded-2xl shadow-xl">
+              <CardHeader className="border-b border-white/20">
+                  <CardTitle className="flex justify-between items-center text-[#1a1f36]">
                     <span>Вопрос №{currentQuestion.problem_number_type} ({currentQuestionIndex + 1} из {questions.length})</span>
                     <div className="flex items-center gap-4">
                       <Button
                         onClick={() => setShowFormulaBooklet(true)}
                         variant="outline"
+                        className="border-[#1a1f36]/30 text-[#1a1f36] hover:bg-gray-100"
                       >
                         <BookOpen className="w-4 h-4 mr-2" />
                         Справочник формул
@@ -1138,7 +1151,7 @@ const PracticeByNumberOgemath = () => {
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Problem Text */}
-                <div className="prose max-w-none">
+                <div className="prose max-w-none text-[#1a1f36]">
                   <MathRenderer text={currentQuestion.problem_text || "Текст задачи не найден"} compiler="mathjax" />
                 </div>
 
@@ -1163,12 +1176,12 @@ const PracticeByNumberOgemath = () => {
                       placeholder="Введите ваш ответ"
                       disabled={isAnswered || solutionViewedBeforeAnswer}
                       onKeyPress={(e) => e.key === 'Enter' && !isAnswered && !solutionViewedBeforeAnswer && checkAnswer()}
-                      className="flex-1"
+                      className="flex-1 bg-white border-gray-300 text-[#1a1f36] placeholder:text-gray-500"
                     />
                     <Button
                       onClick={checkAnswer}
                       disabled={isAnswered || solutionViewedBeforeAnswer || !userAnswer.trim()}
-                      className="min-w-32"
+                      className="min-w-32 bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36] shadow-md font-medium disabled:opacity-50 transition-all"
                     >
                       <CheckCircle className="w-4 h-4 mr-2" />
                       Проверить
@@ -1248,7 +1261,7 @@ const PracticeByNumberOgemath = () => {
                   <Button
                     variant="outline"
                     onClick={handleShowSolution}
-                    className="flex-1 min-w-32"
+                    className="flex-1 min-w-32 border-[#1a1f36]/30 text-[#1a1f36] hover:bg-gray-100"
                   >
                     <BookOpen className="w-4 h-4 mr-2" />
                     Показать решение
@@ -1258,14 +1271,14 @@ const PracticeByNumberOgemath = () => {
                     <Button
                       variant="outline"
                       onClick={skipQuestion}
-                      className="flex-1 min-w-32"
+                      className="flex-1 min-w-32 border-[#1a1f36]/30 text-[#1a1f36] hover:bg-gray-100"
                     >
                       Пропустить
                     </Button>
                   )}
                   
                   {isAnswered && currentQuestionIndex < questions.length - 1 && (
-                    <Button onClick={nextQuestion} className="flex-1 min-w-32">
+                    <Button onClick={nextQuestion} className="flex-1 min-w-32 bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36] shadow-md font-medium transition-all">
                       <ArrowRight className="w-4 h-4 mr-2" />
                       Следующий вопрос
                     </Button>
@@ -1275,12 +1288,12 @@ const PracticeByNumberOgemath = () => {
 
                 {/* Solution */}
                 {showSolution && currentQuestion.solution_text && (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Решение</CardTitle>
+                  <Card className="bg-blue-50/50 backdrop-blur border border-blue-200/50 rounded-2xl shadow-md">
+                    <CardHeader className="border-b border-blue-200/50">
+                      <CardTitle className="text-blue-800">Решение</CardTitle>
                     </CardHeader>
-                    <CardContent>
-                      <div className="prose max-w-none">
+                    <CardContent className="pt-4">
+                      <div className="prose max-w-none text-[#1a1f36]">
                         <MathRenderer text={currentQuestion.solution_text} compiler="mathjax" />
                       </div>
                     </CardContent>
@@ -1320,15 +1333,15 @@ const PracticeByNumberOgemath = () => {
 
           {/* Results Summary */}
           {practiceStarted && questions.length > 0 && !showStatistics && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Статистика</CardTitle>
+            <Card className="bg-white/95 backdrop-blur border border-white/20 rounded-2xl shadow-xl">
+              <CardHeader className="border-b border-white/20">
+                <CardTitle className="text-[#1a1f36]">Статистика</CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-gray-600">
+              <CardContent className="pt-4">
+                <p className="text-gray-700">
                   Найдено {questions.length} вопросов для выбранных номеров
                 </p>
-                {loading && <p className="text-blue-600">Загрузка...</p>}
+                {loading && <p className="text-blue-600 mt-2">Загрузка...</p>}
               </CardContent>
             </Card>
           )}
