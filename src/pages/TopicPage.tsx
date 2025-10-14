@@ -18,7 +18,7 @@ import {
   type TopicContent,
   type ExerciseConfig,
 } from "@/lib/modules.registry";
-import { getTopicTestSkills, getTopicTestQuestionCount } from "@/lib/topicTestHelpers";
+import { getTopicTestSkills, getTopicTestQuestionCount, getTopicTestStatus } from "@/lib/topicTestHelpers";
 
 type TopicArticleRow = {
   topic_id: string;
@@ -27,7 +27,7 @@ type TopicArticleRow = {
 
 const TopicPage: React.FC = () => {
   const navigate = useNavigate();
-  const { refetch, getProgressStatus } = useModuleProgress();
+  const { refetch, getProgressStatus, progressData } = useModuleProgress();
   const [refreshKey, setRefreshKey] = useState(0);
   const [selectedVideo, setSelectedVideo] = useState<{ videoId: string; title: string; description: string } | null>(null);
 
@@ -247,7 +247,13 @@ const TopicPage: React.FC = () => {
             const testSkills = getTopicTestSkills(moduleSlug, topicId);
             const testQuestionCount = getTopicTestQuestionCount(testSkills);
             const testItemId = `${moduleSlug}-${topicId}-topic-test`;
-            const testStatus = getProgressStatus(testItemId, 'test');
+            
+            // Get progress data and calculate status
+            const matchingItems = progressData.filter(p => p.item_id === testItemId && p.activity_type === 'test');
+            const correctCount = matchingItems.length > 0 
+              ? Math.max(...matchingItems.map(item => parseInt(item.correct_count || '0')))
+              : 0;
+            const testStatus = getTopicTestStatus(correctCount, testQuestionCount);
 
             const testStatusBadge = (() => {
               switch (testStatus) {
@@ -309,8 +315,7 @@ const TopicPage: React.FC = () => {
                       isTest: true,
                       itemId: testItemId
                     })}
-                    size="sm"
-                    className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold flex-shrink-0"
+                    className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold flex-shrink-0 h-8 px-3 text-xs"
                   >
                     Начать
                   </Button>
