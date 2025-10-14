@@ -184,20 +184,6 @@ const EgeMathBasic = () => {
     <div className="flex h-[calc(100vh-68px)] w-full bg-background overflow-hidden">
       {/* Left Sidebar - keep fewer buttons */}
       <div className="w-64 h-full bg-sidebar border-r border-border flex-shrink-0">
-        {/* Logo area */}
-        <div className="p-4">
-          <button 
-            onClick={() => navigate("/mydb3")}
-            className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
-          >
-            <img 
-              src="https://kbaazksvkvnafrwtmkcw.supabase.co/storage/v1/object/public/txtbkimg/1001egechat_logo.png" 
-              alt="EGEChat Logo" 
-              className="w-8 h-8"
-            />
-            <span className="font-bold text-lg text-sidebar-foreground">EGEChat</span>
-          </button>
-        </div>
         
         {/* Menu items (fewer than OGE, keep as-is) */}
         <div className="p-4 space-y-2">
