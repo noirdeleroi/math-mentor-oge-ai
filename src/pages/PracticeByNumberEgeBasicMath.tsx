@@ -185,6 +185,7 @@ const PracticeByNumberEgeBasicMath = () => {
         .from('student_activity')
         .insert({
           user_id: user.id,
+          course_id: '2',
           question_id: questionId,
           answer_time_start: new Date().toISOString(),
           finished_or_not: false,
@@ -526,27 +527,17 @@ const PracticeByNumberEgeBasicMath = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
-        <div className="max-w-6xl mx-auto flex gap-4">
-          <div className="flex-shrink-0 pt-2">
-            {practiceStarted ? (
-              <Button 
-                onClick={handleBackToSelection}
-                variant="outline"
-              >
+        <div className={`max-w-6xl mx-auto flex gap-4 ${practiceStarted ? 'justify-center' : ''}`}>
+          <div className={`${practiceStarted ? 'hidden' : 'flex-shrink-0 pt-2'}`}>
+            <Link to="/egemathbasic">
+              <Button variant="outline">
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                К выбору вопросов
+                Назад
               </Button>
-            ) : (
-              <Link to="/egemathbasic">
-                <Button variant="outline">
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Назад
-                </Button>
-              </Link>
-            )}
+            </Link>
           </div>
           
-          <div className="flex-1 max-w-4xl">
+          <div className={`${practiceStarted ? 'w-full max-w-3xl' : 'flex-1 max-w-4xl'}`}>
 
           {!practiceStarted ? (
             /* Question Selection Interface */
@@ -557,27 +548,13 @@ const PracticeByNumberEgeBasicMath = () => {
                   <CardTitle>Группы вопросов</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 gap-3">
                     <Button
                       variant="outline"
                       onClick={() => toggleQuestionGroup('all')}
                       className="p-4 h-auto text-center"
                     >
                       Все вопросы
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => toggleQuestionGroup('part1')}
-                      className="p-4 h-auto text-center"
-                    >
-                      Вопросы 1-20
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => toggleQuestionGroup('part2')}
-                      className="p-4 h-auto text-center"
-                    >
-                      Вопрос 21
                     </Button>
                   </div>
                 </CardContent>
@@ -629,7 +606,17 @@ const PracticeByNumberEgeBasicMath = () => {
           ) : (
             /* Practice Interface */
             questions.length > 0 && currentQuestion ? (
-            <Card className="mb-6">
+            <div>
+              <div className="mb-4 flex justify-center">
+                <Button 
+                  onClick={handleBackToSelection}
+                  variant="outline"
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  К выбору вопросов
+                </Button>
+              </div>
+              <Card className="mb-6 mx-auto">
               <CardHeader>
                 <CardTitle className="flex justify-between items-center">
                   <span>Вопрос №{currentQuestion.problem_number_type} ({currentQuestionIndex + 1} из {questions.length})</span>
@@ -646,14 +633,14 @@ const PracticeByNumberEgeBasicMath = () => {
 
                 {/* Answer Input */}
                 <div className="space-y-4">
-                  <div className="flex gap-2">
+                  <div className="flex flex-col sm:flex-row items-center gap-2 justify-center">
                     <Input
                       value={userAnswer}
                       onChange={(e) => setUserAnswer(e.target.value)}
                       placeholder="Введите ваш ответ"
                       disabled={isAnswered || solutionViewedBeforeAnswer}
                       onKeyPress={(e) => e.key === 'Enter' && !isAnswered && !solutionViewedBeforeAnswer && checkAnswer()}
-                      className="flex-1"
+                      className="w-full max-w-md"
                     />
                     <Button
                       onClick={checkAnswer}
@@ -700,7 +687,7 @@ const PracticeByNumberEgeBasicMath = () => {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex gap-3 flex-wrap">
+                <div className="flex gap-3 flex-wrap justify-center">
                   <Button
                     variant="outline"
                     onClick={handleShowSolution}
@@ -742,13 +729,14 @@ const PracticeByNumberEgeBasicMath = () => {
                   </Card>
                 )}
               </CardContent>
-            </Card>
+              </Card>
+            </div>
             ) : null
           )}
 
           {/* Results Summary */}
           {practiceStarted && questions.length > 0 && (
-            <Card>
+            <Card className="mx-auto">
               <CardHeader>
                 <CardTitle>Статистика</CardTitle>
               </CardHeader>
