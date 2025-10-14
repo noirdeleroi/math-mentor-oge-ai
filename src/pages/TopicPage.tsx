@@ -18,6 +18,7 @@ import {
   type TopicContent,
   type ExerciseConfig,
 } from "@/lib/modules.registry";
+import { getTopicTestSkills, getTopicTestQuestionCount } from "@/lib/topicTestHelpers";
 
 type TopicArticleRow = {
   topic_id: string;
@@ -410,6 +411,106 @@ const TopicPage: React.FC = () => {
                   </div>
                 );
               })}
+
+              {/* Topic Test - Different styling */}
+              {(() => {
+                const testSkills = getTopicTestSkills(moduleSlug, topicId);
+                const testQuestionCount = getTopicTestQuestionCount(testSkills);
+                const testItemId = `${moduleSlug}-${topicId}-topic-test`;
+                const testStatus = getProgressStatus(testItemId, 'exercise');
+
+                if (testSkills.length === 0) return null;
+
+                const getTestStatusBadge = () => {
+                  switch (testStatus) {
+                    case 'mastered':
+                      return { text: 'Освоено', color: 'bg-purple-100 text-purple-700' };
+                    case 'proficient':
+                      return { text: 'В процессе', color: 'bg-orange-100 text-orange-700' };
+                    case 'familiar':
+                      return { text: 'Начато', color: 'bg-blue-100 text-blue-700' };
+                    case 'attempted':
+                      return { text: 'Попытка', color: 'bg-yellow-100 text-yellow-700' };
+                    default:
+                      return { text: 'Не начато', color: 'bg-gray-100 text-gray-700' };
+                  }
+                };
+
+                const testStatusBadge = getTestStatusBadge();
+
+                return (
+                  <div
+                    key="topic-test"
+                    className="relative p-6 rounded-lg border-2 border-orange-400 bg-gradient-to-br from-orange-50 to-amber-50 hover:shadow-lg transition-all mt-6"
+                  >
+                    <div className="flex items-start gap-4">
+                      {/* Progress Cell */}
+                      <div className="flex-shrink-0">
+                        {(() => {
+                          switch (testStatus) {
+                            case 'mastered':
+                              return (
+                                <div className="relative w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center">
+                                  <Crown className="h-6 w-6 text-white" />
+                                </div>
+                              );
+                            case 'proficient':
+                              return <div className="w-12 h-12 bg-gradient-to-t from-orange-500 from-33% to-gray-200 to-33% rounded-lg" />;
+                            case 'familiar':
+                              return <div className="w-12 h-12 rounded-lg border-2 border-orange-500 bg-[linear-gradient(to_top,theme(colors.orange.500)_20%,white_20%)]" />;
+                            case 'attempted':
+                              return <div className="w-12 h-12 border-2 border-orange-400 rounded-lg bg-white" />;
+                            default:
+                              return <div className="w-12 h-12 border-2 border-gray-300 rounded-lg bg-white" />;
+                          }
+                        })()}
+                      </div>
+
+                      {/* Content */}
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-lg font-bold text-orange-900 mb-2 flex items-center gap-2">
+                          <Zap className="h-5 w-5 text-orange-600" />
+                          Тест по теме: {topic?.title}
+                        </h4>
+                        <p className="text-sm text-orange-800 mb-3">
+                          Проверьте усвоение материала этой темы • {testQuestionCount} {testQuestionCount === 1 ? 'вопрос' : testQuestionCount < 5 ? 'вопроса' : 'вопросов'}
+                        </p>
+
+                        {/* Metadata badges */}
+                        <div className="flex items-center gap-3 text-sm">
+                          <div className="flex items-center gap-1.5 text-orange-700">
+                            <Clock className="h-4 w-4" />
+                            <span>10-15 минут</span>
+                          </div>
+                          <span className="px-3 py-1 bg-orange-200 text-orange-900 rounded-md font-semibold">
+                            Тест
+                          </span>
+                          <span className={`px-3 py-1 rounded-md font-medium ${testStatusBadge.color}`}>
+                            {testStatusBadge.text}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Action button */}
+                      <div className="flex items-center gap-3 flex-shrink-0">
+                        <Button
+                          onClick={() => setSelectedExercise({
+                            title: `Тест по теме: ${topic?.title}`,
+                            skills: testSkills,
+                            questionCount: testQuestionCount,
+                            isTest: true,
+                            itemId: testItemId
+                          })}
+                          className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-6 font-semibold"
+                        >
+                          Начать тест
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
+
               {exercises.length === 0 && (
                 <div className="text-sm text-gray-600">Упражнения для темы пока нет</div>
               )}

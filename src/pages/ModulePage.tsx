@@ -14,6 +14,7 @@ import { ModuleProgressBar } from "@/components/ModuleProgressBar";
 import { supabase } from "@/integrations/supabase/client";
 import NotFound from "./NotFound";
 import { Link, useParams, useNavigate } from "react-router-dom";
+import { getTopicTestSkills, getTopicTestQuestionCount } from "@/lib/topicTestHelpers";
 
 const ModulePage = () => {
   const { moduleSlug } = useParams<{ moduleSlug: string }>();
@@ -29,6 +30,7 @@ const ModulePage = () => {
     questionCount?: number;
     isAdvanced?: boolean;
     isModuleTest?: boolean;
+    isTest?: boolean;
     moduleTopics?: string[];
     courseId?: string;
     itemId?: string;
@@ -209,6 +211,61 @@ const ModulePage = () => {
                 </div>
               );
             })}
+
+            {/* Topic Test */}
+            {(() => {
+              const testSkills = getTopicTestSkills(moduleSlug!, topic.id);
+              const testQuestionCount = getTopicTestQuestionCount(testSkills);
+              const testItemId = `${moduleSlug}-${topic.id}-topic-test`;
+              const testStatus = getProgressStatus(testItemId, 'exercise');
+
+              const renderTestProgressCell = () => {
+                switch (testStatus) {
+                  case 'mastered':
+                    return (
+                      <div className="relative w-6 h-6 bg-purple-600 rounded flex items-center justify-center">
+                        <Crown className="h-3 w-3 text-white" />
+                      </div>
+                    );
+                  case 'proficient':
+                    return <div className="w-6 h-6 bg-gradient-to-t from-orange-500 from-33% to-gray-200 to-33% rounded" />;
+                  case 'familiar':
+                    return <div className="w-6 h-6 rounded border border-orange-500 bg-[linear-gradient(to_top,theme(colors.orange.500)_20%,white_20%)]" />;
+                  case 'attempted':
+                    return <div className="w-6 h-6 border-2 border-orange-400 rounded bg-white" />;
+                  default:
+                    return <div className="w-6 h-6 border-2 border-gray-300 rounded bg-white" />;
+                }
+              };
+
+              if (testSkills.length === 0) return null;
+
+              return (
+                <div 
+                  key="topic-test"
+                  onClick={() => setSelectedExercise({
+                    title: `Тест по теме: ${topic.title}`,
+                    skills: testSkills,
+                    questionCount: testQuestionCount,
+                    isTest: true,
+                    itemId: testItemId
+                  })}
+                  className="p-3 bg-gradient-to-br from-orange-50 to-amber-50 rounded-lg border-2 border-orange-300 flex items-center justify-between gap-3 transition-all hover:shadow-md cursor-pointer hover:from-orange-100 hover:to-amber-100"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-gradient-to-r from-orange-500 to-amber-500 rounded-full">
+                      <Zap className="h-4 w-4 text-white" />
+                    </div>
+                    <span className="text-sm font-semibold text-orange-900">
+                      Тест по теме
+                    </span>
+                  </div>
+                  <div className="flex-shrink-0">
+                    {renderTestProgressCell()}
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         </div>
       </div>
