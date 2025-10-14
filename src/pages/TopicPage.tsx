@@ -209,7 +209,7 @@ const TopicPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-2 gap-4 mb-4">
             {/* Skills */}
             <div>
               <h3 className="font-semibold text-[#1a1f36] text-sm mb-2">Навыки:</h3>
@@ -241,6 +241,83 @@ const TopicPage: React.FC = () => {
               </ul>
             </div>
           </div>
+
+          {/* Topic Test - Small Button */}
+          {(() => {
+            const testSkills = getTopicTestSkills(moduleSlug, topicId);
+            const testQuestionCount = getTopicTestQuestionCount(testSkills);
+            const testItemId = `${moduleSlug}-${topicId}-topic-test`;
+            const testStatus = getProgressStatus(testItemId, 'test');
+
+            const testStatusBadge = (() => {
+              switch (testStatus) {
+                case 'mastered': return { text: 'Освоено', color: 'bg-purple-100 text-purple-900' };
+                case 'proficient': return { text: 'Владею', color: 'bg-orange-100 text-orange-900' };
+                case 'familiar': return { text: 'Знаком', color: 'bg-blue-100 text-blue-900' };
+                case 'attempted': return { text: 'Попытался', color: 'bg-gray-100 text-gray-700' };
+                default: return { text: 'Не начато', color: 'bg-gray-100 text-gray-500' };
+              }
+            })();
+
+            return (
+              <div className="bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-300/50 rounded-lg p-3">
+                <div className="flex items-center gap-3">
+                  {/* Progress Cell */}
+                  <div className="flex-shrink-0">
+                    {(() => {
+                      switch (testStatus) {
+                        case 'mastered':
+                          return (
+                            <div className="relative w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center">
+                              <Crown className="h-5 w-5 text-white" />
+                            </div>
+                          );
+                        case 'proficient':
+                          return <div className="w-10 h-10 bg-gradient-to-t from-orange-500 from-33% to-gray-200 to-33% rounded-lg" />;
+                        case 'familiar':
+                          return <div className="w-10 h-10 rounded-lg border-2 border-orange-500 bg-[linear-gradient(to_top,theme(colors.orange.500)_20%,white_20%)]" />;
+                        case 'attempted':
+                          return <div className="w-10 h-10 border-2 border-orange-400 rounded-lg bg-white" />;
+                        default:
+                          return <div className="w-10 h-10 border-2 border-gray-300 rounded-lg bg-white" />;
+                      }
+                    })()}
+                  </div>
+
+                  {/* Content */}
+                  <div className="flex-1 min-w-0">
+                    <h4 className="text-sm font-bold text-orange-900 flex items-center gap-1.5">
+                      <Zap className="h-4 w-4 text-orange-600" />
+                      Тест по теме: {topic?.title}
+                    </h4>
+                    <p className="text-xs text-orange-800">
+                      {testQuestionCount} {testQuestionCount === 1 ? 'вопрос' : testQuestionCount < 5 ? 'вопроса' : 'вопросов'}
+                    </p>
+                  </div>
+
+                  {/* Status Badge */}
+                  <span className={`px-2 py-1 rounded-md text-xs font-medium ${testStatusBadge.color} flex-shrink-0`}>
+                    {testStatusBadge.text}
+                  </span>
+
+                  {/* Action Button */}
+                  <Button
+                    onClick={() => setSelectedExercise({
+                      title: `Тест по теме: ${topic?.title}`,
+                      skills: testSkills,
+                      questionCount: testQuestionCount,
+                      isTest: true,
+                      itemId: testItemId
+                    })}
+                    size="sm"
+                    className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold flex-shrink-0"
+                  >
+                    Начать
+                  </Button>
+                </div>
+              </div>
+            );
+          })()}
         </div>
         {/* Single block with tabs */}
         <motion.div
