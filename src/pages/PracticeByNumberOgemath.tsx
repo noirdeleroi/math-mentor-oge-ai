@@ -870,14 +870,14 @@ const PracticeByNumberOgemath = () => {
               <Button 
                 onClick={handleBackToSelection}
                 variant="outline"
-                className="hover:!bg-gradient-to-r hover:from-gold/30 hover:to-sage/30 hover:!text-black active:!bg-yellow-500"
+                className="hover:bg-gray-100"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 К выбору вопросов
               </Button>
             ) : (
               <Link to="/ogemath-practice">
-                <Button variant="outline" className="hover:!bg-gradient-to-r hover:from-gold/30 hover:to-sage/30 hover:!text-black active:!bg-yellow-500">
+                <Button variant="outline" className="hover:bg-gray-100">
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Назад
                 </Button>
@@ -900,28 +900,28 @@ const PracticeByNumberOgemath = () => {
                     <Button
                       variant="outline"
                       onClick={() => toggleQuestionGroup('all')}
-                      className="p-4 h-auto text-center hover:!bg-gradient-to-r hover:from-gold/30 hover:to-sage/30 hover:!text-black active:!bg-yellow-500"
+                      className="p-4 h-auto text-center hover:bg-gray-100"
                     >
                       Все вопросы
                     </Button>
                     <Button
                       variant="outline"
                       onClick={() => toggleQuestionGroup('part1')}
-                      className="p-4 h-auto text-center hover:!bg-gradient-to-r hover:from-gold/30 hover:to-sage/30 hover:!text-black active:!bg-yellow-500"
+                      className="p-4 h-auto text-center hover:bg-gray-100"
                     >
                       Часть 1
                     </Button>
                     <Button
                       variant="outline"
                       onClick={() => toggleQuestionGroup('part2_algebra')}
-                      className="p-4 h-auto text-center hover:!bg-gradient-to-r hover:from-gold/30 hover:to-sage/30 hover:!text-black active:!bg-yellow-500"
+                      className="p-4 h-auto text-center hover:bg-gray-100"
                     >
                       Часть 2 Алгебра
                     </Button>
                     <Button
                       variant="outline"
                       onClick={() => toggleQuestionGroup('part2_geometry')}
-                      className="p-4 h-auto text-center hover:!bg-gradient-to-r hover:from-gold/30 hover:to-sage/30 hover:!text-black active:!bg-yellow-500"
+                      className="p-4 h-auto text-center hover:bg-gray-100"
                     >
                       Часть 2 Геометрия
                     </Button>
@@ -962,8 +962,8 @@ const PracticeByNumberOgemath = () => {
                               selectedNumbers.includes('1') && selectedNumbers.includes('2') && 
                               selectedNumbers.includes('3') && selectedNumbers.includes('4') && 
                               selectedNumbers.includes('5')
-                                ? 'bg-yellow-500 hover:bg-yellow-600'
-                                : 'hover:!bg-gradient-to-r hover:from-gold/30 hover:to-sage/30 hover:!text-black'
+                                ? 'bg-gradient-to-r from-gold/30 to-sage/30 text-black hover:from-gold/40 hover:to-sage/40'
+                                : 'hover:bg-gray-100'
                             }`}
                           >
                             1-5
@@ -977,8 +977,8 @@ const PracticeByNumberOgemath = () => {
                               onClick={() => toggleIndividualNumber(num.toString())}
                               className={`p-3 h-auto ${
                                 selectedNumbers.includes(num.toString())
-                                  ? 'bg-yellow-500 hover:bg-yellow-600'
-                                  : 'hover:!bg-gradient-to-r hover:from-gold/30 hover:to-sage/30 hover:!text-black'
+                                  ? 'bg-gradient-to-r from-gold/30 to-sage/30 text-black hover:from-gold/40 hover:to-sage/40'
+                                  : 'hover:bg-gray-100'
                               }`}
                             >
                               {num}
@@ -998,8 +998,8 @@ const PracticeByNumberOgemath = () => {
                               onClick={() => toggleIndividualNumber(num.toString())}
                               className={`p-3 h-auto ${
                                 selectedNumbers.includes(num.toString())
-                                  ? 'bg-yellow-500 hover:bg-yellow-600'
-                                  : 'hover:!bg-gradient-to-r hover:from-gold/30 hover:to-sage/30 hover:!text-black'
+                                  ? 'bg-gradient-to-r from-gold/30 to-sage/30 text-black hover:from-gold/40 hover:to-sage/40'
+                                  : 'hover:bg-gray-100'
                               }`}
                             >
                               {num}
@@ -1024,8 +1024,8 @@ const PracticeByNumberOgemath = () => {
                               onClick={() => toggleIndividualNumber(num.toString())}
                               className={`p-3 h-auto ${
                                 selectedNumbers.includes(num.toString())
-                                  ? 'bg-yellow-500 hover:bg-yellow-600'
-                                  : 'hover:!bg-gradient-to-r hover:from-gold/30 hover:to-sage/30 hover:!text-black'
+                                  ? 'bg-gradient-to-r from-gold/30 to-sage/30 text-black hover:from-gold/40 hover:to-sage/40'
+                                  : 'hover:bg-gray-100'
                               }`}
                             >
                               {num}
@@ -1045,8 +1045,8 @@ const PracticeByNumberOgemath = () => {
                               onClick={() => toggleIndividualNumber(num.toString())}
                               className={`p-3 h-auto ${
                                 selectedNumbers.includes(num.toString())
-                                  ? 'bg-yellow-500 hover:bg-yellow-600'
-                                  : 'hover:!bg-gradient-to-r hover:from-gold/30 hover:to-sage/30 hover:!text-black'
+                                  ? 'bg-gradient-to-r from-gold/30 to-sage/30 text-black hover:from-gold/40 hover:to-sage/40'
+                                  : 'hover:bg-gray-100'
                               }`}
                             >
                               {num}
@@ -1064,7 +1064,7 @@ const PracticeByNumberOgemath = () => {
                 <Button
                   onClick={handleStartPractice}
                   disabled={selectedNumbers.length === 0}
-                  className={`px-8 py-3 text-lg ${selectedNumbers.length > 0 ? 'bg-yellow-500 hover:bg-yellow-600' : ''}`}
+                  className={`px-8 py-3 text-lg ${selectedNumbers.length > 0 ? 'bg-gradient-to-r from-gold/30 to-sage/30 text-black hover:from-gold/40 hover:to-sage/40' : ''}`}
                 >
                   Начать практику
                 </Button>
