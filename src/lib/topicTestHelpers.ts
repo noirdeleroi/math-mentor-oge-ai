@@ -3,6 +3,7 @@ import { modulesRegistry } from './modules.registry';
 /**
  * Get all non-advanced skills for a topic test
  * Excludes exercises marked as isAdvanced
+ * Duplicates skills to reach 6 questions if needed
  */
 export const getTopicTestSkills = (
   moduleSlug: string,
@@ -24,15 +25,25 @@ export const getTopicTestSkills = (
     }
   }
 
-  return Array.from(allSkills);
+  const uniqueSkills = Array.from(allSkills);
+  
+  // Duplicate skills to reach 6 questions
+  if (uniqueSkills.length === 0) return [];
+  
+  const result: number[] = [];
+  while (result.length < 6) {
+    result.push(...uniqueSkills);
+  }
+  
+  return result.slice(0, 6);
 };
 
 /**
  * Get the number of questions for a topic test
- * Maximum 6, or the number of available skills if less
+ * Always 6 questions (skills are duplicated if needed)
  */
 export const getTopicTestQuestionCount = (skills: number[]): number => {
-  return Math.min(6, skills.length);
+  return 6;
 };
 
 /**
