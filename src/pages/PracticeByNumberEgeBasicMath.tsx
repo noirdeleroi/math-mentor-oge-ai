@@ -526,26 +526,27 @@ const PracticeByNumberEgeBasicMath = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="relative mb-6">
+        <div className="max-w-6xl mx-auto flex gap-4">
+          <div className="flex-shrink-0 pt-2">
             {practiceStarted ? (
               <Button 
                 onClick={handleBackToSelection}
                 variant="outline"
-                className="absolute left-0 top-0"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 К выбору вопросов
               </Button>
             ) : (
               <Link to="/egemathbasic">
-                <Button variant="outline" className="absolute left-0 top-0">
+                <Button variant="outline">
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Назад
                 </Button>
               </Link>
             )}
           </div>
+          
+          <div className="flex-1 max-w-4xl">
 
           {!practiceStarted ? (
             /* Question Selection Interface */
@@ -759,6 +760,7 @@ const PracticeByNumberEgeBasicMath = () => {
               </CardContent>
             </Card>
           )}
+          </div>
         </div>
       </div>
     </div>
