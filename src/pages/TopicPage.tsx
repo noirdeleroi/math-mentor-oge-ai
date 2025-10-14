@@ -242,7 +242,7 @@ const TopicPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Topic Test - Small Button */}
+          {/* Topic Test - Compact Button */}
           {(() => {
             const testSkills = getTopicTestSkills(moduleSlug, topicId);
             const testQuestionCount = getTopicTestQuestionCount(testSkills);
@@ -255,16 +255,6 @@ const TopicPage: React.FC = () => {
               : 0;
             const testStatus = getTopicTestStatus(correctCount, testQuestionCount);
 
-            const testStatusBadge = (() => {
-              switch (testStatus) {
-                case 'mastered': return { text: 'Освоено', color: 'bg-purple-100 text-purple-900' };
-                case 'proficient': return { text: 'Владею', color: 'bg-orange-100 text-orange-900' };
-                case 'familiar': return { text: 'Знаком', color: 'bg-blue-100 text-blue-900' };
-                case 'attempted': return { text: 'Попытался', color: 'bg-gray-100 text-gray-700' };
-                default: return { text: 'Не начато', color: 'bg-gray-100 text-gray-500' };
-              }
-            })();
-
             return (
               <div 
                 onClick={() => setSelectedExercise({
@@ -274,51 +264,39 @@ const TopicPage: React.FC = () => {
                   isTest: true,
                   itemId: testItemId
                 })}
-                className="bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-300/50 rounded-lg p-2 cursor-pointer hover:from-orange-100 hover:to-amber-100 transition-colors"
+                className="bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-300/50 rounded-lg p-2 cursor-pointer hover:from-orange-100 hover:to-amber-100 transition-colors inline-flex items-center gap-2"
               >
-                <div className="flex items-center gap-2">
-                  {/* Progress Cell */}
-                  <div className="flex-shrink-0">
-                    {(() => {
-                      switch (testStatus) {
-                        case 'mastered':
-                          return (
-                            <div className="relative w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
-                              <Crown className="h-4 w-4 text-white" />
-                            </div>
-                          );
-                        case 'proficient':
-                          return <div className="w-8 h-8 bg-gradient-to-t from-orange-500 from-33% to-gray-200 to-33% rounded-lg" />;
-                        case 'familiar':
-                          return <div className="w-8 h-8 rounded-lg border-2 border-orange-500 bg-[linear-gradient(to_top,theme(colors.orange.500)_20%,white_20%)]" />;
-                        case 'attempted':
-                          return <div className="w-8 h-8 border-2 border-orange-400 rounded-lg bg-white" />;
-                        default:
-                          return <div className="w-8 h-8 border-2 border-gray-300 rounded-lg bg-white" />;
-                      }
-                    })()}
-                  </div>
+                {/* Progress Cell */}
+                <div className="flex-shrink-0">
+                  {(() => {
+                    switch (testStatus) {
+                      case 'mastered':
+                        return (
+                          <div className="relative w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
+                            <Crown className="h-4 w-4 text-white" />
+                          </div>
+                        );
+                      case 'proficient':
+                        return <div className="w-8 h-8 bg-gradient-to-t from-orange-500 from-33% to-gray-200 to-33% rounded-lg" />;
+                      case 'familiar':
+                        return <div className="w-8 h-8 rounded-lg border-2 border-orange-500 bg-[linear-gradient(to_top,theme(colors.orange.500)_20%,white_20%)]" />;
+                      case 'attempted':
+                        return <div className="w-8 h-8 border-2 border-orange-400 rounded-lg bg-white" />;
+                      default:
+                        return <div className="w-8 h-8 border-2 border-gray-300 rounded-lg bg-white" />;
+                    }
+                  })()}
+                </div>
 
-                  {/* Content */}
-                  <div className="flex-1 min-w-0">
-                    <h4 className="text-xs font-bold text-orange-900 flex items-center gap-1">
-                      <Zap className="h-3 w-3 text-orange-600" />
-                      Тест по теме
-                    </h4>
-                    <p className="text-xs text-orange-700">
-                      {testQuestionCount} {testQuestionCount === 1 ? 'вопрос' : testQuestionCount < 5 ? 'вопроса' : 'вопросов'}
-                    </p>
-                  </div>
-
-                  {/* Status Badge */}
-                  <span className={`px-2 py-0.5 rounded text-xs font-medium ${testStatusBadge.color} flex-shrink-0`}>
-                    {testStatusBadge.text}
-                  </span>
-
-                  {/* Action Button */}
-                  <div className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold flex-shrink-0 h-7 px-2 text-xs rounded flex items-center justify-center">
-                    Начать
-                  </div>
+                {/* Content */}
+                <div>
+                  <h4 className="text-xs font-bold text-orange-900 flex items-center gap-1">
+                    <Zap className="h-3 w-3 text-orange-600" />
+                    Тест по теме
+                  </h4>
+                  <p className="text-xs text-orange-700">
+                    {testQuestionCount} {testQuestionCount === 1 ? 'вопрос' : testQuestionCount < 5 ? 'вопроса' : 'вопросов'}
+                  </p>
                 </div>
               </div>
             );
