@@ -214,15 +214,21 @@ const PracticeByNumberEgeBasicMath = () => {
     }
   };
 
-  // Helper function to check if a string is purely numeric
-  const isNumeric = (str: string): boolean => {
-    const cleaned = str.trim();
-    return /^-?\d+([.,]\d+)?$/.test(cleaned);
-  };
+  // Helper: detect non-numeric/canonical text answers (roots, intervals, units, LaTeX, etc.)
+  const isNonNumericAnswer = (answer: string): boolean => {
+    if (!answer) return false;
+    const a = answer.trim();
 
-  // Helper function to sanitize numeric input
-  const sanitizeNumericAnswer = (answer: string): string => {
-    return answer.trim().replace(/\s/g, '').replace(',', '.');
+    // Letters (ru/en) or backslash (LaTeX)
+    if (/\p{L}/u.test(a) || a.includes("\\")) return true;
+
+    // Common math symbols / set notation / intervals
+    if (/[√π∞±≤≥∪∩∈∉∉≈≠(){}\[\];,]/.test(a)) return true;
+
+    // Units like "см", "кг", "м", "мм", "%", etc.
+    if (/(см|мм|м|км|кг|г|л|мл|%)(\b|$)/i.test(a)) return true;
+
+    return false;
   };
 
   const checkAnswer = async () => {
@@ -236,53 +242,11 @@ const PracticeByNumberEgeBasicMath = () => {
     }
 
     try {
-      const correctAnswer = currentQuestion.answer;
       let isCorrect = false;
 
-      // Check if the correct answer is numeric
-      if (isNumeric(correctAnswer)) {
-        const sanitizedUserAnswer = sanitizeNumericAnswer(userAnswer);
-        const sanitizedCorrectAnswer = sanitizeNumericAnswer(correctAnswer);
-        isCorrect = sanitizedUserAnswer === sanitizedCorrectAnswer;
-        
-        console.log('Numeric answer check:', {
-          user: sanitizedUserAnswer,
-          correct: sanitizedCorrectAnswer,
-          isCorrect
-        });
-      } else {
-        console.log('Non-numeric answer detected, using OpenRouter API');
-        
-        const { data, error } = await supabase.functions.invoke('check-non-numeric-answer', {
-          body: {
-            student_answer: userAnswer.trim(),
-            correct_answer: correctAnswer,
-            problem_text: currentQuestion.problem_text
-          }
-        });
-
-        if (error) {
-          console.error('Error checking non-numeric answer:', error);
-          
-          if (data?.retry_message) {
-            toast.error(data.retry_message);
-          } else {
-            toast.error('Ошибка при проверке ответа. Пожалуйста, попробуйте ещё раз.');
-          }
-          return;
-        }
-
-        if (data?.retry_message) {
-          toast.error(data.retry_message);
-          return;
-        }
-
-        isCorrect = data?.is_correct || false;
-        console.log('OpenRouter API result:', { isCorrect });
-      }
-
-      // Call check-text-answer function for logging purposes
-      const { data: logData, error: logError } = await supabase.functions.invoke('check-text-answer', {
+      // Use check-text-answer function for all answer checking (conducts normalization)
+      console.log('Checking answer using check-text-answer function');
+      const { data, error } = await supabase.functions.invoke('check-text-answer', {
         body: {
           user_id: user.id,
           question_id: currentQuestion.question_id,
@@ -290,9 +254,14 @@ const PracticeByNumberEgeBasicMath = () => {
         }
       });
 
-      if (logError) {
-        console.error('Error logging answer check:', logError);
+      if (error) {
+        console.error('Error checking answer:', error);
+        toast.error('Ошибка при проверке ответа. Пожалуйста, попробуйте ещё раз.');
+        return;
       }
+
+      isCorrect = data?.is_correct || false;
+      console.log('check-text-answer result:', { isCorrect });
 
       setIsCorrect(isCorrect);
       setIsAnswered(true);
@@ -651,6 +620,26 @@ const PracticeByNumberEgeBasicMath = () => {
                       Проверить
                     </Button>
                   </div>
+
+                  {/* Note for non-numeric answers */}
+                  {currentQuestion.answer && isNonNumericAnswer(currentQuestion.answer) && (
+                    <div className="text-sm text-gray-600 bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                      <div className="font-medium text-yellow-800 mb-2">
+                        Важно: форма ответа не имеет значения.
+                      </div>
+                      <div className="mb-2">
+                        Вы можете записать ответ в любом виде — главное, чтобы он был математически верным.
+                      </div>
+                      <div className="text-xs">
+                        <div className="font-medium mb-1">Примеры ответа:</div>
+                        <ul className="list-disc ml-5 space-y-1 text-gray-700">
+                          <li><em>корень из трёх</em></li>
+                          <li><em>интервал от 0 до 5</em></li>
+                          <li><em>3 см</em></li>
+                        </ul>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Auth Required Message */}
                   {showAuthRequiredMessage && (
