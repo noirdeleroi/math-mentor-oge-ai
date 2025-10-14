@@ -1,39 +1,41 @@
 project_id = "kbaazksvkvnafrwtmkcw"
 
 [functions.process-user-query]
-timeout = 120
+
 
 [functions.create-task]
 verify_jwt = false
-timeout = 600
+
 
 [functions.openrouter-task-call]
 verify_jwt = false
-timeout = 600
+
 
 [functions.ogemath-task-hardcode]
 verify_jwt = false
-timeout = 600
+
 
 [functions.student-progress-calculate]
 verify_jwt = false
-timeout = 600
 
 [functions.log-textbook-activity]
-timeout = 60
+
 
 [functions.analyze-photo-solution]
-timeout = 120
+
 verify_jwt = false
 
 [functions.check-photo-solution]
 verify_jwt = false
-timeout = 120
+
 
 [functions.boost-low-mastery-skills]
 verify_jwt = true
-timeout = 60
+
 
 [functions.weekly-energy-points-reset]
 verify_jwt = false
-timeout = 120
+
+[db]
+major_version = 15
+

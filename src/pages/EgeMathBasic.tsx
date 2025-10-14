@@ -8,7 +8,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { useMathJaxInitializer } from "@/hooks/useMathJaxInitializer";
 import { saveChatLog, loadChatHistory } from "@/services/chatLogsService";
-import { StreakDisplay } from "@/components/streak/StreakDisplay";
 
 const EgeMathBasic = () => {
   const navigate = useNavigate();
@@ -41,7 +40,7 @@ const EgeMathBasic = () => {
       
       if (history.length > 0) {
         // Convert chat logs to messages format
-        const historyMessages = [];
+        const historyMessages: any[] = [];
         for (const log of history.reverse()) {
           historyMessages.push({
             id: historyMessages.length + 1,
@@ -110,7 +109,7 @@ const EgeMathBasic = () => {
       
       if (history.length > 0) {
         // Convert chat logs to messages format and prepend to existing messages
-        const historyMessages = [];
+        const historyMessages: any[] = [];
         for (const log of history.reverse()) {
           historyMessages.push({
             id: Date.now() + historyMessages.length,
@@ -169,10 +168,6 @@ const EgeMathBasic = () => {
     }
   };
 
-  const handleNavigateToProfile = () => {
-    navigate("/mydashboard");
-  };
-
   const handlePracticeClick = () => {
     navigate("/egemathbasic-practice");
   };
@@ -186,8 +181,8 @@ const EgeMathBasic = () => {
   };
 
   return (
-    <div className="flex h-screen w-full bg-background">
-      {/* Left Sidebar - Fixed */}
+    <div className="flex h-[calc(100vh-68px)] w-full bg-background overflow-hidden">
+      {/* Left Sidebar - keep fewer buttons */}
       <div className="w-64 h-full bg-sidebar border-r border-border flex-shrink-0">
         {/* Logo area */}
         <div className="p-4">
@@ -204,7 +199,7 @@ const EgeMathBasic = () => {
           </button>
         </div>
         
-        {/* Menu items */}
+        {/* Menu items (fewer than OGE, keep as-is) */}
         <div className="p-4 space-y-2">
           <Button
             onClick={handlePracticeClick}
@@ -233,15 +228,11 @@ const EgeMathBasic = () => {
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col h-full">
-        {/* Header */}
-        <div className="h-14 border-b border-border bg-background flex items-center justify-between px-4">
-          <h1 className="text-xl font-semibold">ЕГЭ Базовая Математика</h1>
-          {user && <StreakDisplay />}
-        </div>
+      <div className="flex-1 flex flex-col h-full min-h-0">
+        {/* NOTE: Removed the page-level header (keep LearningLayout header only) */}
 
-        {/* Chat Messages Area - Scrollable */}
-        <div className="flex-1 overflow-hidden">
+        {/* Chat Messages Area */}
+        <div className="flex-1 overflow-hidden min-h-0">
           <CourseChatMessages 
             messages={messages} 
             isTyping={isTyping}
