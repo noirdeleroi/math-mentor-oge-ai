@@ -46,13 +46,12 @@ Deno.serve(async (req) => {
     }
 
     // Step 1: Fetch topic-skill mapping from json_files table
-    // Use id=10 for course_id="2" (OGE), id=1 for others
-    const jsonFileId = course_id === "2" ? 10 : 1;
-    const { data: jsonData, error: jsonError } = await supabaseClient
-      .from('json_files')
-      .select('content')
-      .eq('id', jsonFileId)
-      .single();
+    // OGE always uses json_files.id = 10 for topic→skills mapping
+    const JSON_FILE_ID_OGE = 10;
+    const { data: jsonData, error: jsonError } =
+      await supabaseClient.from('json_files')
+        .select('content').eq('id', JSON_FILE_ID_OGE).single();
+
 
     if (jsonError || !jsonData) {
       console.error('Error fetching topic-skill mapping:', jsonError);
