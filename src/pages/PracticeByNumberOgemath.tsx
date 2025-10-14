@@ -863,42 +863,26 @@ const PracticeByNumberOgemath = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Navigation Bar */}
-      <div className="bg-card shadow-sm border-b border-border">
-        <div className="container mx-auto px-4 py-3">
-          <div className="flex justify-start">
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="relative mb-6">
             {practiceStarted ? (
               <Button 
                 onClick={handleBackToSelection}
                 variant="outline"
+                className="absolute left-0 top-0"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 К выбору вопросов
               </Button>
             ) : (
               <Link to="/ogemath-practice">
-                <Button variant="outline">
+                <Button variant="outline" className="absolute left-0 top-0">
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Назад
                 </Button>
               </Link>
             )}
-          </div>
-        </div>
-      </div>
-
-      <div className="pt-8 container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex justify-between items-center mb-8">
-            <div>
-              <h1 className="text-4xl font-bold text-gray-900 mb-2">Практика по номеру вопроса</h1>
-              <p className="text-lg text-gray-600">
-                {practiceStarted 
-                  ? `Практика вопросов: ${selectedNumbers.join(', ')}`
-                  : "Выберите номера вопросов для практики"
-                }
-              </p>
-            </div>
           </div>
 
           {!practiceStarted ? (
