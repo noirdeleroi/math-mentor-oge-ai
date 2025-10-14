@@ -870,13 +870,14 @@ const PracticeByNumberOgemath = () => {
               <Button 
                 onClick={handleBackToSelection}
                 variant="outline"
+                className="hover:bg-gradient-to-r hover:from-gold/30 hover:to-sage/30 hover:text-black active:bg-yellow-500"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 К выбору вопросов
               </Button>
             ) : (
               <Link to="/ogemath-practice">
-                <Button variant="outline">
+                <Button variant="outline" className="hover:bg-gradient-to-r hover:from-gold/30 hover:to-sage/30 hover:text-black active:bg-yellow-500">
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Назад
                 </Button>
@@ -957,7 +958,13 @@ const PracticeByNumberOgemath = () => {
                                 setSelectedNumbers(prev => [...new Set([...prev, ...group])]);
                               }
                             }}
-                            className="p-3 h-auto hover:bg-gradient-to-r hover:from-gold/30 hover:to-sage/30 hover:text-black active:bg-yellow-500 data-[state=active]:bg-yellow-500"
+                            className={`p-3 h-auto ${
+                              selectedNumbers.includes('1') && selectedNumbers.includes('2') && 
+                              selectedNumbers.includes('3') && selectedNumbers.includes('4') && 
+                              selectedNumbers.includes('5')
+                                ? 'bg-yellow-500 hover:bg-yellow-600'
+                                : 'hover:bg-gradient-to-r hover:from-gold/30 hover:to-sage/30 hover:text-black'
+                            }`}
                           >
                             1-5
                           </Button>
@@ -968,7 +975,11 @@ const PracticeByNumberOgemath = () => {
                               key={num}
                               variant={selectedNumbers.includes(num.toString()) ? "default" : "outline"}
                               onClick={() => toggleIndividualNumber(num.toString())}
-                              className="p-3 h-auto hover:bg-gradient-to-r hover:from-gold/30 hover:to-sage/30 hover:text-black active:bg-yellow-500 data-[state=active]:bg-yellow-500"
+                              className={`p-3 h-auto ${
+                                selectedNumbers.includes(num.toString())
+                                  ? 'bg-yellow-500 hover:bg-yellow-600'
+                                  : 'hover:bg-gradient-to-r hover:from-gold/30 hover:to-sage/30 hover:text-black'
+                              }`}
                             >
                               {num}
                             </Button>
@@ -985,7 +996,11 @@ const PracticeByNumberOgemath = () => {
                               key={num}
                               variant={selectedNumbers.includes(num.toString()) ? "default" : "outline"}
                               onClick={() => toggleIndividualNumber(num.toString())}
-                              className="p-3 h-auto hover:bg-gradient-to-r hover:from-gold/30 hover:to-sage/30 hover:text-black active:bg-yellow-500 data-[state=active]:bg-yellow-500"
+                              className={`p-3 h-auto ${
+                                selectedNumbers.includes(num.toString())
+                                  ? 'bg-yellow-500 hover:bg-yellow-600'
+                                  : 'hover:bg-gradient-to-r hover:from-gold/30 hover:to-sage/30 hover:text-black'
+                              }`}
                             >
                               {num}
                             </Button>
@@ -1007,7 +1022,11 @@ const PracticeByNumberOgemath = () => {
                               key={num}
                               variant={selectedNumbers.includes(num.toString()) ? "default" : "outline"}
                               onClick={() => toggleIndividualNumber(num.toString())}
-                              className="p-3 h-auto hover:bg-gradient-to-r hover:from-gold/30 hover:to-sage/30 hover:text-black active:bg-yellow-500 data-[state=active]:bg-yellow-500"
+                              className={`p-3 h-auto ${
+                                selectedNumbers.includes(num.toString())
+                                  ? 'bg-yellow-500 hover:bg-yellow-600'
+                                  : 'hover:bg-gradient-to-r hover:from-gold/30 hover:to-sage/30 hover:text-black'
+                              }`}
                             >
                               {num}
                             </Button>
@@ -1024,7 +1043,11 @@ const PracticeByNumberOgemath = () => {
                               key={num}
                               variant={selectedNumbers.includes(num.toString()) ? "default" : "outline"}
                               onClick={() => toggleIndividualNumber(num.toString())}
-                              className="p-3 h-auto hover:bg-gradient-to-r hover:from-gold/30 hover:to-sage/30 hover:text-black active:bg-yellow-500 data-[state=active]:bg-yellow-500"
+                              className={`p-3 h-auto ${
+                                selectedNumbers.includes(num.toString())
+                                  ? 'bg-yellow-500 hover:bg-yellow-600'
+                                  : 'hover:bg-gradient-to-r hover:from-gold/30 hover:to-sage/30 hover:text-black'
+                              }`}
                             >
                               {num}
                             </Button>
@@ -1041,7 +1064,7 @@ const PracticeByNumberOgemath = () => {
                 <Button
                   onClick={handleStartPractice}
                   disabled={selectedNumbers.length === 0}
-                  className="px-8 py-3 text-lg"
+                  className={`px-8 py-3 text-lg ${selectedNumbers.length > 0 ? 'bg-yellow-500 hover:bg-yellow-600' : ''}`}
                 >
                   Начать практику
                 </Button>
