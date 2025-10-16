@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+  import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -537,14 +537,7 @@ const EgemathbasicMock = () => {
               <span className="font-mono">
                 {new Date(elapsedTime * 1000).toISOString().substr(11, 8)} / 03:00:00
               </span>
-              <Button
-                onClick={() => setShowFormulaBooklet(true)}
-                variant="outline"
-                className="border-white/30 text-white hover:bg-white/10"
-              >
-                <BookOpen className="w-4 h-4 mr-2" />
-                Справочник формул
-              </Button>
+              
             </div>
           </div>
 
@@ -645,7 +638,7 @@ const EgemathbasicMock = () => {
                     <div className="text-7xl font-bold bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent mb-2">
                       {examStats?.percentage}%
                     </div>
-                    <div className="text-xl text-white/80">Результат экзамена</div>
+                    <div className="text-xl text-black/80">Результат экзамена</div>
                   </div>
                 </CardContent>
               </Card>
