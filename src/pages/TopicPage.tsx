@@ -317,6 +317,12 @@ const TopicPage: React.FC = () => {
                 Обзор
               </TabsTrigger>
               <TabsTrigger 
+                value="demonstrations"
+                className="flex-1 rounded-t-lg rounded-b-none border border-b-0 border-gray-200 data-[state=active]:bg-white data-[state=active]:border-gray-300 data-[state=active]:shadow-sm data-[state=inactive]:bg-gray-50/50 data-[state=inactive]:text-gray-600 px-6 py-3 font-medium"
+              >
+                Демонстрации
+              </TabsTrigger>
+              <TabsTrigger 
                 value="videos"
                 className="flex-1 rounded-t-lg rounded-b-none border border-b-0 border-gray-200 data-[state=active]:bg-white data-[state=active]:border-gray-300 data-[state=active]:shadow-sm data-[state=inactive]:bg-gray-50/50 data-[state=inactive]:text-gray-600 px-6 py-3 font-medium"
               >
@@ -344,6 +350,12 @@ const TopicPage: React.FC = () => {
                   упражнения.
                 </div>
               )}
+            </TabsContent>
+
+            <TabsContent value="demonstrations" className="m-0 p-6">
+              <div className="text-sm text-gray-700">
+                Здесь будут демонстрации: наглядные примеры, анимации и интерактивные иллюстрации по теме.
+              </div>
             </TabsContent>
 
             <TabsContent value="videos" className="m-0 p-6 space-y-6">
