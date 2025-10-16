@@ -14,6 +14,27 @@ import FormulaBookletDialog from "@/components/FormulaBookletDialog";
 import { LoadingOverlay } from "@/components/LoadingOverlay";
 // after imports
 const COURSE_ID = '1'; // OГЭ курс
+const COURSE_ID = '1'; // OГЭ
+const makeExamId = (courseId: string, userId?: string) => {
+  const d = new Date();
+  // YYYYMMDDHHmmss (local time is fine; use UTC if you prefer)
+  const ts = [
+    d.getFullYear().toString().padStart(4, '0'),
+    (d.getMonth() + 1).toString().padStart(2, '0'),
+    d.getDate().toString().padStart(2, '0'),
+    '-',
+    d.getHours().toString().padStart(2, '0'),
+    d.getMinutes().toString().padStart(2, '0'),
+    d.getSeconds().toString().padStart(2, '0'),
+  ].join('');
+  const bytes = new Uint8Array(3);
+  (crypto || (window as any).msCrypto).getRandomValues(bytes);
+  const rand = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+  // Optional: include a short user suffix to reduce collisions further
+  const uid = userId ? '-' + userId.slice(0, 6) : '';
+  return `${courseId}-${ts}-${rand}${uid}`;
+};
+
 
 interface Question {
   question_id: string;
@@ -251,38 +272,43 @@ const OgemathMock = () => {
     }
   };
 
-  const handleStartExam = async () => {
-    if (!user) {
-      toast.error('Войдите в систему для прохождения экзамена');
+const handleStartExam = async () => {
+  if (!user) {
+    toast.error('Войдите в систему для прохождения экзамена');
+    return;
+  }
+
+  setIsTransitioning(true);
+  try {
+    const newExamId = makeExamId(COURSE_ID, user.id);
+    setExamId(newExamId);
+
+    const { error } = await supabase
+      .from('profiles')
+      .update({ exam_id: newExamId })
+      .eq('user_id', user.id);
+
+    if (error) {
+      console.error('Error saving exam_id to profiles:', error);
+      toast.error('Ошибка при сохранении идентификатора экзамена');
       return;
     }
-    
-    setIsTransitioning(true);
-    
-    try {
-      const cryptoApi = window.crypto || (window as any).msCrypto;
-      const array = new Uint8Array(16);
-      cryptoApi.getRandomValues(array);
-      const newExamId = `${array[0].toString(16).padStart(2, '0')}${array[1].toString(16).padStart(2, '0')}${array[2].toString(16).padStart(2, '0')}${array[3].toString(16).padStart(2, '0')}-${array[4].toString(16).padStart(2, '0')}${array[5].toString(16).padStart(2, '0')}-${array[6].toString(16).padStart(2, '0')}${array[7].toString(16).padStart(2, '0')}-${array[8].toString(16).padStart(2, '0')}${array[9].toString(16).padStart(2, '0')}-${array[10].toString(16).padStart(2, '0')}${array[11].toString(16).padStart(2, '0')}${array[12].toString(16).padStart(2, '0')}${array[13].toString(16).padStart(2, '0')}${array[14].toString(16).padStart(2, '0')}${array[15].toString(16).padStart(2, '0')}`;
-      setExamId(newExamId);
 
-      const { error } = await supabase.from('profiles').update({ exam_id: newExamId }).eq('user_id', user.id);
-      if (error) {
-        console.error('Error saving exam_id to profiles:', error);
-        toast.error('Ошибка при сохранении идентификатора экзамена');
-        return;
-      }
+    setExamStarted(true);
+    setExamFinished(false);
+    setExamStats(null);
+    setExamStartTime(new Date());
+    setIsTimeUp(false);
 
-      setExamStarted(true);
-      setExamStartTime(new Date());
-      await generateQuestionSelection();
-    } catch (error) {
-      console.error('Error updating profile with exam_id:', error);
-      toast.error('Ошибка при подготовке экзамена');
-    } finally {
-      setIsTransitioning(false);
-    }
-  };
+    await generateQuestionSelection();
+  } catch (error) {
+    console.error('Error updating profile with exam_id:', error);
+    toast.error('Ошибка при подготовке экзамена');
+  } finally {
+    setIsTransitioning(false);
+  }
+};
+
 
   // Helpers
   const isNonNumericAnswer = (answer: string): boolean => {
