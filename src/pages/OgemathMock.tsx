@@ -12,8 +12,7 @@ import MathRenderer from "@/components/MathRenderer";
 import { toast } from "sonner";
 import FormulaBookletDialog from "@/components/FormulaBookletDialog";
 import { LoadingOverlay } from "@/components/LoadingOverlay";
-// after imports
-const COURSE_ID = '1'; // OГЭ курс
+
 const COURSE_ID = '1'; // OГЭ
 const makeExamId = (courseId: string, userId?: string) => {
   const d = new Date();

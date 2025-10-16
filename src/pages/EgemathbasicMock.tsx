@@ -11,6 +11,26 @@ import MathRenderer from "@/components/MathRenderer";
 import { toast } from "sonner";
 import FormulaBookletDialog from "@/components/FormulaBookletDialog";
 
+const COURSE_ID = '2'; // ЕГЭ База
+
+const makeExamId = (courseId: string, userId?: string) => {
+  const d = new Date();
+  const ts = [
+    d.getFullYear().toString().padStart(4, '0'),
+    (d.getMonth() + 1).toString().padStart(2, '0'),
+    d.getDate().toString().padStart(2, '0'),
+    '-',
+    d.getHours().toString().padStart(2, '0'),
+    d.getMinutes().toString().padStart(2, '0'),
+    d.getSeconds().toString().padStart(2, '0'),
+  ].join('');
+  const bytes = new Uint8Array(3);
+  (crypto || (window as any).msCrypto).getRandomValues(bytes);
+  const rand = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+  const uid = userId ? '-' + userId.slice(0, 6) : '';
+  return `${courseId}-${ts}-${rand}${uid}`;
+};
+
 interface Question {
   question_id: string;
   problem_text: string;
@@ -52,6 +72,7 @@ const EgemathbasicMock = () => {
     percentage: number;
     totalTimeSpent: number;
   } | null>(null);
+  const [examId, setExamId] = useState<string>('');
 
   // Timer state (3 hours)
   const [examStartTime, setExamStartTime] = useState<Date | null>(null);
@@ -66,6 +87,14 @@ const EgemathbasicMock = () => {
   const [reviewQuestionIndex, setReviewQuestionIndex] = useState<number | null>(null);
 
   const currentQuestion = questions[currentQuestionIndex];
+
+  // Auto-start attempt when question changes
+  useEffect(() => {
+    if (examStarted && !examFinished && currentQuestion && user) {
+      const problemNumberType = currentQuestion.problem_number_type || (currentQuestionIndex + 1);
+      startAttempt(currentQuestion.question_id, problemNumberType);
+    }
+  }, [examStarted, examFinished, currentQuestionIndex, currentQuestion, user]);
 
   useEffect(() => {
     if (!examStartTime || examFinished) return;
@@ -269,16 +298,33 @@ const EgemathbasicMock = () => {
       toast.error('Войдите в систему для прохождения экзамена');
       return;
     }
+    
     setIsTransitioning(true);
     try {
-      await generateQuestionSelection();
+      const newExamId = makeExamId(COURSE_ID, user.id);
+      setExamId(newExamId);
+
+      const { error } = await supabase
+        .from('profiles')
+        .update({ exam_id: newExamId })
+        .eq('user_id', user.id);
+
+      if (error) {
+        console.error('Error saving exam_id to profiles:', error);
+        toast.error('Ошибка при сохранении идентификатора экзамена');
+        return;
+      }
+
       setExamStarted(true);
       setExamFinished(false);
       setExamStats(null);
       setExamStartTime(new Date());
       setIsTimeUp(false);
+
+      await generateQuestionSelection();
     } catch (error) {
-      console.error(error);
+      console.error('Error starting exam:', error);
+      toast.error('Ошибка при подготовке экзамена');
     } finally {
       setIsTransitioning(false);
     }
