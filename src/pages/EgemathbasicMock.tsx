@@ -72,6 +72,10 @@ const EgemathbasicMock = () => {
     percentage: number;
     totalTimeSpent: number;
   } | null>(null);
+
+  // Review mode states
+  const [isReviewMode, setIsReviewMode] = useState(false);
+  const [reviewQuestionIndex, setReviewQuestionIndex] = useState<number | null>(null);
   const [examId, setExamId] = useState<string>('');
 
   // Timer state (3 hours)
