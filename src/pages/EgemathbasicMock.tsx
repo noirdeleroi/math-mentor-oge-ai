@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import MathRenderer from "@/components/MathRenderer";
 import { toast } from "sonner";
 import FormulaBookletDialog from "@/components/FormulaBookletDialog";
+import Loading from "@/components/ui/Loading";
 
 const COURSE_ID = "2"; // ЕГЭ База
 
@@ -209,7 +210,6 @@ const EgemathbasicMock = () => {
     } catch (err) {
       console.error("Error starting exam:", err);
       toast.error("Ошибка при подготовке экзамена");
-    } finally {
       setIsTransitioning(false);
     }
   };
@@ -424,7 +424,14 @@ const EgemathbasicMock = () => {
             </div>
           </div>
 
-          {!examStarted ? (
+          {isTransitioning && !examStarted ? (
+            <Loading
+              variant="ring-dots"
+              message="Подготовка экзамена..."
+              subMessage="Загружаем вопросы"
+              size="lg"
+            />
+          ) : !examStarted ? (
             <Card className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl shadow-xl">
               <CardContent className="p-6">
                 <p className="text-white/80 mb-6">
@@ -432,6 +439,7 @@ const EgemathbasicMock = () => {
                 </p>
                 <Button
                   onClick={handleStartExam}
+                  disabled={isTransitioning}
                   className="bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36]"
                 >
                   Начать экзамен
@@ -478,6 +486,13 @@ const EgemathbasicMock = () => {
                 </div>
               </CardContent>
             </Card>
+          ) : isTransitioning ? (
+            <Loading
+              variant="ring-dots"
+              message="Подсчитываем результаты..."
+              subMessage="Обрабатываем ваши ответы"
+              size="lg"
+            />
           ) : !isReviewMode ? (
             <div className="space-y-6">
               {/* Large percentage display */}
