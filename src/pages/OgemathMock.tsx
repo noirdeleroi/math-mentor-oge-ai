@@ -14,25 +14,21 @@ import FormulaBookletDialog from "@/components/FormulaBookletDialog";
 import { LoadingOverlay } from "@/components/LoadingOverlay";
 
 const COURSE_ID = '1'; // OГЭ
-const makeExamId = (courseId: string, userId?: string) => {
-  const d = new Date();
-  // YYYYMMDDHHmmss (local time is fine; use UTC if you prefer)
-  const ts = [
-    d.getFullYear().toString().padStart(4, '0'),
-    (d.getMonth() + 1).toString().padStart(2, '0'),
-    d.getDate().toString().padStart(2, '0'),
-    '-',
-    d.getHours().toString().padStart(2, '0'),
-    d.getMinutes().toString().padStart(2, '0'),
-    d.getSeconds().toString().padStart(2, '0'),
-  ].join('');
-  const bytes = new Uint8Array(3);
-  (crypto || (window as any).msCrypto).getRandomValues(bytes);
-  const rand = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
-  // Optional: include a short user suffix to reduce collisions further
-  const uid = userId ? '-' + userId.slice(0, 6) : '';
-  return `${courseId}-${ts}-${rand}${uid}`;
+const makeExamId = () => {
+  // Standard 36-char UUID like "123e4567-e89b-12d3-a456-426614174000"
+  return (crypto as any)?.randomUUID?.() ?? uuidV4Fallback();
 };
+
+// Fallback for older browsers (still returns a valid v4 UUID)
+function uuidV4Fallback() {
+  const b = new Uint8Array(16);
+  (crypto || (window as any).msCrypto).getRandomValues(b);
+  // Per RFC 4122:
+  b[6] = (b[6] & 0x0f) | 0x40; // version 4
+  b[8] = (b[8] & 0x3f) | 0x80; // variant 10
+  const h = Array.from(b, x => x.toString(16).padStart(2, '0'));
+  return `${h[0]}${h[1]}${h[2]}${h[3]}-${h[4]}${h[5]}-${h[6]}${h[7]}-${h[8]}${h[9]}-${h[10]}${h[11]}${h[12]}${h[13]}${h[14]}${h[15]}`;
+}
 
 
 interface Question {
@@ -279,13 +275,14 @@ const handleStartExam = async () => {
 
   setIsTransitioning(true);
   try {
-    const newExamId = makeExamId(COURSE_ID, user.id);
+    const newExamId = makeExamId();
     setExamId(newExamId);
-
+    
     const { error } = await supabase
       .from('profiles')
-      .update({ exam_id: newExamId })
+      .update({ exam_id: newExamId }) // column should be UUID type
       .eq('user_id', user.id);
+
 
     if (error) {
       console.error('Error saving exam_id to profiles:', error);
