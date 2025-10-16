@@ -13,23 +13,23 @@ import FormulaBookletDialog from "@/components/FormulaBookletDialog";
 
 const COURSE_ID = '2'; // ЕГЭ База
 
-const makeExamId = (courseId: string, userId?: string) => {
-  const d = new Date();
-  const ts = [
-    d.getFullYear().toString().padStart(4, '0'),
-    (d.getMonth() + 1).toString().padStart(2, '0'),
-    d.getDate().toString().padStart(2, '0'),
-    '-',
-    d.getHours().toString().padStart(2, '0'),
-    d.getMinutes().toString().padStart(2, '0'),
-    d.getSeconds().toString().padStart(2, '0'),
-  ].join('');
-  const bytes = new Uint8Array(3);
+// Replace your current makeExamId with this:
+const makeExamId = (): string => {
+  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
+    return crypto.randomUUID();
+  }
+  // Fallback polyfill for older browsers
+  const bytes = new Uint8Array(16);
   (crypto || (window as any).msCrypto).getRandomValues(bytes);
-  const rand = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
-  const uid = userId ? '-' + userId.slice(0, 6) : '';
-  return `${courseId}-${ts}-${rand}${uid}`;
+  // Per RFC 4122: set version (4) and variant (10)
+  bytes[6] = (bytes[6] & 0x0f) | 0x40;
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;
+
+  const toHex = (n: number) => n.toString(16).padStart(2, '0');
+  const b = Array.from(bytes, toHex).join('');
+  return `${b.slice(0,8)}-${b.slice(8,12)}-${b.slice(12,16)}-${b.slice(16,20)}-${b.slice(20)}`;
 };
+
 
 interface Question {
   question_id: string;
@@ -294,41 +294,35 @@ const EgemathbasicMock = () => {
   };
 
   const handleStartExam = async () => {
-    if (!user) {
-      toast.error('Войдите в систему для прохождения экзамена');
-      return;
-    }
-    
-    setIsTransitioning(true);
-    try {
-      const newExamId = makeExamId(COURSE_ID, user.id);
-      setExamId(newExamId);
+  if (!user) { toast.error('Войдите в систему для прохождения экзамена'); return; }
 
-      const { error } = await supabase
-        .from('profiles')
-        .update({ exam_id: newExamId })
-        .eq('user_id', user.id);
+  setIsTransitioning(true);
+  try {
+    const newExamId = makeExamId();     // ← now a pure UUID v4
+    setExamId(newExamId);
 
-      if (error) {
-        console.error('Error saving exam_id to profiles:', error);
-        toast.error('Ошибка при сохранении идентификатора экзамена');
-        return;
-      }
+    const { error } = await supabase
+      .from('profiles')
+      .update({ exam_id: newExamId })
+      .eq('user_id', user.id);
 
-      setExamStarted(true);
-      setExamFinished(false);
-      setExamStats(null);
-      setExamStartTime(new Date());
-      setIsTimeUp(false);
+    if (error) { /* handle */ return; }
 
-      await generateQuestionSelection();
-    } catch (error) {
-      console.error('Error starting exam:', error);
-      toast.error('Ошибка при подготовке экзамена');
-    } finally {
-      setIsTransitioning(false);
-    }
-  };
+    setExamStarted(true);
+    setExamFinished(false);
+    setExamStats(null);
+    setExamStartTime(new Date());
+    setIsTimeUp(false);
+
+    await generateQuestionSelection();
+  } catch (err) {
+    console.error('Error starting exam:', err);
+    toast.error('Ошибка при подготовке экзамена');
+  } finally {
+    setIsTransitioning(false);
+  }
+};
+
 
   const handleNextQuestion = async () => {
     if (!currentQuestion) return;
