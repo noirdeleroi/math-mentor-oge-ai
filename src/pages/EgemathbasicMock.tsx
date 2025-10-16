@@ -80,12 +80,28 @@ const EgemathbasicMock = () => {
   
   const currentQuestion = questions[currentQuestionIndex];
 
+  // Start attempt when question changes
+  useEffect(() => {
+    if (!examStarted || examFinished || !currentQuestion || !user) return;
+    const problemNumberType = currentQuestion.problem_number_type || (currentQuestionIndex + 1);
+    startAttempt(currentQuestion.question_id, problemNumberType);
+  }, [currentQuestionIndex, examStarted, examFinished, currentQuestion, user]);
+
   // --- Helper: fetch current exam id from profiles if needed
   const getCurrentExamId = async (): Promise<string | null> => {
     if (examId) return examId;
     if (!user) return null;
     const { data } = await supabase.from("profiles").select("exam_id").eq("user_id", user.id).single();
     return data?.exam_id ?? null;
+  };
+
+  // --- Helper: check if answer is non-numeric
+  const isNonNumericAnswer = (answer: string): boolean => {
+    if (!answer) return false;
+    if (/\p{L}/u.test(answer)) return true; // letters (units or words)
+    if (answer.includes('\\')) return true; // LaTeX
+    if (/[а-яё]/i.test(answer)) return true; // Cyrillic
+    return false;
   };
 
   // --- Helper: persist answer (text) to photo_analysis_outputs
@@ -113,6 +129,58 @@ const EgemathbasicMock = () => {
       raw_output: raw,
       openrouter_check: verdict,
     });
+  };
+
+  // --- START ATTEMPT: Create student_activity record
+  const startAttempt = async (questionId: string, problemNumberType: number): Promise<string | null> => {
+    if (!user) return null;
+
+    try {
+      // Try to reuse latest unfinished attempt
+      const { data: openAttempt, error: openErr } = await supabase
+        .from('student_activity')
+        .select('attempt_id, finished_or_not')
+        .eq('user_id', user.id)
+        .eq('question_id', questionId)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (openErr) {
+        console.warn('[student_activity] lookup error:', openErr);
+      }
+
+      if (openAttempt && openAttempt.finished_or_not === false) {
+        return (openAttempt as any).attempt_id as string;
+      }
+
+      // Create new attempt
+      const { data: insertData, error: insertErr } = await supabase
+        .from('student_activity')
+        .insert({
+          user_id: user.id,
+          question_id: questionId,
+          answer_time_start: new Date().toISOString(),
+          finished_or_not: false,
+          problem_number_type: problemNumberType,
+          is_correct: null,
+          duration_answer: null,
+          scores_fipi: null,
+          course_id: COURSE_ID,
+        })
+        .select('attempt_id')
+        .single();
+
+      if (insertErr) {
+        console.error('[student_activity] insert error:', insertErr);
+        return null;
+      }
+
+      return (insertData as any)?.attempt_id ?? null;
+    } catch (e) {
+      console.error('startAttempt() exception:', e);
+      return null;
+    }
   };
 
   // --- Generate 21 random questions
@@ -166,19 +234,39 @@ const EgemathbasicMock = () => {
   };
 
   const completeAttempt = async (isCorrect: boolean, scores: number) => {
-    if (!user) return;
+    if (!user || !currentQuestion) return;
     try {
-      const { data: activityData } = await supabase
-        .from("student_activity")
-        .select("attempt_id")
-        .eq("user_id", user.id)
-        .eq("question_id", currentQuestion!.question_id)
-        .order("created_at", { ascending: false })
+      // Prefer latest unfinished attempt
+      let { data: activityData, error: activityError } = await supabase
+        .from('student_activity')
+        .select('attempt_id, finished_or_not')
+        .eq('user_id', user.id)
+        .eq('question_id', currentQuestion.question_id)
+        .eq('finished_or_not', false)
+        .order('created_at', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
-      if (!activityData) return;
-      await supabase.functions.invoke("complete-attempt", {
+      // Fallback: latest attempt if none unfinished
+      if (!activityData) {
+        const fallback = await supabase
+          .from('student_activity')
+          .select('attempt_id, finished_or_not')
+          .eq('user_id', user.id)
+          .eq('question_id', currentQuestion.question_id)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        activityData = fallback.data as any;
+        activityError = fallback.error as any;
+      }
+
+      if (activityError || !activityData) {
+        console.error('Error getting attempt for completion:', activityError);
+        return;
+      }
+
+      const { error: completeError } = await supabase.functions.invoke('complete-attempt', {
         body: {
           attempt_id: (activityData as any).attempt_id,
           finished_or_not: true,
@@ -186,8 +274,14 @@ const EgemathbasicMock = () => {
           scores_fipi: scores,
         },
       });
+
+      if (completeError) {
+        console.error('Error completing attempt:', completeError);
+      } else {
+        console.log(`Completed attempt: correct=${isCorrect}, scores=${scores}`);
+      }
     } catch (err) {
-      console.error("Error completing attempt:", err);
+      console.error("Error in completeAttempt:", err);
     }
   };
 
@@ -223,25 +317,50 @@ const EgemathbasicMock = () => {
       const timeSpent = questionStartTime ? Math.floor((now.getTime() - questionStartTime.getTime()) / 1000) : 0;
       const problemNumber = currentQuestion.problem_number_type || currentQuestionIndex + 1;
 
-      // Check answer
-      const { data: checkData } = await supabase.functions.invoke("check-text-answer", {
-        body: {
-          user_id: user!.id,
-          question_id: currentQuestion.question_id,
-          submitted_answer: userAnswer.trim(),
-        },
-      });
+      let isCorrect = false;
+      let scores = 0;
 
-      const isCorrect = Boolean((checkData as CheckTextAnswerResp)?.is_correct);
-      const scores = isCorrect ? 1 : 0;
+      if (userAnswer.trim()) {
+        // Determine if we need server check based on answer types
+        const userAns = userAnswer.trim();
+        const correctAns = currentQuestion.answer;
+        const needsServerCheck = isNonNumericAnswer(userAns) || isNonNumericAnswer(correctAns);
 
-      await completeAttempt(isCorrect, scores);
-      await persistAnswerToPAO({
-        questionId: currentQuestion.question_id,
-        problemNumber,
-        raw: userAnswer.trim(),
-        verdict: isCorrect ? "true" : "false",
-      });
+        if (needsServerCheck) {
+          // Use check-text-answer for non-numeric answers
+          const { data: checkData } = await supabase.functions.invoke("check-text-answer", {
+            body: {
+              user_id: user!.id,
+              question_id: currentQuestion.question_id,
+              submitted_answer: userAns,
+            },
+          });
+
+          isCorrect = Boolean((checkData as CheckTextAnswerResp)?.is_correct);
+          scores = isCorrect ? 1 : 0;
+
+          // Store with openrouter_check verdict
+          await persistAnswerToPAO({
+            questionId: currentQuestion.question_id,
+            problemNumber,
+            raw: userAns,
+            verdict: isCorrect ? "true" : "false",
+          });
+        } else {
+          // Both are numeric - compare directly, store with NULL openrouter_check
+          isCorrect = userAns.replace(',', '.') === correctAns.replace(',', '.');
+          scores = isCorrect ? 1 : 0;
+
+          await persistAnswerToPAO({
+            questionId: currentQuestion.question_id,
+            problemNumber,
+            raw: userAns,
+            verdict: null, // NULL for numeric answers
+          });
+        }
+
+        await completeAttempt(isCorrect, scores);
+      }
 
       const result: Partial<ExamResult> = {
         isCorrect,
@@ -276,6 +395,8 @@ const EgemathbasicMock = () => {
   const handleSkip = async () => {
     if (!currentQuestion) return;
     const problemNumber = currentQuestion.problem_number_type || currentQuestionIndex + 1;
+    
+    await completeAttempt(false, 0);
     await persistAnswerToPAO({
       questionId: currentQuestion.question_id,
       problemNumber,
@@ -336,16 +457,18 @@ const EgemathbasicMock = () => {
       const updatedResults = examResults.map((result) => {
         const photoRow = photoMap.get(result.questionId);
         if (photoRow) {
-          const attempted = Boolean(photoRow.raw_output && photoRow.raw_output.trim());
+          const attempted = Boolean(photoRow.raw_output && photoRow.raw_output.trim() && photoRow.raw_output !== 'False');
           let isCorrect: boolean | null = null;
 
+          // Use openrouter_check if not NULL (text answers)
           if (photoRow.openrouter_check === "true") {
             isCorrect = true;
           } else if (photoRow.openrouter_check === "false") {
             isCorrect = false;
-          } else if (attempted) {
-            const userAns = (photoRow.raw_output || "").trim().toLowerCase();
-            const correctAns = result.correctAnswer.trim().toLowerCase();
+          } else if (photoRow.openrouter_check === null && attempted) {
+            // Numeric answer - use raw_output
+            const userAns = (photoRow.raw_output || "").trim().replace(',', '.');
+            const correctAns = result.correctAnswer.trim().replace(',', '.');
             isCorrect = userAns === correctAns;
           }
 
@@ -455,6 +578,25 @@ const EgemathbasicMock = () => {
                     Вопрос №{currentQuestion?.problem_number_type || currentQuestionIndex + 1} (
                     {currentQuestionIndex + 1} из {questions.length})
                   </span>
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={() => setShowFormulaBooklet(true)}
+                      variant="outline"
+                      size="sm"
+                      className="border-[#1a1f36]/30 text-[#1a1f36] hover:bg-gray-100"
+                    >
+                      <BookOpen className="w-4 h-4 mr-2" />
+                      Справочник формул
+                    </Button>
+                    <Button
+                      onClick={handleFinishExam}
+                      variant="outline"
+                      size="sm"
+                      className="text-red-600 border-red-300 hover:bg-red-50"
+                    >
+                      Завершить экзамен
+                    </Button>
+                  </div>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
