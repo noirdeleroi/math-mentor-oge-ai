@@ -210,6 +210,7 @@ const EgemathbasicMock = () => {
     } catch (err) {
       console.error("Error starting exam:", err);
       toast.error("Ошибка при подготовке экзамена");
+    } finally {
       setIsTransitioning(false);
     }
   };
