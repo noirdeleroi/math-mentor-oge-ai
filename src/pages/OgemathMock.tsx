@@ -12,6 +12,8 @@ import MathRenderer from "@/components/MathRenderer";
 import { toast } from "sonner";
 import FormulaBookletDialog from "@/components/FormulaBookletDialog";
 import { LoadingOverlay } from "@/components/LoadingOverlay";
+// after imports
+const COURSE_ID = '1'; // OГЭ курс
 
 interface Question {
   question_id: string;
@@ -93,7 +95,7 @@ const OgemathMock = () => {
   useEffect(() => {
     if (!examStarted || examFinished || !currentQuestion || !user) return;
     const problemNumberType = currentQuestion.problem_number_type || (currentQuestionIndex + 1);
-    startAttempt(currentQuestion.question_id, problemNumberType, 0);
+    startAttempt(currentQuestion.question_id, problemNumberType);
   }, [currentQuestionIndex, examStarted, examFinished, currentQuestion, user]);
 
   // Timer effect - counts up to 3 hours 55 minutes (235 minutes)
@@ -647,88 +649,124 @@ const OgemathMock = () => {
     }
   };
 
-  const startAttempt = async (questionId: string, problemNumberType: number, _timeSpent: number) => {
-    if (!user) return null;
-    try {
-      const questionDetailsCache = (window as any).questionDetailsCache;
-      let skillsArray: number[] = [];
-      let topicsArray: string[] = [];
+const startAttempt = async (questionId: string, problemNumberType: number): Promise<string | null> => {
+  if (!user) return null;
 
-      if (questionDetailsCache && questionDetailsCache.has(questionId)) {
-        const questionDetails = questionDetailsCache.get(questionId);
-        skillsArray = Array.isArray(questionDetails.skills_list) ? questionDetails.skills_list : [];
-        topicsArray = Array.isArray(questionDetails.topics_list) ? questionDetails.topics_list : [];
-        console.log(`Using cached details for ${questionId}: ${skillsArray.length} skills, ${topicsArray.length} topics`);
-      } else {
-        console.warn(`No cached details found for question ${questionId}, proceeding without skills/topics`);
-      }
+  try {
+    // 1) Try to reuse the latest unfinished attempt for this user+question
+    const { data: openAttempt, error: openErr } = await supabase
+      .from('student_activity')
+      .select('attempt_id, finished_or_not')
+      .eq('user_id', user.id)
+      .eq('question_id', questionId)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
 
-      const { data, error } = await supabase
-        .from('student_activity')
-        .insert({
-          user_id: user.id,
-          question_id: questionId,
-          answer_time_start: questionStartTime?.toISOString() || new Date().toISOString(),
-          finished_or_not: false,
-          problem_number_type: problemNumberType,
-          is_correct: null,
-          duration_answer: null,
-          scores_fipi: null,
-          skills: skillsArray.length ? skillsArray : null,
-          topics: topicsArray.length ? topicsArray : null
-        })
-        .select('attempt_id')
-        .single();
+    if (openErr) {
+      console.warn('[student_activity] lookup unfinished attempt error:', openErr);
+    }
 
-      if (error) {
-        console.error('Error starting attempt:', error);
-        return null;
-      }
-      if (data) {
-        console.log('Started attempt:', (data as any).attempt_id);
-        return (data as any).attempt_id;
-      }
-    } catch (error) {
-      console.error('Error starting attempt:', error);
+    if (openAttempt && openAttempt.finished_or_not === false) {
+      // Reuse existing unfinished attempt
+      return (openAttempt as any).attempt_id as string;
+    }
+
+    // 2) Otherwise, create a new attempt
+    const questionDetailsCache = (window as any).questionDetailsCache;
+    let skillsArray: number[] = [];
+    let topicsArray: string[] = [];
+
+    if (questionDetailsCache && questionDetailsCache.has(questionId)) {
+      const questionDetails = questionDetailsCache.get(questionId);
+      skillsArray = Array.isArray(questionDetails.skills_list) ? questionDetails.skills_list : [];
+      topicsArray = Array.isArray(questionDetails.topics_list) ? questionDetails.topics_list : [];
+    }
+
+    const { data: insertData, error: insertErr } = await supabase
+      .from('student_activity')
+      .insert({
+        user_id: user.id,
+        question_id: questionId,
+        answer_time_start: new Date().toISOString(), // source of truth
+        finished_or_not: false,
+        problem_number_type: problemNumberType,
+        is_correct: null,
+        duration_answer: null,
+        scores_fipi: null,
+        skills: skillsArray.length ? skillsArray : null,
+        topics: topicsArray.length ? topicsArray : null,
+        course_id: COURSE_ID, // <-- ensure course is saved
+      })
+      .select('attempt_id')
+      .single();
+
+    if (insertErr) {
+      console.error('[student_activity] insert error:', insertErr);
       return null;
     }
-  };
 
-  const completeAttempt = async (isCorrect: boolean, scores: number) => {
-    if (!user) return;
-    try {
-      const { data: activityData, error: activityError } = await supabase
+    return (insertData as any)?.attempt_id ?? null;
+  } catch (e) {
+    console.error('startAttempt() exception:', e);
+    return null;
+  }
+};
+
+
+
+const completeAttempt = async (isCorrect: boolean, scores: number) => {
+  if (!user || !currentQuestion) return;
+  try {
+    // Prefer the latest unfinished attempt
+    let { data: activityData, error: activityError } = await supabase
+      .from('student_activity')
+      .select('attempt_id, finished_or_not')
+      .eq('user_id', user.id)
+      .eq('question_id', currentQuestion.question_id)
+      .eq('finished_or_not', false)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    // Fallback: latest attempt if none unfinished
+    if (!activityData) {
+      const fallback = await supabase
         .from('student_activity')
-        .select('attempt_id')
+        .select('attempt_id, finished_or_not')
         .eq('user_id', user.id)
-        .eq('question_id', currentQuestion!.question_id)
+        .eq('question_id', currentQuestion.question_id)
         .order('created_at', { ascending: false })
         .limit(1)
-        .single();
-
-      if (activityError || !activityData) {
-        console.error('Error getting attempt for completion:', activityError);
-        return;
-      }
-
-      const { error: completeError } = await supabase.functions.invoke('complete-attempt', {
-        body: {
-          attempt_id: (activityData as any).attempt_id,
-          finished_or_not: true,
-          is_correct: isCorrect,
-          scores_fipi: scores
-        }
-      });
-
-      if (completeError) {
-        console.error('Error completing attempt:', completeError);
-      } else {
-        console.log(`Completed attempt: correct=${isCorrect}, scores=${scores}`);
-      }
-    } catch (error) {
-      console.error('Error in completeAttempt:', error);
+        .maybeSingle();
+      activityData = fallback.data as any;
+      activityError = fallback.error as any;
     }
-  };
+
+    if (activityError || !activityData) {
+      console.error('Error getting attempt for completion:', activityError);
+      return;
+    }
+
+    const { error: completeError } = await supabase.functions.invoke('complete-attempt', {
+      body: {
+        attempt_id: (activityData as any).attempt_id,
+        finished_or_not: true,
+        is_correct: isCorrect,
+        scores_fipi: scores,
+      },
+    });
+
+    if (completeError) {
+      console.error('Error completing attempt:', completeError);
+    } else {
+      console.log(`Completed attempt: correct=${isCorrect}, scores=${scores}`);
+    }
+  } catch (error) {
+    console.error('Error in completeAttempt:', error);
+  }
+};
+
 
   const submitToHandleSubmission = async (isCorrect: boolean, scores: number) => {
     if (!user) return;
