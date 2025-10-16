@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, ArrowLeft, Clock, BookOpen } from "lucide-react";
+import { CheckCircle, XCircle, ArrowLeft, ArrowRight, Clock, BookOpen } from "lucide-react";
 import { Link } from "react-router-dom";
 import MathRenderer from "@/components/MathRenderer";
 import { toast } from "sonner";
@@ -74,6 +74,9 @@ const EgemathbasicMock = () => {
   const [isTimeUp, setIsTimeUp] = useState(false);
 
   const [showFormulaBooklet, setShowFormulaBooklet] = useState(false);
+  const [isReviewMode, setIsReviewMode] = useState(false);
+  const [reviewQuestionIndex, setReviewQuestionIndex] = useState<number | null>(null);
+  
   const currentQuestion = questions[currentQuestionIndex];
 
   // --- Helper: fetch current exam id from profiles if needed
@@ -301,16 +304,88 @@ const EgemathbasicMock = () => {
 
   const handleFinishExam = async () => {
     setExamFinished(true);
-    await new Promise((r) => setTimeout(r, 200));
-    const totalQuestions = examResults.length || 21;
-    const totalCorrect = examResults.filter((r) => r.isCorrect).length;
-    const totalTimeSpent = examResults.reduce((sum, r) => sum + (r.timeSpent || 0), 0);
-    setExamStats({
-      totalCorrect,
-      totalQuestions,
-      percentage: Math.round((totalCorrect / totalQuestions) * 100),
-      totalTimeSpent,
-    });
+    setIsTransitioning(true);
+    
+    try {
+      const currentExamId = examId;
+      if (!currentExamId || !user) {
+        console.warn("No exam ID or user found");
+        return;
+      }
+
+      // Fetch all photo analysis outputs for this exam
+      const { data: photoData, error: photoError } = await supabase
+        .from("photo_analysis_outputs")
+        .select("*")
+        .eq("exam_id", currentExamId)
+        .eq("user_id", user.id);
+
+      if (photoError) {
+        console.error("Error fetching photo analysis outputs:", photoError);
+      }
+
+      const photoMap = new Map<string, any>();
+      if (photoData) {
+        photoData.forEach((item) => {
+          photoMap.set(item.question_id, item);
+        });
+      }
+
+      // Update exam results with photo data
+      const updatedResults = examResults.map((result) => {
+        const photoRow = photoMap.get(result.questionId);
+        if (photoRow) {
+          const attempted = Boolean(photoRow.raw_output && photoRow.raw_output.trim());
+          let isCorrect: boolean | null = null;
+
+          if (photoRow.openrouter_check === "true") {
+            isCorrect = true;
+          } else if (photoRow.openrouter_check === "false") {
+            isCorrect = false;
+          } else if (attempted) {
+            const userAns = (photoRow.raw_output || "").trim().toLowerCase();
+            const correctAns = result.correctAnswer.trim().toLowerCase();
+            isCorrect = userAns === correctAns;
+          }
+
+          return {
+            ...result,
+            isCorrect,
+            userAnswer: photoRow.raw_output || "",
+            photoFeedback: photoRow.openrouter_check || "",
+            attempted,
+          };
+        }
+        return result;
+      });
+
+      setExamResults(updatedResults);
+
+      const totalQuestions = updatedResults.length;
+      const totalCorrect = updatedResults.filter((r) => r.isCorrect === true).length;
+      const totalTimeSpent = updatedResults.reduce((sum, r) => sum + (r.timeSpent || 0), 0);
+
+      setExamStats({
+        totalCorrect,
+        totalQuestions,
+        percentage: Math.round((totalCorrect / totalQuestions) * 100),
+        totalTimeSpent,
+      });
+    } catch (error) {
+      console.error("Error in handleFinishExam:", error);
+    } finally {
+      setIsTransitioning(false);
+    }
+  };
+
+  const handleGoToQuestion = (index: number) => {
+    setReviewQuestionIndex(index);
+    setIsReviewMode(true);
+  };
+
+  const handleBackToSummary = () => {
+    setIsReviewMode(false);
+    setReviewQuestionIndex(null);
   };
 
   return (
@@ -403,39 +478,189 @@ const EgemathbasicMock = () => {
                 </div>
               </CardContent>
             </Card>
-          ) : (
-            <Card className="bg-white/95 text-[#1a1f36] rounded-2xl shadow-xl">
-              <CardHeader>
-                <CardTitle>Результаты экзамена</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  Правильных ответов: <strong>{examStats?.totalCorrect}</strong> из{" "}
-                  <strong>{examStats?.totalQuestions}</strong> ({examStats?.percentage}%)
-                </div>
-                <div>
-                  Общее время:{" "}
-                  <strong>
-                    {new Date((examStats?.totalTimeSpent || 0) * 1000).toISOString().substr(11, 8)}
-                  </strong>
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    onClick={() => window.location.reload()}
-                    className="bg-gradient-to-r from-yellow-500 to-emerald-500 text-[#1a1f36]"
-                  >
-                    Новый экзамен
-                  </Button>
-                  <Link to="/egemathbasic-practice">
+          ) : !isReviewMode ? (
+            <div className="space-y-6">
+              {/* Large percentage display */}
+              <Card className="bg-gradient-to-br from-yellow-500/10 to-emerald-500/10 backdrop-blur border border-yellow-500/20 rounded-2xl shadow-xl">
+                <CardContent className="p-8">
+                  <div className="text-center">
+                    <div className="text-7xl font-bold bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent mb-2">
+                      {examStats?.percentage}%
+                    </div>
+                    <div className="text-xl text-white/80">Результат экзамена</div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Stats card */}
+              <Card className="bg-white/95 text-[#1a1f36] rounded-2xl shadow-xl">
+                <CardHeader>
+                  <CardTitle className="text-2xl">Статистика</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-4 bg-gradient-to-br from-yellow-500/10 to-emerald-500/10 rounded-lg">
+                      <div className="text-sm text-gray-600 mb-1">Все вопросы (1-21)</div>
+                      <div className="text-3xl font-bold bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent">
+                        {examStats?.totalCorrect}/{examStats?.totalQuestions}
+                      </div>
+                    </div>
+                    <div className="p-4 bg-gradient-to-br from-yellow-500/10 to-emerald-500/10 rounded-lg">
+                      <div className="text-sm text-gray-600 mb-1">Время</div>
+                      <div className="text-3xl font-bold bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent">
+                        {new Date((examStats?.totalTimeSpent || 0) * 1000).toISOString().substr(11, 8)}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Question grid - 7 columns x 3 rows */}
+                  <div className="mt-6">
+                    <h3 className="text-lg font-semibold mb-3">Вопросы по номерам</h3>
+                    <div className="grid grid-cols-7 gap-2">
+                      {examResults.map((result, idx) => {
+                        const isCorrect = result.isCorrect === true;
+                        const isIncorrect = result.isCorrect === false;
+                        const isUnanswered = !result.attempted;
+
+                        return (
+                          <button
+                            key={idx}
+                            onClick={() => handleGoToQuestion(idx)}
+                            className={`
+                              aspect-square rounded-lg font-bold text-sm transition-all
+                              flex items-center justify-center
+                              ${
+                                isCorrect
+                                  ? "bg-gradient-to-br from-emerald-400 to-emerald-600 text-white hover:from-emerald-500 hover:to-emerald-700"
+                                  : isIncorrect
+                                  ? "bg-gradient-to-br from-red-400 to-red-600 text-white hover:from-red-500 hover:to-red-700"
+                                  : "bg-gradient-to-br from-gray-300 to-gray-400 text-gray-700 hover:from-gray-400 hover:to-gray-500"
+                              }
+                            `}
+                          >
+                            {idx + 1}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Action buttons */}
+                  <div className="flex gap-3 mt-6 pt-6 border-t">
                     <Button
-                      variant="outline"
-                      className="border-[#1a1f36]/30 text-[#1a1f36] hover:bg-gray-100"
+                      onClick={() => window.location.reload()}
+                      className="flex-1 bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36]"
                     >
-                      <ArrowLeft className="w-4 h-4 mr-2" />
-                      К практике
+                      Новый экзамен
                     </Button>
-                  </Link>
+                    <Link to="/egemathbasic-practice" className="flex-1">
+                      <Button
+                        variant="outline"
+                        className="w-full border-[#1a1f36]/30 text-[#1a1f36] hover:bg-gray-100"
+                      >
+                        <ArrowLeft className="w-4 h-4 mr-2" />
+                        К практике
+                      </Button>
+                    </Link>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          ) : (
+            // Review mode
+            <Card className="bg-white/95 text-[#1a1f36] rounded-2xl shadow-xl">
+              <CardHeader className="border-b">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-2xl">
+                    Вопрос №{reviewQuestionIndex! + 1}
+                  </CardTitle>
+                  <Button
+                    onClick={handleBackToSummary}
+                    variant="outline"
+                    size="sm"
+                    className="border-[#1a1f36]/30 text-[#1a1f36] hover:bg-gray-100"
+                  >
+                    <ArrowLeft className="w-4 h-4 mr-2" />
+                    К результатам
+                  </Button>
                 </div>
+              </CardHeader>
+              <CardContent className="space-y-6 p-6">
+                {reviewQuestionIndex !== null && examResults[reviewQuestionIndex] && (
+                  <>
+                    {/* Question text */}
+                    <div>
+                      <h3 className="font-semibold text-lg mb-2">Условие задачи:</h3>
+                      <div className="prose max-w-none">
+                        <MathRenderer text={examResults[reviewQuestionIndex].problemText} compiler="mathjax" />
+                      </div>
+                    </div>
+
+                    {/* User answer */}
+                    <div>
+                      <h3 className="font-semibold text-lg mb-2">Ваш ответ:</h3>
+                      <div className="p-3 bg-gray-100 rounded-lg">
+                        {examResults[reviewQuestionIndex].userAnswer || "Не отвечено"}
+                      </div>
+                    </div>
+
+                    {/* Correct answer */}
+                    <div>
+                      <h3 className="font-semibold text-lg mb-2">Правильный ответ:</h3>
+                      <div className="p-3 bg-emerald-50 rounded-lg text-emerald-700 font-semibold">
+                        {examResults[reviewQuestionIndex].correctAnswer}
+                      </div>
+                    </div>
+
+                    {/* Result indicator */}
+                    <div className="flex items-center gap-2">
+                      {examResults[reviewQuestionIndex].isCorrect ? (
+                        <>
+                          <CheckCircle className="w-6 h-6 text-emerald-500" />
+                          <span className="text-emerald-600 font-semibold">Правильно</span>
+                        </>
+                      ) : (
+                        <>
+                          <XCircle className="w-6 h-6 text-red-500" />
+                          <span className="text-red-600 font-semibold">Неправильно</span>
+                        </>
+                      )}
+                    </div>
+
+                    {/* Solution */}
+                    {examResults[reviewQuestionIndex].solutionText && (
+                      <div>
+                        <h3 className="font-semibold text-lg mb-2">Решение:</h3>
+                        <div className="prose max-w-none p-4 bg-blue-50 rounded-lg">
+                          <MathRenderer text={examResults[reviewQuestionIndex].solutionText} compiler="mathjax" />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Navigation */}
+                    <div className="flex gap-3 pt-4 border-t">
+                      {reviewQuestionIndex > 0 && (
+                        <Button
+                          onClick={() => handleGoToQuestion(reviewQuestionIndex - 1)}
+                          variant="outline"
+                          className="border-[#1a1f36]/30 text-[#1a1f36] hover:bg-gray-100"
+                        >
+                          <ArrowLeft className="w-4 h-4 mr-2" />
+                          Предыдущий
+                        </Button>
+                      )}
+                      {reviewQuestionIndex < examResults.length - 1 && (
+                        <Button
+                          onClick={() => handleGoToQuestion(reviewQuestionIndex + 1)}
+                          className="ml-auto bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36]"
+                        >
+                          Следующий
+                          <ArrowRight className="w-4 h-4 ml-2" />
+                        </Button>
+                      )}
+                    </div>
+                  </>
+                )}
               </CardContent>
             </Card>
           )}
