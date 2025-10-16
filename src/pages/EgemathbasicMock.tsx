@@ -86,10 +86,6 @@ const EgemathbasicMock = () => {
   // Formula booklet state
   const [showFormulaBooklet, setShowFormulaBooklet] = useState(false);
 
-  // Review mode states
-  const [isReviewMode, setIsReviewMode] = useState(false);
-  const [reviewQuestionIndex, setReviewQuestionIndex] = useState<number | null>(null);
-
   const currentQuestion = questions[currentQuestionIndex];
 
   // Auto-start attempt when question changes
