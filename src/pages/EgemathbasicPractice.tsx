@@ -50,12 +50,13 @@ const EgemathbasicPractice = () => {
 
   const mockExam = {
     title: "Пробный экзамен ЕГЭ (База)",
-    description: "Полный экзамен — 21 вопрос",
+    description: "Полный экзамен — 21 вопрос (3:00:00)",
     icon: ClipboardList,
-    gradient: "from-gray-600 to-gray-400",
+    link: "/egemathbasic-mock",
+    gradient: "from-red-500 to-orange-500",
     mathSymbol: "Σ"
   };
-
+  
   return (
     <div className="min-h-screen relative overflow-hidden" style={{
       background: 'linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)'
@@ -182,30 +183,24 @@ const EgemathbasicPractice = () => {
             })}
           </div>
 
-          {/* Mock Exam - disabled gray card */}
-          <div 
+          {/* Mock Exam - Full Width, Clickable */}
+          <Link 
+            to={mockExam.link}
             onMouseEnter={() => setHoveredCard(4)}
             onMouseLeave={() => setHoveredCard(null)}
-            className="cursor-not-allowed"
           >
             <Card 
               className="relative overflow-hidden border-0 transition-all duration-300 group"
               style={{
-                background: 'rgba(100, 100, 100, 0.2)',
+                background: 'rgba(248, 250, 252, 0.05)',
                 backdropFilter: 'blur(10px)',
                 transform: hoveredCard === 4 
                   ? 'translateY(-8px) scale(1.02)' 
                   : 'translateY(0) scale(1)',
-                minHeight: '200px',
-                opacity: 0.6
+                minHeight: '200px'
               }}
             >
-              {/* Coming Soon Badge */}
-              <div className="absolute top-4 left-4 bg-gray-600 text-white px-3 py-1 rounded-full text-sm font-semibold z-20">
-                Скоро
-              </div>
-
-              {/* Gradient Border Effect (gray) */}
+              {/* Gradient Border Effect */}
               <div 
                 className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-r ${mockExam.gradient} p-[2px] rounded-lg`}
                 style={{ zIndex: -1 }}
@@ -229,50 +224,9 @@ const EgemathbasicPractice = () => {
                     {mockExam.description}
                   </p>
                 </div>
-
-                {/* Animated Dashed Path (gray) */}
-                <svg className="absolute bottom-0 left-0 right-0 h-1 opacity-50" preserveAspectRatio="none" viewBox="0 0 100 1">
-                  <line 
-                    x1="0" 
-                    y1="0.5" 
-                    x2="100" 
-                    y2="0.5" 
-                    stroke="url(#gradientLine)" 
-                    strokeWidth="2"
-                    strokeDasharray="4 4"
-                    className="group-hover:stroke-dashoffset-8 transition-all duration-1000"
-                  />
-                  <defs>
-                    <linearGradient id="gradientLine" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="#6b7280" />
-                      <stop offset="100%" stopColor="#9ca3af" />
-                    </linearGradient>
-                  </defs>
-                </svg>
-
-                {/* Progress Ring SVG (gray) */}
-                <svg className="absolute top-4 right-4 opacity-30 group-hover:opacity-60 transition-opacity" width="80" height="80">
-                  <circle 
-                    cx="40" 
-                    cy="40" 
-                    r="35" 
-                    fill="none" 
-                    stroke="url(#gradientMock)" 
-                    strokeWidth="4"
-                    strokeDasharray="220"
-                    strokeDashoffset="55"
-                    className="transition-all duration-700 group-hover:stroke-dashoffset-0"
-                  />
-                  <defs>
-                    <linearGradient id="gradientMock" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#6b7280" />
-                      <stop offset="100%" stopColor="#9ca3af" />
-                    </linearGradient>
-                  </defs>
-                </svg>
               </div>
             </Card>
-          </div>
+          </Link>
         </div>
       </div>
     </div>

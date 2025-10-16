@@ -49,14 +49,15 @@ const TestStatisticsWindow = ({
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="flex justify-between items-center mb-6">
-            <Button 
+            <Button
               onClick={onBackToSummary}
-              variant="outline"
-              className="flex items-center gap-2"
+              variant="default"
+              className="bg-yellow-500 text-[#1a1f36] hover:bg-yellow-400 font-medium px-4 py-2 rounded-lg flex items-center gap-2 shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500/40"
             >
               <ArrowLeft className="w-4 h-4" />
               К сводке результатов
             </Button>
+
             <div className="text-lg font-semibold text-gray-700">
               Просмотр вопроса №{question.questionIndex + 1}
             </div>

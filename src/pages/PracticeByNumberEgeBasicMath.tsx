@@ -12,6 +12,8 @@ import { useStreakTracking } from "@/hooks/useStreakTracking";
 import { awardStreakPoints, calculateStreakReward, getCurrentStreakData } from "@/services/streakPointsService";
 import { awardEnergyPoints } from "@/services/energyPoints";
 import { toast } from "sonner";
+import TestStatisticsWindow from "@/components/TestStatisticsWindow";
+import FormulaBookletDialog from "@/components/FormulaBookletDialog";
 
 interface Question {
   question_id: string;
@@ -20,6 +22,7 @@ interface Question {
   solution_text: string;
   difficulty?: string | number;
   problem_number_type?: number;
+  status?: 'correct' | 'wrong' | 'unseen' | 'unfinished';
 }
 
 const PracticeByNumberEgeBasicMath = () => {
@@ -38,8 +41,28 @@ const PracticeByNumberEgeBasicMath = () => {
   const [currentAttemptId, setCurrentAttemptId] = useState<number | null>(null);
   const [attemptStartTime, setAttemptStartTime] = useState<Date | null>(null);
   
+  // Test session tracking
+  const [showStatistics, setShowStatistics] = useState(false);
+  const [sessionResults, setSessionResults] = useState<Array<{
+    questionIndex: number;
+    questionId: string;
+    isCorrect: boolean;
+    userAnswer: string;
+    correctAnswer: string;
+    problemText: string;
+    solutionText: string;
+    isAnswered: boolean;
+  }>>([]);
+  
+  // Review mode states
+  const [isReviewMode, setIsReviewMode] = useState(false);
+  const [reviewQuestionIndex, setReviewQuestionIndex] = useState<number | null>(null);
+  
   // Auth required message state
   const [showAuthRequiredMessage, setShowAuthRequiredMessage] = useState(false);
+  
+  // Formula booklet state
+  const [showFormulaBooklet, setShowFormulaBooklet] = useState(false);
 
   const currentQuestion = questions[currentQuestionIndex];
 
@@ -66,13 +89,55 @@ const PracticeByNumberEgeBasicMath = () => {
         }
       }
 
-      setQuestions(allQuestions);
+      // Build status map from student_activity similar to OGEMath
+      let questionStatusMap: { [key: string]: { status: 'correct' | 'wrong' | 'unseen' | 'unfinished', priority: number } } = {};
+
+      if (user && allQuestions.length > 0) {
+        const questionIds = allQuestions.map(q => q.question_id);
+        const { data: activityData } = await supabase
+          .from('student_activity')
+          .select('question_id, is_correct, finished_or_not, updated_at')
+          .eq('user_id', user.id)
+          .in('question_id', questionIds)
+          .order('updated_at', { ascending: false });
+
+        const userActivity = activityData || [];
+        allQuestions.forEach(question => {
+          const questionActivity = userActivity.filter(a => a.question_id === question.question_id);
+          if (questionActivity.length === 0) {
+            questionStatusMap[question.question_id] = { status: 'unseen', priority: 3 };
+          } else {
+            const mostRecent = questionActivity[0];
+            if (!mostRecent.finished_or_not) {
+              questionStatusMap[question.question_id] = { status: 'unfinished', priority: 2 };
+            } else if (mostRecent.is_correct === false) {
+              questionStatusMap[question.question_id] = { status: 'wrong', priority: 1 };
+            } else if (mostRecent.is_correct === true) {
+              questionStatusMap[question.question_id] = { status: 'correct', priority: 4 };
+            } else {
+              questionStatusMap[question.question_id] = { status: 'unfinished', priority: 2 };
+            }
+          }
+        });
+      } else {
+        allQuestions.forEach(question => {
+          questionStatusMap[question.question_id] = { status: 'unseen', priority: 3 };
+        });
+      }
+
+      const questionsWithStatus = allQuestions.map(question => ({
+        ...question,
+        status: questionStatusMap[question.question_id]?.status || 'unseen',
+        priority: questionStatusMap[question.question_id]?.priority || 3
+      }));
+
+      setQuestions(questionsWithStatus);
       setCurrentQuestionIndex(0);
       resetQuestionState();
       
       // Start attempt for the first question if user is logged in
-      if (allQuestions.length > 0 && user) {
-        await startAttempt(allQuestions[0].question_id);
+      if (questionsWithStatus.length > 0 && user) {
+        await startAttempt(questionsWithStatus[0].question_id);
       }
     } catch (error) {
       console.error('Error fetching questions:', error);
@@ -151,6 +216,29 @@ const PracticeByNumberEgeBasicMath = () => {
     setQuestions([]);
     setCurrentQuestionIndex(0);
     resetQuestionState();
+  };
+
+  const handleFinishTest = () => {
+    setShowStatistics(true);
+    setIsReviewMode(false);
+  };
+
+  const handleNewTest = () => {
+    setShowStatistics(false);
+    setSessionResults([]);
+    setIsReviewMode(false);
+    setReviewQuestionIndex(null);
+    handleBackToSelection();
+  };
+
+  const handleGoToQuestion = (questionIndex: number) => {
+    setIsReviewMode(true);
+    setReviewQuestionIndex(questionIndex);
+  };
+  
+  const handleBackToSummary = () => {
+    setIsReviewMode(false);
+    setReviewQuestionIndex(null);
   };
 
   // Start attempt logging when question is presented
@@ -265,6 +353,29 @@ const PracticeByNumberEgeBasicMath = () => {
 
       setIsCorrect(isCorrect);
       setIsAnswered(true);
+
+      // Track result in session
+      setSessionResults(prev => {
+        const newResults = [...prev];
+        const existingIndex = newResults.findIndex(r => r.questionIndex === currentQuestionIndex);
+        const result = {
+          questionIndex: currentQuestionIndex,
+          questionId: currentQuestion.question_id,
+          isCorrect,
+          userAnswer: userAnswer.trim(),
+          correctAnswer: currentQuestion.answer,
+          problemText: currentQuestion.problem_text,
+          solutionText: currentQuestion.solution_text,
+          isAnswered: true
+        };
+        
+        if (existingIndex >= 0) {
+          newResults[existingIndex] = result;
+        } else {
+          newResults.push(result);
+        }
+        return newResults;
+      });
 
       // Trigger animation IMMEDIATELY if correct (before backend operations)
       if (isCorrect) {
@@ -417,6 +528,29 @@ const PracticeByNumberEgeBasicMath = () => {
       }
     }
     
+    // Track skipped question in session
+    setSessionResults(prev => {
+      const newResults = [...prev];
+      const existingIndex = newResults.findIndex(r => r.questionIndex === currentQuestionIndex);
+      const result = {
+        questionIndex: currentQuestionIndex,
+        questionId: currentQuestion.question_id,
+        isCorrect: false,
+        userAnswer: '',
+        correctAnswer: currentQuestion.answer,
+        problemText: currentQuestion.problem_text,
+        solutionText: currentQuestion.solution_text,
+        isAnswered: false
+      };
+      
+      if (existingIndex >= 0) {
+        newResults[existingIndex] = result;
+      } else {
+        newResults.push(result);
+      }
+      return newResults;
+    });
+    
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       resetQuestionState();
@@ -495,98 +629,81 @@ const PracticeByNumberEgeBasicMath = () => {
 
   return (
     <div className="min-h-screen text-white relative" style={{ background: "linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)" }}>
-      {/* Navigation Bar */}
-      <div className="bg-white/10 backdrop-blur border-b border-white/20">
-        <div className="container mx-auto px-4 py-3">
-          <div className="flex justify-start">
+      <div className="container mx-auto px-4 py-8 relative z-10">
+        <div className="relative text-center mb-12">
+          <div className="absolute left-0 top-0">
+          {practiceStarted ? (
+            <Button 
+              onClick={handleBackToSelection}
+              variant="ghost"
+              size="sm"
+              className="hover:bg-white/20 text-white"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              К выбору вопросов
+            </Button>
+          ) : (
             <Link to="/egemathbasic">
-              <Button className="bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-400 hover:to-emerald-400 text-[#1a1f36] shadow-lg transition-all duration-200 font-medium">
-                <ArrowLeft className="w-4 h-4 mr-2" />
+              <Button variant="ghost" size="sm" className="hover:bg-white/20 text-white">
+                <ArrowLeft className="h-4 w-4 mr-2" />
                 Назад
               </Button>
             </Link>
+          )}
           </div>
+          {!practiceStarted && (
+            <>
+              <h1 className="text-4xl md:text-5xl font-display font-bold mb-6 bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent">
+                Практика по номеру
+              </h1>
+              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+                Выберите номер(а) (1–21) для тренировки задач выбранного типа
+              </p>
+            </>
+          )}
         </div>
-      </div>
 
-      <div className="container mx-auto px-4 py-8 relative z-10">
-        <div className={`max-w-6xl mx-auto ${practiceStarted ? 'flex justify-center' : ''}`}>
-          <div className={`${practiceStarted ? 'w-full max-w-3xl' : 'w-full max-w-4xl mx-auto'}`}>
+        <div className="max-w-6xl mx-auto flex justify-center">
+          <div className={`${practiceStarted ? 'w-full max-w-3xl' : 'w-full max-w-4xl'}`}>
 
-          {/* Header with Back Button */}
-          <div className="relative text-center mb-16">
-            {/* Back Button - positioned to the left */}
-            <div className="absolute left-0 top-0">
-              {practiceStarted ? (
-                <Button 
-                  onClick={handleBackToSelection}
-                  variant="ghost"
-                  size="sm"
-                  className="hover:bg-white/20 text-white"
-                >
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  К выбору вопросов
-                </Button>
-              ) : (
-                <Link to="/egemathbasic">
-                  <Button variant="ghost" size="sm" className="hover:bg-white/20 text-white">
-                    <ArrowLeft className="h-4 w-4 mr-2" />
-                    Назад
-                  </Button>
-                </Link>
-              )}
-            </div>
-            
-            <h1 className="text-4xl md:text-5xl font-display font-bold mb-6 bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent">
-              Практика по номеру
-            </h1>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Выберите номер(а) (1–21) для тренировки задач выбранного типа
-            </p>
-          </div>
-
+          {/* Question Selection Interface */}
           {!practiceStarted ? (
-            /* Question Selection Interface */
             <div className="space-y-6">
-              {/* Question Groups */}
-              <Card className="bg-white/95 backdrop-blur border border-white/20 rounded-2xl shadow-xl">
-                <CardHeader>
-                  <CardTitle className="text-[#1a1f36]">Группы вопросов</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 gap-3">
-                    <Button
-                      variant="outline"
-                      onClick={() => toggleQuestionGroup('all')}
-                      className="p-4 h-auto text-center border-[#1a1f36]/30 text-[#1a1f36] font-medium hover:bg-gray-100 active:bg-gradient-to-r active:from-yellow-500/20 active:to-emerald-500/20 active:text-black transition-all"
-                    >
-                      Все вопросы
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-
               {/* Individual Numbers */}
               <Card className="bg-white/95 backdrop-blur border border-white/20 rounded-2xl shadow-xl">
                 <CardHeader>
                   <CardTitle className="text-[#1a1f36]">Отдельные номера</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-7 md:grid-cols-10 gap-3">
-                    {questionNumbers.map(num => (
+                  <div className="space-y-4">
+                    {/* Все вопросы button at top - smaller */}
+                    <div className="flex justify-center">
                       <Button
-                        key={num}
-                        variant={selectedNumbers.includes(num) ? "default" : "outline"}
-                        onClick={() => toggleIndividualNumber(num)}
-                        className={`p-3 h-auto font-medium transition-all ${
-                          selectedNumbers.includes(num)
-                            ? 'bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36] border-0 shadow-sm'
-                            : 'border-[#1a1f36]/30 text-[#1a1f36] hover:bg-gray-100 active:bg-gradient-to-r active:from-yellow-500/20 active:to-emerald-500/20'
-                        }`}
+                        variant="outline"
+                        onClick={() => toggleQuestionGroup('all')}
+                        className="px-4 py-2 text-sm border-[#1a1f36]/30 text-[#1a1f36] font-medium hover:bg-gray-100 hover:text-[#1a1f36] active:bg-gradient-to-r active:from-yellow-500/20 active:to-emerald-500/20 transition-all"
                       >
-                        {num}
+                        Все вопросы
                       </Button>
-                    ))}
+                    </div>
+
+                    {/* Number grid */}
+                    <div className="grid grid-cols-7 md:grid-cols-10 gap-3">
+                      {questionNumbers.map(num => (
+                        <Button
+                          key={num}
+                          variant={selectedNumbers.includes(num) ? "default" : "outline"}
+                          onClick={() => toggleIndividualNumber(num)}
+                          className={`p-3 h-auto font-medium transition-all ${
+                            selectedNumbers.includes(num)
+                              ? 'bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36] border-0 shadow-sm'
+                              : 'border-[#1a1f36]/30 text-[#1a1f36] hover:bg-gray-100 hover:text-[#1a1f36] active:bg-gradient-to-r active:from-yellow-500/20 active:to-emerald-500/20'
+                          }`}
+                        >
+                          {num}
+                        </Button>
+                      ))}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -613,28 +730,62 @@ const PracticeByNumberEgeBasicMath = () => {
                 </Card>
               )}
             </div>
+          ) : showStatistics ? (
+            /* Statistics Window */
+            <TestStatisticsWindow
+              sessionResults={sessionResults}
+              onGoToQuestion={handleGoToQuestion}
+              onStartNewTest={handleNewTest}
+              isReviewMode={isReviewMode}
+              currentQuestionData={
+                isReviewMode && reviewQuestionIndex !== null
+                  ? {
+                      question: sessionResults[reviewQuestionIndex],
+                      onBackToSummary: handleBackToSummary,
+                    }
+                  : undefined
+              }
+            />
           ) : (
             /* Practice Interface */
             questions.length > 0 && currentQuestion ? (
             <div>
-              <div className="mb-6 flex justify-center">
-                <Button 
-                  onClick={handleBackToSelection}
-                  variant="outline"
-                  className="bg-white/10 backdrop-blur border-white/30 text-white hover:bg-white/20 hover:border-yellow-500/50 transition-all"
-                >
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  К выбору вопросов
-                </Button>
-              </div>
               <Card className="mb-6 mx-auto bg-white/95 backdrop-blur border border-white/20 rounded-2xl shadow-xl">
               <CardHeader className="border-b border-white/20">
                 <CardTitle className="flex justify-between items-center text-[#1a1f36]">
                   <span>Вопрос №{currentQuestion.problem_number_type} ({currentQuestionIndex + 1} из {questions.length})</span>
-                  <span className="text-sm font-normal text-gray-600">
-                    ID: {currentQuestion.question_id}
-                  </span>
-                </CardTitle>
+                  <div className="flex items-center gap-4">
+                    <Button
+                      onClick={() => setShowFormulaBooklet(true)}
+                      variant="outline"
+                      className="border-[#1a1f36]/30 text-[#1a1f36] hover:bg-gray-100 hover:text-[#1a1f36]"
+                    >
+                      <BookOpen className="w-4 h-4 mr-2" />
+                      Справочник формул
+                    </Button>
+                    <Button
+                      onClick={handleFinishTest}
+                      variant="outline"
+                      className="bg-red-50 hover:bg-red-100 border-red-200 text-red-700"
+                    >
+                      Завершить тест
+                    </Button>
+                   <div className="flex items-center gap-2">
+                     <span className="text-sm font-normal text-gray-500">
+                       ID: {currentQuestion.question_id}
+                     </span>
+                     {currentQuestion.status === 'correct' && (
+                       <CheckCircle className="w-4 h-4 text-green-600" />
+                     )}
+                     {currentQuestion.status === 'wrong' && (
+                       <XCircle className="w-4 h-4 text-red-600" />
+                     )}
+                     {currentQuestion.status === 'unfinished' && (
+                       <div className="w-4 h-4 rounded-full border-2 border-yellow-500 bg-yellow-100" title="Начато, но не завершено" />
+                     )}
+                   </div>
+                 </div>
+               </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Problem Text */}
@@ -722,7 +873,7 @@ const PracticeByNumberEgeBasicMath = () => {
                   <Button
                     variant="outline"
                     onClick={handleShowSolution}
-                    className="flex-1 min-w-32 border-[#1a1f36]/30 text-[#1a1f36] hover:bg-gray-100"
+                    className="flex-1 min-w-32 border-[#1a1f36]/30 text-[#1a1f36] hover:bg-gray-100 hover:text-[#1a1f36]"
                   >
                     <BookOpen className="w-4 h-4 mr-2" />
                     Показать решение
@@ -732,7 +883,7 @@ const PracticeByNumberEgeBasicMath = () => {
                     <Button
                       variant="outline"
                       onClick={skipQuestion}
-                      className="flex-1 min-w-32 border-[#1a1f36]/30 text-[#1a1f36] hover:bg-gray-100"
+                      className="flex-1 min-w-32 border-[#1a1f36]/30 text-[#1a1f36] hover:bg-gray-100 hover:text-[#1a1f36]"
                     >
                       Пропустить
                     </Button>
@@ -782,6 +933,12 @@ const PracticeByNumberEgeBasicMath = () => {
           </div>
         </div>
       </div>
+
+      {/* Formula Booklet Dialog */}
+      <FormulaBookletDialog
+        open={showFormulaBooklet}
+        onOpenChange={setShowFormulaBooklet}
+      />
     </div>
   );
 };
