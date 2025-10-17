@@ -1097,7 +1097,43 @@ const Homework = () => {
                     try {
                       console.log('📤 Attempting to insert pending feedback record...');
                       
-                      // 1. Insert pending feedback record
+                      // Fetch detailed homework progress for all questions
+                      const { data: progressData, error: progressError } = await supabase
+                        .from('homework_progress')
+                        .select('*')
+                        .eq('user_id', user.id)
+                        .eq('homework_name', homeworkName)
+                        .neq('question_id', 'Summary');
+
+                      if (progressError) {
+                        console.error('❌ Failed to fetch homework progress:', progressError);
+                      }
+
+                      // Build detailed question data with text, answers, and timing
+                      const detailedQuestions = allQuestionResults.map((result, index) => {
+                        const progressRecord = progressData?.find(p => p.question_id === result.question.id);
+                        return {
+                          questionNumber: index + 1,
+                          questionId: result.question.id,
+                          questionText: result.question.text,
+                          questionType: result.type,
+                          difficulty: result.question.difficulty,
+                          skills: result.question.skills,
+                          problemNumber: result.question.problem_number,
+                          userAnswer: result.userAnswer,
+                          correctAnswer: result.correctAnswer,
+                          isCorrect: result.isCorrect,
+                          responseTimeSeconds: progressRecord?.response_time_seconds || null,
+                          showedSolution: progressRecord?.showed_solution || false,
+                          options: result.question.options || null
+                        };
+                      });
+
+                      const correctCount = detailedQuestions.filter(q => q.isCorrect).length;
+                      const totalTime = detailedQuestions.reduce((sum, q) => sum + (q.responseTimeSeconds || 0), 0);
+                      const avgTime = detailedQuestions.length > 0 ? Math.round(totalTime / detailedQuestions.length) : 0;
+                      
+                      // 1. Insert pending feedback record with comprehensive data
                       const { data: pendingRecord, error: insertError } = await supabase
                         .from('pending_homework_feedback')
                         .insert({
@@ -1107,8 +1143,14 @@ const Homework = () => {
                           homework_name: homeworkName,
                           context_data: {
                             timestamp: Date.now(),
-                            totalQuestions: currentQuestions.length,
-                            completedQuestions: completedQuestions.size
+                            totalQuestions: detailedQuestions.length,
+                            completedQuestions: detailedQuestions.length,
+                            correctAnswers: correctCount,
+                            accuracyPercentage: Math.round((correctCount / detailedQuestions.length) * 100),
+                            totalTimeSeconds: totalTime,
+                            averageTimePerQuestion: avgTime,
+                            questions: detailedQuestions,
+                            homeworkName: homeworkName
                           }
                         })
                         .select('id')
@@ -1125,6 +1167,7 @@ const Homework = () => {
                       }
 
                       console.log('✅ Feedback record created:', pendingRecord);
+                      console.log('📊 Context data includes', detailedQuestions.length, 'detailed questions');
 
                       // 2. Trigger edge function to generate feedback in background
                       console.log('🚀 Invoking edge function...');
@@ -1363,7 +1406,7 @@ const Homework = () => {
             <div className="flex flex-col gap-2">
               <Button
                 onClick={async () => {
-                  console.log('🔵 Button clicked - Go to AI Teacher');
+                  console.log('🔵 Button clicked - Go to AI Teacher (Confetti Modal)');
                   console.log('User object:', user);
                   console.log('Homework name:', homeworkName);
                   
@@ -1380,7 +1423,43 @@ const Homework = () => {
                   try {
                     console.log('📤 Attempting to insert pending feedback record...');
                     
-                    // 1. Insert pending feedback record
+                    // Fetch detailed homework progress for all questions
+                    const { data: progressData, error: progressError } = await supabase
+                      .from('homework_progress')
+                      .select('*')
+                      .eq('user_id', user.id)
+                      .eq('homework_name', homeworkName)
+                      .neq('question_id', 'Summary');
+
+                    if (progressError) {
+                      console.error('❌ Failed to fetch homework progress:', progressError);
+                    }
+
+                    // Build detailed question data with text, answers, and timing
+                    const detailedQuestions = allQuestionResults.map((result, index) => {
+                      const progressRecord = progressData?.find(p => p.question_id === result.question.id);
+                      return {
+                        questionNumber: index + 1,
+                        questionId: result.question.id,
+                        questionText: result.question.text,
+                        questionType: result.type,
+                        difficulty: result.question.difficulty,
+                        skills: result.question.skills,
+                        problemNumber: result.question.problem_number,
+                        userAnswer: result.userAnswer,
+                        correctAnswer: result.correctAnswer,
+                        isCorrect: result.isCorrect,
+                        responseTimeSeconds: progressRecord?.response_time_seconds || null,
+                        showedSolution: progressRecord?.showed_solution || false,
+                        options: result.question.options || null
+                      };
+                    });
+
+                    const correctCount = detailedQuestions.filter(q => q.isCorrect).length;
+                    const totalTime = detailedQuestions.reduce((sum, q) => sum + (q.responseTimeSeconds || 0), 0);
+                    const avgTime = detailedQuestions.length > 0 ? Math.round(totalTime / detailedQuestions.length) : 0;
+                    
+                    // 1. Insert pending feedback record with comprehensive data
                     const { data: pendingRecord, error: insertError } = await supabase
                       .from('pending_homework_feedback')
                       .insert({
@@ -1390,8 +1469,14 @@ const Homework = () => {
                         homework_name: homeworkName,
                         context_data: {
                           timestamp: Date.now(),
-                          totalQuestions: currentQuestions.length,
-                          completedQuestions: completedQuestions.size
+                          totalQuestions: detailedQuestions.length,
+                          completedQuestions: detailedQuestions.length,
+                          correctAnswers: correctCount,
+                          accuracyPercentage: Math.round((correctCount / detailedQuestions.length) * 100),
+                          totalTimeSeconds: totalTime,
+                          averageTimePerQuestion: avgTime,
+                          questions: detailedQuestions,
+                          homeworkName: homeworkName
                         }
                       })
                       .select('id')
@@ -1414,6 +1499,7 @@ const Homework = () => {
                     }
 
                     console.log('✅ Feedback record created:', pendingRecord);
+                    console.log('📊 Context data includes', detailedQuestions.length, 'detailed questions');
 
                     // 2. Trigger edge function to generate feedback in background
                     console.log('🚀 Invoking edge function...');
