@@ -88,8 +88,7 @@ const OgemathRevision: React.FC = () => {
   }, [user, location.state]);
 
   // Only pull skills from stories_and_telegram for course_id = '1'.
-  // If none found or JSON invalid, tell the user "Навыков для
-подтягивания пока нет 💤"
+  // If none found or JSON invalid, tell the user "Навыков для подтягивания пока нет 💤"
   const loadSkillsForRevision = async () => {
     try {
       setLoading(true);
@@ -177,8 +176,7 @@ skillsToUse.length)];
       const { data, error } = await supabase
         .from('oge_math_skills_questions')
         .select(
-          'question_id, problem_text, answer, option1, option2,
-option3, option4, skills, difficulty'
+          'question_id, problem_text, answer, option1, option2, option3, option4, skills, difficulty'
         )
         .eq('skills', randomSkill)
         .not('problem_text', 'is', null)
@@ -342,8 +340,7 @@ questionIds.length)];
       const { data, error } = await supabase
         .from('oge_math_skills_questions')
         .select(
-          'question_id, problem_text, answer, option1, option2,
-option3, option4, skills, difficulty'
+          'question_id, problem_text, answer, option1, option2, option3, option4, skills, difficulty'
         )
         .eq('question_id', randomQuestionId)
         .single();
@@ -426,8 +423,7 @@ currentQuestion?.answer?.toUpperCase();
     return (
       <div
         className="min-h-screen text-white relative"
-        style={{ background: 'linear-gradient(135deg, #1a1f36 0%,
-#2d3748 50%, #1a1f36 100%)' }}
+        style={{ background: 'linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)' }}
       >
         <div className="container mx-auto px-4 py-8 relative z-10">
           <div className="max-w-5xl mx-auto">
@@ -464,11 +460,10 @@ session.questionsAttempted) * 100)
         : 0;
 
     return (
-      <div
-        className="min-h-screen text-white relative"
-        style={{ background: 'linear-gradient(135deg, #1a1f36 0%,
-#2d3748 50%, #1a1f36 100%)' }}
-      >
+    <div
+      className="min-h-screen text-white relative"
+      style={{ background: 'linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)' }}
+    >
         <div className="container mx-auto px-4 py-8 relative z-10">
           <div className="max-w-5xl mx-auto">
             <div className="mb-6">
@@ -575,8 +570,7 @@ text-[#1a1f36] hover:bg-gray-100"
   return (
     <div
       className="min-h-screen text-white relative"
-      style={{ background: 'linear-gradient(135deg, #1a1f36 0%,
-#2d3748 50%, #1a1f36 100%)' }}
+      style={{ background: 'linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)' }}
     >
       <div className="container mx-auto px-4 py-8 relative z-10">
         <div className="max-w-5xl mx-auto">
@@ -643,12 +637,10 @@ hover:bg-red-500/10"
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2">
-              <Card className="bg-white/95 text-[#1a1f36] rounded-2xl
-shadow-xl">
+              <Card className="bg-white/95 text-[#1a1f36] rounded-2xl shadow-xl">
                 <CardHeader className="border-b border-[#1a1f36]/10">
                   <CardTitle className="text-lg">
-                    {isHomeworkMode ? 'Домашнее задание от ИИ
-помощника' : 'Повторение — супер полезно для вас!'}
+                    {isHomeworkMode ? 'Домашнее задание от ИИ помощника' : 'Повторение — супер полезно для вас!'}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4 p-6">
