@@ -1299,7 +1299,12 @@ const Homework = () => {
             <div className="flex flex-col gap-2">
               <Button
                 onClick={async () => {
+                  console.log('🔵 Button clicked - Go to AI Teacher');
+                  console.log('User object:', user);
+                  console.log('Homework name:', homeworkName);
+                  
                   if (!user) {
+                    console.error('❌ No user object found');
                     toast({
                       title: 'Ошибка',
                       description: 'Необходимо войти в систему',
@@ -1309,6 +1314,8 @@ const Homework = () => {
                   }
 
                   try {
+                    console.log('📤 Attempting to insert pending feedback record...');
+                    
                     // 1. Insert pending feedback record
                     const { data: pendingRecord, error: insertError } = await supabase
                       .from('pending_homework_feedback')
@@ -1345,10 +1352,11 @@ const Homework = () => {
                     console.log('✅ Feedback record created:', pendingRecord);
 
                     // 2. Trigger edge function to generate feedback in background
+                    console.log('🚀 Invoking edge function...');
                     supabase.functions.invoke('generate-homework-feedback', {
                       body: { pending_feedback_id: pendingRecord.id }
                     }).catch(err => {
-                      console.error('Failed to trigger feedback generation:', err);
+                      console.error('❌ Failed to trigger feedback generation:', err);
                     });
 
                     // 3. Show toast and navigate immediately
@@ -1359,12 +1367,13 @@ const Homework = () => {
                     });
 
                     // 4. Navigate with pending_feedback_id parameter
+                    console.log('🧭 Navigating to /ogemath with pending_feedback_id:', pendingRecord.id);
                     navigate(`/ogemath?pending_feedback=${pendingRecord.id}`);
                   } catch (error) {
-                    console.error('Error creating feedback request:', error);
+                    console.error('❌ Unexpected error creating feedback request:', error);
                     toast({
                       title: 'Ошибка',
-                      description: 'Не удалось запустить генерацию обратной связи',
+                      description: error instanceof Error ? error.message : 'Неизвестная ошибка',
                       variant: 'destructive'
                     });
                   }
