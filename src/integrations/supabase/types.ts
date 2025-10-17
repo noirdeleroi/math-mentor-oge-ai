@@ -848,6 +848,7 @@ export type Database = {
           id: number
           is_correct: boolean | null
           problem_number: number | null
+          q_number: string | null
           question_id: string | null
           question_type: string | null
           questions_completed: number | null
@@ -876,6 +877,7 @@ export type Database = {
           id?: number
           is_correct?: boolean | null
           problem_number?: number | null
+          q_number?: string | null
           question_id?: string | null
           question_type?: string | null
           questions_completed?: number | null
@@ -904,6 +906,7 @@ export type Database = {
           id?: number
           is_correct?: boolean | null
           problem_number?: number | null
+          q_number?: string | null
           question_id?: string | null
           question_type?: string | null
           questions_completed?: number | null

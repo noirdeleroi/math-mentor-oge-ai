@@ -35,7 +35,7 @@ const EgemathbasicPractice = () => {
       link: "/egemathbasic-revision",
       gradient: "from-sage to-teal-400",
       mathSymbol: "π",
-      comingSoon: true
+      comingSoon: false
     },
     {
       title: "Домашнее задание",

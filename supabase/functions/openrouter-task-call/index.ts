@@ -24,12 +24,13 @@ Deno.serve(async (req)=>{
     const today = new Date();
     const daysToExam = Math.ceil((examDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
     let studentProgress = '';
-    if (course_id === 1) {
+    if (course_id === 1 || course_id === 2 || course_id === 3) {
       console.log('Fetching student progress...');
       try {
         const { data: progressData, error: progressError } = await supabase.functions.invoke('student-progress-calculate', {
           body: {
-            user_id
+            user_id,
+            course_id
           }
         });
         if (progressError) {
@@ -57,7 +58,7 @@ Deno.serve(async (req)=>{
     let student_activity_session_results = [];
     try {
       console.log('Fetching latest student activity and task timestamps...');
-      const { data: activityRow, error: activityError } = await supabase.from('student_activity').select('updated_at').eq('user_id', user_id).eq('course_id', '1').order('updated_at', {
+      const { data: activityRow, error: activityError } = await supabase.from('student_activity').select('updated_at').eq('user_id', user_id).eq('course_id', String(course_id)).order('updated_at', {
         ascending: false
       }).limit(1).single();
       const { data: taskRow, error: taskError } = await supabase.from('stories_and_telegram').select('created_at').eq('user_id', user_id).eq('course_id', String(course_id)).order('created_at', {
@@ -128,7 +129,7 @@ Deno.serve(async (req)=>{
     console.log('Final previously_failed_topics:', JSON.stringify(previously_failed_topics, null, 2));
     let student_hardcoded_task = '';
     console.log(`Checking conditions for ogemath-task-hardcode: course_id=${course_id}, studentProgress exists=${!!studentProgress}`);
-    if (course_id === 1 && studentProgress) {
+    if ((course_id === 1 || course_id === 2 || course_id === 3) && studentProgress) {
       console.log('Calling ogemath-task-hardcode function...');
       try {
         let progressArray = JSON.parse(studentProgress);
@@ -141,7 +142,8 @@ Deno.serve(async (req)=>{
             hours_per_week: weekly_hours,
             school_grade: school_grade,
             days_to_exam: daysToExam,
-            progress: progressData
+            progress: progressData,
+            course_id
           }
         });
         if (taskError) {
@@ -162,7 +164,7 @@ Deno.serve(async (req)=>{
       throw new Error('Failed to fetch task context');
     }
     let filteredStudentProgress = studentProgress;
-    if (studentProgress && course_id === 1) {
+    if (studentProgress && (course_id === 1 || course_id === 2 || course_id === 3)) {
       try {
         const progressArray = JSON.parse(studentProgress);
         const filteredProgress = progressArray.filter((item)=>!item.hasOwnProperty('навык'));
@@ -239,7 +241,13 @@ Deno.serve(async (req)=>{
     let result_of_prev_homework_completion = [];
     try {
       console.log('Fetching homework from profiles table...');
-      const { data: profileData, error: profileError } = await supabase.from('profiles').select('homework').eq('user_id', user_id).single();
+      let homeworkColumn = 'homework';
+      if (String(course_id) === '2') {
+        homeworkColumn = 'homework2';
+      } else if (String(course_id) === '3') {
+        homeworkColumn = 'homework3';
+      }
+      const { data: profileData, error: profileError } = await supabase.from('profiles').select(homeworkColumn).eq('user_id', user_id).single();
       if (profileError) {
         console.error('Error fetching homework from profiles:', profileError);
       } else if (profileData && profileData.homework) {

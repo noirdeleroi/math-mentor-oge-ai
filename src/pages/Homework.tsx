@@ -113,6 +113,9 @@ const Homework = () => {
   const didLoadQuestionsRef = useRef(false);      // 🔒 loadQuestions once per session
   const sessionStartedRef = useRef(false);        // 🔒 recordSessionStart once
   const mountedRef = useRef(false);               // helps avoid setState after unmount
+  // Track sequential question numbering for this session (first seen order)
+  const questionOrderRef = useRef<Map<string, number>>(new Map());
+  const nextQNumberRef = useRef<number>(1);
 
   useEffect(() => { mountedRef.current = true; return () => { mountedRef.current = false; }; }, []);
 
@@ -554,6 +557,13 @@ const Homework = () => {
         return;
       }
 
+      // Assign sequential q_number for the first time we see this question
+      if (!questionOrderRef.current.has(questionId)) {
+        questionOrderRef.current.set(questionId, nextQNumberRef.current);
+        nextQNumberRef.current += 1;
+      }
+      const assignedQNumber = questionOrderRef.current.get(questionId) || nextQNumberRef.current - 1;
+
       const currentQuestion = currentQuestions.find(q => q.id === questionId);
       const qType = homeworkData?.mcq_questions?.includes(questionId) ? 'mcq' : 'fipi';
 
@@ -570,7 +580,8 @@ const Homework = () => {
         response_time_seconds: responseTime,
         difficulty_level: currentQuestion?.difficulty || null,
         skill_ids: currentQuestion?.skills ? [currentQuestion.skills] : null,
-        problem_number: currentQuestion?.problem_number || null
+        problem_number: currentQuestion?.problem_number || null,
+        q_number: String(assignedQNumber)
       });
     } catch (error) {
       console.error('Error recording progress:', error);
@@ -1110,12 +1121,12 @@ const Homework = () => {
                       }
 
                       // Build detailed question data with text, answers, and timing
-                      const detailedQuestions = allQuestionResults.map((result, index) => {
-                        const progressRecord = progressData?.find(p => p.question_id === result.question.id);
-                        return {
-                          questionNumber: index + 1,
-                          questionId: result.question.id,
-                          questionText: result.question.text,
+                      const detailedQuestions = allQuestionResults.map((result) => {
+                      const progressRecord = progressData?.find(p => p.question_id === result.question.id);
+                      return {
+                        questionNumber: progressRecord?.q_number || null,
+                        questionId: result.question.id,
+                        questionText: result.question.text,
                           questionType: result.type,
                           difficulty: result.question.difficulty,
                           skills: result.question.skills,
@@ -1208,9 +1219,7 @@ const Homework = () => {
             <Card className="bg-white/95 text-[#1a1f36] rounded-2xl shadow-xl">
               <CardContent className="p-4">
                 <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-12 gap-1.5">
-                  {[...allQuestionResults]
-                    .sort((a, b) => a.type === 'mcq' && b.type === 'frq' ? -1 : a.type === 'frq' && b.type === 'mcq' ? 1 : 0)
-                    .map((result, index) => {
+                  {allQuestionResults.map((result, index) => {
                       const originalIndex = allQuestionResults.indexOf(result);
                       return (
                         <Card
@@ -1346,198 +1355,7 @@ const Homework = () => {
     <div className="min-h-screen text-white relative" style={{ background: "linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)" }}>
 
       {showCongrats && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.5 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.5 }}
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-        >
-          <motion.div initial={{ y: -50 }} animate={{ y: 0 }} className="bg-[#f4f4f5] rounded-lg p-8 text-center max-w-md mx-4">
-            <Trophy className="w-16 h-16 mx-auto text-[#f59e0b] mb-4" />
-            <h2 className="text-2xl font-bold mb-4" style={{ background: 'linear-gradient(135deg, #f59e0b, #10b981)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Поздравляем!</h2>
-            <p className="text-gray-600 mb-6">Вы успешно выполнили всё домашнее задание! 🎉</p>
-
-            <div className="bg-gradient-to-r from-[#f59e0b]/10 to-[#10b981]/10 rounded-lg p-4 mb-6">
-              <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
-                <BarChart3 className="w-5 h-5" />
-                Результаты работы:
-              </h3>
-              <div className="grid grid-cols-3 gap-4 text-sm mb-4">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-[#f59e0b]">{completedQuestions.size}</div>
-                  <div className="text-gray-600">Выполнено</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-green-600">{correctAnswers.size}</div>
-                  <div className="text-gray-600">Правильно</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600">
-                    {completedQuestions.size > 0 ? Math.round((correctAnswers.size / completedQuestions.size) * 100) : 0}%
-                  </div>
-                  <div className="text-gray-600">Точность</div>
-                </div>
-              </div>
-
-              {progressStats && (
-                <div className="border-t pt-4 space-y-3">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Общее время:</span>
-                    <span className="font-semibold">
-                      {Math.floor(progressStats.totalTime / 60)} мин {progressStats.totalTime % 60} сек
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Среднее время на задачу:</span>
-                    <span className="font-semibold">{progressStats.avgTime} сек</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Просмотрено решений:</span>
-                    <span className="font-semibold">{progressStats.showedSolutionCount}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Навыков отработано:</span>
-                    <span className="font-semibold">{progressStats.skillsWorkedOn.length}</span>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <Button
-                onClick={async () => {
-                  console.log('🔵 Button clicked - Go to AI Teacher (Confetti Modal)');
-                  console.log('User object:', user);
-                  console.log('Homework name:', homeworkName);
-                  
-                  if (!user) {
-                    console.error('❌ No user object found');
-                    toast({
-                      title: 'Ошибка',
-                      description: 'Необходимо войти в систему',
-                      variant: 'destructive'
-                    });
-                    return;
-                  }
-
-                  try {
-                    console.log('📤 Attempting to insert pending feedback record...');
-                    
-                    // Fetch detailed homework progress for all questions
-                    const { data: progressData, error: progressError } = await supabase
-                      .from('homework_progress')
-                      .select('*')
-                      .eq('user_id', user.id)
-                      .eq('homework_name', homeworkName)
-                      .neq('question_id', 'Summary');
-
-                    if (progressError) {
-                      console.error('❌ Failed to fetch homework progress:', progressError);
-                    }
-
-                    // Build detailed question data with text, answers, and timing
-                    const detailedQuestions = allQuestionResults.map((result, index) => {
-                      const progressRecord = progressData?.find(p => p.question_id === result.question.id);
-                      return {
-                        questionNumber: index + 1,
-                        questionId: result.question.id,
-                        questionText: result.question.text,
-                        questionType: result.type,
-                        difficulty: result.question.difficulty,
-                        skills: result.question.skills,
-                        problemNumber: result.question.problem_number,
-                        userAnswer: result.userAnswer,
-                        correctAnswer: result.correctAnswer,
-                        isCorrect: result.isCorrect,
-                        responseTimeSeconds: progressRecord?.response_time_seconds || null,
-                        showedSolution: progressRecord?.showed_solution || false,
-                        options: result.question.options || null
-                      };
-                    });
-
-                    const correctCount = detailedQuestions.filter(q => q.isCorrect).length;
-                    const totalTime = detailedQuestions.reduce((sum, q) => sum + (q.responseTimeSeconds || 0), 0);
-                    const avgTime = detailedQuestions.length > 0 ? Math.round(totalTime / detailedQuestions.length) : 0;
-                    
-                    // 1. Insert pending feedback record with comprehensive data
-                    const { data: pendingRecord, error: insertError } = await supabase
-                      .from('pending_homework_feedback')
-                      .insert({
-                        user_id: user.id,
-                        course_id: '1', // OGE Math course
-                        feedback_type: 'homework',
-                        homework_name: homeworkName,
-                        context_data: {
-                          timestamp: Date.now(),
-                          totalQuestions: detailedQuestions.length,
-                          completedQuestions: detailedQuestions.length,
-                          correctAnswers: correctCount,
-                          accuracyPercentage: Math.round((correctCount / detailedQuestions.length) * 100),
-                          totalTimeSeconds: totalTime,
-                          averageTimePerQuestion: avgTime,
-                          questions: detailedQuestions,
-                          homeworkName: homeworkName
-                        }
-                      })
-                      .select('id')
-                      .single();
-
-                    if (insertError) {
-                      console.error('❌ Failed to create feedback record:', insertError);
-                      console.error('Error details:', {
-                        message: insertError.message,
-                        code: insertError.code,
-                        details: insertError.details,
-                        hint: insertError.hint
-                      });
-                      toast({
-                        title: 'Ошибка',
-                        description: `Не удалось создать запрос на обратную связь: ${insertError.message}`,
-                        variant: 'destructive'
-                      });
-                      return;
-                    }
-
-                    console.log('✅ Feedback record created:', pendingRecord);
-                    console.log('📊 Context data includes', detailedQuestions.length, 'detailed questions');
-
-                    // 2. Trigger edge function to generate feedback in background
-                    console.log('🚀 Invoking edge function...');
-                    supabase.functions.invoke('generate-homework-feedback', {
-                      body: { pending_feedback_id: pendingRecord.id }
-                    }).catch(err => {
-                      console.error('❌ Failed to trigger feedback generation:', err);
-                    });
-
-                    // 3. Show toast and navigate immediately
-                    toast({
-                      title: 'Генерация обратной связи запущена! 🤖',
-                      description: 'ИИ анализирует ваше ДЗ, результат будет в чате',
-                      duration: 2000
-                    });
-
-                    // 4. Navigate with pending_feedback_id parameter
-                    console.log('🧭 Navigating to /ogemath with pending_feedback_id:', pendingRecord.id);
-                    navigate(`/ogemath?pending_feedback=${pendingRecord.id}`);
-                  } catch (error) {
-                    console.error('❌ Unexpected error creating feedback request:', error);
-                    toast({
-                      title: 'Ошибка',
-                      description: error instanceof Error ? error.message : 'Неизвестная ошибка',
-                      variant: 'destructive'
-                    });
-                  }
-                }}
-                className="bg-purple-600 hover:bg-purple-700 w-full"
-              >
-                Перейти к ИИ учителю
-              </Button>
-              <Button onClick={() => setShowCongrats(false)} variant="outline" className="w-full">
-                Закрыть
-              </Button>
-            </div>
-          </motion.div>
-        </motion.div>
+        <></>
       )}
 
       <div className="pt-8 px-4 pb-8 relative z-10">

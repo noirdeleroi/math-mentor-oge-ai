@@ -79,6 +79,9 @@ const HomeworkEgeb = () => {
   const [questionStartTime, setQuestionStartTime] = useState<number>(Date.now());
   const [progressStats, setProgressStats] = useState<ProgressStats | null>(null);
   const [existingProgress, setExistingProgress] = useState<any>(null);
+  // Track sequential question numbering for this session (first seen order)
+  const questionOrderRef = useRef<Map<string, number>>(new Map());
+  const nextQNumberRef = useRef<number>(1);
   const [userProfile, setUserProfile] = useState<any>(null);
   const [checkingAnswer, setCheckingAnswer] = useState(false);
   const [answerCheckMethod, setAnswerCheckMethod] = useState<'numeric' | 'ai' | null>(null);
@@ -382,6 +385,13 @@ const HomeworkEgeb = () => {
         .maybeSingle();
       if (existingRecord) return;
 
+      // Assign sequential q_number for the first time we see this question
+      if (!questionOrderRef.current.has(questionId)) {
+        questionOrderRef.current.set(questionId, nextQNumberRef.current);
+        nextQNumberRef.current += 1;
+      }
+      const assignedQNumber = questionOrderRef.current.get(questionId) || nextQNumberRef.current - 1;
+
       const currentQuestion = currentQuestions.find(q => q.id === questionId);
       const qType = homeworkData?.mcq_questions?.includes(questionId) ? 'mcq' : 'fipi';
       await supabase.from('homework_progress').insert({
@@ -397,7 +407,8 @@ const HomeworkEgeb = () => {
         response_time_seconds: responseTime,
         difficulty_level: currentQuestion?.difficulty || null,
         skill_ids: currentQuestion?.skills ? [currentQuestion.skills] : null,
-        problem_number: currentQuestion?.problem_number || null
+        problem_number: currentQuestion?.problem_number || null,
+        q_number: String(assignedQNumber)
       });
     } catch {}
   };
@@ -820,10 +831,122 @@ const HomeworkEgeb = () => {
                 </div>
 
                 <Button
-                  onClick={() => {
-                    const completionData = { homeworkName, timestamp: Date.now() } as any;
-                    localStorage.setItem('homeworkCompletionData', JSON.stringify(completionData));
-                    navigate('/egemathbasic');
+                  onClick={async () => {
+                    console.log('🔵 Button clicked - Go to AI Teacher (EGE Basic)');
+                    console.log('User object:', user);
+                    console.log('Homework name:', homeworkName);
+                    
+                    if (!user) {
+                      console.error('❌ No user object found');
+                      toast({
+                        title: 'Ошибка',
+                        description: 'Необходимо войти в систему',
+                        variant: 'destructive'
+                      });
+                      return;
+                    }
+
+                    try {
+                      console.log('📤 Attempting to insert pending feedback record...');
+                      
+                      // Fetch detailed homework progress for all questions
+                      const { data: progressData, error: progressError } = await supabase
+                        .from('homework_progress')
+                        .select('*')
+                        .eq('user_id', user.id)
+                        .eq('homework_name', homeworkName)
+                        .neq('question_id', 'Summary');
+
+                      if (progressError) {
+                        console.error('❌ Failed to fetch homework progress:', progressError);
+                      }
+
+                      // Build detailed question data with text, answers, and timing
+                      const detailedQuestions = allQuestionResults.map((result) => {
+                        const progressRecord = progressData?.find(p => p.question_id === result.question.id);
+                        return {
+                          questionNumber: progressRecord?.q_number || null,
+                          questionId: result.question.id,
+                          questionText: result.question.text,
+                          questionType: result.type,
+                          difficulty: result.question.difficulty,
+                          skills: result.question.skills,
+                          problemNumber: result.question.problem_number,
+                          userAnswer: result.userAnswer,
+                          correctAnswer: result.correctAnswer,
+                          isCorrect: result.isCorrect,
+                          responseTimeSeconds: progressRecord?.response_time_seconds || null,
+                          showedSolution: progressRecord?.showed_solution || false,
+                          options: result.question.options || null
+                        };
+                      });
+
+                      const correctCount = detailedQuestions.filter(q => q.isCorrect).length;
+                      const totalTime = detailedQuestions.reduce((sum, q) => sum + (q.responseTimeSeconds || 0), 0);
+                      const avgTime = detailedQuestions.length > 0 ? Math.round(totalTime / detailedQuestions.length) : 0;
+                      
+                      // 1. Insert pending feedback record with comprehensive data
+                      const { data: pendingRecord, error: insertError } = await supabase
+                        .from('pending_homework_feedback')
+                        .insert({
+                          user_id: user.id,
+                          course_id: '2', // EGE Basic
+                          feedback_type: 'homework',
+                          homework_name: homeworkName,
+                          context_data: {
+                            timestamp: Date.now(),
+                            totalQuestions: detailedQuestions.length,
+                            completedQuestions: detailedQuestions.length,
+                            correctAnswers: correctCount,
+                            accuracyPercentage: Math.round((correctCount / detailedQuestions.length) * 100),
+                            totalTimeSeconds: totalTime,
+                            averageTimePerQuestion: avgTime,
+                            questions: detailedQuestions,
+                            homeworkName: homeworkName
+                          }
+                        })
+                        .select('id')
+                        .single();
+
+                      if (insertError) {
+                        console.error('❌ Failed to create feedback record:', insertError);
+                        toast({
+                          title: 'Ошибка',
+                          description: `Не удалось создать запрос на обратную связь: ${insertError.message}`,
+                          variant: 'destructive'
+                        });
+                        return;
+                      }
+
+                      console.log('✅ Feedback record created:', pendingRecord);
+                      console.log('📊 Context data includes', detailedQuestions.length, 'detailed questions');
+
+                      // 2. Trigger edge function to generate feedback in background
+                      console.log('🚀 Invoking edge function...');
+                      supabase.functions.invoke('generate-homework-feedback', {
+                        body: { pending_feedback_id: pendingRecord.id }
+                      }).catch(err => {
+                        console.error('❌ Failed to trigger feedback generation:', err);
+                      });
+
+                      // 3. Show toast and navigate immediately
+                      toast({
+                        title: 'Генерация обратной связи запущена! 🤖',
+                        description: 'ИИ анализирует ваше ДЗ, результат будет в чате',
+                        duration: 2000
+                      });
+
+                      // 4. Navigate with pending_feedback_id parameter
+                      console.log('🧭 Navigating to /egemathbasic with pending_feedback_id:', pendingRecord.id);
+                      navigate(`/egemathbasic?pending_feedback=${pendingRecord.id}`);
+                    } catch (error) {
+                      console.error('❌ Unexpected error creating feedback request:', error);
+                      toast({
+                        title: 'Ошибка',
+                        description: error instanceof Error ? error.message : 'Неизвестная ошибка',
+                        variant: 'destructive'
+                      });
+                    }
                   }}
                   className="w-full bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36]"
                   size="lg"

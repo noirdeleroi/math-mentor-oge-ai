@@ -6,7 +6,7 @@ const corsHeaders = {
 };
 // Helper functions to provide default values when profile data is missing
 function getDefaultTargetScore(course_id) {
-  switch(course_id){
+  switch(Number(course_id)){
     case 1:
       return 18;
     case 2:
@@ -17,7 +17,7 @@ function getDefaultTargetScore(course_id) {
       return 15;
   }
 }
-function getDefaultSchoolGrade(course_id) {
+function getDefaultSchoolGrade(_course_id) {
   return 4;
 }
 // Telegram notification function
@@ -106,16 +106,20 @@ Deno.serve(async (req)=>{
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     const { user_id, course_id = 1, date_string = '29 may 2026', number_of_words = 500 } = await req.json();
     console.log(`Creating task for user: ${user_id}, course: ${course_id}`);
-    const targetScoreColumn = `course_${course_id}_goal`;
-    const schoolGradeColumn = `schoolmark${course_id}`;
+    // Resolve course string once (used for dynamic column names below)
+    const courseStr = String(course_id);
+    // Profile columns that depend on course
+    const targetScoreColumn = `course_${courseStr}_goal`;
+    const schoolGradeColumn = `schoolmark${courseStr}`;
     const { data: profileData, error: profileError } = await supabase.from('profiles').select(`${targetScoreColumn}, ${schoolGradeColumn}`).eq('user_id', user_id).single();
     if (profileError) {
       console.error('Error fetching profile data:', profileError);
       throw new Error('Failed to fetch user profile data');
     }
-    const target_score = profileData[targetScoreColumn] || getDefaultTargetScore(course_id);
-    const school_grade = profileData[schoolGradeColumn] || getDefaultSchoolGrade(course_id);
+    const target_score = profileData?.[targetScoreColumn] ?? getDefaultTargetScore(courseStr);
+    const school_grade = profileData?.[schoolGradeColumn] ?? getDefaultSchoolGrade(courseStr);
     console.log(`Target score: ${target_score}, School grade: ${school_grade}`);
+    // Call your LLM task generator
     const { data: taskData, error: taskError } = await supabase.functions.invoke('openrouter-task-call', {
       body: {
         user_id,
@@ -155,6 +159,7 @@ Deno.serve(async (req)=>{
       if (hardcodeTaskObj && typeof hardcodeTaskObj === 'object' && !Array.isArray(hardcodeTaskObj)) {
         console.log('[HOMEWORK TRACK] Entering homework generation - valid object');
         console.log('Processing hardcode_task for homework generation...');
+        // Collect MCQ list by skills
         const importantSkills = hardcodeTaskObj['навыки с наибольшей важностью для выбранных тем'] || [];
         const limitedImportantSkills = importantSkills.slice(0, 10);
         console.log(`[HOMEWORK TRACK] Processing important skills: ${limitedImportantSkills.length} items (e.g., ${limitedImportantSkills.slice(0, 3).join(', ')})`);
@@ -186,6 +191,7 @@ Deno.serve(async (req)=>{
           ...new Set(mcqlist)
         ];
         console.log(`[HOMEWORK TRACK] Final MCQ list has ${mcqlist.length} unique questions`);
+        // Collect FIPI list by problem types
         const fipiProblems = hardcodeTaskObj['Задачи ФИПИ для тренировки'] || [];
         const limitedFipiProblems = fipiProblems.slice(0, 10);
         console.log(`[HOMEWORK TRACK] Processing FIPI problems: ${limitedFipiProblems.length} items (e.g., ${limitedFipiProblems.slice(0, 3).join(', ')})`);
@@ -223,18 +229,25 @@ Deno.serve(async (req)=>{
           FIPI: fipilist
         };
         console.log('[HOMEWORK TRACK] Generated homework JSON:', JSON.stringify(homeworkJson, null, 2));
-        console.log(`[HOMEWORK TRACK] Attempting to update profiles.homework for user_id: ${user_id}`);
+        // --- NEW: choose the homework column based on course_id ---
+        const homeworkColumnMap = {
+          '1': 'homework',
+          '2': 'homework2',
+          '3': 'homework3'
+        };
+        const homeworkColumn = homeworkColumnMap[courseStr] ?? 'homework';
+        console.log(`[HOMEWORK TRACK] Attempting to update profiles.${homeworkColumn} for user_id: ${user_id}`);
         const { error: updateError, count } = await supabase.from('profiles').update({
-          homework: JSON.stringify(homeworkJson)
+          [homeworkColumn]: JSON.stringify(homeworkJson)
         }, {
           count: 'exact'
         }).eq('user_id', user_id);
-        console.log(`[HOMEWORK TRACK] Update query returned count: ${count || 'unknown'}`);
+        console.log(`[HOMEWORK TRACK] Update query returned count: ${count ?? 'unknown'}`);
         if (updateError) {
           console.error('[HOMEWORK TRACK] Error updating profiles with homework:', updateError);
           console.error(`[HOMEWORK TRACK] Update error details: code=${updateError.code}, message=${updateError.message}, hint=${updateError.hint || 'none'}`);
         } else {
-          console.log('[HOMEWORK TRACK] Successfully saved homework to profiles table for user:', user_id);
+          console.log(`[HOMEWORK TRACK] Successfully saved homework to profiles.${homeworkColumn} for user: ${user_id}`);
         }
       } else {
         console.log('[HOMEWORK TRACK] Skipping homework generation - invalid after parse');
@@ -262,6 +275,7 @@ Deno.serve(async (req)=>{
       throw new Error('Failed to save task');
     }
     console.log('New task row created successfully');
+    // Fire-and-forget notification
     sendNotificationBackground(supabase, user_id).catch((error)=>{
       console.error('Background notification task error:', error);
     });
