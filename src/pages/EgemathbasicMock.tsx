@@ -192,7 +192,7 @@ const EgemathbasicMock = () => {
           supabase
             .from("egemathbase")
             .select("*")
-            .eq("problem_number_type", problemNum)
+            .eq("problem_number_type", problemNum.toString())
             .limit(30)
         );
       }

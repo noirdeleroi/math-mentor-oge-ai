@@ -389,25 +389,25 @@ currentQuestion?.answer?.toUpperCase();
     return (
       <div
         className="min-h-screen text-white relative"
-        style={{ background: "linear-gradient(135deg, #1a1f36 0%,
-#2d3748 50%, #1a1f36 100%)" }}
+        style={{ background: "linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)" }}
       >
         <div className="container mx-auto px-4 py-8 relative z-10">
           <div className="max-w-5xl mx-auto">
             <div className="mb-6">
-              <Button variant="ghost" size="sm"
-className="hover:bg-white/20 text-white" onClick={() =>
-navigate('/ogemath-practice')}>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                className="hover:bg-white/20 text-white" 
+                onClick={() => navigate('/ogemath-practice')}
+              >
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Назад
               </Button>
             </div>
 
-            <Card className="bg-white/10 backdrop-blur border
-border-white/20 rounded-2xl shadow-xl">
+            <Card className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl shadow-xl">
               <CardContent className="p-6">
-                <p className="text-white/80">Войдите в систему для
-доступа к повторению</p>
+                <p className="text-white/80">Войдите в систему для доступа к повторению</p>
               </CardContent>
             </Card>
           </div>
@@ -424,14 +424,17 @@ border-white/20 rounded-2xl shadow-xl">
     return (
       <div
         className="min-h-screen text-white relative"
-        style={{ background: "linear-gradient(135deg, #1a1f36 0%,
-#2d3748 50%, #1a1f36 100%)" }}
+        style={{ background: "linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)" }}
       >
         <div className="container mx-auto px-4 py-8 relative z-10">
           <div className="max-w-5xl mx-auto">
             <div className="mb-6">
-              <Button variant="ghost" size="sm"
-className="hover:bg-white/20 text-white" onClick={handleBackToMain}>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                className="hover:bg-white/20 text-white" 
+                onClick={handleBackToMain}
+              >
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Назад
               </Button>
@@ -533,15 +536,18 @@ text-[#1a1f36] hover:bg-gray-100"
   return (
     <div
       className="min-h-screen text-white relative"
-      style={{ background: "linear-gradient(135deg, #1a1f36 0%,
-#2d3748 50%, #1a1f36 100%)" }}
+      style={{ background: "linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)" }}
     >
       <div className="container mx-auto px-4 py-8 relative z-10">
         <div className="max-w-5xl mx-auto">
           {/* Back button */}
           <div className="mb-6">
-            <Button variant="ghost" size="sm"
-className="hover:bg-white/20 text-white" onClick={handleBackToMain}>
+            <Button 
+              variant="ghost" 
+              size="sm"
+              className="hover:bg-white/20 text-white" 
+              onClick={handleBackToMain}
+            >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Назад
             </Button>
@@ -599,14 +605,11 @@ hover:bg-red-500/10"
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Question card */}
             <div className="lg:col-span-2">
-              <Card className="bg-white/95 text-[#1a1f36] rounded-2xl
-shadow-xl">
+              <Card className="bg-white/95 text-[#1a1f36] rounded-2xl shadow-xl">
                 <CardHeader className="border-b border-[#1a1f36]/10">
-                  <CardTitle className="text-lg flex items-center
-justify-between">
+                  <CardTitle className="text-lg flex items-center justify-between">
                     <span>
-                      {isHomeworkMode ? 'Домашнее задание от ИИ
-помощника' : 'Повторение — супер полезно для вас!'}
+                      {isHomeworkMode ? 'Домашнее задание от ИИ помощника' : 'Повторение — супер полезно для вас!'}
                     </span>
                   </CardTitle>
                 </CardHeader>

@@ -1327,14 +1327,22 @@ const Homework = () => {
                       .single();
 
                     if (insertError) {
-                      console.error('Failed to create feedback record:', insertError);
+                      console.error('❌ Failed to create feedback record:', insertError);
+                      console.error('Error details:', {
+                        message: insertError.message,
+                        code: insertError.code,
+                        details: insertError.details,
+                        hint: insertError.hint
+                      });
                       toast({
                         title: 'Ошибка',
-                        description: 'Не удалось создать запрос на обратную связь',
+                        description: `Не удалось создать запрос на обратную связь: ${insertError.message}`,
                         variant: 'destructive'
                       });
                       return;
                     }
+
+                    console.log('✅ Feedback record created:', pendingRecord);
 
                     // 2. Trigger edge function to generate feedback in background
                     supabase.functions.invoke('generate-homework-feedback', {
