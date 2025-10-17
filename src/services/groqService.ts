@@ -36,12 +36,17 @@ export async function streamChatCompletion(
 ): Promise<ReadableStream<Uint8Array> | null> {
   try {
     const fullMessages = buildMessagesWithContext(messages, homeworkContext, /*isStream*/ true);
+    // Diagnostics (optional)
+    try {
+      console.log('[groq:stream] context?', Boolean(homeworkContext), 'payload bytes:', JSON.stringify(fullMessages).length);
+    } catch { /* ignore */ }
+
     const { data, error } = await supabase.functions.invoke('groq-chat', {
       body: { messages: fullMessages, stream: true }
     });
     if (error) {
-      console.error('Groq function error:', error);
-      throw new Error(`Groq function error: ${error.message}`);
+      console.error('Groq function error (stream):', error);
+      throw new Error(`Groq function error (stream): ${error.message}`);
     }
     return data;
   } catch (error) {
@@ -87,7 +92,7 @@ export async function getChatCompletion(messages: Message[], homeworkContext?: a
         return problem.solution_text || "Решение пока недоступно.";
       }
       if (asksExplain) {
-        // будьте уверены, что ключ совпадает с БД (solutiontextexpanded?)
+        // убедитесь, что ключ совпадает с БД
         return (problem as any).solutiontextexpanded || problem.solution_text || "Подробного объяснения нет.";
       }
     }
@@ -126,22 +131,55 @@ export async function getChatCompletion(messages: Message[], homeworkContext?: a
     // ---- Step 3: Default to Groq completion (with optional homework context) ----
     const fullMessages = buildMessagesWithContext(messages, homeworkContext, /*isStream*/ false);
 
-    const { data, error } = await supabase.functions.invoke('groq-chat', {
-      body: { messages: fullMessages, stream: false }
-    });
+    // Diagnostics
+    let payloadBytes = -1;
+    try { payloadBytes = JSON.stringify(fullMessages).length; } catch { /* ignore */ }
+    console.log('[groq] payload bytes:', payloadBytes, 'context?', Boolean(homeworkContext));
+
+    // Call with context first
+    let data, error;
+    try {
+      const res = await supabase.functions.invoke('groq-chat', {
+        body: { messages: fullMessages, stream: false }
+      });
+      data = res.data;
+      error = res.error;
+    } catch (e: any) {
+      console.error('[groq] invoke threw:', e);
+      // Fallback: try without context
+      const fallbackMessages: Message[] = [SYSTEM_PROMPT, ...messages];
+      let fbBytes = -1;
+      try { fbBytes = JSON.stringify(fallbackMessages).length; } catch { /* ignore */ }
+      console.log('[groq] fallback payload bytes:', fbBytes);
+
+      const fb = await supabase.functions.invoke('groq-chat', {
+        body: { messages: fallbackMessages, stream: false }
+      });
+      if (fb.error) {
+        console.error('[groq] fallback error:', fb.error);
+        return `Произошла ошибка (fallback): ${fb.error.message ?? 'unknown'}. Попробуй позже.`;
+      }
+      const fbContent = fb?.data?.choices?.[0]?.message?.content;
+      return fbContent ?? 'Произошла ошибка (fallback контент пуст). Попробуй позже.';
+    }
+
     if (error) {
-      console.error('Groq function error:', error);
-      throw new Error(`Groq function error: ${error.message}`);
+      console.error('[groq] function error:', error);
+      // Surface the function error back to the user (useful while debugging)
+      return `Произошла ошибка: ${error.message ?? 'unknown'}. Попробуй позже.`;
     }
 
     const content = data?.choices?.[0]?.message?.content;
     if (!content) {
-      return 'Произошла ошибка при получении ответа модели. Попробуй ещё раз.';
+      console.warn('[groq] empty content:', data);
+      return 'Произошла ошибка: пустой ответ модели. Попробуй ещё раз.';
     }
     return content;
-  } catch (error) {
+
+  } catch (error: any) {
     console.error('Chat completion error:', error);
-    return 'Произошла ошибка. Попробуй позже.';
+    const msg = typeof error?.message === 'string' ? error.message : String(error ?? 'unknown');
+    return `Произошла ошибка: ${msg}. Попробуй позже.`;
   }
 }
 
@@ -158,13 +196,19 @@ function buildMessagesWithContext(messages: Message[], homeworkContext?: any, is
   let safeContext: any;
   try {
     safeContext = JSON.parse(JSON.stringify(homeworkContext));
-  } catch {
-    safeContext = undefined;
+  } catch (e) {
+    console.warn('[groq] context JSON clone failed:', e);
+    return fullMessages; // skip context if not serializable
   }
-  if (!safeContext) return fullMessages;
 
   // Limit questions (avoid token overflow)
   const questions: any[] = Array.isArray(safeContext.questions) ? safeContext.questions.slice(-10) : [];
+  console.log('[groq] context summary:', {
+    hasContext: true,
+    questionsCount: questions.length,
+    name: safeContext.homeworkName,
+    acc: safeContext.accuracyPercentage
+  });
 
   // Build questions block safely
   const questionsBlock = questions.length
