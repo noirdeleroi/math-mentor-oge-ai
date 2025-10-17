@@ -37,6 +37,10 @@ const OgeMath = () => {
   const [historyOffset, setHistoryOffset] = useState(0);
   const [hasMoreHistory, setHasMoreHistory] = useState(true);
   const [isHistoryLoaded, setIsHistoryLoaded] = useState(false);
+  
+  // State for homework context
+  const [homeworkContext, setHomeworkContext] = useState<any>(null);
+  const [contextExpiresAt, setContextExpiresAt] = useState<Date | null>(null);
 
   // Initialize KaTeX
   useKaTeXInitializer();
@@ -64,10 +68,29 @@ const OgeMath = () => {
             console.log('✅ Feedback record found:', feedbackRecord);
 
             if (feedbackRecord.processed && feedbackRecord.feedback_message) {
-              // Feedback already generated - display immediately
+              // Store homework context for follow-up questions
+              if (feedbackRecord.context_data) {
+                setHomeworkContext(feedbackRecord.context_data);
+                setContextExpiresAt(new Date(Date.now() + 30 * 60 * 1000)); // 30 min timeout
+                console.log('📚 Loaded homework context:', feedbackRecord.context_data);
+              }
+              
+              // Feedback already generated - display immediately with helpful prompts
               const feedbackMsg: Message = {
                 id: Date.now(),
-                text: `🎯 **Автоматический анализ домашнего задания "${feedbackRecord.homework_name}"**\n\n${feedbackRecord.feedback_message}`,
+                text: `🎯 **Автоматический анализ домашнего задания "${feedbackRecord.homework_name}"**
+
+${feedbackRecord.feedback_message}
+
+---
+
+💬 **Теперь можешь спросить:**
+- "Объясни, почему задача 3 неправильная"
+- "Покажи решение задачи 5 подробнее"
+- "Как правильно решать такие задачи?"
+- "Почему мой ответ в задаче 7 не подходит?"
+
+Я помню все детали твоего ДЗ и готов обсудить любой вопрос! 🎓`,
                 isUser: false,
                 timestamp: new Date(feedbackRecord.processed_at)
               };
@@ -102,13 +125,38 @@ const OgeMath = () => {
                   .eq('id', pendingFeedbackId)
                   .single();
 
-                if (updated?.processed) {
+                  if (updated?.processed) {
                   clearInterval(pollInterval);
                   
                   if (updated.feedback_message) {
+                    // Store homework context when polling completes
+                    const { data: completeRecord } = await supabase
+                      .from('pending_homework_feedback')
+                      .select('context_data')
+                      .eq('id', pendingFeedbackId)
+                      .single();
+                      
+                    if (completeRecord?.context_data) {
+                      setHomeworkContext(completeRecord.context_data);
+                      setContextExpiresAt(new Date(Date.now() + 30 * 60 * 1000));
+                      console.log('📚 Loaded homework context (from polling):', completeRecord.context_data);
+                    }
+                    
                     const feedbackMsg: Message = {
                       id: Date.now(),
-                      text: `🎯 **Автоматический анализ домашнего задания "${updated.homework_name}"**\n\n${updated.feedback_message}`,
+                      text: `🎯 **Автоматический анализ домашнего задания "${updated.homework_name}"**
+
+${updated.feedback_message}
+
+---
+
+💬 **Теперь можешь спросить:**
+- "Объясни, почему задача 3 неправильная"
+- "Покажи решение задачи 5 подробнее"
+- "Как правильно решать такие задачи?"
+- "Почему мой ответ в задаче 7 не подходит?"
+
+Я помню все детали твоего ДЗ и готов обсудить любой вопрос! 🎓`,
                       isUser: false,
                       timestamp: new Date(updated.processed_at || new Date())
                     };
@@ -292,8 +340,17 @@ const OgeMath = () => {
     addMessage(newUserMessage);
     setIsTyping(true);
     try {
-      // Send message to AI and get response
-      const aiResponse = await sendChatMessage(newUserMessage, messages, isDatabaseMode);
+      // Check if homework context is still valid
+      const validContext = homeworkContext && contextExpiresAt && new Date() < contextExpiresAt 
+        ? homeworkContext 
+        : null;
+      
+      if (validContext) {
+        console.log('💬 Using homework context for AI response');
+      }
+      
+      // Send message to AI and get response with context
+      const aiResponse = await sendChatMessage(newUserMessage, messages, isDatabaseMode, validContext);
       addMessage(aiResponse);
 
       // Save chat interaction to database
@@ -435,6 +492,30 @@ const OgeMath = () => {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col h-full min-h-0">
+        {/* Homework Context Indicator */}
+        {homeworkContext && contextExpiresAt && new Date() < contextExpiresAt && (
+          <div className="px-4 py-2 bg-blue-50 dark:bg-blue-950 border-b border-blue-200 dark:border-blue-800">
+            <div className="flex items-center justify-between max-w-4xl mx-auto">
+              <span className="text-sm text-blue-700 dark:text-blue-300">
+                📚 Обсуждаем: {homeworkContext.homeworkName || 'Домашнее задание'}
+              </span>
+              <button 
+                onClick={() => {
+                  setHomeworkContext(null);
+                  setContextExpiresAt(null);
+                  toast({
+                    title: 'Контекст очищен',
+                    description: 'Теперь можно обсудить другие темы',
+                  });
+                }}
+                className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
+              >
+                Очистить контекст
+              </button>
+            </div>
+          </div>
+        )}
+        
         {/* Chat Messages Area - Scrollable */}
         <div className="flex-1 overflow-hidden min-h-0">
           <CourseChatMessages messages={messages} isTyping={isTyping} onLoadMoreHistory={loadMoreHistory} isLoadingHistory={isLoadingHistory} hasMoreHistory={hasMoreHistory} />

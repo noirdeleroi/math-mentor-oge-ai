@@ -56,7 +56,7 @@ function extractLastQuestionId(messages: Message[]): string | null {
   return null;
 }
 
-export async function getChatCompletion(messages: Message[]): Promise<string> {
+export async function getChatCompletion(messages: Message[], homeworkContext?: any): Promise<string> {
   try {
     const lastMessage = messages[messages.length - 1]?.content.toLowerCase();
 
@@ -109,7 +109,51 @@ export async function getChatCompletion(messages: Message[]): Promise<string> {
     }
 
     // Step 3: Default to Groq completion
-    const fullMessages = [SYSTEM_PROMPT, ...messages];
+    let fullMessages: Message[] = [SYSTEM_PROMPT, ...messages];
+    
+    // Inject homework context if available
+    if (homeworkContext) {
+      console.log('💬 Injecting homework context into AI prompt');
+      
+      const contextPrompt: Message = {
+        role: 'system',
+        content: `
+КОНТЕКСТ ДОМАШНЕГО ЗАДАНИЯ (Доступен для обсуждения):
+
+Название: ${homeworkContext.homeworkName || 'Домашнее задание'}
+Выполнено: ${homeworkContext.completedQuestions || 0}/${homeworkContext.totalQuestions || 0} вопросов
+Правильных ответов: ${homeworkContext.correctAnswers || 0}
+Точность: ${homeworkContext.accuracyPercentage || 0}%
+Общее время: ${homeworkContext.totalTimeSeconds || 0} секунд
+Среднее время на вопрос: ${homeworkContext.averageTimePerQuestion || 0} секунд
+
+ДЕТАЛИ ВОПРОСОВ:
+${homeworkContext.questions?.map((q: any, i: number) => `
+Вопрос ${i + 1} (ID: ${q.questionId}):
+  Текст: ${q.questionText || 'Текст недоступен'}
+  Ответ ученика: ${q.userAnswer || 'Не отвечено'}
+  Правильный ответ: ${q.correctAnswer}
+  Результат: ${q.isCorrect ? '✅ Правильно' : '❌ Неправильно'}
+  Время ответа: ${q.responseTimeSeconds || 0}с
+  Тип: ${q.questionType}
+  Сложность: ${q.difficulty}
+  Навыки: ${q.skills?.join(', ') || 'Не указаны'}
+  ${q.showedSolution ? '⚠️ Показывалось решение' : ''}
+`).join('\n') || 'Нет данных о вопросах'}
+
+ИНСТРУКЦИИ ДЛЯ ОТВЕТОВ:
+- Когда ученик упоминает "вопрос 3" или "задача 5", используй данные выше
+- Объясняй ПОЧЕМУ его ответ был неправильным, если он спрашивает
+- Показывай пошаговые решения когда просят
+- Ссылайся на конкретные вопросы по номеру
+- Будь ободряющим и образовательным
+- Помни, что у тебя есть полный доступ ко всем деталям выполненного ДЗ
+- Если ученик спрашивает про конкретную задачу, покажи ее текст, его ответ и правильный ответ
+`
+      };
+      
+      fullMessages = [SYSTEM_PROMPT, contextPrompt, ...messages];
+    }
     
     const { data, error } = await supabase.functions.invoke('groq-chat', {
       body: { messages: fullMessages, stream: false }
