@@ -1079,15 +1079,79 @@ const Homework = () => {
                 </div>
 
                 <Button
-                  onClick={() => {
-                    const completionData = { homeworkName, timestamp: Date.now() };
-                    localStorage.setItem('homeworkCompletionData', JSON.stringify(completionData));
-                    toast({
-                      title: 'Данные отправлены ИИ учителю! 🤖',
-                      description: 'Ваши результаты будут проанализированы автоматически',
-                      duration: 2000
-                    });
-                    navigate('/ogemath');
+                  onClick={async () => {
+                    console.log('🔵 Button clicked - Go to AI Teacher (Regular View)');
+                    console.log('User object:', user);
+                    console.log('Homework name:', homeworkName);
+                    
+                    if (!user) {
+                      console.error('❌ No user object found');
+                      toast({
+                        title: 'Ошибка',
+                        description: 'Необходимо войти в систему',
+                        variant: 'destructive'
+                      });
+                      return;
+                    }
+
+                    try {
+                      console.log('📤 Attempting to insert pending feedback record...');
+                      
+                      // 1. Insert pending feedback record
+                      const { data: pendingRecord, error: insertError } = await supabase
+                        .from('pending_homework_feedback')
+                        .insert({
+                          user_id: user.id,
+                          course_id: '1', // OGE Math course
+                          feedback_type: 'homework',
+                          homework_name: homeworkName,
+                          context_data: {
+                            timestamp: Date.now(),
+                            totalQuestions: currentQuestions.length,
+                            completedQuestions: completedQuestions.size
+                          }
+                        })
+                        .select('id')
+                        .single();
+
+                      if (insertError) {
+                        console.error('❌ Failed to create feedback record:', insertError);
+                        toast({
+                          title: 'Ошибка',
+                          description: `Не удалось создать запрос на обратную связь: ${insertError.message}`,
+                          variant: 'destructive'
+                        });
+                        return;
+                      }
+
+                      console.log('✅ Feedback record created:', pendingRecord);
+
+                      // 2. Trigger edge function to generate feedback in background
+                      console.log('🚀 Invoking edge function...');
+                      supabase.functions.invoke('generate-homework-feedback', {
+                        body: { pending_feedback_id: pendingRecord.id }
+                      }).catch(err => {
+                        console.error('❌ Failed to trigger feedback generation:', err);
+                      });
+
+                      // 3. Show toast and navigate immediately
+                      toast({
+                        title: 'Генерация обратной связи запущена! 🤖',
+                        description: 'ИИ анализирует ваше ДЗ, результат будет в чате',
+                        duration: 2000
+                      });
+
+                      // 4. Navigate with pending_feedback_id parameter
+                      console.log('🧭 Navigating to /ogemath with pending_feedback_id:', pendingRecord.id);
+                      navigate(`/ogemath?pending_feedback=${pendingRecord.id}`);
+                    } catch (error) {
+                      console.error('❌ Unexpected error creating feedback request:', error);
+                      toast({
+                        title: 'Ошибка',
+                        description: error instanceof Error ? error.message : 'Неизвестная ошибка',
+                        variant: 'destructive'
+                      });
+                    }
                   }}
                   className="w-full bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36]"
                   size="lg"
