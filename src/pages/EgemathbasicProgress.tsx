@@ -210,12 +210,12 @@ function ProblemCardSkeleton({
 }
 
 // ---------- Topic Progress Modal ----------
-function TopicProgressModal({
-  isOpen,
-  onClose,
-  module,
+function TopicProgressModal({ 
+  isOpen, 
+  onClose, 
+  module, 
   topicProgress,
-  moduleDefinitions
+  moduleDefinitions 
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -242,8 +242,8 @@ function TopicProgressModal({
         <div className="space-y-3">
           {topics.map(topicCode => {
           const progress = topicProgress[topicCode] || 0;
-          const hue = hueForProgress(progress);
-          const ringColor = `hsl(${hue} 72% 44%)`;
+            const hue = hueForProgress(progress);
+            const ringColor = `hsl(${hue} 72% 44%)`;
           return <div key={topicCode} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
                 <span className="text-sm font-medium text-gray-700">{TOPIC_NAMES[topicCode] || `Тема ${topicCode}`}</span>
                 <div className="flex items-center gap-2">
@@ -256,13 +256,13 @@ function TopicProgressModal({
                   <span className="text-sm font-semibold text-gray-900 w-10 text-right">{progress}%</span>
                 </div>
               </div>;
-        })}
+          })}
         </div>
       </div>
     </div>;
-}
+  }
 
-// ---------- Components ----------
+  // ---------- Components ----------
 function ModuleCard({
   m,
   onClick
@@ -270,32 +270,32 @@ function ModuleCard({
   m: ModuleItem;
   onClick?: () => void;
 }) {
-  const ring = `hsl(${hueForProgress(m.progress)} 72% 44%)`;
+    const ring = `hsl(${hueForProgress(m.progress)} 72% 44%)`;
   return <div className="group relative rounded-2xl border border-gray-200 bg-white/90 p-4 hover:border-gray-300 transition-colors cursor-pointer" onClick={onClick}>
-      <div className="flex items-start gap-4">
-        <Radial value={m.progress} size={56} />
-        <div className="min-w-0 flex-1">
-          <h3 className="truncate text-[15px] font-semibold text-gray-900">{m.title}</h3>
-          <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-gray-200">
+        <div className="flex items-start gap-4">
+          <Radial value={m.progress} size={56} />
+          <div className="min-w-0 flex-1">
+            <h3 className="truncate text-[15px] font-semibold text-gray-900">{m.title}</h3>
+            <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-gray-200">
             <div className="h-full rounded-full" style={{
             width: `${m.progress}%`,
             backgroundColor: ring
           }} />
-          </div>
-          <div className="mt-2 flex flex-wrap items-center gap-3 text-[12px] text-gray-600">
-            <span>Освоено: <b>{m.mastered}</b>/<b>{m.total}</b></span>
-            <span className="opacity-70">{statusText(m.progress)}</span>
+            </div>
+            <div className="mt-2 flex flex-wrap items-center gap-3 text-[12px] text-gray-600">
+              <span>Освоено: <b>{m.mastered}</b>/<b>{m.total}</b></span>
+              <span className="opacity-70">{statusText(m.progress)}</span>
+            </div>
           </div>
         </div>
-      </div>
     </div>;
-}
-function ModuleView({
-  modules,
-  topicProgress,
-  moduleDefinitions
-}: {
-  modules: ModuleItem[];
+  }
+  function ModuleView({ 
+    modules, 
+    topicProgress, 
+    moduleDefinitions 
+  }: { 
+    modules: ModuleItem[]; 
   topicProgress: {
     [key: string]: number;
   };
@@ -304,43 +304,43 @@ function ModuleView({
     name: string;
     topicCodes: string[];
   }>;
-}) {
-  const hasRealData = modules.some(m => m.progress > 0 || m.total > 0 || m.mastered > 0);
-  const [sortByLow, setSortByLow] = useState(false);
-  const [onlyNeedsWork, setOnlyNeedsWork] = useState(false);
-  const [selectedModule, setSelectedModule] = useState<ModuleItem | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const list = useMemo(() => {
-    let arr = [...modules];
-    if (onlyNeedsWork) arr = arr.filter(m => m.progress < 80);
-    arr.sort((a, b) => sortByLow ? a.progress - b.progress : a.id - b.id);
-    return arr;
-  }, [modules, sortByLow, onlyNeedsWork]);
-  const handleModuleClick = (module: ModuleItem) => {
-    setSelectedModule(module);
-    setIsModalOpen(true);
-  };
+  }) {
+    const hasRealData = modules.some(m => m.progress > 0 || m.total > 0 || m.mastered > 0);
+    const [sortByLow, setSortByLow] = useState(false);
+    const [onlyNeedsWork, setOnlyNeedsWork] = useState(false);
+    const [selectedModule, setSelectedModule] = useState<ModuleItem | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const list = useMemo(() => {
+      let arr = [...modules];
+      if (onlyNeedsWork) arr = arr.filter(m => m.progress < 80);
+      arr.sort((a, b) => sortByLow ? a.progress - b.progress : a.id - b.id);
+      return arr;
+    }, [modules, sortByLow, onlyNeedsWork]);
+    const handleModuleClick = (module: ModuleItem) => {
+      setSelectedModule(module);
+      setIsModalOpen(true);
+    };
   return <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <button onClick={() => setOnlyNeedsWork(v => !v)} className="rounded-xl border px-3 py-1.5 text-[13px] hover:bg-gray-50">
-            {onlyNeedsWork ? "Показать все" : "Только < 80%"}
-          </button>
-          <button onClick={() => setSortByLow(v => !v)} className="rounded-xl border px-3 py-1.5 text-[13px] hover:bg-gray-50">
-            {sortByLow ? "Сортировать: снизу вверх" : "Сортировать: сверху вниз"}
-          </button>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <button onClick={() => setOnlyNeedsWork(v => !v)} className="rounded-xl border px-3 py-1.5 text-[13px] hover:bg-gray-50">
+              {onlyNeedsWork ? "Показать все" : "Только < 80%"}
+            </button>
+            <button onClick={() => setSortByLow(v => !v)} className="rounded-xl border px-3 py-1.5 text-[13px] hover:bg-gray-50">
+              {sortByLow ? "Сортировать: снизу вверх" : "Сортировать: сверху вниз"}
+            </button>
+          </div>
+          <div className="flex flex-wrap gap-4 text-gray-600">
+            <LegendItem label="< 40%" mid={20} />
+            <LegendItem label="40–79%" mid={60} />
+            <LegendItem label="80–99%" mid={90} />
+            <LegendItem label="100%" mid={100} />
+          </div>
         </div>
-        <div className="flex flex-wrap gap-4 text-gray-600">
-          <LegendItem label="< 40%" mid={20} />
-          <LegendItem label="40–79%" mid={60} />
-          <LegendItem label="80–99%" mid={90} />
-          <LegendItem label="100%" mid={100} />
-        </div>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {hasRealData ? list.map(m => <ModuleCard key={m.id} m={m} onClick={() => handleModuleClick(m)} />) : PLACEHOLDER_MODULES.map(m => <ModuleCardSkeleton key={m.id} title={m.title} />)}
-      </div>
+        </div>
 
       <TopicProgressModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} module={selectedModule} topicProgress={topicProgress} moduleDefinitions={moduleDefinitions} />
     </div>;
@@ -350,46 +350,46 @@ function ProblemView({
 }: {
   problems: ProblemItem[];
 }) {
-  const hasRealData = problems.some(p => p.progress > 0);
-  const [showOnlyNeedsWork, setShowOnlyNeedsWork] = useState(false);
+    const hasRealData = problems.some(p => p.progress > 0);
+    const [showOnlyNeedsWork, setShowOnlyNeedsWork] = useState(false);
   const filtered = useMemo(() => showOnlyNeedsWork ? problems.filter(i => i.progress < 80) : problems, [problems, showOnlyNeedsWork]);
-  useEffect(() => {
+    useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key.toLowerCase() === "f") setShowOnlyNeedsWork(v => !v);
     };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, []);
+      window.addEventListener("keydown", onKey);
+      return () => window.removeEventListener("keydown", onKey);
+    }, []);
   return <div className="space-y-4">
-      <div className="flex items-center justify-between gap-3">
-        <button onClick={() => setShowOnlyNeedsWork(v => !v)} className="rounded-xl border px-3 py-1.5 text-[13px] hover:bg-gray-50" title="Клавиша F — переключить фильтр">
-          {showOnlyNeedsWork ? "Показать все" : "Только < 80%"}
-        </button>
-        <div className="flex flex-wrap gap-4 text-gray-600">
-          <LegendItem label="< 40%" mid={20} />
-          <LegendItem label="40–79%" mid={60} />
-          <LegendItem label="80–99%" mid={90} />
-          <LegendItem label="100%" mid={100} />
+        <div className="flex items-center justify-between gap-3">
+          <button onClick={() => setShowOnlyNeedsWork(v => !v)} className="rounded-xl border px-3 py-1.5 text-[13px] hover:bg-gray-50" title="Клавиша F — переключить фильтр">
+            {showOnlyNeedsWork ? "Показать все" : "Только < 80%"}
+          </button>
+          <div className="flex flex-wrap gap-4 text-gray-600">
+            <LegendItem label="< 40%" mid={20} />
+            <LegendItem label="40–79%" mid={60} />
+            <LegendItem label="80–99%" mid={90} />
+            <LegendItem label="100%" mid={100} />
+          </div>
         </div>
-      </div>
 
       <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 xl:grid-cols-8 gap-4">
         {hasRealData ? filtered.map(it => <div key={it.key} className="rounded-xl border border-gray-200 bg-white/90 p-2.5 hover:border-gray-300 transition-colors">
-                <div className="flex items-center justify-center mb-2">
-                  <span className="text-[12px] font-medium text-gray-800">№ {it.label}</span>
-                </div>
-                <div className="grid place-items-center mb-2">
+                  <div className="flex items-center justify-center mb-2">
+                    <span className="text-[12px] font-medium text-gray-800">№ {it.label}</span>
+                  </div>
+                  <div className="grid place-items-center mb-2">
                   <Radial value={it.progress} size={48} />
-                </div>
-                <div className="h-1 w-full overflow-hidden rounded-full bg-gray-200 mb-1">
+                  </div>
+                  <div className="h-1 w-full overflow-hidden rounded-full bg-gray-200 mb-1">
                   <div className="h-full rounded-full" style={{
             width: `${it.progress}%`,
             backgroundColor: `hsl(${hueForProgress(it.progress)} 72% 44%)`
           }} />
-                </div>
-                <div className="text-center text-[10px] text-gray-500">{statusText(it.progress)}</div>
+                  </div>
+                  <div className="text-center text-[10px] text-gray-500">{statusText(it.progress)}</div>
               </div>) : PLACEHOLDER_PROBLEMS.map(it => <ProblemCardSkeleton key={it.key} label={it.label} />)}
-      </div>
+                </div>
     </div>;
 }
 
@@ -444,9 +444,9 @@ function SkillView({
               </div>)}
       </div>
     </div>;
-}
+  }
 
-// ---------- Sticky Tab Bar ----------
+  // ---------- Sticky Tab Bar ----------
 function TabBar({
   mode,
   setMode
@@ -455,19 +455,19 @@ function TabBar({
   setMode: (m: "module" | "problem" | "skill") => void;
 }) {
   return <div className="sticky top-0 z-30 -mx-4 sm:mx-0 backdrop-blur supports-[backdrop-filter]:bg-white/70 bg-white/95 border-b">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="flex items-center gap-2 py-3">
-          <nav className="relative inline-flex rounded-xl border bg-white shadow-sm">
+            <nav className="relative inline-flex rounded-xl border bg-white shadow-sm">
             <button onClick={() => setMode("module")} className={`flex items-center gap-2 px-3 py-2 text-[13px] ${mode === "module" ? "bg-gray-900 text-white" : "text-gray-700 hover:bg-gray-50"}`} aria-pressed={mode === "module"}>
-              <LayoutGrid className="h-4 w-4" /> Модули
-            </button>
+                <LayoutGrid className="h-4 w-4" /> Модули
+              </button>
             <button onClick={() => setMode("problem")} className={`flex items-center gap-2 px-3 py-2 text-[13px] ${mode === "problem" ? "bg-gray-900 text-white" : "text-gray-700 hover:bg-gray-50"}`} aria-pressed={mode === "problem"}>
-              <ListOrdered className="h-4 w-4" /> Задания
-            </button>
+                <ListOrdered className="h-4 w-4" /> Задания
+              </button>
             <button onClick={() => setMode("skill")} className={`flex items-center gap-2 px-3 py-2 text-[13px] ${mode === "skill" ? "bg-gray-900 text-white" : "text-gray-700 hover:bg-gray-50"}`} aria-pressed={mode === "skill"}>
               <ListOrdered className="h-4 w-4" /> Навыки
             </button>
-          </nav>
+            </nav>
         </div>
       </div>
     </div>;
@@ -876,8 +876,8 @@ export default function EgemathbasicProgress2() {
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
 
-        <TabBar mode={mode} setMode={setMode} />
-
+      <TabBar mode={mode} setMode={setMode} />
+      
         <main className="py-8 space-y-10">
           {mode === "module" ? <ModuleView modules={modules} topicProgress={topicProgress} moduleDefinitions={moduleDefinitions} /> : mode === "problem" ? <ProblemView problems={problems} /> : <SkillView skills={skills} />}
         </main>

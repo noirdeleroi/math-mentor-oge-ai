@@ -5,16 +5,19 @@ import CourseChatMessages from "@/components/chat/CourseChatMessages";
 import ChatInput from "@/components/chat/ChatInput";
 import { sendChatMessage } from "@/services/chatService";
 import { useAuth } from "@/contexts/AuthContext";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useMathJaxInitializer } from "@/hooks/useMathJaxInitializer";
 import { loadChatHistory, saveChatLog, type ChatLog } from "@/services/chatLogsService";
-import { StreakDisplay } from "@/components/streak/StreakDisplay";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
+import { type Message } from "@/contexts/ChatContext";
 
 const EgeMathProf = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { messages, isTyping, isDatabaseMode, setMessages, setIsTyping, addMessage } = useChatContext();
   const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Пользователь';
+  const { toast } = useToast();
   
   // Chat history state
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
@@ -22,119 +25,318 @@ const EgeMathProf = () => {
   const [hasMoreHistory, setHasMoreHistory] = useState(true);
   const [isHistoryLoaded, setIsHistoryLoaded] = useState(false);
   
+  // Homework context state
+  const [homeworkContext, setHomeworkContext] = useState<any>(null);
+  const [contextExpiresAt, setContextExpiresAt] = useState<Date | null>(null);
+  
+  // Refs for pending feedback handling
+  const handledFeedbackRef = useRef<boolean>(false);
+  const lastFeedbackTextRef = useRef<string | null>(null);
+  const channelRef = useRef<any>(null);
+  const addMessageRef = useRef(addMessage);
+  addMessageRef.current = addMessage;
+  
   // Initialize MathJax
   useMathJaxInitializer();
 
-  // Load initial chat history or show welcome messages
+  // Initialize chat history or welcome messages
   useEffect(() => {
-    const loadInitialHistory = async () => {
-      if (!user || isHistoryLoaded) return;
+    if (!isHistoryLoaded && user) {
+      loadInitialHistory();
+    }
+  }, [user, isHistoryLoaded]);
 
-      try {
-        const history = await loadChatHistory('3', 3, 0);
-        
-        if (history.length > 0) {
-          // Convert chat logs to messages format
-          const historyMessages = history.reverse().flatMap((log: ChatLog, index: number) => [
-            {
-              id: Date.now() + index * 2,
-              text: log.user_message,
-              isUser: true,
-              timestamp: new Date(log.time_of_user_message)
-            },
-            {
-              id: Date.now() + index * 2 + 1,
-              text: log.response,
-              isUser: false,
-              timestamp: new Date(log.time_of_response)
-            }
-          ]);
-          
-          setMessages(historyMessages);
-          setHistoryOffset(3);
-          setHasMoreHistory(history.length === 3);
-        } else {
-          // Show welcome messages if no history
-          setMessages([
-            {
-              id: 1,
-              text: `Привет, ${userName}! Я твой ИИ-репетитор по ЕГЭ профильной математике. Готов разобрать сложные задачи и концепции!`,
-              isUser: false,
-              timestamp: new Date()
-            },
-            {
-              id: 2,
-              text: "Хочешь решить задачи повышенной сложности или изучить продвинутые темы?",
-              isUser: false,
-              timestamp: new Date()
-            }
-          ]);
-          setHasMoreHistory(false);
-        }
-        setIsHistoryLoaded(true);
-      } catch (error) {
-        console.error('Error loading chat history:', error);
-        // Show welcome messages on error
-        setMessages([
-          {
-            id: 1,
-            text: `Привет, ${userName}! Я твой ИИ-репетитор по ЕГЭ профильной математике. Готов разобрать сложные задачи и концепции!`,
-            isUser: false,
-            timestamp: new Date()
-          },
-          {
-            id: 2,
-            text: "Хочешь решить задачи повышенной сложности или изучить продвинутые темы?",
-            isUser: false,
-            timestamp: new Date()
+  // Set up real-time subscription for new chat messages
+  useEffect(() => {
+    if (!user) return;
+    if (channelRef.current) return; // already subscribed
+    const channel = supabase
+      .channel('chat_logs_realtime_egeprof')
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'chat_logs',
+        filter: `user_id=eq.${user.id}&course_id=eq.3`
+      }, payload => {
+        console.log('New chat log received (EGE Prof):', payload);
+        const newLog = payload.new as any;
+
+        // Check if this is a homework feedback message (generic completion message)
+        const isHomeworkFeedback = newLog.user_message === 'Домашнее задание завершено - автоматический анализ ИИ учителя';
+        if (isHomeworkFeedback) {
+          // For homework feedback, only add the AI response
+          if (lastFeedbackTextRef.current && newLog.response === lastFeedbackTextRef.current) {
+            return; // Skip duplicate echo of the same feedback
           }
-        ]);
-        setIsHistoryLoaded(true);
-        setHasMoreHistory(false);
+          addMessageRef.current({ id: Date.now(), text: newLog.response, isUser: false, timestamp: new Date(newLog.time_of_response) });
+        } else {
+          // For regular chat messages, add both user and AI messages
+          addMessageRef.current({
+            id: Date.now() * 2 + 1,
+            text: newLog.user_message,
+            isUser: true,
+            timestamp: new Date(newLog.time_of_user_message)
+          });
+          addMessageRef.current({
+            id: Date.now() * 2 + 2,
+            text: newLog.response,
+            isUser: false,
+            timestamp: new Date(newLog.time_of_response)
+          });
+        }
+      })
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'pending_homework_feedback',
+        filter: `user_id=eq.${user.id}&course_id=eq.3`
+      }, async payload => {
+        const updated = payload.new as any;
+        console.log('Pending homework feedback updated (EGE Prof):', updated);
+        if (updated?.processed && updated?.feedback_message) {
+          // Set context for follow-up questions
+          if (updated.context_data) {
+            setHomeworkContext(updated.context_data);
+            setContextExpiresAt(new Date(Date.now() + 30 * 60 * 1000));
+          }
+          const feedbackText = `🎯 **Автоматический анализ домашнего задания "${updated.homework_name}"**
+
+${updated.feedback_message}
+
+---
+
+💬 **Теперь можешь спросить:**
+- "Объясни, почему задача 3 неправильная"
+- "Покажи решение задачи 5 подробнее"
+- "Как правильно решать такие задачи?"
+- "Почему мой ответ в задаче 7 не подходит?"
+
+Я помню все детали твоего ДЗ и готов обсудить любой вопрос! 🎓`;
+          // Avoid duplicate if same text was just shown
+          if (lastFeedbackTextRef.current !== feedbackText) {
+            addMessageRef.current({ id: Date.now(), text: feedbackText, isUser: false, timestamp: new Date(updated.processed_at || new Date()) });
+            lastFeedbackTextRef.current = feedbackText;
+            try {
+              await saveChatLog('Домашнее задание завершено - автоматический анализ ИИ учителя', feedbackText, '3');
+            } catch (e) {
+              console.error('Error saving chat log from realtime pending feedback:', e);
+            }
+          }
+        }
+      })
+      .subscribe(status => {
+        console.log('Chat realtime subscription status (EGE Prof):', status);
+      });
+    channelRef.current = channel;
+    return () => {
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
       }
     };
+  }, [user]);
 
-    loadInitialHistory();
-  }, [user, userName, setMessages, isHistoryLoaded]);
+  const loadInitialHistory = async () => {
+    if (!user) return;
+
+    try {
+      setIsLoadingHistory(true);
+      
+      // Check URL parameter for pending_feedback_id
+      const urlParams = new URLSearchParams(window.location.search);
+      const pendingFeedbackId = urlParams.get('pending_feedback');
+
+      if (pendingFeedbackId && !handledFeedbackRef.current) {
+        handledFeedbackRef.current = true;
+        console.log('Checking pending feedback:', pendingFeedbackId);
+        
+        const { data: feedbackRecord, error: feedbackError } = await supabase
+          .from('pending_homework_feedback')
+          .select('*')
+          .eq('id', pendingFeedbackId)
+          .eq('course_id', '3')
+          .single();
+
+        if (feedbackRecord) {
+          if (feedbackRecord.processed && feedbackRecord.feedback_message) {
+            // Feedback already generated, show immediately
+            if (feedbackRecord.context_data) {
+              setHomeworkContext(feedbackRecord.context_data);
+              setContextExpiresAt(new Date(Date.now() + 30 * 60 * 1000));
+            }
+            const feedbackText = `🎯 **Автоматический анализ домашнего задания "${feedbackRecord.homework_name}"**
+
+${feedbackRecord.feedback_message}
+
+---
+
+💬 **Теперь можешь спросить:**
+- "Объясни, почему задача 3 неправильная"
+- "Покажи решение задачи 5 подробнее"
+- "Как правильно решать такие задачи?"
+- "Почему мой ответ в задаче 7 не подходит?"
+
+Я помню все детали твоего ДЗ и готов обсудить любой вопрос! 🎓`;
+            addMessageRef.current({ id: Date.now(), text: feedbackText, isUser: false, timestamp: new Date(feedbackRecord.processed_at) });
+            lastFeedbackTextRef.current = feedbackText;
+            try {
+              await saveChatLog('Домашнее задание завершено - автоматический анализ ИИ учителя', feedbackText, '3');
+            } catch (e) {
+              console.error('Error saving chat log from pending feedback:', e);
+            }
+            // Clear URL parameter after handling
+            window.history.replaceState({}, '', '/egemathprof');
+          } else {
+            // Feedback not yet generated, poll for it
+            console.log('Feedback not ready yet, polling...');
+            const pollInterval = setInterval(async () => {
+              const { data: updated } = await supabase
+                .from('pending_homework_feedback')
+                .select('*')
+                .eq('id', pendingFeedbackId)
+                .single();
+
+              if (updated?.processed && updated?.feedback_message) {
+                clearInterval(pollInterval);
+                if (updated.context_data) {
+                  setHomeworkContext(updated.context_data);
+                  setContextExpiresAt(new Date(Date.now() + 30 * 60 * 1000));
+                }
+                const feedbackText = `🎯 **Автоматический анализ домашнего задания "${updated.homework_name}"**
+
+${updated.feedback_message}
+
+---
+
+💬 **Теперь можешь спросить:**
+- "Объясни, почему задача 3 неправильная"
+- "Покажи решение задачи 5 подробнее"
+- "Как правильно решать такие задачи?"
+- "Почему мой ответ в задаче 7 не подходит?"
+
+Я помню все детали твоего ДЗ и готов обсудить любой вопрос! 🎓`;
+                addMessageRef.current({ id: Date.now(), text: feedbackText, isUser: false, timestamp: new Date(updated.processed_at) });
+                lastFeedbackTextRef.current = feedbackText;
+                try {
+                  await saveChatLog('Домашнее задание завершено - автоматический анализ ИИ учителя', feedbackText, '3');
+                } catch (e) {
+                  console.error('Error saving chat log from polling:', e);
+                }
+                toast({
+                  title: 'Анализ готов!',
+                  description: 'Проверьте чат для деталей'
+                });
+              } else if (updated.error_message) {
+                clearInterval(pollInterval);
+                toast({
+                  title: 'Ошибка генерации',
+                  description: updated.error_message,
+                  variant: 'destructive'
+                });
+              }
+              
+              // Clear URL parameter after handling
+              window.history.replaceState({}, '', '/egemathprof');
+            }, 2000); // Poll every 2 seconds
+
+            // Cleanup polling after 60 seconds
+            setTimeout(() => clearInterval(pollInterval), 60000);
+          }
+        } else {
+          console.warn('⚠️ Feedback record not found or error:', feedbackError);
+          window.history.replaceState({}, '', '/egemathprof');
+        }
+      }
+
+      const history = await loadChatHistory('3', 3, 0);
+      
+      if (history.length > 0) {
+        const historyMessages: any[] = [];
+        for (const log of history.reverse()) {
+          historyMessages.push({
+            id: historyMessages.length + 1,
+            text: log.user_message,
+            isUser: true,
+            timestamp: new Date(log.time_of_user_message)
+          });
+          historyMessages.push({
+            id: historyMessages.length + 1,
+            text: log.response,
+            isUser: false,
+            timestamp: new Date(log.time_of_response)
+          });
+        }
+        setMessages(historyMessages);
+        setHistoryOffset(3);
+        setHasMoreHistory(history.length === 3);
+      } else {
+        setMessages([
+          { id: 1, text: `Привет, ${userName}! Я твой ИИ-репетитор по ЕГЭ профильной математике. Готов разобрать сложные задачи и концепции!`, isUser: false, timestamp: new Date() },
+          { id: 2, text: "Хочешь решить задачи повышенной сложности или изучить продвинутые темы?", isUser: false, timestamp: new Date() }
+        ]);
+        setHasMoreHistory(false);
+      }
+    } catch (error) {
+      console.error('Error loading chat history:', error);
+      setMessages([
+        {
+          id: 1,
+          text: `Привет, ${userName}! Я твой ИИ-репетитор по ЕГЭ профильной математике. Готов разобрать сложные задачи и концепции!`,
+          isUser: false,
+          timestamp: new Date()
+        },
+        {
+          id: 2,
+          text: "Хочешь решить задачи повышенной сложности или изучить продвинутые темы?",
+          isUser: false,
+          timestamp: new Date()
+        }
+      ]);
+      setHasMoreHistory(false);
+    } finally {
+      setIsLoadingHistory(false);
+      setIsHistoryLoaded(true);
+    }
+  };
 
   const loadMoreHistory = async () => {
     if (!user || isLoadingHistory || !hasMoreHistory) return;
 
-    setIsLoadingHistory(true);
     try {
+      setIsLoadingHistory(true);
       const history = await loadChatHistory('3', 3, historyOffset);
       
       if (history.length > 0) {
-        const historyMessages = history.reverse().flatMap((log: ChatLog, index: number) => [
-          {
-            id: historyOffset * 1000 + index * 2,
+        const historyMessages: any[] = [];
+        for (const log of history.reverse()) {
+          historyMessages.push({
+            id: Date.now() + historyMessages.length,
             text: log.user_message,
             isUser: true,
             timestamp: new Date(log.time_of_user_message)
-          },
-          {
-            id: historyOffset * 1000 + index * 2 + 1,
+          });
+          historyMessages.push({
+            id: Date.now() + historyMessages.length + 1,
             text: log.response,
             isUser: false,
             timestamp: new Date(log.time_of_response)
-          }
-        ]);
-        
+          });
+        }
         setMessages([...historyMessages, ...messages]);
-        setHistoryOffset(prev => prev + history.length);
+        setHistoryOffset(prev => prev + 3);
         setHasMoreHistory(history.length === 3);
       } else {
         setHasMoreHistory(false);
       }
     } catch (error) {
-      console.error('Error loading more history:', error);
+      console.error('Error loading more chat history:', error);
+      setHasMoreHistory(false);
     } finally {
       setIsLoadingHistory(false);
     }
   };
 
   const handleSendMessage = async (userInput: string) => {
-    // Add user message
     const newUserMessage = {
       id: messages.length + 1,
       text: userInput,
@@ -146,21 +348,16 @@ const EgeMathProf = () => {
     setIsTyping(true);
 
     try {
-      // Send message to AI and get response
       const aiResponse = await sendChatMessage(newUserMessage, messages, isDatabaseMode);
       addMessage(aiResponse);
       
-      // Save chat interaction to database
+      // Save chat interaction to database with course_id='3'
       await saveChatLog(userInput, aiResponse.text, '3');
     } catch (error) {
       console.error('Error in chat:', error);
     } finally {
       setIsTyping(false);
     }
-  };
-
-  const handleNavigateToProfile = () => {
-    navigate("/mydashboard");
   };
 
   const handlePracticeClick = () => {
@@ -176,24 +373,9 @@ const EgeMathProf = () => {
   };
 
   return (
-    <div className="flex h-screen w-full bg-background">
+    <div className="flex h-[calc(100vh-68px)] w-full bg-background overflow-hidden">
       {/* Left Sidebar - Fixed */}
       <div className="w-64 h-full bg-sidebar border-r border-border flex-shrink-0">
-        {/* Logo area */}
-        <div className="p-4">
-          <button 
-            onClick={() => navigate("/mydb3")}
-            className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
-          >
-            <img 
-              src="https://kbaazksvkvnafrwtmkcw.supabase.co/storage/v1/object/public/txtbkimg/1001egechat_logo.png" 
-              alt="EGEChat Logo" 
-              className="w-8 h-8"
-            />
-            <span className="font-bold text-lg text-sidebar-foreground">EGEChat</span>
-          </button>
-        </div>
-        
         {/* Menu items */}
         <div className="p-4 space-y-2">
           <Button
@@ -223,15 +405,43 @@ const EgeMathProf = () => {
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col h-full">
-        {/* Header */}
-        <div className="h-14 border-b border-border bg-background flex items-center justify-between px-4">
-          <h1 className="text-xl font-semibold">ЕГЭ Профильная Математика</h1>
-          {user && <StreakDisplay />}
-        </div>
+      <div className="flex-1 flex flex-col h-full min-h-0">
+        {/* NOTE: No page-level header - use LearningLayout header only */}
 
-        {/* Chat Messages Area - Scrollable */}
-        <div className="flex-1 overflow-hidden">
+        {/* Homework Context Indicator */}
+        {homeworkContext && contextExpiresAt && new Date() < contextExpiresAt && (
+          <div className="px-4 py-2 bg-blue-50 dark:bg-blue-950 border-b border-blue-200 dark:border-blue-800">
+            <div className="flex items-center justify-between max-w-4xl mx-auto">
+              <div className="flex items-center gap-3">
+                <div className="px-2.5 py-1 rounded-full bg-gradient-to-r from-yellow-500/20 to-emerald-500/20 border border-yellow-400/40 text-[#1a1f36] text-xs font-medium shadow-sm">
+                  Контекст активен
+                </div>
+                <div className="text-sm text-[#1a1f36] dark:text-blue-100">
+                  <span className="font-semibold">Домашнее задание:</span>
+                  <span className="ml-2">
+                    {homeworkContext.homeworkName || 'без названия'}
+                  </span>
+                </div>
+              </div>
+              <button 
+                onClick={() => {
+                  setHomeworkContext(null);
+                  setContextExpiresAt(null);
+                  toast({
+                    title: 'Контекст очищен',
+                    description: 'Теперь можно обсудить другие темы',
+                  });
+                }}
+                className="text-xs px-3 py-1 rounded-full bg-white/60 backdrop-blur border border-white/60 text-[#1a1f36] hover:bg-white/80 transition"
+              >
+                Очистить
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Chat Messages Area */}
+        <div className="flex-1 overflow-hidden min-h-0">
           <CourseChatMessages 
             messages={messages} 
             isTyping={isTyping}

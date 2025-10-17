@@ -60,7 +60,9 @@ export const COURSES: Record<CourseId, Course> = {
       '/egemathprof',
       '/egemathprof-practice',
       '/egemathprof-progress',
-      '/practice-by-number-egeprofmath'
+      '/egemathprof-revision',
+      '/practice-by-number-egeprofmath',
+      '/homework-egeprof'
     ],
     topicsUrl: 'https://kbaazksvkvnafrwtmkcw.supabase.co/storage/v1/object/public/jsons_for_topic_skills/ege_math_profil_topics_only_with_names.json'
   }
@@ -92,9 +94,18 @@ export function getCourseFromTopicNumber(topicNumber: string): Course | null {
 
 // Enhanced helper to get course from current route
 export function getCourseFromRoute(pathname: string): Course | null {
-  // 1. Try exact static route matches first
-  for (const course of Object.values(COURSES)) {
-    if (course.staticRoutes.some(route => pathname.startsWith(route))) {
+  // 1. Collect all routes with their courses and sort by length (longest first)
+  // This prevents partial matches like /homework matching /homework-egeb
+  const allRoutes = Object.entries(COURSES).flatMap(([_, course]) =>
+    course.staticRoutes.map(route => ({ route, course }))
+  );
+  
+  // Sort by route length descending (longest/most specific first)
+  allRoutes.sort((a, b) => b.route.length - a.route.length);
+  
+  for (const { route, course } of allRoutes) {
+    // Exact match or child path match (e.g., /homework-egeb or /homework-egeb/results)
+    if (pathname === route || pathname.startsWith(route + '/')) {
       return course;
     }
   }

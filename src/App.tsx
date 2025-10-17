@@ -30,6 +30,7 @@ const OgemathPractice = lazy(() => import("./pages/OgemathPractice"));
 const OgemathMock = lazy(() => import("./pages/OgemathMock"));
 const OgemathRevision = lazy(() => import("./pages/OgemathRevision"));
 const EgemathbasicRevision = lazy(() => import("./pages/EgemathbasicRevision"));
+const EgemathprofRevision = lazy(() => import("./pages/EgemathprofRevision"));
 const EgemathbasicMock = lazy(() => import("./pages/EgemathbasicMock"));
 const OgemathProgress2 = lazy(() => import("./pages/OgemathProgress2"));
 const EgemathbasicProgress = lazy(() => import("./pages/EgemathbasicProgress"));
@@ -44,6 +45,7 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const MyDb3 = lazy(() => import("./pages/MyDb3"));
 const Homework = lazy(() => import("./pages/Homework"));
 const HomeworkEgeb = lazy(() => import("./pages/HomeworkEgeb"));
+const HomeworkEgeprof = lazy(() => import("./pages/HomeworkEgeprof"));
 const HomeworkFipiPractice = lazy(() => import("./pages/HomeworkFipiPractice"));
 const CellardLp2 = lazy(() => import("./pages/CellardLp2"));
 
@@ -89,6 +91,7 @@ const App = () => (
                 <Route path="/egemathprof-practice" element={<EgemathprofPractice />} />
                 <Route path="/egemathbasic-practice" element={<EgemathbasicPractice />} />
                 <Route path="/egemathbasic-revision" element={<EgemathbasicRevision />} />
+                <Route path="/egemathprof-revision" element={<EgemathprofRevision />} />
                 <Route path="/egemathprof" element={<EgeMathProf />} />
                 <Route path="/egemathbasic" element={<EgeMathBasic />} />
               </Route>
@@ -105,6 +108,7 @@ const App = () => (
                 <Route path="/practice" element={<PracticeExercise />} />
                 <Route path="/homework" element={<Homework />} />
                 <Route path="/homework-egeb" element={<HomeworkEgeb />} />
+                <Route path="/homework-egeprof" element={<HomeworkEgeprof />} />
                 <Route path="/homework-fipi-practice" element={<HomeworkFipiPractice />} />
               </Route>
               </Route>
