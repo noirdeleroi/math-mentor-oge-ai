@@ -1,24 +1,49 @@
-import React from 'react';
+// src/components/LoadingOverlay.tsx
+import React from "react";
+import Loading from "@/components/ui/Loading";
+
+type LoadingVariant = "ring" | "dots" | "ring-dots";
+type LoadingSize = "sm" | "md" | "lg";
 
 interface LoadingOverlayProps {
+  /** Главный текст под анимацией */
   message?: string;
+  /** Дополнительная строка под сообщением (мельче) */
+  subMessage?: string;
+  /** Тип анимации: кольцо, точки или оба вместе */
+  variant?: LoadingVariant;
+  /** Размер спиннера/точек */
+  size?: LoadingSize;
+  /** Доп. классы-обёртки (передаются внутрь Loading) */
+  className?: string;
+  /** Кастомные классы текста сообщения */
+  textClassName?: string;
 }
 
-export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({ 
-  message = "Загрузка..." 
+/**
+ * Полноэкранный оверлей загрузки,
+ * визуально совпадает со стилем из src/components/ui/Loading.tsx.
+ */
+export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
+  message = "Загрузка...",
+  subMessage,
+  variant = "ring-dots",
+  size = "lg",
+  className,
+  textClassName,
 }) => {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm animate-fade-in">
-      <div className="bg-card rounded-2xl p-8 shadow-2xl max-w-sm w-full mx-4 animate-scale-in border border-border">
-        <div className="text-center">
-          {/* Spinner animation */}
-          <div className="mx-auto w-16 h-16 border-4 border-muted border-t-primary rounded-full animate-spin mb-4" />
-          
-          <p className="text-foreground text-lg font-medium">
-            {message}
-          </p>
-        </div>
-      </div>
-    </div>
+    <Loading
+      fullscreen
+      overlay
+      variant={variant}
+      message={message}
+      subMessage={subMessage}
+      size={size}
+      className={className}
+      textClassName={textClassName}
+    />
   );
 };
+
+export default LoadingOverlay;

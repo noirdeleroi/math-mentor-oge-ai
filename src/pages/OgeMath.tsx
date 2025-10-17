@@ -355,7 +355,7 @@ const OgeMath = () => {
       if (error) throw error;
 
       // Task created successfully
-      const successMessageText = "Задание создано";
+      const successMessageText = "Твое задание создано! 🎉Нажми на мой аватар в сториc выше, чтобы прочитать его. Ееее! 😎";
       
       // Add AI response to chat
       const aiMessage: Message = {

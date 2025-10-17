@@ -1,4 +1,5 @@
-// src/pages/Homework.tsx
+// src/pages/HomeworkEgeb.tsx
+// Copy of Homework.tsx adapted for EGE Basic (course_id = '2') and FRQ from egemathbase
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -7,10 +8,7 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import {
-  BookOpen, Trophy, Target, Clock, ArrowRight, Check, X, Eye,
-  BarChart3, MessageSquare, ArrowLeft, Highlighter
-} from 'lucide-react';
+import { BookOpen, Trophy, Target, ArrowRight, Check, X, Eye, BarChart3, MessageSquare, ArrowLeft, Highlighter } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -27,7 +25,6 @@ import ChatInput from '@/components/chat/ChatInput';
 import { sendChatMessage } from '@/services/chatService';
 import { saveChatLog } from '@/services/chatLogsService';
 import { awardEnergyPoints } from '@/services/energyPoints';
-// Removed animated background for a calmer UI
 
 interface HomeworkData {
   mcq_questions: string[];
@@ -56,7 +53,7 @@ interface ProgressStats {
   difficultyBreakdown: Record<string, number>;
 }
 
-const Homework = () => {
+const HomeworkEgeb = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -86,50 +83,41 @@ const Homework = () => {
   const [checkingAnswer, setCheckingAnswer] = useState(false);
   const [answerCheckMethod, setAnswerCheckMethod] = useState<'numeric' | 'ai' | null>(null);
   const [reviewMode, setReviewMode] = useState(false);
-  const [allQuestionResults, setAllQuestionResults] = useState<Array<{
-    question: Question;
-    type: 'mcq' | 'frq';
-    userAnswer: string;
-    isCorrect: boolean;
-    correctAnswer: string;
-  }>>([]);
+  const [allQuestionResults, setAllQuestionResults] = useState<Array<{ question: Question; type: 'mcq' | 'frq'; userAnswer: string; isCorrect: boolean; correctAnswer: string; }>>([]);
 
-  // Mastery tracking (FIPI)
   const [currentAttemptId, setCurrentAttemptId] = useState<number | null>(null);
   const [attemptStartTime, setAttemptStartTime] = useState<Date | null>(null);
 
-  // Selector tool states
   const [isSelecterActive, setIsSelecterActive] = useState(false);
   const [selectedText, setSelectedText] = useState('');
   const [selectionPosition, setSelectionPosition] = useState<{ x: number; y: number } | null>(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
 
-  // Chat context
   const { messages, setMessages, isTyping, setIsTyping, addMessage, isDatabaseMode } = useChatContext();
 
-  // ---------- Flicker guards (React 18 StrictMode) ----------
-  const didInitRef = useRef(false);               // 🔒 run initial loads once
-  const didCheckRef = useRef(false);              // 🔒 run checkExistingProgress once
-  const didLoadQuestionsRef = useRef(false);      // 🔒 loadQuestions once per session
-  const sessionStartedRef = useRef(false);        // 🔒 recordSessionStart once
-  const mountedRef = useRef(false);               // helps avoid setState after unmount
-
+  const didInitRef = useRef(false);
+  const didCheckRef = useRef(false);
+  const didLoadQuestionsRef = useRef(false);
+  const sessionStartedRef = useRef(false);
+  const mountedRef = useRef(false);
   useEffect(() => { mountedRef.current = true; return () => { mountedRef.current = false; }; }, []);
 
-  // Initialize MathJax selection - reinitialize when reviewMode changes
   useMathJaxSelection({ root: reviewMode ? '#solution-box' : undefined });
+
+  const closeSelectionPopup = () => {
+    setSelectedText('');
+    setSelectionPosition(null);
+    window.getSelection()?.removeAllRanges();
+  };
 
   const loadHomeworkData = async () => {
     if (!user) return;
     try {
       const { data, error } = await supabase.from('profiles').select('*').eq('user_id', user.id).single();
-      if (error) {
-        console.error('Error loading homework:', error);
-        return;
-      }
-      if (data && (data as any).homework) {
+      if (error) return;
+      if (data && (data as any).homework2) {
         try {
-          const parsedHomework = JSON.parse((data as any).homework);
+          const parsedHomework = JSON.parse((data as any).homework2);
           const transformedHomework: HomeworkData = {
             mcq_questions: parsedHomework.MCQ || parsedHomework.mcq_questions || [],
             fipi_questions: parsedHomework.FIPI || parsedHomework.fipi_questions || [],
@@ -137,50 +125,33 @@ const Homework = () => {
             due_date: parsedHomework.due_date
           };
           if (mountedRef.current) setHomeworkData(transformedHomework);
-        } catch (parseError) {
-          console.error('Error parsing homework JSON:', parseError);
-          toast({ title: 'Ошибка', description: 'Неверный формат домашнего задания', variant: 'destructive' });
-        }
+        } catch {}
       }
-    } catch (error) {
-      console.error('Error fetching homework:', error);
-    }
+    } catch {}
   };
 
   const loadUserProfile = async () => {
     if (!user) return;
     try {
-      const { data, error } = await supabase.from('profiles').select('*').eq('user_id', user.id).single();
-      if (error) throw error;
+      const { data } = await supabase.from('profiles').select('*').eq('user_id', user.id).single();
       if (mountedRef.current) setUserProfile(data);
-    } catch (err) {
-      console.error('Error loading profile:', err);
-    }
+    } catch {}
   };
 
   const startFIPIAttempt = async (questionId: string) => {
     if (!user) return;
     try {
-      let skillsArray: number[] = [];
-      let topicsArray: string[] = [];
       let problemNumberType = 1;
-
       try {
-        const { data: detailsResp, error: detailsErr } = await supabase.functions.invoke('get-question-details', {
-          body: { question_id: questionId, course_id: '1' }
+        const { data: detailsResp } = await supabase.functions.invoke('get-question-details', {
+          body: { question_id: questionId, course_id: '2' }
         });
-        if (!detailsErr && detailsResp?.data) {
-          skillsArray = Array.isArray(detailsResp.data.skills_list) ? detailsResp.data.skills_list : [];
-          topicsArray = Array.isArray(detailsResp.data.topics_list) ? detailsResp.data.topics_list : [];
-          if (detailsResp.data.problem_number_type) {
-            problemNumberType = parseInt(detailsResp.data.problem_number_type.toString(), 10);
-          }
+        if (detailsResp?.data?.problem_number_type) {
+          problemNumberType = parseInt(detailsResp.data.problem_number_type.toString(), 10);
         }
-      } catch (e) {
-        console.warn('get-question-details failed, continuing:', e);
-      }
+      } catch {}
 
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from('student_activity')
         .insert({
           user_id: user.id,
@@ -191,139 +162,43 @@ const Homework = () => {
           is_correct: null,
           duration_answer: null,
           scores_fipi: null,
-          skills: skillsArray.length ? skillsArray : null,
-          topics: topicsArray.length ? topicsArray : null
+          course_id: '2'
         })
         .select('attempt_id')
         .single();
 
-      if (!error && data) {
+      if (data) {
         if (mountedRef.current) {
           setCurrentAttemptId(data.attempt_id);
           setAttemptStartTime(new Date());
         }
       }
-    } catch (error) {
-      console.error('Error starting FIPI attempt:', error);
-    }
+    } catch {}
   };
 
-  // -------- Text selection handlers ----------
-  useEffect(() => {
-    if (!isSelecterActive) return;
-  
-    const pickSelection = () => {
-      const text = getSelectedTextWithMath();
-      if (text.trim().length > 0) {
-        setSelectedText(text);
-        const sel = window.getSelection();
-        if (sel && sel.rangeCount) {
-          const rect = sel.getRangeAt(0).getBoundingClientRect();
-          setSelectionPosition({ x: rect.left + rect.width / 2, y: rect.top - 10 });
-        }
-      }
-    };
-  
-    const handleMouseUp = () => setTimeout(pickSelection, 10);
-  
-    document.addEventListener('mouseup', handleMouseUp);
-    document.addEventListener('touchend', handleMouseUp);
-    document.addEventListener('selectionchange', pickSelection); // 👈 new
-  
-    return () => {
-      document.removeEventListener('mouseup', handleMouseUp);
-      document.removeEventListener('touchend', handleMouseUp);
-      document.removeEventListener('selectionchange', pickSelection); // 👈 cleanup
-    };
-  }, [isSelecterActive, reviewMode]); // 👈 add reviewMode
-
-
-  const closeSelectionPopup = () => {
-    setSelectedText('');
-    setSelectionPosition(null);
-    window.getSelection()?.removeAllRanges();
-  };
-
-  const handleAskHedgehog = async () => {
-    if (!selectedText) return;
-    setIsChatOpen(true);
-    closeSelectionPopup();
-
-    const newUserMessage = {
-      id: Date.now(),
-      text: `Объясни мне это: "${selectedText}"`,
-      isUser: true,
-      timestamp: new Date()
-    };
-
-    addMessage(newUserMessage);
-    setIsTyping(true);
-
-    try {
-      const aiResponse = await sendChatMessage(newUserMessage, messages, isDatabaseMode);
-      addMessage(aiResponse);
-      try { await saveChatLog(newUserMessage.text, aiResponse.text, '1'); } catch (logError) {
-        console.error('Error saving chat log:', logError);
-      }
-    } catch (error) {
-      console.error('Error getting AI response:', error);
-      toast({ title: "Ошибка", description: "Не удалось получить ответ от Ёжика", variant: "destructive" });
-    } finally {
-      setIsTyping(false);
-    }
-    setSelectedText('');
-  };
-
-  const handleSendChatMessage = async (userInput: string) => {
-    if (!userInput.trim()) return;
-    const userMessage = { id: Date.now(), text: userInput, isUser: true, timestamp: new Date() };
-    setMessages([...messages, userMessage]);
-    setIsTyping(true);
-
-    try {
-      const aiResponse = await sendChatMessage(userMessage, messages, false);
-      setMessages([...messages, userMessage, aiResponse]);
-      try { await saveChatLog(userInput, aiResponse.text, '1'); } catch (logError) {
-        console.error('Error saving chat log:', logError);
-      }
-    } catch (error) {
-      console.error('Error sending message:', error);
-      toast({ title: 'Ошибка', description: 'Не удалось отправить сообщение', variant: 'destructive' });
-    } finally {
-      setIsTyping(false);
-    }
-  };
-
-
-  // -------- Initial load: run once --------
   useEffect(() => {
     if (!user || didInitRef.current) return;
-    didInitRef.current = true; // 🔒
+    didInitRef.current = true;
     (async () => {
       await loadHomeworkData();
       await loadUserProfile();
       setLoading(false);
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
-  // After both homework & profile are in, check previous progress (once)
   useEffect(() => {
     if (!user || !homeworkData || !userProfile || didCheckRef.current) return;
-    didCheckRef.current = true; // 🔒
+    didCheckRef.current = true;
     checkExistingProgress();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, homeworkData, userProfile]);
 
-  // Set initial question index ONLY when questions first load (not when completedQuestions changes)
   useEffect(() => {
     if (!currentQuestions.length || didLoadQuestionsRef.current === false) return;
     const firstIncomplete = currentQuestions.findIndex(q => !completedQuestions.has(q.id));
     const nextIndex = firstIncomplete >= 0 ? firstIncomplete : 0;
     setCurrentQuestionIndex(nextIndex);
-  }, [currentQuestions]); // Remove completedQuestions dependency to prevent re-running
+  }, [currentQuestions]);
 
-  // When question changes, prepare timer / FIPI attempt
   useEffect(() => {
     if (!currentQuestions.length) return;
     setQuestionStartTime(Date.now());
@@ -333,17 +208,15 @@ const Homework = () => {
     }
   }, [currentQuestionIndex, currentQuestions, questionType, user]);
 
-  // Start a session only once per mount
   useEffect(() => {
     if (!user?.id || !homeworkName || !currentQuestions.length || sessionStartedRef.current) return;
-    sessionStartedRef.current = true; // 🔒
+    sessionStartedRef.current = true;
     recordSessionStart();
   }, [user?.id, homeworkName, currentQuestions.length]);
 
-
   const loadQuestions = async () => {
     if (!homeworkData || didLoadQuestionsRef.current) return;
-    didLoadQuestionsRef.current = true; // 🔒
+    didLoadQuestionsRef.current = true;
     setLoadingQuestions(true);
     if (homeworkData.mcq_questions?.length) {
       await loadMCQQuestions();
@@ -362,12 +235,7 @@ const Homework = () => {
         .from('oge_math_skills_questions')
         .select('*')
         .in('question_id', homeworkData.mcq_questions);
-
-      if (error) {
-        console.error('Error loading MCQ questions:', error);
-        toast({ title: 'Ошибка', description: 'Не удалось загрузить вопросы MCQ', variant: 'destructive' });
-        return;
-      }
+      if (error) return;
 
       const sortedData = homeworkData.mcq_questions
         .map(qid => mcqData?.find(q => q.question_id === qid))
@@ -388,28 +256,20 @@ const Homework = () => {
       }));
 
       if (mountedRef.current) setCurrentQuestions(mcqQuestions);
-    } catch (error) {
-      console.error('Error loading MCQ questions:', error);
-      toast({ title: 'Ошибка', description: 'Произошла ошибка при загрузке вопросов', variant: 'destructive' });
-    }
+    } catch {}
   };
 
   const loadFRQQuestions = async () => {
     if (!homeworkData?.fipi_questions?.length) return;
     try {
       const { data: frqData, error } = await supabase
-        .from('oge_math_fipi_bank')
+        .from('egemathbase')
         .select('*')
         .in('question_id', homeworkData.fipi_questions);
-
-      if (error) {
-        console.error('Error loading FRQ questions:', error);
-        toast({ title: 'Ошибка', description: 'Не удалось загрузить задачи ФИПИ', variant: 'destructive' });
-        return;
-      }
+      if (error) return;
 
       const sortedData = homeworkData.fipi_questions
-        .map(qid => frqData?.find(q => q.question_id === qid))
+        .map(qid => frqData?.find((q: any) => q.question_id === qid))
         .filter(Boolean) as any[];
 
       const frqQuestions: Question[] = sortedData.map((q, index) => ({
@@ -424,43 +284,29 @@ const Homework = () => {
 
       if (mountedRef.current) {
         setCurrentQuestions(frqQuestions);
-        // Reset to first unanswered FRQ question
         const firstIncomplete = frqQuestions.findIndex(q => !completedQuestions.has(q.id));
         setCurrentQuestionIndex(firstIncomplete >= 0 ? firstIncomplete : 0);
       }
-    } catch (error) {
-      console.error('Error loading FRQ questions:', error);
-      toast({ title: 'Ошибка', description: 'Произошла ошибка при загрузке задач', variant: 'destructive' });
-    }
+    } catch {}
   };
 
   const checkExistingProgress = async () => {
-    if (!user?.id || !homeworkData || !userProfile?.homework) { await loadQuestions(); return; }
-
+    if (!user?.id || !homeworkData || !(userProfile as any)?.homework2) { await loadQuestions(); return; }
     try {
-      const homeworkJson = typeof userProfile.homework === 'string'
-        ? JSON.parse(userProfile.homework)
-        : userProfile.homework;
-
+      const hwRaw = (userProfile as any).homework2;
+      const homeworkJson = typeof hwRaw === 'string' ? JSON.parse(hwRaw) : hwRaw;
       const currentHomeworkName = homeworkJson.homework_name || 'Homework';
       setHomeworkName(prev => (prev === currentHomeworkName ? prev : currentHomeworkName));
 
-      const { data: existingSessions, error } = await supabase
+      const { data: existingSessions } = await supabase
         .from('homework_progress')
         .select('*')
         .eq('user_id', user.id)
         .eq('homework_name', currentHomeworkName)
         .order('created_at', { ascending: false });
 
-      if (error) {
-        console.error('Error checking existing progress:', error);
-        await loadQuestions();
-        return;
-      }
-
       if (existingSessions && existingSessions.length > 0) {
         const summaryRecord = existingSessions.find(s => s.question_id === 'Summary');
-
         const completedQuestionsList = existingSessions
           .filter(s => s.question_id && s.question_id !== 'Summary')
           .map(s => s.question_id as string);
@@ -471,7 +317,7 @@ const Homework = () => {
         setCompletedQuestions(new Set(completedQuestionsList));
         setCorrectAnswers(new Set(correctQuestionsList));
 
-        await loadQuestions(); // guarded by didLoadQuestionsRef
+        await loadQuestions();
 
         if (summaryRecord) {
           await loadReviewModeData(existingSessions);
@@ -485,37 +331,27 @@ const Homework = () => {
           await loadFRQQuestions();
           setQuestionType('frq');
         }
-
         setExistingProgress(existingSessions[0]);
       } else {
         await loadQuestions();
       }
-    } catch (error) {
-      console.error('Error checking existing progress:', error);
-      await loadQuestions();
-    }
+    } catch { await loadQuestions(); }
   };
 
   const recordSessionStart = async () => {
     if (!user?.id || !homeworkName) return;
     try {
-      const { data: existingStart, error: checkError } = await supabase
+      const { data: existingStart } = await supabase
         .from('homework_progress')
         .select('id')
         .eq('user_id', user.id)
         .eq('homework_name', homeworkName)
         .ilike('homework_task', '%Session Start%')
         .maybeSingle();
-
-      if (checkError) {
-        console.error('Error checking existing session start:', checkError);
-        return;
-      }
       if (existingStart) return;
 
       const totalQ = (homeworkData?.mcq_questions?.length || 0) + (homeworkData?.fipi_questions?.length || 0);
-
-      const { error } = await supabase.from('homework_progress').insert({
+      await supabase.from('homework_progress').insert({
         user_id: user.id,
         homework_task: `Homework ${new Date().toLocaleDateString()} - Session Start`,
         homework_name: homeworkName,
@@ -524,10 +360,7 @@ const Homework = () => {
         questions_correct: 0,
         completion_status: 'in_progress'
       });
-      if (error) console.error('Error recording session start:', error);
-    } catch (error) {
-      console.error('Error recording session start:', error);
-    }
+    } catch {}
   };
 
   const recordQuestionProgress = async (
@@ -540,7 +373,6 @@ const Homework = () => {
   ) => {
     if (!user?.id || !homeworkName) return;
     try {
-      // Check if this question already has a record to prevent duplicates
       const { data: existingRecord } = await supabase
         .from('homework_progress')
         .select('id')
@@ -548,15 +380,10 @@ const Homework = () => {
         .eq('homework_name', homeworkName)
         .eq('question_id', questionId)
         .maybeSingle();
-
-      if (existingRecord) {
-        console.log('Question already recorded, skipping duplicate insert');
-        return;
-      }
+      if (existingRecord) return;
 
       const currentQuestion = currentQuestions.find(q => q.id === questionId);
       const qType = homeworkData?.mcq_questions?.includes(questionId) ? 'mcq' : 'fipi';
-
       await supabase.from('homework_progress').insert({
         user_id: user.id,
         homework_task: `Homework ${new Date().toLocaleDateString()}`,
@@ -572,19 +399,14 @@ const Homework = () => {
         skill_ids: currentQuestion?.skills ? [currentQuestion.skills] : null,
         problem_number: currentQuestion?.problem_number || null
       });
-    } catch (error) {
-      console.error('Error recording progress:', error);
-    }
+    } catch {}
   };
 
   const loadReviewModeData = async (progressRecords: any[]) => {
     const results: Array<{ question: Question; type: 'mcq' | 'frq'; userAnswer: string; isCorrect: boolean; correctAnswer: string; }> = [];
-
     for (const record of progressRecords) {
       if (record.question_id === 'Summary') continue;
-
       let question = currentQuestions.find(q => q.id === record.question_id);
-
       if (!question) {
         const isMCQ = homeworkData?.mcq_questions?.includes(record.question_id);
         if (isMCQ) {
@@ -604,11 +426,11 @@ const Homework = () => {
               difficulty: data.difficulty || null,
               skills: data.skills || null,
               problem_image: data.problem_image || undefined
-            };
+            } as Question;
           }
         } else {
           const { data } = await supabase
-            .from('oge_math_fipi_bank')
+            .from('egemathbase')
             .select('*')
             .eq('question_id', record.question_id)
             .maybeSingle();
@@ -621,58 +443,25 @@ const Homework = () => {
               problem_number: data.problem_number_type || 0,
               difficulty: data.difficulty || null,
               problem_image: data.problem_image || undefined
-            };
+            } as Question;
           }
         }
       }
       if (!question) continue;
-
       results.push({
         question,
         type: homeworkData?.mcq_questions?.includes(record.question_id) ? 'mcq' : 'frq',
         userAnswer: record.user_answer || '',
         isCorrect: record.is_correct || false,
-        correctAnswer: record.correct_answer || question.correct_answer || ''
+        correctAnswer: record.correct_answer || (question as any).correct_answer || ''
       });
     }
     if (mountedRef.current) setAllQuestionResults(results);
   };
 
-  const loadProgressStats = async () => {
-    if (!user?.id || !homeworkName) return;
-    try {
-      const { data, error } = await supabase
-        .from('homework_progress')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('homework_name', homeworkName)
-        .not('question_id', 'is', null)
-        .neq('question_id', 'Summary');
-      if (error) throw error;
-
-      if (data) {
-        const stats: ProgressStats = {
-          totalTime: data.reduce((sum, r) => sum + (r.response_time_seconds || 0), 0),
-          avgTime: data.length > 0 ? Math.round(data.reduce((s, r) => s + (r.response_time_seconds || 0), 0) / data.length) : 0,
-          showedSolutionCount: data.filter(r => r.showed_solution).length,
-          skillsWorkedOn: [...new Set(data.flatMap(r => r.skill_ids || []))],
-          difficultyBreakdown: data.reduce((acc, r) => {
-            const level = r.difficulty_level || 'unknown';
-            acc[level] = (acc[level] || 0) + 1;
-            return acc;
-          }, {} as Record<string, number>)
-        };
-        if (mountedRef.current) setProgressStats(stats);
-      }
-    } catch (error) {
-      console.error('Error loading stats:', error);
-    }
-  };
-
   const handleSubmitAnswer = async () => {
     const currentQuestion = currentQuestions[currentQuestionIndex];
     if (!currentQuestion || !user) return;
-
     const answer = questionType === 'mcq' ? selectedOption : userAnswer;
     if (!answer) {
       toast({ title: 'Ответ не выбран', description: 'Пожалуйста, выберите или введите ответ', variant: 'destructive' });
@@ -682,35 +471,24 @@ const Homework = () => {
     if (questionType === 'mcq') {
       const correct = answer === currentQuestion.correct_answer;
       const responseTime = Math.floor((Date.now() - questionStartTime) / 1000);
-
       setIsCorrect(correct);
       setShowAnswer(true);
-
-      // Only update state and record progress if not already completed
       if (!completedQuestions.has(currentQuestion.id)) {
-        // Award energy points and trigger animation IMMEDIATELY if correct
         if (correct) {
-          // Fetch current streak for bonus calculation
           const { data: streakData } = await supabase
             .from('user_streaks')
             .select('current_streak')
             .eq('user_id', user.id)
             .single();
-          
           const currentStreak = streakData?.current_streak || 0;
-          
           const result = await awardEnergyPoints(user.id, 'problem', undefined, 'oge_math_skills_questions', currentStreak);
           if (result.success && result.pointsAwarded && (window as any).triggerEnergyPointsAnimation) {
             (window as any).triggerEnergyPointsAnimation(result.pointsAwarded);
           }
         }
-        
-        // Backend operations run after animation trigger
         setCompletedQuestions(prev => new Set([...prev, currentQuestion.id]));
         if (correct) setCorrectAnswers(prev => new Set([...prev, currentQuestion.id]));
-
         await recordQuestionProgress(currentQuestion.id, answer, currentQuestion.correct_answer || '', correct, responseTime, false);
-
         if (currentQuestion.skills) {
           await processMCQSkillAttempt(currentQuestion, correct, responseTime);
         }
@@ -721,72 +499,35 @@ const Homework = () => {
     if (questionType === 'frq') {
       setCheckingAnswer(true);
       setAnswerCheckMethod(null);
-
       try {
-        const { data, error } = await supabase.functions.invoke('check-text-answer', {
+        const { data } = await supabase.functions.invoke('check-text-answer', {
           body: { user_id: user.id, question_id: currentQuestion.id, submitted_answer: answer }
         });
-
-        if (error) {
-          console.error('Error checking answer:', error);
-          toast({ title: 'Ошибка проверки', description: 'Не удалось проверить ответ. Попробуйте снова.', variant: 'destructive' });
-          setCheckingAnswer(false);
-          return;
-        }
-
         const { is_correct } = data;
-
-        const isNumericAnswer =
-          !isNaN(parseFloat(answer)) &&
-          !isNaN(parseFloat(currentQuestion.correct_answer || ''));
-
+        const isNumericAnswer = !isNaN(parseFloat(answer)) && !isNaN(parseFloat(currentQuestion.correct_answer || ''));
         setAnswerCheckMethod(isNumericAnswer ? 'numeric' : 'ai');
         setIsCorrect(is_correct);
         setShowAnswer(true);
-
-        // Only update state and record progress if not already completed
         if (!completedQuestions.has(currentQuestion.id)) {
-          // Award energy points and trigger animation IMMEDIATELY if correct
           if (is_correct) {
-            // Fetch current streak for bonus calculation
             const { data: streakData } = await supabase
               .from('user_streaks')
               .select('current_streak')
               .eq('user_id', user.id)
               .single();
-            
             const currentStreak = streakData?.current_streak || 0;
-            
-            const result = await awardEnergyPoints(user.id, 'problem', undefined, 'oge_math_fipi_bank', currentStreak);
+            const result = await awardEnergyPoints(user.id, 'problem', undefined, 'egemathbase', currentStreak);
             if (result.success && result.pointsAwarded && (window as any).triggerEnergyPointsAnimation) {
               (window as any).triggerEnergyPointsAnimation(result.pointsAwarded);
             }
           }
-          
-          // Backend operations run after animation trigger
           setCompletedQuestions(prev => new Set([...prev, currentQuestion.id]));
           if (is_correct) setCorrectAnswers(prev => new Set([...prev, currentQuestion.id]));
-
           const responseTime = Math.floor((Date.now() - questionStartTime) / 1000);
-          await recordQuestionProgress(
-            currentQuestion.id,
-            answer,
-            currentQuestion.correct_answer || '',
-            is_correct,
-            responseTime,
-            false
-          );
+          await recordQuestionProgress(currentQuestion.id, answer, currentQuestion.correct_answer || '', is_correct, responseTime, false);
         }
-
-        toast({
-          title: is_correct ? 'Правильно! ✓' : 'Неправильно ✗',
-          description: `Проверено ${isNumericAnswer ? 'числовым сравнением' : 'ИИ анализом'}`,
-          variant: is_correct ? 'default' : 'destructive'
-        });
-
-      } catch (error) {
-        console.error('Error in handleSubmitAnswer for FIPI:', error);
-        toast({ title: 'Ошибка', description: 'Произошла ошибка при проверке ответа', variant: 'destructive' });
+        // Suppress correctness toast per requirements
+      } catch {
       } finally {
         setCheckingAnswer(false);
       }
@@ -805,17 +546,13 @@ const Homework = () => {
           is_correct: isCorrectAns,
           difficulty: question.difficulty || 2,
           duration,
-          course_id: '1'
+          course_id: '2'
         }
       });
       if (error) {
-        console.error('process-mcq-skill-attempt error:', error);
         toast({ title: 'Предупреждение', description: 'Не удалось обновить прогресс навыков', variant: 'destructive' });
       }
-    } catch (error) {
-      console.error('Error calling process-mcq-skill-attempt:', error);
-      toast({ title: 'Предупреждение', description: 'Ошибка при обновлении прогресса навыков', variant: 'destructive' });
-    }
+    } catch {}
   };
 
   const updateFIPIActivity = async (isCorrectAns: boolean, scores: number) => {
@@ -824,37 +561,25 @@ const Homework = () => {
       const now = new Date();
       const startTime = attemptStartTime || new Date();
       const durationInSeconds = (now.getTime() - startTime.getTime()) / 1000;
-
-      const { error: updateError } = await supabase
+      await supabase
         .from('student_activity')
-        .update({
-          duration_answer: durationInSeconds,
-          is_correct: isCorrectAns,
-          scores_fipi: scores,
-          finished_or_not: true
-        })
+        .update({ duration_answer: durationInSeconds, is_correct: isCorrectAns, scores_fipi: scores, finished_or_not: true })
         .eq('user_id', user.id)
         .eq('attempt_id', currentAttemptId);
-
-      if (updateError) console.error('Error updating student_activity:', updateError);
-    } catch (error) {
-      console.error('Error in updateFIPIActivity:', error);
-    }
+    } catch {}
   };
 
   const submitToHandleSubmission = async (isCorrectAns: boolean) => {
     if (!user) return;
     try {
-      const { data: activityData, error: activityError } = await supabase
+      const { data: activityData } = await supabase
         .from('student_activity')
         .select('question_id, attempt_id, finished_or_not, duration_answer, scores_fipi')
         .eq('user_id', user.id)
         .order('updated_at', { ascending: false })
         .limit(1)
         .single();
-
-      if (activityError || !activityData) return;
-
+      if (!activityData) return;
       const submissionData = {
         user_id: user.id,
         question_id: activityData.question_id,
@@ -864,34 +589,25 @@ const Homework = () => {
         duration: activityData.duration_answer,
         scores_fipi: activityData.scores_fipi
       };
-
       const { error } = await supabase.functions.invoke('handle-submission', {
-        body: { course_id: '1', submission_data: submissionData }
+        body: { course_id: '2', submission_data: submissionData }
       });
-      if (error) console.error('handle-submission error:', error);
-    } catch (error) {
-      console.error('Error in submitToHandleSubmission:', error);
-    }
+      if (error) {}
+    } catch {}
   };
 
   const handleShowSolution = async () => {
     const currentQuestion = currentQuestions[currentQuestionIndex];
     if (!currentQuestion) return;
-
     const responseTime = Math.floor((Date.now() - questionStartTime) / 1000);
-
     setShowSolution(true);
     setIsCorrect(false);
     setShowAnswer(true);
-
-    // Only update state and record progress if not already completed
     if (!completedQuestions.has(currentQuestion.id)) {
       setCompletedQuestions(prev => new Set([...prev, currentQuestion.id]));
-
       const answer = questionType === 'mcq' ? selectedOption : userAnswer;
       await recordQuestionProgress(currentQuestion.id, answer || '', currentQuestion.correct_answer || '', false, responseTime, true);
     }
-
     if (questionType === 'mcq' && currentQuestion.skills) {
       await processMCQSkillAttempt(currentQuestion, false, responseTime);
     } else if (questionType === 'frq') {
@@ -910,13 +626,12 @@ const Homework = () => {
     setCurrentAttemptId(null);
     setAttemptStartTime(null);
     setAnswerCheckMethod(null);
-
     if (currentQuestionIndex < currentQuestions.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
     } else {
       if (questionType === 'mcq' && (homeworkData?.fipi_questions?.length || 0) > 0) {
         setQuestionType('frq');
-        loadFRQQuestions(); // safe: not gated so you can transition once MCQ ends
+        loadFRQQuestions();
       } else {
         completeHomework();
       }
@@ -925,17 +640,14 @@ const Homework = () => {
 
   const completeHomework = async () => {
     if (!user?.id || !homeworkName) return;
-
     const totalMCQ = homeworkData?.mcq_questions?.length || 0;
     const totalFRQ = homeworkData?.fipi_questions?.length || 0;
     const totalQuestions = totalMCQ + totalFRQ;
-
     const completedCount = completedQuestions.size;
     const correctCount = correctAnswers.size;
     const accuracy = completedCount > 0 ? (correctCount / completedCount) * 100 : 0;
-
     try {
-      const { error: completionError } = await supabase
+      await supabase
         .from('homework_progress')
         .insert({
           user_id: user.id,
@@ -949,40 +661,69 @@ const Homework = () => {
           accuracy_percentage: accuracy,
           completion_status: 'completed'
         });
-
-      if (completionError) {
-        console.error('Error inserting Summary record:', completionError);
-      }
-
       const { data: existingProgress } = await supabase
         .from('homework_progress')
         .select('*')
         .eq('user_id', user.id)
         .eq('homework_name', homeworkName)
         .order('created_at', { ascending: false });
-
       if (existingProgress) {
         await loadReviewModeData(existingProgress);
       }
-
       await loadProgressStats();
-
       setReviewMode(true);
       confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
       toast({ title: 'Домашнее задание завершено!', description: 'Отличная работа! 🎉' });
-    } catch (error) {
-      console.error('Error completing homework:', error);
+    } catch {
       toast({ title: 'Ошибка', description: 'Не удалось сохранить завершение', variant: 'destructive' });
     }
   };
 
-  // --------------------- RENDER ---------------------
+  const loadProgressStats = async () => {
+    if (!user?.id || !homeworkName) return;
+    try {
+      const { data } = await supabase
+        .from('homework_progress')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('homework_name', homeworkName)
+        .not('question_id', 'is', null)
+        .neq('question_id', 'Summary');
+      if (data) {
+        const stats: ProgressStats = {
+          totalTime: data.reduce((sum, r) => sum + (r.response_time_seconds || 0), 0),
+          avgTime: data.length > 0 ? Math.round(data.reduce((s, r) => s + (r.response_time_seconds || 0), 0) / data.length) : 0,
+          showedSolutionCount: data.filter(r => r.showed_solution).length,
+          skillsWorkedOn: [...new Set(data.flatMap(r => r.skill_ids || []))],
+          difficultyBreakdown: data.reduce((acc, r) => { const level = r.difficulty_level || 'unknown'; acc[level] = (acc[level] || 0) + 1; return acc; }, {} as Record<string, number>)
+        };
+        if (mountedRef.current) setProgressStats(stats);
+      }
+    } catch {}
+  };
+
+  const handleSendChatMessage = async (userInput: string) => {
+    if (!userInput.trim()) return;
+    const userMessage = { id: Date.now(), text: userInput, isUser: true, timestamp: new Date() } as any;
+    setMessages([...messages, userMessage]);
+    setIsTyping(true);
+    try {
+      const aiResponse = await sendChatMessage(userMessage, messages, false);
+      setMessages([...messages, userMessage, aiResponse]);
+      try { await saveChatLog(userInput, aiResponse.text, '2'); } catch {}
+    } catch {
+      toast({ title: 'Ошибка', description: 'Не удалось отправить сообщение', variant: 'destructive' });
+    } finally {
+      setIsTyping(false);
+    }
+  };
+
   if (!user) {
     return (
       <div className="min-h-screen text-white relative" style={{ background: "linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)" }}>
         <div className="pt-20 px-4 relative z-10">
           <div className="max-w-2xl mx-auto text-center">
-            <p className="text-lg text-muted-foreground">Войдите в систему для доступа к домашнему заданию</p>
+            <p className="text-lg text-white/70">Войдите в систему для доступа к домашнему заданию</p>
           </div>
         </div>
       </div>
@@ -1007,7 +748,7 @@ const Homework = () => {
         <div className="pt-12 px-4 relative z-10">
           <div className="max-w-3xl mx-auto">
             <div className="mb-6">
-              <Button onClick={() => navigate('/ogemath-practice')} variant="ghost" className="hover:bg-white/10 text-white">
+              <Button onClick={() => navigate('/egemathbasic-practice')} variant="ghost" className="hover:bg-white/10 text-white">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Назад
               </Button>
@@ -1021,7 +762,7 @@ const Homework = () => {
                 <p className="text-gray-600">
                   У вас пока нет домашнего задания от ИИ помощника. Обратитесь к преподавателю или попробуйте другие виды практики.
                 </p>
-                <Button onClick={() => navigate('/ogemath-practice')} className="bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36]">
+                <Button onClick={() => navigate('/egemathbasic-practice')} className="bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36]">
                   Перейти к другим видам практики
                 </Button>
               </CardContent>
@@ -1044,7 +785,7 @@ const Homework = () => {
     );
   }
 
-  // Review Mode - Full Page View
+  // Review Mode - Full Page View (copied and adapted from Homework.tsx)
   if (reviewMode) {
     const totalQuestions = allQuestionResults.length;
     const correctAnswersCount = allQuestionResults.filter(r => r.isCorrect).length;
@@ -1080,14 +821,9 @@ const Homework = () => {
 
                 <Button
                   onClick={() => {
-                    const completionData = { homeworkName, timestamp: Date.now() };
+                    const completionData = { homeworkName, timestamp: Date.now() } as any;
                     localStorage.setItem('homeworkCompletionData', JSON.stringify(completionData));
-                    toast({
-                      title: 'Данные отправлены ИИ учителю! 🤖',
-                      description: 'Ваши результаты будут проанализированы автоматически',
-                      duration: 2000
-                    });
-                    navigate('/ogemath');
+                    navigate('/egemathbasic');
                   }}
                   className="w-full bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36]"
                   size="lg"
@@ -1123,7 +859,7 @@ const Homework = () => {
                           <CardContent className="p-1.5 text-center">
                             <div className="text-xs font-bold mb-0.5">№{originalIndex + 1}</div>
                             <div className="text-[10px] font-medium mb-1 text-muted-foreground">
-                              {result.type === 'mcq' ? 'MCQ' : 'FIPI'}
+                              {result.type === 'mcq' ? 'MCQ' : 'FRQ'}
                             </div>
                             {result.isCorrect
                               ? <Check className="w-3 h-3 text-green-600 mx-auto" />
@@ -1211,7 +947,7 @@ const Homework = () => {
                         if (isSelecterActive) closeSelectionPopup();
                       }}
                       variant={isSelecterActive ? "default" : "outline"}
-                      className={cn("flex items-center gap-2", isSelecterActive && "bg-purple-600 hover:bg-purple-700")}
+                      className={cn("flex items-center gap-2", isSelecterActive && "bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36]")}
                     >
                       <Highlighter className="w-4 h-4" />
                       {isSelecterActive ? "Выкл. выделение" : "Вкл. выделение"}
@@ -1237,167 +973,31 @@ const Homework = () => {
 
   return (
     <div className="min-h-screen text-white relative" style={{ background: "linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)" }}>
-
-      {showCongrats && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.5 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.5 }}
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-        >
-          <motion.div initial={{ y: -50 }} animate={{ y: 0 }} className="bg-[#f4f4f5] rounded-lg p-8 text-center max-w-md mx-4">
-            <Trophy className="w-16 h-16 mx-auto text-[#f59e0b] mb-4" />
-            <h2 className="text-2xl font-bold mb-4" style={{ background: 'linear-gradient(135deg, #f59e0b, #10b981)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Поздравляем!</h2>
-            <p className="text-gray-600 mb-6">Вы успешно выполнили всё домашнее задание! 🎉</p>
-
-            <div className="bg-gradient-to-r from-[#f59e0b]/10 to-[#10b981]/10 rounded-lg p-4 mb-6">
-              <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
-                <BarChart3 className="w-5 h-5" />
-                Результаты работы:
-              </h3>
-              <div className="grid grid-cols-3 gap-4 text-sm mb-4">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-[#f59e0b]">{completedQuestions.size}</div>
-                  <div className="text-gray-600">Выполнено</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-green-600">{correctAnswers.size}</div>
-                  <div className="text-gray-600">Правильно</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600">
-                    {completedQuestions.size > 0 ? Math.round((correctAnswers.size / completedQuestions.size) * 100) : 0}%
-                  </div>
-                  <div className="text-gray-600">Точность</div>
-                </div>
-              </div>
-
-              {progressStats && (
-                <div className="border-t pt-4 space-y-3">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Общее время:</span>
-                    <span className="font-semibold">
-                      {Math.floor(progressStats.totalTime / 60)} мин {progressStats.totalTime % 60} сек
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Среднее время на задачу:</span>
-                    <span className="font-semibold">{progressStats.avgTime} сек</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Просмотрено решений:</span>
-                    <span className="font-semibold">{progressStats.showedSolutionCount}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Навыков отработано:</span>
-                    <span className="font-semibold">{progressStats.skillsWorkedOn.length}</span>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <Button
-                onClick={async () => {
-                  if (!user) {
-                    toast({
-                      title: 'Ошибка',
-                      description: 'Необходимо войти в систему',
-                      variant: 'destructive'
-                    });
-                    return;
-                  }
-
-                  try {
-                    // 1. Insert pending feedback record
-                    const { data: pendingRecord, error: insertError } = await supabase
-                      .from('pending_homework_feedback')
-                      .insert({
-                        user_id: user.id,
-                        course_id: '1', // OGE Math course
-                        feedback_type: 'homework',
-                        homework_name: homeworkName,
-                        context_data: {
-                          timestamp: Date.now(),
-                          totalQuestions: currentQuestions.length,
-                          completedQuestions: completedQuestions.size
-                        }
-                      })
-                      .select('id')
-                      .single();
-
-                    if (insertError) {
-                      console.error('Failed to create feedback record:', insertError);
-                      toast({
-                        title: 'Ошибка',
-                        description: 'Не удалось создать запрос на обратную связь',
-                        variant: 'destructive'
-                      });
-                      return;
-                    }
-
-                    // 2. Trigger edge function to generate feedback in background
-                    supabase.functions.invoke('generate-homework-feedback', {
-                      body: { pending_feedback_id: pendingRecord.id }
-                    }).catch(err => {
-                      console.error('Failed to trigger feedback generation:', err);
-                    });
-
-                    // 3. Show toast and navigate immediately
-                    toast({
-                      title: 'Генерация обратной связи запущена! 🤖',
-                      description: 'ИИ анализирует ваше ДЗ, результат будет в чате',
-                      duration: 2000
-                    });
-
-                    // 4. Navigate with pending_feedback_id parameter
-                    navigate(`/ogemath?pending_feedback=${pendingRecord.id}`);
-                  } catch (error) {
-                    console.error('Error creating feedback request:', error);
-                    toast({
-                      title: 'Ошибка',
-                      description: 'Не удалось запустить генерацию обратной связи',
-                      variant: 'destructive'
-                    });
-                  }
-                }}
-                className="bg-purple-600 hover:bg-purple-700 w-full"
-              >
-                Перейти к ИИ учителю
-              </Button>
-              <Button onClick={() => setShowCongrats(false)} variant="outline" className="w-full">
-                Закрыть
-              </Button>
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-
       <div className="pt-8 px-4 pb-8 relative z-10">
-        <div className="max-w-4xl mx-auto">
-          {/* Header with back button and title - matching ModulePage style */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex items-center gap-6 mb-8"
-          >
+        <div className="max-w-6xl mx-auto">
+          {/* Back Button like egemathbasic-practice */}
+          <div className="mb-8">
             <Button
-              onClick={() => navigate('/ogemath-practice')}
               variant="ghost"
-              className="text-white hover:bg-white/10"
+              size="sm"
+              onClick={() => navigate('/egemathbasic-practice')}
+              className="hover:bg-white/20 text-white"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Назад к карте
+              Назад
             </Button>
-            <div className="flex-1">
-              <h1 className="text-3xl font-bold font-display bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent">
-                Домашнее задание
-              </h1>
-              <p className="text-gray-200/90 mt-1">
-                {homeworkData.mcq_questions?.length || 0} MCQ • {homeworkData.fipi_questions?.length || 0} ФИПИ
-              </p>
-            </div>
-          </motion.div>
+          </div>
+
+          {/* Header like egemathbasic-practice */}
+          <div className="text-center mb-10">
+            <h1 className="text-5xl md:text-6xl font-display font-bold mb-4 bg-gradient-to-r from-gold to-sage bg-clip-text text-transparent">
+              Домашнее задание
+            </h1>
+            <p className="text-lg text-cool-gray font-body">
+              Персональные задания от ИИ помощника
+            </p>
+          </div>
+
           <Card className="mb-6 bg-white/95 text-[#1a1f36] rounded-2xl shadow-xl">
             <CardContent className="py-4">
               <div className="flex items-center gap-4">
@@ -1406,7 +1006,7 @@ const Homework = () => {
                   <Progress value={currentProgress} className="h-2 bg-white/20 [&>div]:bg-gradient-to-r from-yellow-500 to-emerald-500" />
                 </div>
                 <Badge variant="secondary" className={questionType === 'mcq' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}>
-                  {questionType === 'mcq' ? 'MCQ' : 'ФИПИ'}
+                  {questionType === 'mcq' ? 'MCQ' : 'FRQ'}
                 </Badge>
                 <span className="text-sm text-muted-foreground whitespace-nowrap">{completedQuestions.size} из {totalMCQ + totalFRQ} выполнено</span>
               </div>
@@ -1417,7 +1017,7 @@ const Homework = () => {
             <Card className="mb-6 bg-white/95 text-[#1a1f36] rounded-2xl shadow-xl">
               <CardHeader>
                 <CardTitle className="text-lg">
-                  {questionType === 'mcq' ? 'Вопрос с выбором ответа' : 'Задача ФИПИ'}
+                  {questionType === 'mcq' ? 'Вопрос с выбором ответа' : 'Задача'}
                   {currentQuestion.problem_number && (
                     <Badge variant="outline" className="ml-2">№{currentQuestion.problem_number}</Badge>
                   )}
@@ -1426,14 +1026,9 @@ const Homework = () => {
               <CardContent className="space-y-4">
                 {currentQuestion.problem_image && (
                   <div className="flex justify-center mb-4">
-                    <img
-                      src={currentQuestion.problem_image}
-                      alt="Problem illustration"
-                      className="max-w-full h-auto rounded-lg shadow-md"
-                    />
+                    <img src={currentQuestion.problem_image} alt="Problem" className="max-w-full h-auto rounded-lg shadow-md" />
                   </div>
                 )}
-
                 <MathRenderer text={currentQuestion.text} className="text-lg leading-relaxed" compiler="mathjax" />
 
                 {questionType === 'mcq' && currentQuestion.options ? (
@@ -1462,22 +1057,12 @@ const Homework = () => {
                 ) : (
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Ваш ответ:</label>
-                    <Input
-                      value={userAnswer}
-                      onChange={(e) => setUserAnswer(e.target.value)}
-                      placeholder="Введите ответ..."
-                      disabled={showAnswer}
-                      className="text-lg"
-                    />
+                    <Input value={userAnswer} onChange={(e) => setUserAnswer(e.target.value)} placeholder="Введите ответ..." disabled={showAnswer} className="text-lg" />
                   </div>
                 )}
 
                 {showAnswer && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className={`p-4 rounded-lg border-2 ${isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}
-                  >
+                  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className={`p-4 rounded-lg border-2 ${isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
                     <div className="flex items-center gap-2 mb-2">
                       {isCorrect ? <Check className="w-5 h-5 text-green-600" /> : <X className="w-5 h-5 text-red-600" />}
                       <span className={`font-bold ${isCorrect ? 'text-green-800' : 'text-red-800'}`}>
@@ -1506,19 +1091,8 @@ const Homework = () => {
                 <div className="flex gap-2">
                   {!showAnswer ? (
                     <>
-                      <Button
-                        onClick={handleSubmitAnswer}
-                        className="bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36]"
-                        disabled={checkingAnswer || (questionType === 'mcq' ? !selectedOption : !userAnswer)}
-                      >
-                        {checkingAnswer ? (
-                          <>
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                            Проверяем...
-                          </>
-                        ) : (
-                          'Проверить ответ'
-                        )}
+                      <Button onClick={handleSubmitAnswer} className="bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36]" disabled={checkingAnswer || (questionType === 'mcq' ? !selectedOption : !userAnswer)}>
+                        {checkingAnswer ? (<><div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>Проверяем...</>) : ('Проверить ответ')}
                       </Button>
                       <Button onClick={handleShowSolution} variant="outline" className="flex items-center gap-2 border-[#1a1f36]/30 text-[#1a1f36] hover:bg-gray-100 hover:text-[#1a1f36]" disabled={checkingAnswer}>
                         <Eye className="w-4 h-4" />
@@ -1527,15 +1101,10 @@ const Homework = () => {
                     </>
                   ) : (
                     <>
-                      <Button
-                        onClick={handleNextQuestion}
-                        className="flex-1 bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36]"
-                        size="lg"
-                      >
+                      <Button onClick={handleNextQuestion} className="flex-1 bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36]" size="lg">
                         {isFinalOverall ? (
                           <>
-                            <Trophy className="mr-2 h-5 w-5" />
-                            Завершить домашнее задание
+                            <Trophy className="mr-2 h-5 w-5" />Завершить домашнее задание
                           </>
                         ) : (
                           <>
@@ -1548,14 +1117,7 @@ const Homework = () => {
                         <Eye className="w-4 h-4" />
                         Показать решение
                       </Button>
-                      <Button
-                        onClick={() => {
-                          setIsSelecterActive(!isSelecterActive);
-                          if (isSelecterActive) closeSelectionPopup();
-                        }}
-                        variant={isSelecterActive ? "default" : "outline"}
-                        className={cn("flex items-center gap-2", isSelecterActive && "bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36]")}
-                      >
+                      <Button onClick={() => { setIsSelecterActive(!isSelecterActive); if (isSelecterActive) setSelectedText(''); }} variant={isSelecterActive ? "default" : "outline"} className={cn("flex items-center gap-2", isSelecterActive && "bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36]")}>
                         <Highlighter className="w-4 h-4" />
                         {isSelecterActive ? "Выкл. выделение" : "Вкл. выделение"}
                       </Button>
@@ -1565,17 +1127,12 @@ const Homework = () => {
               </CardContent>
             </Card>
           )}
-          </div>
         </div>
+      </div>
 
-        {selectedText && selectionPosition && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="fixed z-50 bg-[#f4f4f5] rounded-lg shadow-xl border-2 p-3"
-          style={{ left: `${selectionPosition.x}px`, top: `${selectionPosition.y}px`, transform: 'translate(-50%, -100%)', borderColor: '#f59e0b' }}
-        >
-          <Button onClick={handleAskHedgehog} className="bg-gradient-to-r from-[#f59e0b] to-[#10b981] hover:opacity-90 text-white flex items-center gap-2">
+      {selectedText && selectionPosition && (
+        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="fixed z-50 bg-white rounded-lg shadow-xl border-2 p-3" style={{ left: `${selectionPosition.x}px`, top: `${selectionPosition.y}px`, transform: 'translate(-50%, -100%)', borderColor: '#10b981' }}>
+          <Button onClick={() => { const newUserMessage = { id: Date.now(), text: `Объясни мне это: "${selectedText}"`, isUser: true, timestamp: new Date() } as any; addMessage(newUserMessage); setIsTyping(true); (async () => { try { const aiResponse = await sendChatMessage(newUserMessage, messages, isDatabaseMode); addMessage(aiResponse); try { await saveChatLog(newUserMessage.text, aiResponse.text, '2'); } catch {} } finally { setIsTyping(false); } })(); setSelectedText(''); }} className="bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36] flex items-center gap-2">
             <MessageSquare className="w-4 h-4" />
             Спросить Ёжика
           </Button>
@@ -1586,7 +1143,7 @@ const Homework = () => {
         <SheetContent side="right" className="w-full sm:w-[540px] flex flex-col h-full p-0">
           <SheetHeader className="px-6 py-4 border-b">
             <SheetTitle className="flex items-center gap-2">
-              <MessageSquare className="w-5 h-5 text-purple-600" />
+              <MessageSquare className="w-5 h-5 text-emerald-600" />
               Чат с Ёжиком
             </SheetTitle>
           </SheetHeader>
@@ -1604,4 +1161,6 @@ const Homework = () => {
   );
 };
 
-export default Homework;
+export default HomeworkEgeb;
+
+

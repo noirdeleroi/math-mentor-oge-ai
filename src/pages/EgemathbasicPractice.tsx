@@ -41,10 +41,10 @@ const EgemathbasicPractice = () => {
       title: "Домашнее задание",
       description: "Персональные задания от ИИ помощника - MCQ и ФИПИ",
       icon: ClipboardList,
-      link: "/homework",
+      link: "/homework-egeb",
       gradient: "from-purple-500 to-pink-500",
       mathSymbol: "∞",
-      comingSoon: true
+      comingSoon: false
     }
   ];
 

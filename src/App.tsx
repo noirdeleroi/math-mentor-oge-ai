@@ -42,6 +42,7 @@ const ModulePage = lazy(() => import("./pages/ModulePage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const MyDb3 = lazy(() => import("./pages/MyDb3"));
 const Homework = lazy(() => import("./pages/Homework"));
+const HomeworkEgeb = lazy(() => import("./pages/HomeworkEgeb"));
 const HomeworkFipiPractice = lazy(() => import("./pages/HomeworkFipiPractice"));
 const CellardLp2 = lazy(() => import("./pages/CellardLp2"));
 
@@ -101,6 +102,7 @@ const App = () => (
                 <Route path="/diagnostic" element={<DiagnosticTest />} />
                 <Route path="/practice" element={<PracticeExercise />} />
                 <Route path="/homework" element={<Homework />} />
+                <Route path="/homework-egeb" element={<HomeworkEgeb />} />
                 <Route path="/homework-fipi-practice" element={<HomeworkFipiPractice />} />
               </Route>
               </Route>

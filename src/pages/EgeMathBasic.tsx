@@ -8,12 +8,15 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { useMathJaxInitializer } from "@/hooks/useMathJaxInitializer";
 import { saveChatLog, loadChatHistory } from "@/services/chatLogsService";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
 
 const EgeMathBasic = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { messages, isTyping, isDatabaseMode, setMessages, setIsTyping, addMessage } = useChatContext();
   const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Пользователь';
+  const { toast } = useToast();
   
   // Chat history state
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
@@ -36,6 +39,43 @@ const EgeMathBasic = () => {
 
     try {
       setIsLoadingHistory(true);
+      // Homework feedback autoshow (course 2)
+      const homeworkData = localStorage.getItem('homeworkCompletionData');
+      let shouldGenerateHomeworkFeedback = false;
+      let homeworkFeedbackMessage = '';
+      if (homeworkData) {
+        try {
+          const completionData = JSON.parse(homeworkData);
+          if (!completionData.homeworkName) {
+            localStorage.removeItem('homeworkCompletionData');
+            throw new Error('Missing homeworkName');
+          }
+          const { data: sessionRows, error } = await supabase
+            .from('homework_progress')
+            .select('*')
+            .eq('user_id', user.id)
+            .eq('homework_name', completionData.homeworkName)
+            .order('created_at', { ascending: true });
+          if (error) throw error;
+          if (sessionRows && sessionRows.length > 0) {
+            // Keep the same structure: summary of results
+            const total = sessionRows.filter(r => r.question_id && r.question_id !== 'Summary').length;
+            const correct = sessionRows.filter(r => r.is_correct).length;
+            const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
+            homeworkFeedbackMessage = `**ДОМАШНЕЕ ЗАДАНИЕ (ЕГЭ база)**\n\n` +
+              `✅ Правильных ответов: ${correct} из ${total}\n` +
+              `📊 Точность: ${accuracy}%`;
+            shouldGenerateHomeworkFeedback = true;
+            localStorage.removeItem('homeworkCompletionData');
+          } else {
+            localStorage.removeItem('homeworkCompletionData');
+          }
+        } catch (err) {
+          console.error('Error processing EGE basic homework completion data:', err);
+          localStorage.removeItem('homeworkCompletionData');
+        }
+      }
+
       const history = await loadChatHistory('2', 3, 0);
       
       if (history.length > 0) {
@@ -55,25 +95,32 @@ const EgeMathBasic = () => {
             timestamp: new Date(log.time_of_response)
           });
         }
-        setMessages(historyMessages);
+        if (shouldGenerateHomeworkFeedback) {
+          setMessages([
+            { id: 1, text: `🎯 **Автоматический анализ домашнего задания**\n\n${homeworkFeedbackMessage}`, isUser: false, timestamp: new Date() },
+            ...historyMessages
+          ]);
+          try { await saveChatLog('Домашнее задание завершено - автоматический анализ ИИ учителя', `🎯 **Автоматический анализ домашнего задания**\n\n${homeworkFeedbackMessage}`, '2'); } catch {}
+        } else {
+          setMessages(historyMessages);
+        }
         setHistoryOffset(3);
         setHasMoreHistory(history.length === 3);
       } else {
         // Show welcome messages if no history
-        setMessages([
-          {
-            id: 1,
-            text: `Привет, ${userName}! Я твой ИИ-репетитор по ЕГЭ базовой математике. Помогу тебе освоить все необходимые темы!`,
-            isUser: false,
-            timestamp: new Date()
-          },
-          {
-            id: 2,
-            text: "Хочешь потренироваться решать задачи или изучить теорию?",
-            isUser: false,
-            timestamp: new Date()
-          }
-        ]);
+        const baseWelcome = [
+          { id: 1, text: `Привет, ${userName}! Я твой ИИ-репетитор по ЕГЭ базовой математике. Помогу тебе освоить все необходимые темы!`, isUser: false, timestamp: new Date() },
+          { id: 2, text: "Хочешь потренироваться решать задачи или изучить теорию?", isUser: false, timestamp: new Date() }
+        ];
+        if (shouldGenerateHomeworkFeedback) {
+          setMessages([
+            { id: 0, text: `🎯 **Автоматический анализ домашнего задания**\n\n${homeworkFeedbackMessage}`, isUser: false, timestamp: new Date() },
+            ...baseWelcome
+          ]);
+          try { await saveChatLog('Домашнее задание завершено - автоматический анализ ИИ учителя', `🎯 **Автоматический анализ домашнего задания**\n\n${homeworkFeedbackMessage}`, '2'); } catch {}
+        } else {
+          setMessages(baseWelcome);
+        }
         setHasMoreHistory(false);
       }
     } catch (error) {
@@ -180,6 +227,77 @@ const EgeMathBasic = () => {
     navigate("/egemathbasic-progress");
   };
 
+  const handleCreateTask = async () => {
+    if (!user) {
+      toast({
+        title: "Ошибка",
+        description: "Необходимо войти в систему",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const userMessageText = "Создать задание";
+    const courseId = '2';
+
+    try {
+      // Add user message to chat
+      const userMessage: any = {
+        id: Date.now(),
+        text: userMessageText,
+        isUser: true,
+        timestamp: new Date()
+      };
+      addMessage(userMessage);
+      setIsTyping(true);
+
+      // Call create-task edge function with course_id=2 and fixed date
+      const { data, error } = await supabase.functions.invoke('create-task', {
+        body: {
+          user_id: user.id,
+          course_id: 2,
+          date_string: '25 may 2026'
+        }
+      });
+
+      if (error) throw error as any;
+
+      const successMessageText = "Твое задание создано! 🎉Нажми на мой аватар в сториc выше, чтобы прочитать его. Ееее! 😎";
+      const aiMessage: any = {
+        id: Date.now() + 1,
+        text: successMessageText,
+        isUser: false,
+        timestamp: new Date()
+      };
+      addMessage(aiMessage);
+
+      // Save chat log with course_id '2'
+      await saveChatLog(userMessageText, successMessageText, courseId);
+
+      toast({
+        title: "Задание создано",
+        description: "Персональное задание успешно создано!"
+      });
+    } catch (err) {
+      console.error('Error creating task:', err);
+      const errorMessageText = "Ошибка при создании задания";
+      addMessage({
+        id: Date.now() + 1,
+        text: errorMessageText,
+        isUser: false,
+        timestamp: new Date()
+      } as any);
+      await saveChatLog(userMessageText, errorMessageText, courseId);
+      toast({
+        title: "Ошибка",
+        description: "Не удалось создать задание",
+        variant: "destructive"
+      });
+    } finally {
+      setIsTyping(false);
+    }
+  };
+
   return (
     <div className="flex h-[calc(100vh-68px)] w-full bg-background overflow-hidden">
       {/* Left Sidebar - keep fewer buttons */}
@@ -209,6 +327,14 @@ const EgeMathBasic = () => {
             className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
           >
             Прогресс
+          </Button>
+
+          <Button
+            onClick={handleCreateTask}
+            variant="ghost"
+            className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+          >
+            Создать задание
           </Button>
         </div>
       </div>

@@ -12,6 +12,7 @@ import MathRenderer from "@/components/MathRenderer";
 import { toast } from "sonner";
 import FormulaBookletDialog from "@/components/FormulaBookletDialog";
 import { LoadingOverlay } from "@/components/LoadingOverlay";
+import Loading from "@/components/ui/Loading";
 
 const COURSE_ID = '1'; // OГЭ
 const makeExamId = () => {
@@ -1127,53 +1128,60 @@ const completeAttempt = async (isCorrect: boolean, scores: number) => {
 
   if (!examStarted) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-        <div className="bg-white shadow-sm border-b">
-          <div className="container mx-auto px-4 py-3">
-            <div className="flex justify-start">
+      <div 
+        className="min-h-screen text-white relative" 
+        style={{ background: 'linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)' }}
+      >
+        <div className="container mx-auto px-4 py-8 relative z-10">
+          <div className="max-w-5xl mx-auto">
+            {/* Back */}
+            <div className="mb-6">
               <Link to="/ogemath-practice">
-                <Button className="bg-gradient-to-r from-yellow-200 to-yellow-300 hover:from-yellow-300 hover:to-yellow-400 text-black shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
+                <Button variant="ghost" size="sm" className="hover:bg-white/20 text-white">
+                  <ArrowLeft className="h-4 w-4 mr-2" />
                   Назад
                 </Button>
               </Link>
             </div>
-          </div>
-        </div>
 
-        <div className="container mx-auto px-4 py-12">
-          <div className="max-w-2xl mx-auto text-center">
-            <div className="mb-8">
-              <Clock className="w-16 h-16 mx-auto mb-4 text-blue-600" />
-              <h1 className="text-4xl font-bold text-gray-900 mb-4">Пробный экзамен ОГЭ</h1>
-              <p className="text-lg text-gray-600 mb-6">Полноценный экзамен с таймером на 3 часа 55 минут</p>
+            {/* Header */}
+            <div className="flex items-center justify-between mb-6">
+              <h1 className="text-3xl md:text-4xl font-display font-bold bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent">
+                Пробный экзамен ОГЭ
+              </h1>
+              <div className="flex items-center gap-3 text-white/80">
+                <Clock className="w-5 h-5" />
+                <span className="font-mono">00:00:00 / 03:55:00</span>
+                <Button onClick={() => setShowFormulaBooklet(true)} variant="outline" className="border-white/30 text-white hover:bg-white/10">
+                  <BookOpen className="w-4 h-4 mr-2" />Справочник формул
+                </Button>
+              </div>
             </div>
 
-            <Card className="mb-8">
-              <CardHeader>
-                <CardTitle>Условия экзамена</CardTitle>
-              </CardHeader>
-              <CardContent className="text-left space-y-3">
-                <p>• <strong>25 вопросов</strong> в порядке от 1 до 25</p>
-                <p>• <strong>Время:</strong> 3 часа 55 минут (таймер запускается автоматически)</p>
-                <p>• <strong>Вопросы 1-19:</strong> текстовые ответы</p>
-                <p>• <strong>Вопросы 20-25:</strong> развернутые решения с фото</p>
-                <p>• <strong>Результаты:</strong> показываются только в конце экзамена</p>
+            {/* Start/Exam UI */}
+            <Card className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl shadow-xl">
+              <CardContent className="p-6">
+                <div className="space-y-4 text-white/80 mb-6">
+                  <p>• <strong className="text-white">25 вопросов</strong> в порядке от 1 до 25</p>
+                  <p>• <strong className="text-white">Время:</strong> 3 часа 55 минут (таймер запускается автоматически)</p>
+                  <p>• <strong className="text-white">Вопросы 1-19:</strong> текстовые ответы</p>
+                  <p>• <strong className="text-white">Вопросы 20-25:</strong> развернутые решения с фото</p>
+                  <p>• <strong className="text-white">Результаты:</strong> показываются только в конце экзамена</p>
+                </div>
+                <Button 
+                  onClick={handleStartExam} 
+                  disabled={loading || !user}
+                  className="bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36] px-8 py-3 text-lg font-semibold"
+                >
+                  {loading ? 'Подготовка экзамена...' : 'Начать экзамен'}
+                </Button>
+                {!user && (
+                  <Alert className="mt-4 bg-orange-50 border-orange-200">
+                    <AlertDescription className="text-orange-800">Войдите в систему для прохождения экзамена</AlertDescription>
+                  </Alert>
+                )}
               </CardContent>
             </Card>
-
-            <Button
-              onClick={handleStartExam}
-              disabled={loading || !user}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg"
-            >
-              {loading ? 'Подготовка экзамена...' : 'Начать экзамен'}
-            </Button>
-
-            {!user && (
-              <Alert className="mt-4">
-                <AlertDescription>Войдите в систему для прохождения экзамена</AlertDescription>
-              </Alert>
-            )}
           </div>
         </div>
       </div>
@@ -1183,63 +1191,72 @@ const completeAttempt = async (isCorrect: boolean, scores: number) => {
   if (examFinished && !isReviewMode) {
     if (!examStats) {
       return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-lg text-gray-600">Обрабатываем результаты...</p>
-          </div>
+        <div 
+          className="min-h-screen text-white relative flex items-center justify-center" 
+          style={{ background: 'linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)' }}
+        >
+          <Loading 
+            variant="ring-dots" 
+            size="lg" 
+            message="Обрабатываем результаты..." 
+            fullscreen={false}
+            className="text-white"
+          />
         </div>
       );
     }
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-        <div className="bg-white shadow-sm border-b">
-          <div className="container mx-auto px-4 py-3">
-            <div className="flex justify-between items-center">
+      <div 
+        className="min-h-screen text-white relative" 
+        style={{ background: 'linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)' }}
+      >
+        <div className="container mx-auto px-4 py-8 relative z-10">
+          <div className="max-w-5xl mx-auto">
+            {/* Back */}
+            <div className="mb-6">
               <Link to="/ogemath-practice">
-                <Button className="bg-gradient-to-r from-yellow-200 to-yellow-300 hover:from-yellow-300 hover:to-yellow-400 text-black shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
+                <Button variant="ghost" size="sm" className="hover:bg-white/20 text-white">
+                  <ArrowLeft className="h-4 w-4 mr-2" />
                   Назад к практике
                 </Button>
               </Link>
-              <div className="text-lg font-semibold text-gray-700">Экзамен завершен</div>
             </div>
-          </div>
-        </div>
 
-        <div className="container mx-auto px-4 py-8">
-          <div className="max-w-4xl mx-auto">
+            {/* Header */}
             <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-gray-900 mb-4">Результаты экзамена</h1>
+              <h1 className="text-3xl md:text-4xl font-display font-bold bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent mb-4">
+                Результаты экзамена
+              </h1>
               <div className="text-6xl font-bold mb-4">
-                <span className={examStats.percentage >= 60 ? 'text-green-600' : 'text-red-600'}>
+                <span className={examStats.percentage >= 60 ? 'text-emerald-400' : 'text-red-400'}>
                   {examStats.percentage}%
                 </span>
               </div>
-              <p className="text-lg text-gray-600">
+              <p className="text-lg text-white/80">
                 {examStats.totalCorrect} из {examStats.totalQuestions} правильных ответов
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <Card>
-                <CardHeader><CardTitle>Часть 1 (1-19)</CardTitle></CardHeader>
+              <Card className="bg-white/95 backdrop-blur border border-white/20 rounded-2xl shadow-xl">
+                <CardHeader><CardTitle className="text-[#1a1f36]">Часть 1 (1-19)</CardTitle></CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold text-blue-600">{examStats.part1Correct}/{examStats.part1Total}</div>
                   <p className="text-gray-600">Базовый уровень</p>
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader><CardTitle>Часть 2 (20-25)</CardTitle></CardHeader>
+              <Card className="bg-white/95 backdrop-blur border border-white/20 rounded-2xl shadow-xl">
+                <CardHeader><CardTitle className="text-[#1a1f36]">Часть 2 (20-25)</CardTitle></CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold text-purple-600">{examStats.part2Correct}/{examStats.part2Total}</div>
                   <p className="text-gray-600">Повышенный уровень</p>
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader><CardTitle>Время</CardTitle></CardHeader>
+              <Card className="bg-white/95 backdrop-blur border border-white/20 rounded-2xl shadow-xl">
+                <CardHeader><CardTitle className="text-[#1a1f36]">Время</CardTitle></CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold text-gray-600">{formatTime(examStats.totalTimeSpent)}</div>
                   <p className="text-gray-600">Общее время</p>
@@ -1247,9 +1264,9 @@ const completeAttempt = async (isCorrect: boolean, scores: number) => {
               </Card>
             </div>
 
-            <Card>
+            <Card className="bg-white/95 backdrop-blur border border-white/20 rounded-2xl shadow-xl">
               <CardHeader>
-                <CardTitle>Подробные результаты</CardTitle>
+                <CardTitle className="text-[#1a1f36]">Подробные результаты</CardTitle>
                 <p className="text-sm text-gray-600 mt-2">
                   <span className="inline-flex items-center gap-2"><span className="w-3 h-3 bg-green-500 rounded"></span>Правильно</span>
                   <span className="inline-flex items-center gap-2 ml-4"><span className="w-3 h-3 bg-red-500 rounded"></span>Неправильно</span>
@@ -1257,7 +1274,7 @@ const completeAttempt = async (isCorrect: boolean, scores: number) => {
                 </p>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-5 gap-2">
+                <div className="grid grid-cols-5 gap-2 mb-6">
                   {Array.from({ length: 25 }, (_, index) => {
                     const result = examResults[index];
                     const isAttempted = result?.attempted !== false;
@@ -1284,6 +1301,23 @@ const completeAttempt = async (isCorrect: boolean, scores: number) => {
                     );
                   })}
                 </div>
+                <div className="flex gap-3 pt-4 border-t">
+                  <Button
+                    onClick={() => window.location.reload()}
+                    className="flex-1 bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36]"
+                  >
+                    Новый экзамен
+                  </Button>
+                  <Link to="/ogemath-practice" className="flex-1">
+                    <Button
+                      variant="outline"
+                      className="w-full border-[#1a1f36]/30 text-[#1a1f36] hover:bg-gray-100"
+                    >
+                      <ArrowLeft className="w-4 h-4 mr-2" />
+                      К практике
+                    </Button>
+                  </Link>
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -1297,26 +1331,29 @@ const completeAttempt = async (isCorrect: boolean, scores: number) => {
     const reviewQuestion = questions[reviewQuestionIndex];
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-        <div className="bg-white shadow-sm border-b">
-          <div className="container mx-auto px-4 py-3">
-            <div className="flex justify-between items-center">
-              <Button onClick={handleBackToSummary}>
+      <div 
+        className="min-h-screen text-white relative" 
+        style={{ background: 'linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)' }}
+      >
+        <div className="container mx-auto px-4 py-8 relative z-10">
+          <div className="max-w-5xl mx-auto">
+            {/* Back */}
+            <div className="mb-6">
+              <Button onClick={handleBackToSummary} variant="ghost" size="sm" className="hover:bg-white/20 text-white">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 К результатам
               </Button>
-              <div className="text-lg font-semibold text-gray-700">
-                Вопрос {reviewQuestionIndex + 1} из {questions.length}
-              </div>
             </div>
-          </div>
-        </div>
 
-        <div className="container mx-auto px-4 py-8">
-          <div className="max-w-4xl mx-auto">
-            <Card className="mb-6">
+            {/* Header */}
+            <div className="text-center mb-8">
+              <h1 className="text-2xl md:text-3xl font-display font-bold bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent">
+                Вопрос {reviewQuestionIndex + 1} из {questions.length}
+              </h1>
+            </div>
+            <Card className="mb-6 bg-white/95 backdrop-blur border border-white/20 rounded-2xl shadow-xl">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-[#1a1f36]">
                   Вопрос {reviewQuestionIndex + 1}
                   {reviewResult?.isCorrect === true ? (
                     <CheckCircle className="w-6 h-6 text-green-600" />
@@ -1334,11 +1371,11 @@ const completeAttempt = async (isCorrect: boolean, scores: number) => {
             </Card>
 
             <div className="space-y-4 mb-6">
-              <Card>
+              <Card className="bg-white/95 backdrop-blur border border-white/20 rounded-2xl shadow-xl">
                 <CardHeader>
                   <div className="flex justify-between items-center">
-                    <CardTitle>Ваш ответ</CardTitle>
-                    <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-3 py-1 rounded text-sm font-bold">
+                    <CardTitle className="text-[#1a1f36]">Ваш ответ</CardTitle>
+                    <div className="bg-gradient-to-r from-yellow-500 to-emerald-500 text-[#1a1f36] px-3 py-1 rounded text-sm font-bold">
                       Баллы: {(() => {
                         const maxPoints = reviewQuestionIndex >= 19 ? 2 : 1;
                         let earnedPoints = 0;
@@ -1389,23 +1426,54 @@ const completeAttempt = async (isCorrect: boolean, scores: number) => {
                 </CardContent>
               </Card>
 
-              <div className="p-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border-2 border-gray-200 hover:border-blue-300 transition-all duration-300 hover:shadow-md animate-fade-in">
-                <div className="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2 border-b border-gray-200 pb-2">
-                  <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
-                  Правильный ответ:
-                </div>
-                <MathRenderer text={reviewResult?.correctAnswer || 'Неизвестно'} compiler="mathjax" />
-              </div>
+              <Card className="bg-white/95 backdrop-blur border border-white/20 rounded-2xl shadow-xl">
+                <CardHeader>
+                  <CardTitle className="text-[#1a1f36] flex items-center gap-2">
+                    <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                    Правильный ответ
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="p-3 bg-emerald-50 rounded border border-emerald-200">
+                    <MathRenderer text={reviewResult?.correctAnswer || 'Неизвестно'} compiler="mathjax" />
+                  </div>
+                </CardContent>
+              </Card>
             </div>
 
             {reviewQuestion?.solution_text && (
-              <Card>
-                <CardHeader><CardTitle>Решение</CardTitle></CardHeader>
+              <Card className="bg-white/95 backdrop-blur border border-white/20 rounded-2xl shadow-xl">
+                <CardHeader><CardTitle className="text-[#1a1f36]">Решение</CardTitle></CardHeader>
                 <CardContent>
-                  <MathRenderer text={reviewQuestion.solution_text} />
+                  <div className="prose max-w-none p-4 bg-blue-50 rounded-lg">
+                    <MathRenderer text={reviewQuestion.solution_text} />
+                  </div>
                 </CardContent>
               </Card>
             )}
+
+            {/* Navigation buttons */}
+            <div className="flex gap-3 pt-6">
+              {reviewQuestionIndex > 0 && (
+                <Button
+                  onClick={() => handleGoToQuestion(reviewQuestionIndex - 1)}
+                  variant="outline"
+                  className="border-white/30 text-white hover:bg-white/10"
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Предыдущий
+                </Button>
+              )}
+              {reviewQuestionIndex < examResults.length - 1 && (
+                <Button
+                  onClick={() => handleGoToQuestion(reviewQuestionIndex + 1)}
+                  className="ml-auto bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36]"
+                >
+                  Следующий
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -1413,60 +1481,60 @@ const completeAttempt = async (isCorrect: boolean, scores: number) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      {/* Header with timer */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="container mx-auto px-4 py-3">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-4">
-              <Button onClick={() => setShowFormulaBooklet(true)} variant="outline" disabled={isTransitioning}>
-                <BookOpen className="w-4 h-4 mr-2" />
-                Справочные материалы
-              </Button>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <div className={`text-xl font-bold ${isTimeUp ? 'text-red-600' : 'text-blue-600'}`}>
+    <div 
+      className="min-h-screen text-white relative" 
+      style={{ background: 'linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)' }}
+    >
+      <div className="container mx-auto px-4 py-8 relative z-10">
+        <div className="max-w-5xl mx-auto">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-2xl md:text-3xl font-display font-bold bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent">
+              Пробный экзамен ОГЭ
+            </h1>
+            <div className="flex items-center gap-3 text-white/80">
+              <div className={`text-xl font-bold ${isTimeUp ? 'text-red-400' : 'text-white'}`}>
                 <Clock className="w-5 h-5 inline mr-2" />
                 {formatTime(elapsedTime)}
               </div>
-
-              <Button onClick={() => setShowQuestionMenu(true)} variant="outline" className="bg-blue-50 hover:bg-blue-100 border-blue-200" disabled={isTransitioning}>
+              <Button onClick={() => setShowFormulaBooklet(true)} variant="outline" className="border-white/30 text-white hover:bg-white/10" disabled={isTransitioning}>
+                <BookOpen className="w-4 h-4 mr-2" />
+                Справочник формул
+              </Button>
+              <Button onClick={() => setShowQuestionMenu(true)} variant="outline" className="border-white/30 text-white hover:bg-white/10" disabled={isTransitioning}>
                 <Menu className="w-4 h-4 mr-2" />
                 Вопросы
               </Button>
-
-              {/* Keeping header finish behavior unchanged */}
-              <Button onClick={handleFinishExam} variant="outline" className="text-red-600 border-red-300 hover:bg-red-50" disabled={isTransitioning}>
+              <Button onClick={handleFinishExam} variant="outline" className="bg-red-50 hover:bg-red-100 border-red-200 text-red-700" disabled={isTransitioning}>
                 Завершить экзамен
               </Button>
             </div>
           </div>
-        </div>
-      </div>
-
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
           {/* Progress bar */}
           <div className="mb-6">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-sm font-medium text-gray-700">Вопрос {currentQuestionIndex + 1} из {questions.length}</span>
+              <span className="text-sm font-medium text-white/80">Вопрос {currentQuestionIndex + 1} из {questions.length}</span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div className="bg-blue-600 h-2 rounded-full transition-all duration-300" style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }} />
+            <div className="w-full bg-white/20 rounded-full h-2">
+              <div className="bg-gradient-to-r from-yellow-500 to-emerald-500 h-2 rounded-full transition-all duration-300" style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }} />
             </div>
           </div>
 
           {loading ? (
-            <Card>
-              <CardContent className="text-center py-12">
-                <div className="text-lg">Загрузка вопроса...</div>
+            <Card className="bg-white/95 backdrop-blur border border-white/20 rounded-2xl shadow-xl">
+              <CardContent className="py-12">
+                <Loading 
+                  variant="ring-dots" 
+                  size="md" 
+                  message="Загрузка вопроса..." 
+                  fullscreen={false}
+                />
               </CardContent>
             </Card>
           ) : (
-            <Card>
+            <Card className="bg-white/95 backdrop-blur border border-white/20 rounded-2xl shadow-xl">
               <CardHeader>
-                <CardTitle>
+                <CardTitle className="text-[#1a1f36]">
                   Задание {currentQuestionIndex + 1}
                   {currentQuestion?.problem_number_type && (
                     <span className="ml-2 text-sm font-normal text-gray-500">(Номер {currentQuestion.problem_number_type})</span>
@@ -1503,7 +1571,7 @@ const completeAttempt = async (isCorrect: boolean, scores: number) => {
                     </div>
                   )}
 
-                  <div className="flex justify-between">
+                  <div className="flex justify-between pt-4 border-t">
                     <div className="flex gap-3">
                       {currentQuestionIndex > 0 && (
                         <Button
@@ -1512,6 +1580,7 @@ const completeAttempt = async (isCorrect: boolean, scores: number) => {
                             setUserAnswer(examResults[currentQuestionIndex - 1]?.userAnswer || "");
                           }}
                           variant="outline"
+                          className="border-[#1a1f36]/30 text-[#1a1f36] hover:bg-gray-100"
                           disabled={isTransitioning}
                         >
                           <ArrowLeft className="w-4 h-4 mr-2" />
@@ -1520,7 +1589,11 @@ const completeAttempt = async (isCorrect: boolean, scores: number) => {
                       )}
                     </div>
 
-                    <Button onClick={handleNextQuestion} className="flex items-center gap-2" disabled={isTransitioning || loading}>
+                    <Button 
+                      onClick={handleNextQuestion} 
+                      className="flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36]" 
+                      disabled={isTransitioning || loading}
+                    >
                       {currentQuestionIndex === questions.length - 1 ? 'Завершить экзамен' : 'Следующий вопрос'}
                       {currentQuestionIndex < questions.length - 1 && <ArrowRight className="w-4 h-4" />}
                     </Button>

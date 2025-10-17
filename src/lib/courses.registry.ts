@@ -45,7 +45,8 @@ export const COURSES: Record<CourseId, Course> = {
       '/egemathbasic',
       '/egemathbasic-practice',
       '/egemathbasic-progress',
-      '/practice-by-number-egebasicmath'
+      '/practice-by-number-egebasicmath',
+      '/homework-egeb'
     ],
     topicsUrl: 'https://kbaazksvkvnafrwtmkcw.supabase.co/storage/v1/object/public/jsons_for_topic_skills/EGE_math_basic_topicsonly_with_names.json'
   },
