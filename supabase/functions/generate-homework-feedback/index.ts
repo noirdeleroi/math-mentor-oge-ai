@@ -35,7 +35,7 @@ serve(async (req) => {
       .single();
 
     if (fetchError || !feedbackRecord) {
-      console.error('❌ Failed to fetch feedback record:', fetchError);
+      console.error('❌  Failed to fetch feedback record:', fetchError);
       throw new Error('Feedback record not found');
     }
 
