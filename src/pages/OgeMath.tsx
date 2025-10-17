@@ -41,143 +41,146 @@ const OgeMath = () => {
   // Initialize KaTeX
   useKaTeXInitializer();
 
-  // Load initial chat history and welcome messages
+  // Load initial chat history and handle pending feedback
   useEffect(() => {
     const loadInitialHistory = async () => {
       if (user && !isHistoryLoaded) {
-        // Check for homework completion data
-        const homeworkData = localStorage.getItem('homeworkCompletionData');
-        const textbookData = localStorage.getItem('textbookExerciseCompletionData');
-        let shouldGenerateHomeworkFeedback = false;
-        let homeworkFeedbackMessage = '';
-        if (homeworkData) {
-          try {
-            console.log('📋 Homework completion data found in localStorage:', homeworkData);
-            const completionData = JSON.parse(homeworkData);
-            console.log('✅ Parsed completion data:', completionData);
-            if (!completionData.homeworkName) {
-              console.error('❌ No homeworkName in completion data');
-              localStorage.removeItem('homeworkCompletionData');
-              throw new Error('Missing homeworkName in homework completion data');
-            }
+        // Check URL parameter for pending_feedback_id
+        const urlParams = new URLSearchParams(window.location.search);
+        const pendingFeedbackId = urlParams.get('pending_feedback');
 
-            // Query all records for this homework by homework_name
-            console.log('🔍 Querying homework_progress for homework_name:', completionData.homeworkName);
-            const {
-              data: sessionRows,
-              error
-            } = await supabase.from('homework_progress').select('*').eq('user_id', user.id).eq('homework_name', completionData.homeworkName).order('created_at', {
-              ascending: true
-            });
-            if (error) {
-              console.error('❌ Database error fetching session:', error);
-              throw error;
-            }
-            console.log(`📊 Found ${sessionRows?.length || 0} records for session`);
-            if (sessionRows && sessionRows.length > 0) {
-              // Show loading toast
+        if (pendingFeedbackId) {
+          console.log('📋 Checking for pending feedback:', pendingFeedbackId);
+
+          // Query the pending_homework_feedback table
+          const { data: feedbackRecord, error: feedbackError } = await supabase
+            .from('pending_homework_feedback')
+            .select('*')
+            .eq('id', pendingFeedbackId)
+            .eq('user_id', user.id)
+            .single();
+
+          if (!feedbackError && feedbackRecord) {
+            console.log('✅ Feedback record found:', feedbackRecord);
+
+            if (feedbackRecord.processed && feedbackRecord.feedback_message) {
+              // Feedback already generated - display immediately
+              const feedbackMsg: Message = {
+                id: Date.now(),
+                text: `🎯 **Автоматический анализ домашнего задания "${feedbackRecord.homework_name}"**\n\n${feedbackRecord.feedback_message}`,
+                isUser: false,
+                timestamp: new Date(feedbackRecord.processed_at)
+              };
+              addMessage(feedbackMsg);
+              
+              // Save to chat_logs for history
+              await saveChatLog('', feedbackMsg.text, feedbackRecord.course_id);
+
+              // Clear URL parameter
+              window.history.replaceState({}, '', '/ogemath');
+            } else if (feedbackRecord.error_message) {
+              // Generation failed
               toast({
-                title: "Генерация обратной связи",
-                description: "ИИ анализирует ваше домашнее задание..."
+                title: 'Ошибка генерации обратной связи',
+                description: feedbackRecord.error_message,
+                variant: 'destructive'
               });
-              console.log('🤖 Generating AI feedback for session data...');
-              // Generate AI feedback from the session data
-              homeworkFeedbackMessage = await generateAIHomeworkFeedback(sessionRows);
-              console.log('✨ AI feedback generated successfully');
-              shouldGenerateHomeworkFeedback = true;
-
-              // prevent duplicate feedback on next open
-              localStorage.removeItem('homeworkCompletionData');
+              window.history.replaceState({}, '', '/ogemath');
             } else {
-              console.warn('⚠️ No rows found for session');
-              localStorage.removeItem('homeworkCompletionData');
-            }
-          } catch (err) {
-            console.error('❌ Error processing homework completion data:', err);
-            toast({
-              title: "Ошибка",
-              description: "Не удалось сгенерировать обратную связь по ДЗ",
-              variant: "destructive"
-            });
-            localStorage.removeItem('homeworkCompletionData');
-          }
-        } else if (textbookData) {
-          try {
-            const completionData = JSON.parse(textbookData);
-            // Generate feedback for textbook exercise
-            const activityTypeRu = completionData.activityType === 'exam' ? 'экзамен' : completionData.activityType === 'test' ? 'тест' : 'упражнение';
-            homeworkFeedbackMessage = `**${activityTypeRu.toUpperCase()}: ${completionData.activityName}**\n\n` + `✅ Правильных ответов: ${completionData.questionsCorrect} из ${completionData.totalQuestions}\n` + `📊 Точность: ${completionData.accuracy}%\n` + `🎯 Навыки: #${completionData.skills.join(', #')}\n\n` + (completionData.accuracy >= 75 ? '🎉 Отличная работа! Ты хорошо освоил этот материал.' : completionData.accuracy >= 50 ? '👍 Неплохой результат! Продолжай практиковаться.' : '💪 Не останавливайся! Изучи теорию и попробуй еще раз.');
-            shouldGenerateHomeworkFeedback = true;
+              // Still processing - show loading indicator and poll
+              toast({
+                title: 'Обратная связь генерируется...',
+                description: 'Пожалуйста, подождите',
+                duration: 3000
+              });
 
-            // Clear the stored data to avoid repeated feedback
-            localStorage.removeItem('textbookExerciseCompletionData');
-          } catch (error) {
-            console.error('Error processing textbook exercise data:', error);
-            localStorage.removeItem('textbookExerciseCompletionData');
+              // Poll for completion
+              const pollInterval = setInterval(async () => {
+                const { data: updated } = await supabase
+                  .from('pending_homework_feedback')
+                  .select('processed, feedback_message, error_message, homework_name, course_id, processed_at')
+                  .eq('id', pendingFeedbackId)
+                  .single();
+
+                if (updated?.processed) {
+                  clearInterval(pollInterval);
+                  
+                  if (updated.feedback_message) {
+                    const feedbackMsg: Message = {
+                      id: Date.now(),
+                      text: `🎯 **Автоматический анализ домашнего задания "${updated.homework_name}"**\n\n${updated.feedback_message}`,
+                      isUser: false,
+                      timestamp: new Date(updated.processed_at || new Date())
+                    };
+                    addMessage(feedbackMsg);
+                    await saveChatLog('', feedbackMsg.text, updated.course_id || '1');
+                    
+                    toast({
+                      title: 'Обратная связь готова! ✨',
+                      description: 'Проверьте чат для деталей'
+                    });
+                  } else if (updated.error_message) {
+                    toast({
+                      title: 'Ошибка генерации',
+                      description: updated.error_message,
+                      variant: 'destructive'
+                    });
+                  }
+                  
+                  // Clear URL parameter after handling
+                  window.history.replaceState({}, '', '/ogemath');
+                }
+              }, 2000); // Poll every 2 seconds
+
+              // Cleanup polling after 60 seconds
+              setTimeout(() => clearInterval(pollInterval), 60000);
+            }
+          } else {
+            console.warn('⚠️ Feedback record not found or error:', feedbackError);
+            window.history.replaceState({}, '', '/ogemath');
           }
         }
+
         try {
           const history = await loadChatHistory('1', 3, 0);
-          let initialMessages = [];
-          if (shouldGenerateHomeworkFeedback) {
-            // Add homework feedback as the first message with special formatting
-            initialMessages = [{
-              id: 1,
-              text: `🎯 **Автоматический анализ домашнего задания**\n\n${homeworkFeedbackMessage}`,
-              isUser: false,
-              timestamp: new Date()
-            }];
-
-            // Save the homework feedback to chat logs with context
-            await saveChatLog('Домашнее задание завершено - автоматический анализ ИИ учителя', `🎯 **Автоматический анализ домашнего задания**\n\n${homeworkFeedbackMessage}`, '1');
-          }
+          
           if (history.length > 0) {
             // Convert chat logs to messages format and reverse to show chronologically
             const historyMessages = history.reverse().flatMap((log, index) => [{
-              id: (index + initialMessages.length) * 2 + 1,
+              id: index * 2 + 1,
               text: log.user_message,
               isUser: true,
               timestamp: new Date(log.time_of_user_message)
             }, {
-              id: (index + initialMessages.length) * 2 + 2,
+              id: index * 2 + 2,
               text: log.response,
               isUser: false,
               timestamp: new Date(log.time_of_response)
             }]);
-            setMessages([...initialMessages, ...historyMessages]);
+            setMessages(historyMessages);
             setHistoryOffset(3);
             setHasMoreHistory(history.length === 3);
           } else {
             // Set welcome messages if no history
             const welcomeMessages = [{
-              id: initialMessages.length + 1,
+              id: 1,
               text: `Привет, ${userName}! Я твой ИИ-репетитор по ОГЭ математике. Готов помочь тебе подготовиться к экзамену!`,
               isUser: false,
               timestamp: new Date()
             }, {
-              id: initialMessages.length + 2,
+              id: 2,
               text: "Хочешь пройти тренировочные задания или разобрать конкретную тему?",
               isUser: false,
               timestamp: new Date()
             }];
-            setMessages([...initialMessages, ...welcomeMessages]);
+            setMessages(welcomeMessages);
             setHasMoreHistory(false);
           }
           setIsHistoryLoaded(true);
         } catch (error) {
           console.error('Error loading chat history:', error);
           // Fallback to welcome messages
-          const fallbackMessages = shouldGenerateHomeworkFeedback ? [{
-            id: 1,
-            text: homeworkFeedbackMessage,
-            isUser: false,
-            timestamp: new Date()
-          }, {
-            id: 2,
-            text: `Привет, ${userName}! Я твой ИИ-репетитор по ОГЭ математике. Готов помочь тебе подготовиться к экзамену!`,
-            isUser: false,
-            timestamp: new Date()
-          }] : [{
+          const fallbackMessages = [{
             id: 1,
             text: `Привет, ${userName}! Я твой ИИ-репетитор по ОГЭ математике. Готов помочь тебе подготовиться к экзамену!`,
             isUser: false,

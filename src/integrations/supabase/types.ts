@@ -1701,6 +1701,51 @@ export type Database = {
         }
         Relationships: []
       }
+      pending_homework_feedback: {
+        Row: {
+          context_data: Json | null
+          course_id: string
+          created_at: string
+          error_message: string | null
+          feedback_message: string | null
+          feedback_type: string
+          homework_name: string | null
+          id: string
+          processed: boolean | null
+          processed_at: string | null
+          processing_started_at: string | null
+          user_id: string
+        }
+        Insert: {
+          context_data?: Json | null
+          course_id: string
+          created_at?: string
+          error_message?: string | null
+          feedback_message?: string | null
+          feedback_type: string
+          homework_name?: string | null
+          id?: string
+          processed?: boolean | null
+          processed_at?: string | null
+          processing_started_at?: string | null
+          user_id: string
+        }
+        Update: {
+          context_data?: Json | null
+          course_id?: string
+          created_at?: string
+          error_message?: string | null
+          feedback_message?: string | null
+          feedback_type?: string
+          homework_name?: string | null
+          id?: string
+          processed?: boolean | null
+          processed_at?: string | null
+          processing_started_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       photo_analysis_outputs: {
         Row: {
           analysis_type: string | null
@@ -1749,6 +1794,8 @@ export type Database = {
           exam_id: string | null
           full_name: string | null
           homework: string | null
+          homework2: string | null
+          homework3: string | null
           id: string
           image_proccessing_command: string | null
           schoolmark1: number | null
@@ -1780,6 +1827,8 @@ export type Database = {
           exam_id?: string | null
           full_name?: string | null
           homework?: string | null
+          homework2?: string | null
+          homework3?: string | null
           id?: string
           image_proccessing_command?: string | null
           schoolmark1?: number | null
@@ -1811,6 +1860,8 @@ export type Database = {
           exam_id?: string | null
           full_name?: string | null
           homework?: string | null
+          homework2?: string | null
+          homework3?: string | null
           id?: string
           image_proccessing_command?: string | null
           schoolmark1?: number | null

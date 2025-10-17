@@ -660,22 +660,66 @@ const OgeExerciseQuiz: React.FC<OgeExerciseQuizProps> = ({
               </AlertDialogAction>
             )}
             <AlertDialogAction 
-              onClick={() => {
-                // Store exercise completion data for AI feedback
-                const completionData = {
-                  activityName: title,
-                  activityType: questionCount === 10 || isModuleTest ? "exam" : questionCount === 6 ? "test" : "exercise",
-                  totalQuestions: questions.length,
-                  questionsCorrect: correctAnswers,
-                  accuracy: score,
-                  skills: skills,
-                  itemId: itemId || `exercise-${skills.join("-")}`,
-                  completedAt: new Date().toISOString(),
-                  timestamp: Date.now()
-                };
-                localStorage.setItem('textbookExerciseCompletionData', JSON.stringify(completionData));
-                
-                navigate('/ogemath');
+              onClick={async () => {
+                if (!user) {
+                  toast({
+                    title: 'Ошибка',
+                    description: 'Необходимо войти в систему',
+                    variant: 'destructive'
+                  });
+                  return;
+                }
+
+                try {
+                  const activityType = questionCount === 10 || isModuleTest ? "exam" : questionCount === 6 ? "test" : "exercise";
+                  const activityTypeRu = activityType === 'exam' ? 'Экзамен' : activityType === 'test' ? 'Тест' : 'Упражнение';
+
+                  // Generate simple feedback message
+                  const feedbackMessage = `**${activityTypeRu.toUpperCase()}: ${title}**\n\n` +
+                    `✅ Правильных ответов: ${correctAnswers} из ${questions.length}\n` +
+                    `📊 Точность: ${score}%\n` +
+                    `🎯 Навыки: #${skills.join(', #')}\n\n` +
+                    (score >= 75 ? '🎉 Отличная работа! Ты хорошо освоил этот материал.' :
+                     score >= 50 ? '👍 Неплохой результат! Продолжай практиковаться.' :
+                     '💪 Не останавливайся! Изучи теорию и попробуй еще раз.');
+
+                  // Insert feedback record (already processed since it's simple feedback)
+                  const { data: pendingRecord, error: insertError } = await supabase
+                    .from('pending_homework_feedback')
+                    .insert({
+                      user_id: user.id,
+                      course_id: courseId,
+                      feedback_type: 'textbook_exercise',
+                      homework_name: title,
+                      context_data: {
+                        activityType,
+                        totalQuestions: questions.length,
+                        questionsCorrect: correctAnswers,
+                        accuracy: score,
+                        skills: skills,
+                        itemId: itemId || `exercise-${skills.join("-")}`,
+                        completedAt: new Date().toISOString(),
+                        timestamp: Date.now()
+                      },
+                      processed: true,
+                      processed_at: new Date().toISOString(),
+                      feedback_message: feedbackMessage
+                    })
+                    .select('id')
+                    .single();
+
+                  if (insertError) {
+                    console.error('Failed to create feedback record:', insertError);
+                    navigate('/ogemath');
+                    return;
+                  }
+
+                  // Navigate with feedback ID
+                  navigate(`/ogemath?pending_feedback=${pendingRecord.id}`);
+                } catch (error) {
+                  console.error('Error creating exercise feedback:', error);
+                  navigate('/ogemath');
+                }
               }}
               className="w-full bg-gradient-to-r from-navy to-navy/80 hover:from-navy/90 hover:to-navy/70 text-white rounded-xl px-4 py-3 text-sm font-bold shadow-lg hover:shadow-xl transition-all"
             >
