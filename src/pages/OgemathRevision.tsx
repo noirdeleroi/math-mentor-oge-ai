@@ -3,8 +3,18 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Check, X, ArrowRight, Trophy, Target, RefreshCw, Heart,
-BookOpen, StopCircle, ArrowLeft } from 'lucide-react';
+import {
+  Check,
+  X,
+  ArrowRight,
+  Trophy,
+  Target,
+  RefreshCw,
+  Heart,
+  BookOpen,
+  StopCircle,
+  ArrowLeft,
+} from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useStreakTracking } from '@/hooks/useStreakTracking';
@@ -32,7 +42,7 @@ interface RevisionSession {
   totalQuestions: number;
 }
 
-const OgemathRevision = () => {
+const OgemathRevision: React.FC = () => {
   const { user } = useAuth();
   const { trackActivity } = useStreakTracking();
   const navigate = useNavigate();
@@ -49,7 +59,7 @@ const OgemathRevision = () => {
     correctAnswers: 0,
     pointsEarned: 0,
     startTime: new Date(),
-    totalQuestions: 5
+    totalQuestions: 5,
   });
   const [showSummary, setShowSummary] = useState(false);
   const [isHomeworkMode, setIsHomeworkMode] = useState(false);
@@ -59,25 +69,27 @@ const OgemathRevision = () => {
   const options = ['А', 'Б', 'В', 'Г'];
 
   useEffect(() => {
-    // Check if we're in homework mode
-    if (location.state?.isHomework && location.state?.homeworkQuestions) {
+    // Determine mode (homework/revision) and initiate loading
+    // We intentionally keep this logic unchanged; only the UI is re-skinned.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const state: any = location.state;
+    if (state?.isHomework && state?.homeworkQuestions) {
       setIsHomeworkMode(true);
-      setHomeworkQuestions(location.state.homeworkQuestions);
-
-      // Set total questions to match homework questions count
-      setSession(prev => ({
+      setHomeworkQuestions(state.homeworkQuestions);
+      setSession((prev) => ({
         ...prev,
-        totalQuestions: location.state.homeworkQuestions.length
+        totalQuestions: state.homeworkQuestions.length,
       }));
-
-      loadHomeworkQuestion(location.state.homeworkQuestions);
+      loadHomeworkQuestion(state.homeworkQuestions);
     } else if (user) {
       loadSkillsForRevision();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, location.state]);
 
-  // ✅ Only pull skills from stories_and_telegram for course_id = '1'
-  // If none found (or JSON invalid), show the "Навыков..." toast and stop.
+  // Only pull skills from stories_and_telegram for course_id = '1'.
+  // If none found or JSON invalid, tell the user "Навыков для
+подтягивания пока нет 💤"
   const loadSkillsForRevision = async () => {
     try {
       setLoading(true);
@@ -92,11 +104,14 @@ const OgemathRevision = () => {
         .limit(1);
 
       if (storyError) {
+        // DB error — surface a friendly toast
+        // (kept behavior unchanged)
+        // eslint-disable-next-line no-console
         console.error('Error fetching story data:', storyError);
         toast({
           title: 'Ошибка загрузки',
           description: 'Не удалось загрузить данные для повторения 😕',
-          variant: 'destructive'
+          variant: 'destructive',
         });
         return;
       }
@@ -109,12 +124,15 @@ const OgemathRevision = () => {
 
       let skillsFromTask: number[] = [];
       try {
-        const story = storyData[0] as any;
-        const taskData = JSON.parse(story.hardcode_task);
-        skillsFromTask = Array.isArray(taskData?.['навыки для подтягивания'])
-          ? taskData['навыки для подтягивания']
-          : [];
+        const story = storyData[0] as { hardcode_task: string };
+        const taskData = JSON.parse(story.hardcode_task) as
+Record<string, unknown>;
+        const maybeSkills = (taskData as Record<string,
+unknown>)['навыки для подтягивания'];
+        skillsFromTask = Array.isArray(maybeSkills) ? (maybeSkills as
+number[]) : [];
       } catch (parseError) {
+        // eslint-disable-next-line no-console
         console.error('Error parsing hardcode_task JSON:', parseError);
         toast({ title: 'Навыков для подтягивания пока нет 💤' });
         setSkillsForPractice([]);
@@ -129,17 +147,18 @@ const OgemathRevision = () => {
 
       toast({
         title: 'Навыки для повторения загружены 🎯',
-        description: `Найдено ${skillsFromTask.length} навыков.`
+        description: `Найдено ${skillsFromTask.length} навыков.`,
       });
 
       setSkillsForPractice(skillsFromTask);
       loadNextQuestion(skillsFromTask);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Error loading skills for revision:', error);
       toast({
         title: 'Ошибка 😔',
         description: 'Не удалось загрузить навыки для повторения.',
-        variant: 'destructive'
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -151,14 +170,16 @@ const OgemathRevision = () => {
       const skillsToUse = skills || skillsForPractice;
       if (skillsToUse.length === 0) return;
 
-      // Select random skill from the array
+      // Random skill
       const randomSkill = skillsToUse[Math.floor(Math.random() *
 skillsToUse.length)];
 
-      // Get questions for this skill
       const { data, error } = await supabase
         .from('oge_math_skills_questions')
-        .select('question_id, problem_text, answer, option1, option2, option3, option4, skills, difficulty')
+        .select(
+          'question_id, problem_text, answer, option1, option2,
+option3, option4, skills, difficulty'
+        )
         .eq('skills', randomSkill)
         .not('problem_text', 'is', null)
         .not('option1', 'is', null)
@@ -167,40 +188,40 @@ skillsToUse.length)];
         .not('option4', 'is', null);
 
       if (error) {
+        // eslint-disable-next-line no-console
         console.error('Error loading question:', error);
         toast({
-          title: "Ошибка",
-          description: "Не удалось загрузить вопрос. Попробуйте еще раз.",
-          variant: "destructive"
+          title: 'Ошибка',
+          description: 'Не удалось загрузить вопрос. Попробуйте еще раз.',
+          variant: 'destructive',
         });
         return;
       }
 
       if (data && data.length > 0) {
-        // Select random question from the skill
         const randomQuestion = data[Math.floor(Math.random() * data.length)];
         setCurrentQuestion(randomQuestion);
         setSelectedAnswer('');
         setShowResult(false);
       } else {
-        // If no questions found for this skill, try another one
-        const availableSkills = skillsToUse.filter(s => s !== randomSkill);
+        const availableSkills = skillsToUse.filter((s) => s !== randomSkill);
         if (availableSkills.length > 0) {
           loadNextQuestion(availableSkills);
         } else {
           toast({
-            title: "Вопросы не найдены",
-            description: "Не удалось найти вопросы для практики",
-            variant: "destructive"
+            title: 'Вопросы не найдены',
+            description: 'Не удалось найти вопросы для практики',
+            variant: 'destructive',
           });
         }
       }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Error loading question:', error);
       toast({
-        title: "Ошибка",
-        description: "Произошла ошибка при загрузке вопроса",
-        variant: "destructive"
+        title: 'Ошибка',
+        description: 'Произошла ошибка при загрузке вопроса',
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -213,43 +234,51 @@ skillsToUse.length)];
     const answerLetter = options[optionIndex];
     setSelectedAnswer(answerLetter);
 
-    // Check if answer is correct
     const correct = answerLetter === currentQuestion?.answer?.toUpperCase();
     setIsCorrect(correct);
     setShowResult(true);
 
-    // Update session stats
-    const newSession = {
+    const newSession: RevisionSession = {
       ...session,
       questionsAttempted: session.questionsAttempted + 1,
       correctAnswers: session.correctAnswers + (correct ? 1 : 0),
-      pointsEarned: session.pointsEarned + (correct ? 15 : 5) // More points for revision
+      pointsEarned: session.pointsEarned + (correct ? 15 : 5),
+      startTime: session.startTime,
+      totalQuestions: session.totalQuestions,
     };
     setSession(newSession);
 
-    // Track activity for streak and award energy points
     if (correct && user) {
       trackActivity('problem', 3);
 
-      // Fetch current streak for bonus calculation
       const { data: streakData } = await supabase
         .from('user_streaks')
         .select('current_streak')
         .eq('user_id', user.id)
         .single();
 
-      const currentStreak = streakData?.current_streak || 0;
+      const currentStreak = (streakData as { current_streak?: number }
+| null)?.current_streak || 0;
 
-      // Award energy points based on table (oge_math_skills_questions = 1 point)
-      const result = await awardEnergyPoints(user.id, 'problem', undefined, 'oge_math_skills_questions', currentStreak);
+      const result = await awardEnergyPoints(
+        user.id,
+        'problem',
+        undefined,
+        'oge_math_skills_questions',
+        currentStreak
+      );
 
-      // Trigger header animation with awarded points
-      if (result.success && result.pointsAwarded && (window as any).triggerEnergyPointsAnimation) {
+      if (
+        result.success &&
+        result.pointsAwarded &&
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (window as any).triggerEnergyPointsAnimation
+      ) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (window as any).triggerEnergyPointsAnimation(result.pointsAwarded);
       }
     }
 
-    // Only auto-complete in homework mode
     if (isHomeworkMode && newSession.questionsAttempted >=
 session.totalQuestions) {
       setTimeout(() => {
@@ -282,7 +311,7 @@ session.totalQuestions) {
       correctAnswers: 0,
       pointsEarned: 0,
       startTime: new Date(),
-      totalQuestions: isHomeworkMode ? homeworkQuestions.length : 9999
+      totalQuestions: isHomeworkMode ? homeworkQuestions.length : 9999,
     });
     setShowSummary(false);
     setIsStopped(false);
@@ -307,23 +336,25 @@ session.totalQuestions) {
     try {
       setLoading(true);
 
-      // Select random question from homework list
       const randomQuestionId = questionIds[Math.floor(Math.random() *
 questionIds.length)];
 
-      // Get the specific homework question
       const { data, error } = await supabase
         .from('oge_math_skills_questions')
-        .select('question_id, problem_text, answer, option1, option2, option3, option4, skills, difficulty')
+        .select(
+          'question_id, problem_text, answer, option1, option2,
+option3, option4, skills, difficulty'
+        )
         .eq('question_id', randomQuestionId)
         .single();
 
       if (error) {
+        // eslint-disable-next-line no-console
         console.error('Error loading homework question:', error);
         toast({
-          title: "Ошибка",
-          description: "Не удалось загрузить вопрос из домашнего задания",
-          variant: "destructive"
+          title: 'Ошибка',
+          description: 'Не удалось загрузить вопрос из домашнего задания',
+          variant: 'destructive',
         });
         return;
       }
@@ -333,16 +364,17 @@ questionIds.length)];
         setSelectedAnswer('');
         setShowResult(false);
         toast({
-          title: "Домашнее задание",
-          description: "Загружен вопрос из вашего домашнего задания",
+          title: 'Домашнее задание',
+          description: 'Загружен вопрос из вашего домашнего задания',
         });
       }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Error loading homework question:', error);
       toast({
-        title: "Ошибка",
-        description: "Произошла ошибка при загрузке домашнего задания",
-        variant: "destructive"
+        title: 'Ошибка',
+        description: 'Произошла ошибка при загрузке домашнего задания',
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -354,11 +386,16 @@ questionIds.length)];
     if (!question) return '';
 
     switch (optionIndex) {
-      case 0: return question.option1;
-      case 1: return question.option2;
-      case 2: return question.option3;
-      case 3: return question.option4;
-      default: return '';
+      case 0:
+        return question.option1;
+      case 1:
+        return question.option2;
+      case 2:
+        return question.option3;
+      case 3:
+        return question.option4;
+      default:
+        return '';
     }
   };
 
@@ -389,15 +426,16 @@ currentQuestion?.answer?.toUpperCase();
     return (
       <div
         className="min-h-screen text-white relative"
-        style={{ background: "linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)" }}
+        style={{ background: 'linear-gradient(135deg, #1a1f36 0%,
+#2d3748 50%, #1a1f36 100%)' }}
       >
         <div className="container mx-auto px-4 py-8 relative z-10">
           <div className="max-w-5xl mx-auto">
             <div className="mb-6">
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="ghost"
                 size="sm"
-                className="hover:bg-white/20 text-white" 
+                className="hover:bg-white/20 text-white"
                 onClick={() => navigate('/ogemath-practice')}
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
@@ -405,9 +443,11 @@ currentQuestion?.answer?.toUpperCase();
               </Button>
             </div>
 
-            <Card className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl shadow-xl">
+            <Card className="bg-white/10 backdrop-blur border
+border-white/20 rounded-2xl shadow-xl">
               <CardContent className="p-6">
-                <p className="text-white/80">Войдите в систему для доступа к повторению</p>
+                <p className="text-white/80">Войдите в систему для
+доступа к повторению</p>
               </CardContent>
             </Card>
           </div>
@@ -417,22 +457,25 @@ currentQuestion?.answer?.toUpperCase();
   }
 
   if (showSummary) {
-    const accuracy = session.questionsAttempted > 0
-      ? Math.round((session.correctAnswers / session.questionsAttempted) * 100)
-      : 0;
+    const accuracy =
+      session.questionsAttempted > 0
+        ? Math.round((session.correctAnswers /
+session.questionsAttempted) * 100)
+        : 0;
 
     return (
       <div
         className="min-h-screen text-white relative"
-        style={{ background: "linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)" }}
+        style={{ background: 'linear-gradient(135deg, #1a1f36 0%,
+#2d3748 50%, #1a1f36 100%)' }}
       >
         <div className="container mx-auto px-4 py-8 relative z-10">
           <div className="max-w-5xl mx-auto">
             <div className="mb-6">
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="ghost"
                 size="sm"
-                className="hover:bg-white/20 text-white" 
+                className="hover:bg-white/20 text-white"
                 onClick={handleBackToMain}
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
@@ -440,7 +483,6 @@ currentQuestion?.answer?.toUpperCase();
               </Button>
             </div>
 
-            {/* Big result percentage */}
             <Card className="bg-gradient-to-br from-yellow-500/10
 to-emerald-500/10 backdrop-blur border border-yellow-500/20
 rounded-2xl shadow-xl mb-6">
@@ -456,7 +498,6 @@ from-yellow-500 to-emerald-500 bg-clip-text text-transparent mb-2">
               </CardContent>
             </Card>
 
-            {/* Stats & actions */}
             <Card className="bg-white/95 text-[#1a1f36] rounded-2xl shadow-xl">
               <CardHeader>
                 <CardTitle className="text-2xl">Статистика</CardTitle>
@@ -477,16 +518,14 @@ text-transparent">
 from-yellow-500/10 to-emerald-500/10 rounded-lg">
                     <div className="text-sm text-gray-600
 mb-1">Правильных ответов</div>
-                    <div className="text-3xl font-bold text-emerald-600">
-                      {session.correctAnswers}
-                    </div>
+                    <div className="text-3xl font-bold
+text-emerald-600">{session.correctAnswers}</div>
                   </div>
                   <div className="p-4 bg-gradient-to-br
 from-yellow-500/10 to-emerald-500/10 rounded-lg">
                     <div className="text-sm text-gray-600 mb-1">Баллы</div>
-                    <div className="text-3xl font-bold text-orange-600">
-                      {session.pointsEarned}
-                    </div>
+                    <div className="text-3xl font-bold
+text-orange-600">{session.pointsEarned}</div>
                   </div>
                 </div>
 
@@ -495,10 +534,10 @@ rounded-lg border border-purple-200">
                   <Heart className="w-6 h-6 mx-auto mb-2 text-purple-500" />
                   <p className="text-sm text-purple-700 font-medium">
                     {accuracy >= 80
-                      ? "Превосходно! Ваши навыки значительно улучшились!"
+                      ? 'Превосходно! Ваши навыки значительно улучшились!'
                       : accuracy >= 60
-                      ? "Хорошая работа! Продолжайте практиковаться!"
-                      : "Отличное начало! Повторение поможет закрепить знания!"}
+                      ? 'Хорошая работа! Продолжайте практиковаться!'
+                      : 'Отличное начало! Повторение поможет закрепить знания!'}
                   </p>
                 </div>
 
@@ -536,16 +575,16 @@ text-[#1a1f36] hover:bg-gray-100"
   return (
     <div
       className="min-h-screen text-white relative"
-      style={{ background: "linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)" }}
+      style={{ background: 'linear-gradient(135deg, #1a1f36 0%,
+#2d3748 50%, #1a1f36 100%)' }}
     >
       <div className="container mx-auto px-4 py-8 relative z-10">
         <div className="max-w-5xl mx-auto">
-          {/* Back button */}
           <div className="mb-6">
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               size="sm"
-              className="hover:bg-white/20 text-white" 
+              className="hover:bg-white/20 text-white"
               onClick={handleBackToMain}
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
@@ -553,7 +592,6 @@ text-[#1a1f36] hover:bg-gray-100"
             </Button>
           </div>
 
-          {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-3xl md:text-4xl font-display font-bold
 bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text
@@ -571,13 +609,14 @@ ${session.totalQuestions}`
             </div>
           </div>
 
-          {/* Progress card */}
           <Card className="bg-white/10 backdrop-blur border
 border-white/20 rounded-2xl shadow-xl mb-6">
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
                 <Target className="w-4 h-4 text-yellow-400 flex-shrink-0" />
                 <div className="flex-1">
+                  {/* If your Tailwind config doesn’t support the
+arbitrary variant, you can remove [&>div]:bg-orange-500 safely. */}
                   <Progress value={progressPercentage} className="h-2
 bg-black [&>div]:bg-orange-500" />
                 </div>
@@ -603,14 +642,13 @@ hover:bg-red-500/10"
           </Card>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Question card */}
             <div className="lg:col-span-2">
-              <Card className="bg-white/95 text-[#1a1f36] rounded-2xl shadow-xl">
+              <Card className="bg-white/95 text-[#1a1f36] rounded-2xl
+shadow-xl">
                 <CardHeader className="border-b border-[#1a1f36]/10">
-                  <CardTitle className="text-lg flex items-center justify-between">
-                    <span>
-                      {isHomeworkMode ? 'Домашнее задание от ИИ помощника' : 'Повторение — супер полезно для вас!'}
-                    </span>
+                  <CardTitle className="text-lg">
+                    {isHomeworkMode ? 'Домашнее задание от ИИ
+помощника' : 'Повторение — супер полезно для вас!'}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4 p-6">
@@ -646,9 +684,7 @@ border border-emerald-200">
 justify-center space-x-2">
                               <Check className="w-6 h-6 text-emerald-600" />
                               <p className="text-base font-semibold
-text-emerald-700">
-                                Отлично! +{15} баллов
-                              </p>
+text-emerald-700">Отлично! +15 баллов</p>
                             </div>
                           ) : (
                             <div className="flex items-center
@@ -677,8 +713,10 @@ hover:to-emerald-600 text-[#1a1f36]"
 session.questionsAttempted >= session.totalQuestions ? (
                               <>Завершить</>
                             ) : (
-                              <>Следующий вопрос <ArrowRight
-className="w-4 h-4 ml-2" /></>
+                              <>
+                                Следующий вопрос <ArrowRight
+className="w-4 h-4 ml-2" />
+                              </>
                             )}
                           </Button>
                         </div>
@@ -691,9 +729,12 @@ className="w-4 h-4 ml-2" /></>
 mx-auto mb-2" />
                         <p className="text-sm text-[#1a1f36]/60
 mb-2">Ошибка загрузки</p>
-                        <Button onClick={() => loadNextQuestion()}
-size="sm" className="bg-gradient-to-r from-yellow-500 to-emerald-500
-text-[#1a1f36]">
+                        <Button
+                          onClick={() => loadNextQuestion()}
+                          size="sm"
+                          className="bg-gradient-to-r from-yellow-500
+to-emerald-500 text-[#1a1f36]"
+                        >
                           Повторить
                         </Button>
                       </div>
@@ -703,7 +744,6 @@ text-[#1a1f36]">
               </Card>
             </div>
 
-            {/* Answer options */}
             <div className="lg:col-span-1">
               <Card className="bg-white/95 text-[#1a1f36] rounded-2xl
 shadow-xl">
@@ -718,8 +758,9 @@ text-center">Варианты ответов</CardTitle>
                         <div
                           key={letter}
                           className={`p-4 border-2 rounded-lg
-cursor-pointer transition-all duration-200 ${getOptionStyle(index)}
-hover:shadow-sm`}
+cursor-pointer transition-all duration-200 ${getOptionStyle(
+                            index
+                          )} hover:shadow-sm`}
                           onClick={() => handleAnswerSelect(index)}
                         >
                           <div className="flex items-start space-x-3">
@@ -729,10 +770,8 @@ justify-center">
                               {letter}
                             </span>
                             <MathRenderer
-                              text={getOptionContent(index)}
-                              className="flex-1 text-sm"
-                              compiler="mathjax"
-                            />
+text={getOptionContent(index)} className="flex-1 text-sm"
+compiler="mathjax" />
                           </div>
                         </div>
                       ))}
@@ -742,7 +781,6 @@ justify-center">
               </Card>
             </div>
           </div>
-
         </div>
       </div>
     </div>
