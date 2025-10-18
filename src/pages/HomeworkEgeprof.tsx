@@ -452,7 +452,7 @@ const HomeworkEgeprof = () => {
               correct_answer: data.answer || '',
               solution_text: data.solution_text || '',
               problem_number: data.problem_number_type || 0,
-              difficulty: data.difficulty || null,
+              difficulty: data.difficulty ? Number(data.difficulty) : undefined,
               problem_image: data.problem_image || undefined
             } as Question;
           }
