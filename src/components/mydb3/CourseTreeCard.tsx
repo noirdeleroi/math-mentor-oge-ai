@@ -302,7 +302,7 @@ export const CourseTreeCard: React.FC<CourseTreeCardProps> = ({
         {/* Start Button */}
         <Button
           onClick={() => onStart(course.id)}
-          className="w-full bg-gradient-to-r from-amber-400/15 to-green-600/15 hover:from-amber-400/25 hover:to-green-600/25 text-[#1a1f36] font-semibold border border-amber-500/30 hover:border-amber-500/50 shadow-sm hover:shadow-md transform hover:scale-105 transition-all duration-200 mt-3"
+          className="w-full bg-gradient-to-r from-amber-500/20 to-emerald-700/20 hover:from-amber-500/30 hover:to-emerald-700/30 text-[#1a1f36] font-semibold border border-amber-500/30 hover:border-amber-500/50 shadow-sm hover:shadow-md transform hover:scale-105 transition-all duration-200 mt-3"
           size="sm"
         >
           <Play className="w-4 h-4 mr-2" />
