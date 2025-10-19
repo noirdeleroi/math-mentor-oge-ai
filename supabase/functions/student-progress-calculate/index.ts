@@ -187,12 +187,16 @@ Deno.serve(async (req)=>{
     console.log('Calculating topic mastery from skill probabilities...');
     let topicSkillMappings = {};
     try {
-      const { data, error } = await supabase.from('json_files').select('content').eq('id', 1).eq('course_id', course_id).single();
+      let mappingFileId;
+      if (course_id === '1') mappingFileId = 1;
+      else if (course_id === '2') mappingFileId = 3;
+      else if (course_id === '3') mappingFileId = 5;
+      const { data, error } = await supabase.from('json_files').select('content').eq('id', mappingFileId).eq('course_id', course_id).maybeSingle();
       if (error) {
         console.error('Error fetching topic-skill mappings:', error);
-        throw error;
-      }
-      if (data?.content) {
+      } else if (!data) {
+        console.warn(`No topic-skill mapping found for course ${course_id}`);
+      } else if (data?.content) {
         topicSkillMappings = data.content;
         console.log(`Loaded topic-skill mappings for ${Object.keys(topicSkillMappings).length} topics`);
       }
