@@ -238,11 +238,11 @@ export const CourseTreeCard: React.FC<CourseTreeCardProps> = ({
   };
 
   return (
-    <Card className="rounded-lg shadow-sm h-full flex flex-col bg-white">
-      <CardHeader className="pb-4">
+    <Card className="rounded-2xl shadow-xl h-full flex flex-col bg-white/95 backdrop-blur border border-white/20">
+      <CardHeader className="pb-4 bg-gradient-to-br from-yellow-500/10 to-emerald-500/10 rounded-t-2xl">
         <div>
           <CardTitle 
-            className="text-lg font-semibold text-gray-900 hover:text-yellow-500 cursor-pointer transition-colors"
+            className="text-lg font-semibold text-[#1a1f36] hover:text-yellow-600 cursor-pointer transition-colors"
             onClick={() => onStart(course.id)}
           >
             {course.title}
@@ -250,7 +250,7 @@ export const CourseTreeCard: React.FC<CourseTreeCardProps> = ({
           <div className="flex items-center gap-2 mt-1">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <span className="text-sm text-yellow-600 hover:text-yellow-700 hover:underline cursor-pointer">
+                <span className="text-sm text-[#1a1f36] hover:text-[#1a1f36] hover:underline cursor-pointer font-medium">
                   Всего ({topics.length})
                 </span>
               </DropdownMenuTrigger>
@@ -300,9 +300,9 @@ export const CourseTreeCard: React.FC<CourseTreeCardProps> = ({
         </div>
         
         {/* Start Button */}
-        <Button 
+        <Button
           onClick={() => onStart(course.id)}
-          className="w-full bg-black hover:bg-gradient-to-r hover:from-yellow-500 hover:to-emerald-500 hover:shadow-lg text-white mt-3"
+          className="w-full bg-gradient-to-r from-yellow-500/20 to-emerald-500/20 hover:from-yellow-500/30 hover:to-emerald-500/30 text-[#1a1f36] font-semibold border border-yellow-500/30 hover:border-yellow-500/50 shadow-sm hover:shadow-md transform hover:scale-105 transition-all duration-200 mt-3"
           size="sm"
         >
           <Play className="w-4 h-4 mr-2" />
@@ -312,10 +312,10 @@ export const CourseTreeCard: React.FC<CourseTreeCardProps> = ({
         {/* Progress Bar */}
         <div className="mt-4">
           <div className="flex items-center justify-between text-sm mb-2">
-            <span className="text-muted-foreground">Общий прогресс</span>
-            <span className="font-medium">{progress}%</span>
+            <span className="text-gray-600">Общий прогресс</span>
+            <span className="font-bold text-[#1a1f36]">{progress}%</span>
           </div>
-          <Progress value={progress} className="h-2" />
+          <Progress value={progress} className="h-2 bg-gray-200 [&>div]:bg-gradient-to-r [&>div]:from-yellow-500 [&>div]:to-emerald-500" />
         </div>
       </CardHeader>
       

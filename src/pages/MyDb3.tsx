@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Plus, LogOut } from 'lucide-react';
-import { Sidebar } from '@/components/mydb3/Sidebar';
+import { Plus, LogOut, User, Crown } from 'lucide-react';
 import { UserInfoStripe } from '@/components/mydb3/UserInfoStripe';
 import { CourseTreeCard } from '@/components/mydb3/CourseTreeCard';
 import { CourseSelectionModal } from '@/components/mydb3/CourseSelectionModal';
@@ -10,6 +9,8 @@ import { useDashboardLogic } from '@/hooks/useDashboardLogic';
 import { COURSES, CourseId, courseIdToNumber } from '@/lib/courses.registry';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import FlyingMathBackground from '@/components/FlyingMathBackground';
 
 const MyDb3 = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -24,6 +25,7 @@ const MyDb3 = () => {
   } = useDashboardLogic();
 
   const { signOut } = useAuth();
+  const navigate = useNavigate();
 
   // Convert user courses to our registry format
   const enrolledCourses = myCourses.map(course => COURSES[course.id as CourseId]).filter(Boolean);
@@ -273,28 +275,58 @@ const MyDb3 = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="flex">
-        {/* Sidebar */}
-        <Sidebar />
-        
-        {/* Main Content */}
-        <div className="flex-1 p-6">
-          {/* User Info Stripe */}
-          <UserInfoStripe />
-          
-          {/* My Courses Section */}
-          <div className="mb-6">
-            <div className="flex items-center justify-between mb-6">
-              <h1 className="text-2xl font-bold">Мои курсы</h1>
-              <Button 
-                onClick={handleOpenDeleteModal}
-                className="bg-black hover:bg-gradient-to-r hover:from-yellow-500 hover:to-emerald-500 hover:shadow-lg text-white"
+    <div className="min-h-screen relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)' }}>
+      {/* Flying Math Symbols Background */}
+      <FlyingMathBackground />
+
+      {/* Main Content */}
+      <div className="relative z-10 pt-8 pb-16 px-4 md:px-8">
+        <div className="max-w-7xl mx-auto">
+          {/* Top Navigation Bar */}
+          <div className="mb-12 flex flex-wrap items-center justify-between gap-4">
+            <div className="flex flex-wrap items-center gap-3">
+              <Button
+                onClick={() => navigate('/profile')}
+                variant="ghost"
+                className="bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white border border-white/20 transition-all"
               >
-                Редактировать курсы
+                <User className="w-4 h-4 mr-2" />
+                Профиль
+              </Button>
+              <Button
+                onClick={() => navigate('/subscribe')}
+                className="bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36] font-bold shadow-lg transform hover:scale-105 transition-all duration-200"
+              >
+                <Crown className="w-4 h-4 mr-2" />
+                Подписки
               </Button>
             </div>
+            <Button 
+              onClick={handleOpenDeleteModal}
+              variant="ghost"
+              className="bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white border border-white/20 transition-all"
+            >
+              Редактировать курсы
+            </Button>
+          </div>
 
+          {/* User Info Stripe */}
+          <div className="mb-12">
+            <UserInfoStripe />
+          </div>
+
+          {/* Page Title */}
+          <div className="text-center mb-12">
+            <h1 className="text-5xl md:text-6xl font-display font-bold mb-4 bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent">
+              Мои курсы
+            </h1>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              Управляйте своими курсами и отслеживайте прогресс
+            </p>
+          </div>
+
+          {/* My Courses Section */}
+          <div className="mb-6">
             {enrolledCourses.length === 0 ? (
               /* No courses - show empty state with large plus button */
               <div className="text-center py-16">
@@ -303,17 +335,17 @@ const MyDb3 = () => {
                       onClick={handleOpenAddModal}
                       variant="outline"
                       size="lg"
-                      className="w-32 h-32 rounded-full border-2 border-dashed border-yellow-500/30 hover:border-yellow-500 hover:bg-yellow-500/5 transition-all duration-200"
+                      className="w-32 h-32 rounded-full border-2 border-dashed border-yellow-500/50 hover:border-yellow-500 hover:bg-yellow-500/10 bg-white/5 backdrop-blur-sm text-white transition-all duration-200"
                     >
-                      <Plus className="w-12 h-12 text-yellow-600" />
+                      <Plus className="w-12 h-12 text-yellow-400" />
                     </Button>
                 </div>
-                <p className="text-muted-foreground text-lg">Добавить другой курс</p>
+                <p className="text-gray-300 text-lg">Добавить курс</p>
               </div>
             ) : (
               /* Has courses - show course grid with add button */
               <div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                   {enrolledCourses.map((course) => (
                     <CourseTreeCard
                       key={course.id}
@@ -323,17 +355,17 @@ const MyDb3 = () => {
                   ))}
                   
                   {/* Add course card */}
-                  <div className="flex items-center justify-center min-h-[300px] border-2 border-dashed border-muted-foreground/20 rounded-lg">
+                  <div className="flex items-center justify-center min-h-[300px] border-2 border-dashed border-white/20 rounded-2xl bg-white/5 backdrop-blur-sm hover:border-yellow-500/50 hover:bg-white/10 transition-all duration-200">
                     <div className="text-center">
                       <Button
                         onClick={handleOpenAddModal}
                         variant="outline"
                         size="lg"
-                        className="w-20 h-20 rounded-full border-2 border-dashed border-yellow-500/30 hover:border-yellow-500 hover:bg-yellow-500/5 transition-all duration-200 mb-4"
+                        className="w-20 h-20 rounded-full border-2 border-dashed border-yellow-500/50 hover:border-yellow-500 hover:bg-yellow-500/10 bg-white/5 backdrop-blur-sm text-white transition-all duration-200 mb-4"
                       >
-                        <Plus className="w-8 h-8 text-yellow-600" />
+                        <Plus className="w-8 h-8 text-yellow-400" />
                       </Button>
-                      <p className="text-muted-foreground">Добавить другой курс</p>
+                      <p className="text-gray-300">Добавить курс</p>
                     </div>
                   </div>
                 </div>
