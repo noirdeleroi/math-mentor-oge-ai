@@ -59,26 +59,16 @@ export const CourseSelectionModal: React.FC<CourseSelectionModalProps> = ({
       <DialogContent className="max-w-4xl max-h-[80vh] p-0 bg-white/95 backdrop-blur border border-white/20 rounded-2xl overflow-hidden">
         {/* Header */}
         <div className="bg-gradient-to-br from-yellow-500/20 to-emerald-500/20 border-b border-white/20 p-6 rounded-t-2xl">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex-1">
-              <DialogTitle className="text-2xl font-bold text-[#1a1f36] mb-2">
-                {mode === 'delete' ? '🗑️ Удалить курсы' : '📚 Выберите курсы'}
-              </DialogTitle>
-              <p className="text-gray-700">
-                {mode === 'delete' 
-                  ? 'Выберите курсы для удаления. Все данные о прогрессе будут потеряны.'
-                  : 'Выберите курсы, и мы подберём правильные уроки для вас.'
-                }
-              </p>
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleClose}
-              className="text-[#1a1f36] hover:bg-white/50 rounded-full"
-            >
-              <X className="w-5 h-5" />
-            </Button>
+          <div>
+            <DialogTitle className="text-2xl font-bold text-[#1a1f36] mb-2">
+              {mode === 'delete' ? '🗑️ Удалить курсы' : '📚 Выберите курсы'}
+            </DialogTitle>
+            <p className="text-gray-700">
+              {mode === 'delete' 
+                ? 'Выберите курсы для удаления. Все данные о прогрессе будут потеряны.'
+                : 'Выберите курсы, и мы подберём правильные уроки для вас.'
+              }
+            </p>
           </div>
         </div>
 
@@ -174,3 +164,4 @@ export const CourseSelectionModal: React.FC<CourseSelectionModalProps> = ({
     </Dialog>
   );
 };
+

@@ -145,7 +145,9 @@ const MyDb3 = () => {
     const resultOfPrevHomeworkCompletion: unknown[] = [];
     const studentActivitySessionResults: unknown[] = [];
 
-    // Enroll courses in database + insert welcome chat + insert first story
+    // Enroll courses in database; initialize priors only if absent; conditionally add welcome/story
+    // Also collect courses that require onboarding wizard (only when mastery didn't exist)
+    const wizardEligible: CourseId[] = [];
     for (const courseId of courseIds) {
       const courseNumber = courseIdToNumber[courseId]; // 1 | 2 | 3
 
@@ -169,59 +171,80 @@ const MyDb3 = () => {
         .update({ courses: newCourseNumbers })
         .eq('user_id', user.id);
 
-      // Initialize priors for the course
-      try {
-        await supabase.functions.invoke('initialize-priors', {
-          body: { 
+      // Check if mastery rows already exist for this user+course
+      const { count: masteryCount, error: masteryCountError } = await supabase
+        .from('student_mastery')
+        .select('user_id', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .eq('course_id', courseNumber.toString());
+
+      const masteryExists = !masteryCountError && (masteryCount ?? 0) > 0;
+
+      // Initialize priors only if no mastery exists yet
+      if (!masteryExists) {
+        try {
+          await supabase.functions.invoke('initialize-priors', {
+            body: { 
+              user_id: user.id,
+              course_id: courseNumber.toString()
+            }
+          });
+        } catch (error) {
+          console.error('Error initializing priors:', error);
+        }
+      } else {
+        console.log(`Mastery already initialized for course ${courseNumber}, skipping initialization.`);
+      }
+
+      // Only send welcome message and initial story when mastery did NOT exist
+      if (!masteryExists) {
+        // Mark course as wizard-eligible
+        wizardEligible.push(courseId);
+        try {
+          await supabase.from('chat_logs').insert({
             user_id: user.id,
-            course_id: courseNumber.toString()
-          }
-        });
-      } catch (error) {
-        console.error('Error initializing priors:', error);
-      }
+            course_id: courseNumber.toString(), // text
+            user_message: 'Описание страниц на платформе',
+            response: welcomeMessage,
+            time_of_user_message: new Date().toISOString(),
+            time_of_response: new Date().toISOString()
+          });
+        } catch (error) {
+          console.error('Error inserting welcome message:', error);
+        }
 
-      // Insert welcome message into chat_logs
-      try {
-        await supabase.from('chat_logs').insert({
-          user_id: user.id,
-          course_id: courseNumber.toString(), // text
-          user_message: 'Описание страниц на платформе',
-          response: welcomeMessage,
-          time_of_user_message: new Date().toISOString(),
-          time_of_response: new Date().toISOString()
-        });
-      } catch (error) {
-        console.error('Error inserting welcome message:', error);
-      }
+        // Insert initial story into stories_and_telegram
+        try {
+          const uploadId = Math.floor(100000 + Math.random() * 900000); // random 6 digits
 
-      // --- NEW: Insert initial story into stories_and_telegram ---
-      try {
-        const uploadId = Math.floor(100000 + Math.random() * 900000); // random 6 digits
-
-        await supabase.from('stories_and_telegram').insert({
-          user_id: user.id,
-          course_id: courseNumber.toString(),            // text column
-          upload_id: uploadId,                            // 6-digit number
-          seen: 0,                                        // not seen
-          task: firstLessonTask,                          // long task text
-          hardcode_task: JSON.stringify(hardcodeTaskObj), // store JSON as string
-          previously_failed_topics: JSON.stringify(previouslyFailedObj),
-          previous_homework_question_ids: JSON.stringify(previousHomeworkQuestionIdsObj),
-          result_of_prev_homework_completion: JSON.stringify(resultOfPrevHomeworkCompletion),
-          student_activity_session_results: JSON.stringify(studentActivitySessionResults)
-          // created_at will use default NOW() if your table has it
-        });
-      } catch (error) {
-        console.error('Error inserting initial story:', error);
+          await supabase.from('stories_and_telegram').insert({
+            user_id: user.id,
+            course_id: courseNumber.toString(),            // text column
+            upload_id: uploadId,                            // 6-digit number
+            seen: 0,                                        // not seen
+            task: firstLessonTask,                          // long task text
+            hardcode_task: JSON.stringify(hardcodeTaskObj), // store JSON as string
+            previously_failed_topics: JSON.stringify(previouslyFailedObj),
+            previous_homework_question_ids: JSON.stringify(previousHomeworkQuestionIdsObj),
+            result_of_prev_homework_completion: JSON.stringify(resultOfPrevHomeworkCompletion),
+            student_activity_session_results: JSON.stringify(studentActivitySessionResults)
+            // created_at will use default NOW() if your table has it
+          });
+        } catch (error) {
+          console.error('Error inserting initial story:', error);
+        }
       }
-      // --- END NEW ---
     }
     
-    // Close modal and start wizard flow
+    // Close modal and start wizard flow only for courses without existing mastery
     setIsModalOpen(false);
-    setWizardQueue(courseIds);
-    startNextWizard(courseIds);
+    if (wizardEligible.length > 0) {
+      setWizardQueue(wizardEligible);
+      startNextWizard(wizardEligible);
+    } else {
+      // Nothing to onboard; refresh to reflect updated courses
+      window.location.reload();
+    }
   };
 
   const startNextWizard = (queue: CourseId[]) => {
@@ -254,19 +277,34 @@ const MyDb3 = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Call the database function for each course using numeric course IDs
-      for (const courseId of courseIds) {
-        const numericCourseId = courseIdToNumber[courseId].toString();
-        const { error } = await supabase.rpc('delete_course_data', {
-          p_user_id: user.id,
-          p_course_id: numericCourseId
-        });
-        
-        if (error) {
-          console.error('Error deleting course data:', error);
-        }
+      // Fetch current courses
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('courses')
+        .eq('user_id', user.id)
+        .single();
+
+      if (profileError) {
+        console.error('Error reading profile courses:', profileError);
+        return;
       }
-      
+
+      const currentCourses: number[] = profile?.courses || [];
+      const removeCourseNumbers = courseIds.map((c) => courseIdToNumber[c]);
+
+      // Filter out removed courses
+      const updatedCourses = currentCourses.filter((num) => !removeCourseNumbers.includes(num));
+
+      // Update profile only; preserve student_mastery and student_mastery_status
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ courses: updatedCourses })
+        .eq('user_id', user.id);
+
+      if (updateError) {
+        console.error('Error updating profile courses:', updateError);
+      }
+
       // Refresh the page data
       window.location.reload();
     } catch (error) {

@@ -1,21 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import { X, ChevronDown } from 'lucide-react';
+import { X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import ChatRenderer2 from './chat/ChatRenderer2';
-import { Button } from '@/components/ui/button';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { findTopicRoute } from '@/lib/topic-routing';
-import { COURSES, getCourseFromRoute } from '@/lib/courses.registry'; // ← include COURSES for neutral chooser
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { COURSES, getCourseFromRoute } from '@/lib/courses.registry';
 
-interface DailyTaskStoryProps {
+export interface DailyTaskStoryProps {
   /** Optional fallback; route-derived course takes precedence. */
   courseId?: string | null;
 }
@@ -25,15 +18,15 @@ export const DailyTaskStory: React.FC<DailyTaskStoryProps> = ({ courseId }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Detect course from route (same logic as LearningLayout)
+  // Resolve course from route
   const routeCourse = getCourseFromRoute(location.pathname);
   const routeCourseId = routeCourse?.numericId ?? null;
 
-  // Neutral mode when no course can be resolved from route and no valid prop given
+  // Neutral mode: pages without a course
   const neutral =
     routeCourseId == null && (courseId == null || Number.isNaN(Number(courseId)));
 
-  // Effective numeric course id (null in neutral mode)
+  // Effective course id (null in neutral mode)
   const effectiveCourseIdNum: number | null = neutral
     ? null
     : typeof routeCourseId === 'number'
@@ -70,7 +63,7 @@ export const DailyTaskStory: React.FC<DailyTaskStoryProps> = ({ courseId }) => {
         );
         if (profile?.tutor_name) setTutorName(profile.tutor_name);
 
-        // Neutral mode: skip stories query, show generic message
+        // Neutral: skip stories query and show generic message
         if (neutral) {
           setTask(
             'Молодец! Продолжай в том же духе 🎯 Зайди в курс, чтобы увидеть сообщение от своего ИИ-репетитора.'
@@ -91,7 +84,6 @@ export const DailyTaskStory: React.FC<DailyTaskStoryProps> = ({ courseId }) => {
           .eq('user_id', user.id);
 
         if (effectiveCourseIdNum !== null) {
-          // course_id is stored as text in some schemas—use String for compatibility
           query = query.eq('course_id', String(effectiveCourseIdNum));
         }
 
@@ -109,37 +101,32 @@ export const DailyTaskStory: React.FC<DailyTaskStoryProps> = ({ courseId }) => {
           setStoryId(story.upload_id);
           setSeen(story.seen);
 
-          // Parse learning topics
+          // Learning topics
           if (story.hardcode_task) {
             try {
               const parsedTask = JSON.parse(story.hardcode_task);
               const topics = parsedTask['темы для изучения'];
-              if (Array.isArray(topics)) setLearningTopics(topics);
-              else setLearningTopics([]);
-            } catch (e) {
-              console.error('Error parsing hardcode_task:', e);
+              setLearningTopics(Array.isArray(topics) ? topics : []);
+            } catch {
               setLearningTopics([]);
             }
           } else {
             setLearningTopics([]);
           }
 
-          // Parse failed topics
+          // Failed topics
           if (story.previously_failed_topics) {
             try {
               const parsedFailed = JSON.parse(story.previously_failed_topics);
               const topics = parsedFailed['темы с ошибками'];
-              if (Array.isArray(topics) && topics.length > 0) setFailedTopics(topics);
-              else setFailedTopics([]);
-            } catch (e) {
-              console.error('Error parsing previously_failed_topics:', e);
+              setFailedTopics(Array.isArray(topics) ? topics : []);
+            } catch {
               setFailedTopics([]);
             }
           } else {
             setFailedTopics([]);
           }
         } else {
-          // No story for this course/user
           setTask('');
           setStoryId(null);
           setFailedTopics([]);
@@ -153,10 +140,8 @@ export const DailyTaskStory: React.FC<DailyTaskStoryProps> = ({ courseId }) => {
     }
 
     fetchData();
-    // Re-run when user logs in, or route/course changes
   }, [user, location.pathname, routeCourseId, effectiveCourseIdNum, neutral]);
 
-  // Russian genitive for a couple of names
   const getTutorNameGenitive = (name: string) => {
     if (name === 'Ёжик') return 'Ёжика';
     if (name === 'Сакура') return 'Сакуры';
@@ -165,8 +150,7 @@ export const DailyTaskStory: React.FC<DailyTaskStoryProps> = ({ courseId }) => {
 
   async function handleOpen() {
     setIsOpen(true);
-
-    // Mark seen (only for course-scoped story and unseen)
+    // Only mark seen for course-scoped stories
     if (!neutral && storyId && seen === 0) {
       try {
         await supabase
@@ -180,7 +164,6 @@ export const DailyTaskStory: React.FC<DailyTaskStoryProps> = ({ courseId }) => {
     }
   }
 
-  // Loading / no user
   if (!user || isLoading) return null;
 
   return (
@@ -229,130 +212,103 @@ export const DailyTaskStory: React.FC<DailyTaskStoryProps> = ({ courseId }) => {
                 </button>
               </div>
 
-              {/* Work for Today */}
-              <div className="flex-shrink-0 px-6 pt-4 pb-6 border-b border-border/20">
-                <h2 className="text-xl font-bold text-center mb-4 text-foreground">
-                  Работа на сегодня:
-                </h2>
-                <div className="flex flex-wrap gap-3 justify-center">
-                  {/* Повторить — only in course mode and if we have failed topics */}
-                  {!neutral && failedTopics.length > 0 && (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-medium px-6 py-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105">
-                          Повторить <ChevronDown className="ml-2 h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent className="bg-background border-border shadow-xl z-[10000]">
-                        {failedTopics.map((topicIdentifier, index) => {
-                          const route = findTopicRoute(topicIdentifier);
-                          return (
-                            <DropdownMenuItem
-                              key={index}
+              {/* Work for Today (buttons hidden on neutral pages) */}
+              {!neutral && (
+                <div className="flex-shrink-0 px-6 pt-4 pb-6 border-b border-border/20">
+                  <h2 className="text-xl font-bold text-center mb-4 text-foreground">
+                    Работа на сегодня:
+                  </h2>
+                  <div className="flex flex-wrap gap-3 justify-center">
+                    {/* "Повторить" dropdown */}
+                    {failedTopics.length > 0 && (
+                      <div className="inline-flex">
+                        <details className="group relative">
+                          <summary className="list-none px-6 py-2 rounded-full text-white font-medium bg-gradient-to-r from-orange-500 to-orange-600 cursor-pointer shadow-lg transition-all duration-200">
+                            Повторить
+                          </summary>
+                          <div className="absolute mt-2 min-w-[260px] bg-background border border-border rounded-md p-1 shadow-xl z-[10000]">
+                            {failedTopics.map((topicIdentifier, i) => {
+                              const route = findTopicRoute(topicIdentifier);
+                              return (
+                                <button
+                                  key={i}
+                                  onClick={() => {
+                                    if (route) {
+                                      navigate(`/module/${route.moduleSlug}/topic/${route.topicId}`);
+                                    } else {
+                                      navigate(`/learning-platform?topic=${topicIdentifier}`);
+                                    }
+                                    setIsOpen(false);
+                                  }}
+                                  className="w-full text-left px-3 py-2 rounded-md hover:bg-muted"
+                                >
+                                  {route?.topicName || topicIdentifier}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </details>
+                      </div>
+                    )}
+
+                    {/* "Изучить" dropdown */}
+                    <div className="inline-flex">
+                      <details className="group relative">
+                        <summary className="list-none px-6 py-2 rounded-full text-white font-medium bg-gradient-to-r from-blue-500 to-blue-600 cursor-pointer shadow-lg transition-all duration-200">
+                          Изучить
+                        </summary>
+                        <div className="absolute mt-2 min-w-[260px] bg-background border border-border rounded-md p-1 shadow-xl z-[10000]">
+                          {learningTopics.length > 0 ? (
+                            learningTopics.map((topicIdentifier, i) => {
+                              const route = findTopicRoute(topicIdentifier);
+                              return (
+                                <button
+                                  key={i}
+                                  onClick={() => {
+                                    if (route) {
+                                      navigate(`/module/${route.moduleSlug}/topic/${route.topicId}`);
+                                    } else {
+                                      navigate(`/learning-platform?topic=${topicIdentifier}`);
+                                    }
+                                    setIsOpen(false);
+                                  }}
+                                  className="w-full text-left px-3 py-2 rounded-md hover:bg-muted"
+                                >
+                                  {route?.topicName || topicIdentifier}
+                                </button>
+                              );
+                            })
+                          ) : (
+                            <button
                               onClick={() => {
-                                if (route) {
-                                  navigate(`/module/${route.moduleSlug}/topic/${route.topicId}`);
-                                } else {
-                                  navigate(`/learning-platform?topic=${topicIdentifier}`);
-                                }
+                                navigate('/learning-platform');
                                 setIsOpen(false);
                               }}
-                              className="cursor-pointer hover:bg-muted"
+                              className="w-full text-left px-3 py-2 rounded-md hover:bg-muted"
                             >
-                              {route?.topicName || topicIdentifier}
-                            </DropdownMenuItem>
-                          );
-                        })}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  )}
+                              Платформа для изучения
+                            </button>
+                          )}
+                        </div>
+                      </details>
+                    </div>
 
-                  {/* Изучить — course mode shows topics, neutral shows course chooser */}
-                  {!neutral ? (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium px-6 py-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105">
-                          Изучить <ChevronDown className="ml-2 h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent className="bg-background border-border shadow-xl z-[10000]">
-                        {learningTopics.length > 0 ? (
-                          learningTopics.map((topicIdentifier, index) => {
-                            const route = findTopicRoute(topicIdentifier);
-                            return (
-                              <DropdownMenuItem
-                                key={index}
-                                onClick={() => {
-                                  if (route) {
-                                    navigate(`/module/${route.moduleSlug}/topic/${route.topicId}`);
-                                  } else {
-                                    navigate(`/learning-platform?topic=${topicIdentifier}`);
-                                  }
-                                  setIsOpen(false);
-                                }}
-                                className="cursor-pointer hover:bg-muted"
-                              >
-                                {route?.topicName || topicIdentifier}
-                              </DropdownMenuItem>
-                            );
-                          })
-                        ) : (
-                          <DropdownMenuItem
-                            onClick={() => {
-                              navigate('/learning-platform');
-                              setIsOpen(false);
-                            }}
-                            className="cursor-pointer hover:bg-muted"
-                          >
-                            Платформа для изучения
-                          </DropdownMenuItem>
-                        )}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  ) : (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium px-6 py-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105">
-                          Выбрать курс <ChevronDown className="ml-2 h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent className="bg-background border-border shadow-xl z-[10000]">
-                        {Object.values(COURSES).map((c) => (
-                          <DropdownMenuItem
-                            key={c.id}
-                            onClick={() => {
-                              navigate(c.homeRoute);
-                              setIsOpen(false);
-                            }}
-                            className="cursor-pointer hover:bg-muted"
-                          >
-                            {c.title}
-                          </DropdownMenuItem>
-                        ))}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  )}
-
-                  {/* Homework / action button */}
-                  <Button
-                    onClick={() => {
-                      if (neutral) {
-                        // Neutral: send to hub or course chooser
-                        navigate('/learning-platform');
-                      } else {
+                    {/* Homework button */}
+                    <button
+                      onClick={() => {
                         let homeworkPath = '/homework'; // OGE default
                         if (effectiveCourseIdNum === 3) homeworkPath = '/homework-egeprof';
                         else if (effectiveCourseIdNum === 2) homeworkPath = '/homework-egeb';
                         navigate(homeworkPath);
-                      }
-                      setIsOpen(false);
-                    }}
-                    className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-medium px-6 py-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
-                  >
-                    {neutral ? 'Открыть платформу' : 'Домашнее Задание'}
-                  </Button>
+                        setIsOpen(false);
+                      }}
+                      className="px-6 py-2 rounded-full text-white font-medium bg-gradient-to-r from-green-500 to-green-600 shadow-lg transition-all duration-200"
+                    >
+                      Домашнее Задание
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Detailed Feedback */}
               <div className="flex-1 overflow-y-auto p-6">
