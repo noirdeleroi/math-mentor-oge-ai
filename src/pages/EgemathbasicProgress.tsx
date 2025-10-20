@@ -3,6 +3,9 @@ import { LayoutGrid, ListOrdered, ArrowLeft, RefreshCw } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { LineChart, Line, Area, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine, ResponsiveContainer } from 'recharts';
+import { Button } from '@/components/ui/button';
+import FlyingMathBackground from '@/components/FlyingMathBackground';
 
 /**
  * EGE Basic Progress — Minimal, Spacious Preview with Real Data
@@ -25,6 +28,26 @@ export type SkillItem = {
   id: string;
   label: string;
   progress: number;
+};
+
+// ---------- Прокачка Types ----------
+export type ParsedSnapshot = {
+  date: Date;
+  timestamp: string;
+  general_progress: number;
+  fipi_tasks: { id: string; prob: number }[];
+  topics: { topic: string; prob: number }[];
+};
+
+export type Period = '7d' | '30d' | 'all';
+export type AnalyticsMode = 'modules' | 'tasks' | 'topics';
+
+export type TrendItem = {
+  id: string;
+  label: string;
+  currentPercent: number;
+  delta: number;
+  sparklineData: number[];
 };
 
 // Topic names mapping for EGE Basic
@@ -76,6 +99,107 @@ interface ProgressData {
 const clamp01 = (n: number) => Math.min(100, Math.max(0, n));
 const hueForProgress = (p: number) => Math.round(clamp01(p) / 100 * 120); // 0=red→120=green
 const statusText = (p: number) => p >= 100 ? "Готово!" : p >= 80 ? "Почти мастер" : p >= 40 ? "В процессе" : "Начни здесь";
+
+// ---------- Прокачка Utils ----------
+function parseSnapshot(snapshot: any): ParsedSnapshot {
+  const rawData = snapshot.raw_data || [];
+  const computedSummary = snapshot.computed_summary || [];
+  
+  const fipi_tasks: { id: string; prob: number }[] = [];
+  const topics: { topic: string; prob: number }[] = [];
+  let general_progress = 0;
+
+  // Parse general_progress from computed_summary
+  const generalItem = computedSummary.find((item: any) => item.general_progress !== undefined);
+  if (generalItem) {
+    general_progress = generalItem.general_progress;
+  }
+
+  // Parse FIPI tasks from raw_data
+  rawData.forEach((item: any) => {
+    if (item['задача ФИПИ']) {
+      fipi_tasks.push({
+        id: String(item['задача ФИПИ']),
+        prob: item.prob || 0
+      });
+    }
+  });
+
+  // Parse topics from computed_summary
+  computedSummary.forEach((item: any) => {
+    if (item.topic && !item.topic.includes('задача ФИПИ') && !item.topic.includes('навык')) {
+      topics.push({
+        topic: item.topic,
+        prob: item.prob || 0
+      });
+    }
+  });
+
+  return {
+    date: new Date(snapshot.run_timestamp),
+    timestamp: snapshot.run_timestamp,
+    general_progress,
+    fipi_tasks,
+    topics
+  };
+}
+
+function groupByDate(snapshots: ParsedSnapshot[], period: Period): ParsedSnapshot[] {
+  if (period === 'all') return snapshots;
+  
+  const now = new Date();
+  const cutoffDate = new Date();
+  
+  if (period === '7d') {
+    cutoffDate.setDate(now.getDate() - 7);
+  } else if (period === '30d') {
+    cutoffDate.setDate(now.getDate() - 30);
+  }
+  
+  return snapshots.filter(s => s.date >= cutoffDate);
+}
+
+function getAverageProgress(snapshots: ParsedSnapshot[], mode: AnalyticsMode): number[] {
+  return snapshots.map(snapshot => {
+    if (mode === 'modules') {
+      return snapshot.general_progress * 100;
+    } else if (mode === 'tasks') {
+      const tasks = snapshot.fipi_tasks;
+      if (tasks.length === 0) return 0;
+      const avg = tasks.reduce((sum, task) => sum + task.prob, 0) / tasks.length;
+      return avg * 100;
+    } else { // topics
+      const topics = snapshot.topics;
+      if (topics.length === 0) return 0;
+      const avg = topics.reduce((sum, topic) => sum + topic.prob, 0) / topics.length;
+      return avg * 100;
+    }
+  });
+}
+
+function computeDelta(series: number[]): number {
+  if (series.length < 2) return 0;
+  const first = series[0];
+  const last = series[series.length - 1];
+  return last - first;
+}
+
+function topKByDelta(items: TrendItem[], k: number, ascending: boolean): TrendItem[] {
+  const sorted = [...items].sort((a, b) => ascending ? a.delta - b.delta : b.delta - a.delta);
+  return sorted.slice(0, k);
+}
+
+function getItemTimeSeries(snapshots: ParsedSnapshot[], itemId: string, mode: AnalyticsMode): number[] {
+  return snapshots.map(snapshot => {
+    if (mode === 'tasks') {
+      const task = snapshot.fipi_tasks.find(t => t.id === itemId);
+      return task ? task.prob * 100 : 0;
+    } else { // topics or modules
+      const topic = snapshot.topics.find(t => t.topic === itemId);
+      return topic ? topic.prob * 100 : 0;
+    }
+  });
+}
 function Radial({
   value,
   size = 60
@@ -91,7 +215,7 @@ function Radial({
     height: size,
     background: `conic-gradient(${ringColor} ${angle}deg, #eceef1 0deg)`
   }} aria-label={`Прогресс ${Math.round(value)}%`}>
-      <div className="absolute inset-[12%] rounded-full bg-white/90 grid place-items-center text-[11px] font-semibold text-gray-800">
+      <div className="absolute inset-[12%] rounded-full bg-white/95 grid place-items-center text-[11px] font-semibold text-gray-800">
         {Math.round(value)}%
       </div>
     </div>;
@@ -181,15 +305,15 @@ function ModuleCardSkeleton({
 }: {
   title: string;
 }) {
-  return <div className="relative rounded-2xl border border-gray-200 bg-white/90 p-4">
+  return <div className="relative rounded-2xl border border-white/20 bg-white/95 p-4">
       <div className="flex items-start gap-4">
         <div className="h-14 w-14 animate-pulse rounded-full bg-gray-200" />
         <div className="min-w-0 flex-1">
           <h3 className="truncate text-[15px] font-semibold text-gray-400">{title}</h3>
           <div className="mt-2"><SkeletonBar /></div>
           <div className="mt-2 h-4 w-40 animate-pulse rounded bg-gray-200" />
-        </div>
-      </div>
+          </div>
+          </div>
     </div>;
 }
 function ProblemCardSkeleton({
@@ -197,10 +321,10 @@ function ProblemCardSkeleton({
 }: {
   label: string;
 }) {
-  return <div className="rounded-xl border border-gray-200 bg-white/90 p-2.5">
+  return <div className="rounded-xl border border-white/20 bg-white/95 p-2.5">
       <div className="flex items-center justify-center mb-2">
         <span className="text-[12px] font-medium text-gray-400">№ {label}</span>
-      </div>
+        </div>
       <div className="grid place-items-center mb-2">
         <div className="h-12 w-12 animate-pulse rounded-full bg-gray-200" />
       </div>
@@ -233,13 +357,13 @@ function TopicProgressModal({
   const moduleDefinition = moduleDefinitions.find(m => m.id === module.id);
   const topics = moduleDefinition?.topicCodes || [];
   return <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50" onClick={onClose}>
-      <div className="bg-white rounded-2xl p-6 max-w-md w-full mx-4" onClick={e => e.stopPropagation()}>
-        <div className="flex items-center justify-between mb-4">
+      <div className="bg-white rounded-2xl p-6 max-w-md w-full mx-4 max-h-[80vh] flex flex-col" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between mb-4 flex-shrink-0">
           <h2 className="text-lg font-semibold text-gray-900">{module.title}</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600">✕</button>
         </div>
         
-        <div className="space-y-3">
+        <div className="space-y-3 overflow-y-auto flex-1 pr-2">
           {topics.map(topicCode => {
           const progress = topicProgress[topicCode] || 0;
             const hue = hueForProgress(progress);
@@ -252,7 +376,7 @@ function TopicProgressModal({
                   width: `${progress}%`,
                   backgroundColor: ringColor
                 }} />
-                  </div>
+      </div>
                   <span className="text-sm font-semibold text-gray-900 w-10 text-right">{progress}%</span>
                 </div>
               </div>;
@@ -271,7 +395,7 @@ function ModuleCard({
   onClick?: () => void;
 }) {
     const ring = `hsl(${hueForProgress(m.progress)} 72% 44%)`;
-  return <div className="group relative rounded-2xl border border-gray-200 bg-white/90 p-4 hover:border-gray-300 transition-colors cursor-pointer" onClick={onClick}>
+  return <div className="group relative rounded-2xl border border-white/20 bg-white/95 p-4 hover:border-white/30 transition-colors cursor-pointer" onClick={onClick}>
         <div className="flex items-start gap-4">
           <Radial value={m.progress} size={56} />
           <div className="min-w-0 flex-1">
@@ -323,12 +447,7 @@ function ModuleCard({
   return <div className="space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <button onClick={() => setOnlyNeedsWork(v => !v)} className="rounded-xl border px-3 py-1.5 text-[13px] hover:bg-gray-50">
-              {onlyNeedsWork ? "Показать все" : "Только < 80%"}
-            </button>
-            <button onClick={() => setSortByLow(v => !v)} className="rounded-xl border px-3 py-1.5 text-[13px] hover:bg-gray-50">
-              {sortByLow ? "Сортировать: снизу вверх" : "Сортировать: сверху вниз"}
-            </button>
+
           </div>
           <div className="flex flex-wrap gap-4 text-gray-600">
             <LegendItem label="< 40%" mid={20} />
@@ -374,7 +493,7 @@ function ProblemView({
         </div>
 
       <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 xl:grid-cols-8 gap-4">
-        {hasRealData ? filtered.map(it => <div key={it.key} className="rounded-xl border border-gray-200 bg-white/90 p-2.5 hover:border-gray-300 transition-colors">
+        {hasRealData ? problems.map(it => <div key={it.key} className="rounded-xl border border-white/20 bg-white/95 p-2.5 hover:border-white/30 transition-colors">
                   <div className="flex items-center justify-center mb-2">
                     <span className="text-[12px] font-medium text-gray-800">№ {it.label}</span>
                   </div>
@@ -416,7 +535,7 @@ function SkillView({
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-4">
-        {hasRealData ? filtered.map(skill => <div key={skill.id} className="rounded-xl border border-gray-200 bg-white/90 p-3 hover:border-gray-300 transition-colors">
+        {hasRealData ? skills.map(skill => <div key={skill.id} className="rounded-xl border border-white/20 bg-white/95 p-3 hover:border-white/30 transition-colors">
                 <div className="flex items-center justify-center mb-2">
                   <span className="text-[12px] font-medium text-gray-800">Навык {skill.label}</span>
                 </div>
@@ -432,7 +551,7 @@ function SkillView({
                 <div className="text-center text-[10px] text-gray-500">{statusText(skill.progress)}</div>
               </div>) : Array.from({
         length: 20
-      }, (_, i) => <div key={i} className="rounded-xl border border-gray-200 bg-white/90 p-3">
+      }, (_, i) => <div key={i} className="rounded-xl border border-white/20 bg-white/95 p-3">
                 <div className="flex items-center justify-center mb-2">
                   <span className="text-[12px] font-medium text-gray-400">Навык {i + 1}</span>
                 </div>
@@ -446,31 +565,478 @@ function SkillView({
     </div>;
   }
 
+// ---------- Прокачка UI Components ----------
+
+function PeriodToggle({ 
+  period, 
+  onChange 
+}: { 
+  period: Period; 
+  onChange: (p: Period) => void;
+}) {
+  const periods: { value: Period; label: string }[] = [
+    { value: '7d', label: '7д' },
+    { value: '30d', label: '30д' },
+    { value: 'all', label: 'Все' }
+  ];
+  
+  return (
+    <div className="inline-flex rounded-lg border border-white/20 bg-white/10 backdrop-blur p-1 gap-1">
+      {periods.map(p => (
+        <button
+          key={p.value}
+          onClick={() => onChange(p.value)}
+          className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
+            period === p.value 
+              ? 'bg-gradient-to-r from-yellow-500 to-emerald-500 text-white shadow-lg' 
+              : 'text-black hover:bg-white/20'
+          }`}
+        >
+          {p.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function ModeSwitch({ 
+  mode, 
+  onChange 
+}: { 
+  mode: AnalyticsMode; 
+  onChange: (m: AnalyticsMode) => void;
+}) {
+  const modes: { value: AnalyticsMode; label: string }[] = [
+    { value: 'modules', label: 'Модули' },
+    { value: 'tasks', label: 'Задачи' },
+    { value: 'topics', label: 'Темы' }
+  ];
+  
+  return (
+    <div className="inline-flex rounded-lg border border-white/20 bg-white/10 backdrop-blur p-1 gap-1">
+      {modes.map(m => (
+        <button
+          key={m.value}
+          onClick={() => onChange(m.value)}
+          className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
+            mode === m.value 
+              ? 'bg-gradient-to-r from-yellow-500 to-emerald-500 text-white shadow-lg' 
+              : 'text-black hover:bg-white/20'
+          }`}
+        >
+          {m.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function MainChart({
+  snapshots,
+  mode,
+  period,
+  selectedItemId,
+  selectedItemData,
+  onPeriodChange,
+  onModeChange
+}: {
+  snapshots: ParsedSnapshot[];
+  mode: AnalyticsMode;
+  period: Period;
+  selectedItemId: string | null;
+  selectedItemData: number[] | null;
+  onPeriodChange: (p: Period) => void;
+  onModeChange: (m: AnalyticsMode) => void;
+}) {
+  const filteredSnapshots = useMemo(() => groupByDate(snapshots, period), [snapshots, period]);
+  
+  const chartData = useMemo(() => {
+    return filteredSnapshots.map((snapshot, index) => {
+      let progress: number;
+      
+      if (selectedItemId && selectedItemData) {
+        // Show selected item's progress
+        progress = selectedItemData[index] || 0;
+      } else {
+        // Show general progress
+        progress = getAverageProgress([snapshot], mode)[0];
+      }
+      
+      return {
+        name: new Date(snapshot.date).toLocaleDateString('ru-RU', { 
+          month: 'short', 
+          day: 'numeric' 
+        }),
+        progress: Math.round(progress),
+        index
+      };
+    });
+  }, [filteredSnapshots, mode, selectedItemId, selectedItemData]);
+
+  const delta = useMemo(() => {
+    if (selectedItemId && selectedItemData) {
+      return computeDelta(selectedItemData);
+    } else {
+      const series = getAverageProgress(filteredSnapshots, mode);
+      return computeDelta(series);
+    }
+  }, [filteredSnapshots, mode, selectedItemId, selectedItemData]);
+
+  // Get chart title and subtitle
+  const chartTitle = useMemo(() => {
+    if (selectedItemId) {
+      if (mode === 'tasks') {
+        return `Задача ${selectedItemId}`;
+      } else {
+        // Find topic name
+        const lastSnapshot = filteredSnapshots[filteredSnapshots.length - 1];
+        if (lastSnapshot) {
+          const topic = lastSnapshot.topics.find(t => t.topic === selectedItemId);
+          if (topic) {
+            const topicCode = topic.topic.match(/^(\d+\.\d+)/)?.[1] || topic.topic;
+            return TOPIC_NAMES[topicCode] || topic.topic;
+          }
+        }
+        return selectedItemId;
+      }
+    }
+    return 'Общий прогресс';
+  }, [selectedItemId, mode, filteredSnapshots]);
+
+  if (filteredSnapshots.length < 2) {
+    return (
+      <div className="bg-white/95 rounded-2xl border border-white/20 p-12 text-center">
+        <p className="text-gray-600 text-lg">
+          Недостаточно данных для анализа прогресса. Вернитесь позже!
+        </p>
+        <p className="text-gray-400 text-sm mt-2">
+          Нужно минимум 2 снимка прогресса
+        </p>
+      </div>
+    );
+  }
+
+  const deltaColor = delta > 0 ? 'text-green-600' : delta < 0 ? 'text-red-600' : 'text-gray-600';
+  const deltaSign = delta > 0 ? '+' : '';
+  const lineColor = delta > 0 ? '#10b981' : delta < 0 ? '#ef4444' : '#6b7280';
+
+  return (
+    <div className="bg-white/95 rounded-2xl border border-white/20 p-6">
+      <div className="flex items-center justify-between gap-4 mb-4">
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900">
+            {chartTitle}
+          </h3>
+          <p className="text-sm text-gray-600">Динамика прогресса</p>
+        </div>
+        
+        {/* Controls on the same line */}
+        <div className="flex flex-wrap gap-3 items-end justify-end">
+          <PeriodToggle period={period} onChange={onPeriodChange} />
+          <ModeSwitch mode={mode} onChange={onModeChange} />
+        </div>
+
+        <div className="text-right flex-shrink-0">
+          <p className="text-xs text-gray-500">Изменение</p>
+          <p className={`text-2xl font-bold ${deltaColor}`}>
+            {deltaSign}{Math.round(delta)}%
+          </p>
+        </div>
+      </div>
+      
+      <ResponsiveContainer width="100%" height={300}>
+        <LineChart data={chartData}>
+          <defs>
+            <linearGradient id="colorProgress" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor={lineColor} stopOpacity={0.3}/>
+              <stop offset="95%" stopColor={lineColor} stopOpacity={0}/>
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+          <XAxis 
+            dataKey="name" 
+            stroke="#9ca3af"
+            style={{ fontSize: '12px' }}
+          />
+          <YAxis 
+            stroke="#9ca3af"
+            style={{ fontSize: '12px' }}
+            domain={[0, 100]}
+          />
+          <Tooltip 
+            contentStyle={{ 
+              backgroundColor: 'white', 
+              border: '1px solid #e5e7eb',
+              borderRadius: '8px',
+              fontSize: '13px'
+            }}
+            formatter={(value: number) => [`${value}%`, 'Прогресс']}
+          />
+          <ReferenceLine 
+            y={70} 
+            stroke="#f59e0b" 
+            strokeDasharray="5 5"
+            label={{ value: 'Цель 70%', position: 'right', fill: '#f59e0b', fontSize: 12 }}
+          />
+          <Area 
+            type="monotone" 
+            dataKey="progress" 
+            stroke={lineColor}
+            strokeWidth={2}
+            fill="url(#colorProgress)" 
+          />
+          <Line 
+            type="monotone" 
+            dataKey="progress" 
+            stroke={lineColor}
+            strokeWidth={3}
+            dot={{ fill: lineColor, r: 4 }}
+            activeDot={{ r: 6 }}
+          />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+function TrendCard({
+  label,
+  currentPercent,
+  delta,
+  sparklineData,
+  isSelected,
+  onClick
+}: TrendItem & {
+  isSelected?: boolean;
+  onClick?: () => void;
+}) {
+  const deltaColor = delta > 0 ? 'text-green-600' : delta < 0 ? 'text-red-600' : 'text-gray-600';
+  const borderColor = delta > 0 ? 'border-green-300' : delta < 0 ? 'border-red-300' : 'border-gray-200';
+  const bgColor = isSelected ? (delta > 0 ? 'bg-green-50' : delta < 0 ? 'bg-red-50' : 'bg-white/95') : 'bg-white/95';
+  const deltaSign = delta > 0 ? '+' : '';
+  const lineColor = delta > 0 ? '#10b981' : delta < 0 ? '#ef4444' : '#6b7280';
+
+  const miniData = sparklineData.map((value, index) => ({ index, value }));
+
+  return (
+    <div 
+      onClick={onClick}
+      className={`${bgColor} rounded-xl border-2 ${borderColor} p-4 hover:shadow-md transition-all cursor-pointer ${isSelected ? 'ring-2 ring-offset-2 ring-gray-900' : ''}`}
+    >
+      <div className="flex items-start justify-between mb-3">
+        <div className="flex-1 min-w-0">
+          <h4 className="text-sm font-medium text-gray-900 truncate">{label}</h4>
+          <p className="text-2xl font-bold text-gray-900 mt-1">{currentPercent}%</p>
+        </div>
+        <div className={`text-right ${deltaColor}`}>
+          <p className="text-lg font-bold">{deltaSign}{Math.round(delta)}%</p>
+        </div>
+      </div>
+      <div className="h-12">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={miniData}>
+            <Line 
+              type="monotone" 
+              dataKey="value" 
+              stroke={lineColor} 
+              strokeWidth={2}
+              dot={false}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  );
+}
+
+function SmallMultiples({
+  snapshots,
+  mode,
+  period,
+  selectedItemId,
+  onSelectItem,
+  onSelectGeneral
+}: {
+  snapshots: ParsedSnapshot[];
+  mode: AnalyticsMode;
+  period: Period;
+  selectedItemId: string | null;
+  onSelectItem: (id: string | null) => void;
+  onSelectGeneral: () => void;
+}) {
+  const filteredSnapshots = useMemo(() => groupByDate(snapshots, period), [snapshots, period]);
+
+  const trendItems = useMemo(() => {
+    if (filteredSnapshots.length < 2) return [];
+
+    const items: TrendItem[] = [];
+    const lastSnapshot = filteredSnapshots[filteredSnapshots.length - 1];
+
+    if (mode === 'tasks') {
+      // Analyze FIPI tasks
+      lastSnapshot.fipi_tasks.forEach(task => {
+        const series = getItemTimeSeries(filteredSnapshots, task.id, mode);
+        const delta = computeDelta(series);
+        items.push({
+          id: task.id,
+          label: `Задача ${task.id}`,
+          currentPercent: Math.round(task.prob * 100),
+          delta,
+          sparklineData: series
+        });
+      });
+    } else {
+      // Analyze topics (for both 'topics' and 'modules' mode)
+      lastSnapshot.topics.forEach(topic => {
+        const series = getItemTimeSeries(filteredSnapshots, topic.topic, mode);
+        const delta = computeDelta(series);
+        const topicCode = topic.topic.match(/^(\d+\.\d+)/)?.[1] || topic.topic;
+        const topicName = TOPIC_NAMES[topicCode] || topic.topic;
+        items.push({
+          id: topic.topic,
+          label: topicName,
+          currentPercent: Math.round(topic.prob * 100),
+          delta,
+          sparklineData: series
+        });
+      });
+    }
+
+    // Sort by task/topic ID or alphabetically for consistency
+    if (mode === 'tasks') {
+      return items.sort((a, b) => parseInt(a.id) - parseInt(b.id));
+    }
+    return items;
+  }, [filteredSnapshots, mode]);
+
+  if (filteredSnapshots.length < 2) {
+    return null;
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* General Progress Button */}
+      <div>
+            <button
+          onClick={onSelectGeneral}
+          className={`w-full px-4 py-3 rounded-xl border-2 font-semibold transition-all ${
+            selectedItemId === null
+              ? 'bg-blue-50 border-blue-300 text-blue-900'
+              : 'bg-white/95 border-white/20 text-gray-900 hover:border-blue-200'
+          }`}
+        >
+          Общий прогресс
+            </button>
+          </div>
+
+      {/* All Items Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {trendItems.map(item => (
+          <TrendCard 
+            key={item.id} 
+            {...item}
+            isSelected={selectedItemId === item.id}
+            onClick={() => onSelectItem(item.id)}
+          />
+        ))}
+        </div>
+      </div>
+    );
+  }
+
   // ---------- Sticky Tab Bar ----------
 function TabBar({
   mode,
   setMode
 }: {
-  mode: "module" | "problem" | "skill";
-  setMode: (m: "module" | "problem" | "skill") => void;
+  mode: "module" | "problem" | "analytics";
+  setMode: (m: "module" | "problem" | "analytics") => void;
 }) {
-  return <div className="sticky top-0 z-30 -mx-4 sm:mx-0 backdrop-blur supports-[backdrop-filter]:bg-white/70 bg-white/95 border-b">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="flex items-center gap-2 py-3">
-            <nav className="relative inline-flex rounded-xl border bg-white shadow-sm">
-            <button onClick={() => setMode("module")} className={`flex items-center gap-2 px-3 py-2 text-[13px] ${mode === "module" ? "bg-gray-900 text-white" : "text-gray-700 hover:bg-gray-50"}`} aria-pressed={mode === "module"}>
-                <LayoutGrid className="h-4 w-4" /> Модули
+  return <div className="inline-flex rounded-lg border border-white/20 bg-white/10 backdrop-blur p-1 gap-1">
+              <button
+                onClick={() => setMode("module")}
+      className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
+        mode === "module" 
+          ? "bg-gradient-to-r from-yellow-500 to-emerald-500 text-white shadow-lg" 
+          : "text-gray-300 hover:text-white hover:bg-white/10"
+      }`} 
+                aria-pressed={mode === "module"}
+              >
+      <LayoutGrid className="h-4 w-4" /> 
+      <span className="hidden sm:inline">Модули</span>
+      <span className="sm:hidden">Мод.</span>
               </button>
-            <button onClick={() => setMode("problem")} className={`flex items-center gap-2 px-3 py-2 text-[13px] ${mode === "problem" ? "bg-gray-900 text-white" : "text-gray-700 hover:bg-gray-50"}`} aria-pressed={mode === "problem"}>
-                <ListOrdered className="h-4 w-4" /> Задания
+
+              <button
+                onClick={() => setMode("problem")}
+      className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
+        mode === "problem" 
+          ? "bg-gradient-to-r from-yellow-500 to-emerald-500 text-white shadow-lg" 
+          : "text-gray-300 hover:text-white hover:bg-white/10"
+      }`} 
+                aria-pressed={mode === "problem"}
+              >
+      <ListOrdered className="h-4 w-4" /> 
+      <span className="hidden sm:inline">Задания</span>
+      <span className="sm:hidden">Зад.</span>
               </button>
-            <button onClick={() => setMode("skill")} className={`flex items-center gap-2 px-3 py-2 text-[13px] ${mode === "skill" ? "bg-gray-900 text-white" : "text-gray-700 hover:bg-gray-50"}`} aria-pressed={mode === "skill"}>
-              <ListOrdered className="h-4 w-4" /> Навыки
+
+            <button
+      onClick={() => setMode("analytics")} 
+      className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
+        mode === "analytics" 
+          ? "bg-gradient-to-r from-yellow-500 to-emerald-500 text-white shadow-lg" 
+          : "text-gray-300 hover:text-white hover:bg-white/10"
+      }`} 
+      aria-pressed={mode === "analytics"}
+    >
+      <RefreshCw className="h-4 w-4" /> 
+      <span className="hidden sm:inline">Прокачка</span>
+      <span className="sm:hidden">Проч.</span>
             </button>
-            </nav>
-        </div>
-      </div>
-    </div>;
+  </div>;
+}
+
+// ---------- Прокачка Data Hook ----------
+function useMasterySnapshots() {
+  const { user } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [snapshots, setSnapshots] = useState<ParsedSnapshot[]>([]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchSnapshots = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const { data, error: fetchError } = await supabase
+          .from('mastery_snapshots')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('course_id', '2')
+          .order('run_timestamp', { ascending: true });
+
+        if (fetchError) throw fetchError;
+
+        if (data) {
+          const parsed = data.map(parseSnapshot);
+          setSnapshots(parsed);
+        }
+      } catch (err) {
+        console.error('Error fetching mastery snapshots:', err);
+        setError(err instanceof Error ? err.message : 'Ошибка загрузки данных');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSnapshots();
+  }, [user]);
+
+  return { snapshots, loading, error };
 }
 
 // ---------- Data Fetching Hook ----------
@@ -805,10 +1371,96 @@ function useEgemathbasicProgressData() {
   };
 }
 
+// ---------- Progress Analytics View ----------
+function ProgressAnalyticsView() {
+  const [period, setPeriod] = useState<Period>('30d');
+  const [analyticsMode, setAnalyticsMode] = useState<AnalyticsMode>('modules');
+  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+
+  const { snapshots, loading, error } = useMasterySnapshots();
+
+  const filteredSnapshots = useMemo(() => groupByDate(snapshots, period), [snapshots, period]);
+
+  const overallDelta = useMemo(() => {
+    const series = getAverageProgress(filteredSnapshots, analyticsMode);
+    return computeDelta(series);
+  }, [filteredSnapshots, analyticsMode]);
+
+  // Get selected item's time series data for chart
+  const selectedItemData = useMemo(() => {
+    if (!selectedItemId || filteredSnapshots.length < 2) return null;
+    return getItemTimeSeries(filteredSnapshots, selectedItemId, analyticsMode);
+  }, [selectedItemId, filteredSnapshots, analyticsMode]);
+
+  // Reset to general progress when mode changes
+  const handleModeChange = (newMode: AnalyticsMode) => {
+    setAnalyticsMode(newMode);
+    setSelectedItemId(null);
+  };
+
+  const handleSelectGeneral = () => {
+    setSelectedItemId(null);
+  };
+
+  if (loading) {
+  return (
+      <div className="flex items-center justify-center py-20">
+        <div className="text-center space-y-4">
+          <div className="h-12 w-12 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin mx-auto"></div>
+          <p className="text-gray-600">Загружаем данные анализа...</p>
+          </div>
+        </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-red-50 rounded-2xl border border-red-200 p-6 text-center">
+        <p className="text-red-600">{error}</p>
+      </div>
+    );
+  }
+
+  if (snapshots.length === 0) {
+  return (
+      <div className="bg-white/95 rounded-2xl border border-white/20 p-12 text-center">
+        <p className="text-gray-600 text-lg">
+          Данные о прогрессе еще не собраны. Начните решать задачи!
+        </p>
+    </div>
+  );
+  }
+
+  return (
+    <div className="space-y-3">
+      {/* Main Chart - shows selected item or general progress */}
+      <MainChart 
+        snapshots={snapshots} 
+        mode={analyticsMode} 
+        period={period}
+        selectedItemId={selectedItemId}
+        selectedItemData={selectedItemData}
+        onPeriodChange={setPeriod}
+        onModeChange={handleModeChange}
+      />
+
+      {/* Small Multiples - clickable boxes */}
+      <SmallMultiples 
+        snapshots={snapshots} 
+        mode={analyticsMode} 
+        period={period}
+        selectedItemId={selectedItemId}
+        onSelectItem={setSelectedItemId}
+        onSelectGeneral={handleSelectGeneral}
+      />
+    </div>
+  );
+}
+
 // ---------- Page Shell ----------
 export default function EgemathbasicProgress2() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"module" | "problem" | "skill">("module");
+  const [mode, setMode] = useState<"module" | "problem" | "analytics">("module");
   const {
     modules,
     problems,
@@ -857,34 +1509,68 @@ export default function EgemathbasicProgress2() {
         </div>
       </div>;
   }
-  return <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="relative flex items-center justify-center">
-            <button onClick={recalculateProgress} disabled={refreshing} className="flex items-center gap-2 px-4 py-2 text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors bg-slate-950 hover:bg-slate-800 font-bold rounded-sm">
-              <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
-              <span>{refreshing ? 'Обновление...' : 'Обновить прогресс'}</span>
-            </button>
-            <button onClick={() => navigate('/egemathbasic')} className="absolute left-0 flex items-center gap-2 transition-colors text-lg font-normal rounded-md bg-slate-50 text-slate-900">
-              <ArrowLeft className="h-4 w-4" />
-              <span>Назад</span>
+  return <div className="min-h-screen relative overflow-hidden" style={{
+    background: 'linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)'
+  }}>
+      {/* Flying Math Symbols Background */}
+      <FlyingMathBackground />
+
+      <div className="relative z-10 pt-8 pb-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          {/* Back Button */}
+          <div className="mb-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate("/egemathbasic")}
+              className="hover:bg-white/20 text-white"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Назад
+            </Button>
+          </div>
+
+          {/* Header - Compact Layout */}
+          <div className="flex items-center justify-between gap-4 mb-8">
+            <div>
+              <h1 className="text-3xl md:text-4xl font-bold mb-1 bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent">
+                Прогресс ЕГЭ Базовый
+              </h1>
+              <p className="text-sm text-gray-300 font-body">
+                Отслеживайте ваш прогресс по модулям, заданиям и темам
+              </p>
+            </div>
+
+            {/* Refresh Button */}
+            <button 
+              onClick={recalculateProgress} 
+              disabled={refreshing} 
+              className="flex items-center gap-2 px-4 py-2 text-sm text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 font-bold rounded-lg shadow-lg whitespace-nowrap flex-shrink-0"
+            >
+              <RefreshCw className={`${refreshing ? 'animate-spin' : ''} h-4 w-4`} />
+              <span>{refreshing ? 'Обновление...' : 'Обновить'}</span>
             </button>
           </div>
-        </div>
-      </div>
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
-
-      <TabBar mode={mode} setMode={setMode} />
+          {/* Tab Bar - Now integrated inline */}
+          <div className="mb-8">
+            <TabBar mode={mode} setMode={setMode} />
+          </div>
       
-        <main className="py-8 space-y-10">
-          {mode === "module" ? <ModuleView modules={modules} topicProgress={topicProgress} moduleDefinitions={moduleDefinitions} /> : mode === "problem" ? <ProblemView problems={problems} /> : <SkillView skills={skills} />}
-        </main>
+          <main className="py-8 space-y-10">
+            {mode === "module" ? (
+              <ModuleView modules={modules} topicProgress={topicProgress} moduleDefinitions={moduleDefinitions} />
+            ) : mode === "problem" ? (
+              <ProblemView problems={problems} />
+            ) : (
+              <ProgressAnalyticsView />
+            )}
+          </main>
 
-        <footer className="pb-16 pt-4 text-[12px] text-gray-500">
-          Новый дизайн страницы прогресса. Данные взяты из реального API.
-        </footer>
+          <footer className="pb-16 pt-4 text-[12px] text-gray-400 text-center">
+            Данные взяты из реального API.
+          </footer>
+        </div>
       </div>
     </div>;
 }

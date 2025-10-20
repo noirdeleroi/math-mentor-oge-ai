@@ -290,9 +290,19 @@ export const DailyTaskStory: React.FC<DailyTaskStoryProps> = ({ courseId }) => {
                   </DropdownMenu>
 
                   {/* Homework */}
+                  {/* Homework */}
                   <Button
                     onClick={() => {
-                      navigate('/homework');
+                      let homeworkPath = '/homework';
+                      
+                      if (effectiveCourseIdNum === 3) {
+                        homeworkPath = '/homework-egeprof';
+                      } else if (effectiveCourseIdNum === 2) {
+                        homeworkPath = '/homework-egeb';
+                      }
+                      // effectiveCourseIdNum === 1 stays as '/homework'
+                      
+                      navigate(homeworkPath);
                       setIsOpen(false);
                     }}
                     className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-medium px-6 py-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
