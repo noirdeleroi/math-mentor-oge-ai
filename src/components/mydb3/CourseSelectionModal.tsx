@@ -56,18 +56,18 @@ export const CourseSelectionModal: React.FC<CourseSelectionModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-4xl max-h-[80vh] p-0">
+      <DialogContent className="max-w-4xl max-h-[80vh] p-0 bg-white/95 backdrop-blur border border-white/20 rounded-2xl overflow-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-6 rounded-t-lg">
-          <div className="flex items-center justify-between">
-            <div>
-              <DialogTitle className="text-xl font-semibold text-white">
-                {mode === 'delete' ? 'Удалить курсы' : 'Какие курсы мы можем помочь вам изучить?'}
+        <div className="bg-gradient-to-br from-yellow-500/20 to-emerald-500/20 border-b border-white/20 p-6 rounded-t-2xl">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex-1">
+              <DialogTitle className="text-2xl font-bold text-[#1a1f36] mb-2">
+                {mode === 'delete' ? '🗑️ Удалить курсы' : '📚 Выберите курсы'}
               </DialogTitle>
-              <p className="text-blue-100 mt-1">
+              <p className="text-gray-700">
                 {mode === 'delete' 
                   ? 'Выберите курсы для удаления. Все данные о прогрессе будут потеряны.'
-                  : 'Выберите курсы и мы подберем правильные уроки для вас.'
+                  : 'Выберите курсы, и мы подберём правильные уроки для вас.'
                 }
               </p>
             </div>
@@ -75,7 +75,7 @@ export const CourseSelectionModal: React.FC<CourseSelectionModalProps> = ({
               variant="ghost"
               size="sm"
               onClick={handleClose}
-              className="text-white hover:bg-white/20"
+              className="text-[#1a1f36] hover:bg-white/50 rounded-full"
             >
               <X className="w-5 h-5" />
             </Button>
@@ -83,12 +83,12 @@ export const CourseSelectionModal: React.FC<CourseSelectionModalProps> = ({
         </div>
 
         {/* Content */}
-        <div className="p-6">
-          <div className="mb-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">Математика</h3>
-              <span className="text-sm text-muted-foreground">
-                Всего ({availableCourses.length})
+        <div className="p-8 overflow-y-auto max-h-[calc(80vh-200px)]">
+          <div>
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-semibold text-[#1a1f36]">Математика</h3>
+              <span className="text-sm font-medium text-gray-600 bg-yellow-100 px-3 py-1 rounded-full">
+                Доступно: {availableCourses.length}
               </span>
             </div>
             
@@ -96,7 +96,12 @@ export const CourseSelectionModal: React.FC<CourseSelectionModalProps> = ({
               {availableCourses.map((course) => (
                 <div
                   key={course.id}
-                  className="flex items-start gap-3 p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+                  onClick={() => handleCourseToggle(course.id, !selectedCourses.includes(course.id))}
+                  className={`flex items-start gap-4 p-4 rounded-xl border-2 transition-all cursor-pointer ${
+                    selectedCourses.includes(course.id)
+                      ? 'bg-gradient-to-br from-yellow-50 to-emerald-50 border-yellow-500 shadow-md'
+                      : 'bg-white/50 border-white/40 hover:bg-white/70 hover:border-white/60'
+                  }`}
                 >
                   <Checkbox
                     id={course.id}
@@ -104,43 +109,63 @@ export const CourseSelectionModal: React.FC<CourseSelectionModalProps> = ({
                     onCheckedChange={(checked) => 
                       handleCourseToggle(course.id, checked as boolean)
                     }
-                    className="mt-0.5"
+                    className="mt-1 w-5 h-5"
                   />
                   <div className="flex-1">
                     <label
                       htmlFor={course.id}
-                      className="text-sm font-medium cursor-pointer block"
+                      className="text-base font-semibold text-[#1a1f36] cursor-pointer block mb-2"
                     >
                       {course.title}
                     </label>
-                    <Badge variant="secondary" className="mt-1 text-xs">
+                    <Badge 
+                      variant="secondary" 
+                      className="bg-gradient-to-r from-yellow-100 to-emerald-100 text-[#1a1f36] font-medium px-3 py-1 text-xs"
+                    >
                       {course.tag}
                     </Badge>
                   </div>
                 </div>
               ))}
             </div>
+
+            {availableCourses.length === 0 && (
+              <div className="text-center py-12">
+                <p className="text-gray-600 text-lg">
+                  {mode === 'delete' ? 'У вас нет курсов для удаления' : 'Все курсы уже добавлены'}
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between p-6 border-t bg-muted/30">
-          <Button variant="ghost" onClick={handleClose}>
-            Назад
+        <div className="flex items-center justify-between p-6 border-t border-white/20 bg-white/50">
+          <Button 
+            variant="outline" 
+            onClick={handleClose}
+            className="border-gray-300 text-[#1a1f36] hover:bg-gray-100"
+          >
+            Отмена
           </Button>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">
-              Шаг 1 из 1
-            </span>
+            {selectedCourses.length > 0 && (
+              <span className="text-sm font-medium text-gray-700">
+                Выбрано: {selectedCourses.length}
+              </span>
+            )}
             <Button
               onClick={handleContinue}
               disabled={selectedCourses.length === 0}
-              className="min-w-[200px]"
-              variant={mode === 'delete' ? 'destructive' : 'default'}
+              className={`min-w-[220px] font-semibold transition-all ${
+                mode === 'delete'
+                  ? 'bg-red-600 hover:bg-red-700 text-white'
+                  : 'bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36] shadow-md'
+              }`}
             >
               {mode === 'delete' 
-                ? `Удалить ${selectedCourses.length} курс${selectedCourses.length === 1 ? '' : 'а'}`
-                : `Продолжить с ${selectedCourses.length} курс${selectedCourses.length === 1 ? 'ом' : 'ами'}`
+                ? `Удалить (${selectedCourses.length})`
+                : `Продолжить (${selectedCourses.length})`
               }
             </Button>
           </div>

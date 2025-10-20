@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, ArrowRight, BookOpen, Award, Target, Sparkles } from 'lucide-react';
+import { ArrowLeft, ArrowRight, BookOpen, Award, Target, Sparkles, X } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { COURSES, CourseId, courseIdToNumber } from '@/lib/courses.registry';
@@ -38,6 +38,17 @@ export function CourseOnboardingWizard({ courseId, onDone, onError }: CourseOnbo
 
   const course = COURSES[courseId];
   const courseNumber = courseIdToNumber[courseId];
+
+  // Handle ESC key to close
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onDone();
+      }
+    };
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [onDone]);
 
   useEffect(() => {
     // Reset wizard state when courseId changes
@@ -129,7 +140,20 @@ export function CourseOnboardingWizard({ courseId, onDone, onError }: CourseOnbo
         return data.tookMock !== undefined && (!data.tookMock || (data.mockScore !== undefined && data.mockScore >= 0 && data.mockScore <= 100));
       case 4:
         const isOGE = courseId === 'oge-math';
-        const maxScore = isOGE ? 31 : 100;
+        const isEgeBasic = courseId === 'ege-basic';
+        const isEgeProf = courseId === 'ege-advanced';
+        
+        let maxScore;
+        if (isOGE) {
+          maxScore = 31;
+        } else if (isEgeBasic) {
+          maxScore = 21;
+        } else if (isEgeProf) {
+          maxScore = 100;
+        } else {
+          maxScore = 100;
+        }
+        
         return data.goalScore !== undefined && data.goalScore >= 0 && data.goalScore <= maxScore;
       default:
         return false;
@@ -198,21 +222,26 @@ export function CourseOnboardingWizard({ courseId, onDone, onError }: CourseOnbo
       case 1:
         return (
           <div className="space-y-6">
-            <div className="text-center">
-              <Award className="mx-auto h-12 w-12 text-primary mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Твоя текущая школьная оценка по математике</h3>
+            <div>
+              <h2 className="text-lg font-semibold text-[#1a1f36] mb-1">Твоя оценка</h2>
+              <p className="text-sm text-gray-600">Средняя по математике в школе</p>
             </div>
             
             <div className="grid grid-cols-4 gap-2">
               {[2, 3, 4, 5].map((grade) => (
-                <Button
+                <motion.button
                   key={grade}
-                  variant={data.schoolGrade === grade ? "default" : "outline"}
-                  className="h-12 text-lg font-bold"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={() => updateData({ schoolGrade: grade })}
+                  className={`h-12 text-xl font-bold rounded-xl transition-all ${
+                    data.schoolGrade === grade
+                      ? 'bg-gradient-to-br from-yellow-500 to-emerald-500 text-white shadow-md'
+                      : 'bg-gray-100/80 text-gray-700 hover:bg-gray-200/80'
+                  }`}
                 >
                   {grade}
-                </Button>
+                </motion.button>
               ))}
             </div>
           </div>
@@ -221,25 +250,41 @@ export function CourseOnboardingWizard({ courseId, onDone, onError }: CourseOnbo
       case 2:
         return (
           <div className="space-y-6">
-            <div className="text-center">
-              <Target className="mx-auto h-12 w-12 text-primary mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Как ты оцениваешь свои базовые математические навыки?</h3>
+            <div>
+              <h2 className="text-lg font-semibold text-[#1a1f36] mb-1">Твой уровень</h2>
+              <p className="text-sm text-gray-600">Как оцениваешь свои навыки?</p>
             </div>
             
             <div className="space-y-4">
-              <div className="flex items-center justify-between text-sm text-muted-foreground">
+              <div className="flex items-center justify-center">
+                <span className="text-4xl">{data.basicLevel ? getEmojiForLevel(data.basicLevel) : '🙂'}</span>
+              </div>
+              
+              {/* Custom Modern Slider */}
+              <div className="relative py-4">
+                <input
+                  type="range"
+                  min="1"
+                  max="5"
+                  step="1"
+                  value={data.basicLevel || 3}
+                  onChange={(e) => updateData({ basicLevel: parseInt(e.target.value) })}
+                  className="w-full h-2 bg-gray-200 rounded-full appearance-none cursor-pointer slider-modern"
+                  style={{
+                    background: `linear-gradient(to right, 
+                      rgb(234 179 8) 0%, 
+                      rgb(234 179 8) ${((data.basicLevel || 3) - 1) * 25}%, 
+                      rgb(229 231 235) ${((data.basicLevel || 3) - 1) * 25}%, 
+                      rgb(229 231 235) 100%)`
+                  }}
+                />
+              </div>
+              
+              <div className="flex justify-between text-xs text-gray-500">
                 <span>Слабо</span>
-                <span className="text-2xl">{data.basicLevel ? getEmojiForLevel(data.basicLevel) : '🙂'}</span>
+                <span className="font-semibold text-[#1a1f36]">{data.basicLevel || 3} из 5</span>
                 <span>Отлично</span>
               </div>
-              <Slider
-                value={[data.basicLevel || 3]}
-                onValueChange={([value]) => updateData({ basicLevel: value })}
-                min={1}
-                max={5}
-                step={1}
-                className="w-full"
-              />
             </div>
           </div>
         );
@@ -247,26 +292,30 @@ export function CourseOnboardingWizard({ courseId, onDone, onError }: CourseOnbo
       case 3:
         return (
           <div className="space-y-6">
-            <div className="text-center">
-              <BookOpen className="mx-auto h-12 w-12 text-primary mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Пробный тест</h3>
+            <div>
+              <h2 className="text-lg font-semibold text-[#1a1f36] mb-1">Пробный тест</h2>
+              <p className="text-sm text-gray-600">Уже проходил(а)?</p>
             </div>
             
-            <div className="grid grid-cols-2 gap-3">
-              <Button
-                variant={data.tookMock === false ? "default" : "outline"}
-                className="h-12"
-                onClick={() => updateData({ tookMock: false, mockScore: undefined })}
-              >
-                Пока не проходил(а)
-              </Button>
-              <Button
-                variant={data.tookMock === true ? "default" : "outline"}
-                className="h-12"
-                onClick={() => updateData({ tookMock: true })}
-              >
-                Проходил(а)
-              </Button>
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                { label: 'Нет', value: false },
+                { label: 'Да', value: true }
+              ].map(({ label, value }) => (
+                <motion.button
+                  key={label}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => updateData({ tookMock: value, mockScore: undefined })}
+                  className={`h-10 rounded-xl font-medium transition-all text-sm ${
+                    data.tookMock === value
+                      ? 'bg-gradient-to-r from-yellow-500 to-emerald-500 text-white shadow-md'
+                      : 'bg-gray-100/80 text-gray-700 hover:bg-gray-200/80'
+                  }`}
+                >
+                  {label}
+                </motion.button>
+              ))}
             </div>
 
             {data.tookMock && (
@@ -275,18 +324,18 @@ export function CourseOnboardingWizard({ courseId, onDone, onError }: CourseOnbo
                 animate={{ opacity: 1, height: 'auto' }}
                 className="space-y-2"
               >
-                <Label className="text-base font-medium">Баллы пробного теста</Label>
+                <Label className="text-sm font-medium text-[#1a1f36]">Сколько баллов?</Label>
                 <Input
                   type="number"
                   min="0"
                   max="100"
                   value={data.mockScore || ''}
                   onChange={(e) => updateData({ mockScore: parseInt(e.target.value) || 0 })}
-                  placeholder="0-100"
-                  className="h-12 text-center text-lg"
+                  placeholder="0–100"
+                  className="h-10 text-center text-base font-semibold bg-gray-50/80 border-gray-300 rounded-xl text-[#1a1f36]"
                 />
                 {data.tookMock && (data.mockScore === undefined || data.mockScore < 0 || data.mockScore > 100) && (
-                  <p className="text-sm text-destructive">Введите результат от 0 до 100</p>
+                  <p className="text-xs text-red-600 font-medium">Введи число от 0 до 100</p>
                 )}
               </motion.div>
             )}
@@ -295,104 +344,149 @@ export function CourseOnboardingWizard({ courseId, onDone, onError }: CourseOnbo
 
       case 4:
         const isOGE = courseId === 'oge-math';
-        const maxScore = isOGE ? 31 : 100;
-        const defaultScore = isOGE ? 15 : 50;
+        const isEgeBasic = courseId === 'ege-basic';
+        const isEgeProf = courseId === 'ege-advanced';
+        
+        let maxScore, defaultScore, showPercentage;
+        
+        if (isOGE) {
+          maxScore = 31;
+          defaultScore = 15;
+          showPercentage = false;
+        } else if (isEgeBasic) {
+          maxScore = 21;
+          defaultScore = 12;
+          showPercentage = false;
+        } else if (isEgeProf) {
+          maxScore = 100;
+          defaultScore = 50;
+          showPercentage = false;
+        } else {
+          maxScore = 100;
+          defaultScore = 50;
+          showPercentage = true;
+        }
+        
+        const currentGoal = data.goalScore || defaultScore;
         
         return (
           <div className="space-y-6">
-            <div className="text-center">
-              <Target className="mx-auto h-12 w-12 text-primary mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Какой результат хочешь получить на {course.title}?</h3>
+            <div>
+              <h2 className="text-lg font-semibold text-[#1a1f36] mb-1">Твоя цель</h2>
+              <p className="text-sm text-gray-600">На сколько баллов целишься?</p>
             </div>
             
-            <div className="space-y-4">
-              <div className="relative">
-                <div 
-                  className="h-3 rounded-full bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 mb-2"
-                  style={{
-                    background: `linear-gradient(to right, 
-                      #ef4444 0%, 
-                      #f97316 25%, 
-                      #eab308 50%, 
-                      #84cc16 75%, 
-                      #22c55e 100%)`
-                  }}
-                />
-                <Slider
-                  value={[data.goalScore || defaultScore]}
-                  onValueChange={([value]) => updateData({ goalScore: value })}
-                  min={0}
-                  max={maxScore}
-                  step={1}
-                  className="w-full"
-                />
-                <div className="flex justify-between text-sm text-muted-foreground mt-1">
-                  <span>0{isOGE ? '' : '%'}</span>
-                  <span className="font-semibold text-lg text-foreground">
-                    {data.goalScore || defaultScore}{isOGE ? '' : '%'}
-                  </span>
-                  <span>{maxScore}{isOGE ? '' : '%'}</span>
+            <div className="space-y-5">
+              {/* Score Display */}
+              <div className="text-center">
+                <div className="text-4xl font-bold bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent">
+                  {currentGoal}{showPercentage ? '%' : ''}
                 </div>
               </div>
 
+              {/* Modern Slider */}
+              <div className="relative py-4">
+                <input
+                  type="range"
+                  min="0"
+                  max={maxScore}
+                  step="1"
+                  value={currentGoal}
+                  onChange={(e) => updateData({ goalScore: parseInt(e.target.value) })}
+                  className="w-full h-2 bg-gray-200 rounded-full appearance-none cursor-pointer slider-modern"
+                  style={{
+                    background: `linear-gradient(to right, 
+                      rgb(234 179 8) 0%, 
+                      rgb(234 179 8) ${(currentGoal / maxScore) * 100}%, 
+                      rgb(229 231 235) ${(currentGoal / maxScore) * 100}%, 
+                      rgb(229 231 235) 100%)`
+                  }}
+                />
+              </div>
+
+              <div className="flex justify-between text-xs text-gray-500">
+                <span>0</span>
+                <span>{maxScore}</span>
+              </div>
+
+              {/* OGE Grade Reference */}
               {isOGE && (
-                <div className="space-y-2">
-                  <div className="text-sm text-muted-foreground text-center">Оценки по баллам:</div>
-                  <div className="grid grid-cols-4 gap-2">
-                    <div className="text-center p-2 rounded-lg bg-red-100 dark:bg-red-900/20">
-                      <div className="font-bold text-red-700 dark:text-red-400">2</div>
-                      <div className="text-xs text-red-600 dark:text-red-500">0-7</div>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="grid grid-cols-4 gap-1.5 pt-2"
+                >
+                  {[
+                    { grade: '2', range: '0–7', bg: 'bg-red-100/80', text: 'text-red-700' },
+                    { grade: '3', range: '8–14', bg: 'bg-orange-100/80', text: 'text-orange-700' },
+                    { grade: '4', range: '15–21', bg: 'bg-blue-100/80', text: 'text-blue-700' },
+                    { grade: '5', range: '22–31', bg: 'bg-green-100/80', text: 'text-green-700' }
+                  ].map(({ grade, range, bg, text }) => (
+                    <div key={grade} className={`${bg} rounded-lg p-1.5 text-center`}>
+                      <div className={`font-bold text-sm ${text}`}>{grade}</div>
+                      <div className="text-xs text-gray-600">{range}</div>
                     </div>
-                    <div className="text-center p-2 rounded-lg bg-orange-100 dark:bg-orange-900/20">
-                      <div className="font-bold text-orange-700 dark:text-orange-400">3</div>
-                      <div className="text-xs text-orange-600 dark:text-orange-500">8-14</div>
-                    </div>
-                    <div className="text-center p-2 rounded-lg bg-blue-100 dark:bg-blue-900/20">
-                      <div className="font-bold text-blue-700 dark:text-blue-400">4</div>
-                      <div className="text-xs text-blue-600 dark:text-blue-500">15-21</div>
-                    </div>
-                    <div className="text-center p-2 rounded-lg bg-green-100 dark:bg-green-900/20">
-                      <div className="font-bold text-green-700 dark:text-green-400">5</div>
-                      <div className="text-xs text-green-600 dark:text-green-500">22-31</div>
-                    </div>
-                  </div>
-                </div>
+                  ))}
+                </motion.div>
               )}
 
+              {/* EGE Basic Grade Reference */}
+              {isEgeBasic && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="grid grid-cols-3 gap-1.5 pt-2"
+                >
+                  {[
+                    { grade: '3', range: '7–11', bg: 'bg-orange-100/80', text: 'text-orange-700' },
+                    { grade: '4', range: '12–16', bg: 'bg-blue-100/80', text: 'text-blue-700' },
+                    { grade: '5', range: '17–21', bg: 'bg-green-100/80', text: 'text-green-700' }
+                  ].map(({ grade, range, bg, text }) => (
+                    <div key={grade} className={`${bg} rounded-lg p-1.5 text-center`}>
+                      <div className={`font-bold text-sm ${text}`}>{grade}</div>
+                      <div className="text-xs text-gray-600">{range}</div>
+                    </div>
+                  ))}
+                </motion.div>
+              )}
+
+              {/* Smart Comment */}
               {data.goalScore && (
                 <motion.div
                   key={getSmartComment()}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="text-center text-sm bg-muted/50 rounded-lg p-3"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-center text-sm text-gray-700 py-2"
                 >
                   {getSmartComment()}
                 </motion.div>
               )}
             </div>
 
+            {/* Error State */}
             {error && (
-              <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
-                <p className="text-destructive text-sm">{error}</p>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="mt-2"
+              <div className="bg-red-50 border border-red-200 rounded-xl p-3 space-y-2">
+                <p className="text-sm text-red-700">{error}</p>
+                <button
                   onClick={handleSubmit}
                   disabled={isSubmitting}
+                  className="w-full bg-red-600 hover:bg-red-700 text-white text-sm h-9 rounded-lg font-medium transition-all"
                 >
                   Повторить
-                </Button>
+                </button>
               </div>
             )}
 
-            <Button
+            {/* Submit Button */}
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               onClick={handleSubmit}
               disabled={isSubmitting}
-              className="w-full h-14 text-lg font-semibold"
+              className="w-full h-10 bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-white text-sm font-semibold rounded-xl transition-all shadow-md disabled:opacity-50"
             >
-              {isSubmitting ? "Сохраняем..." : "Готово"}
-            </Button>
+              {isSubmitting ? "Сохраняем..." : "Готово 🚀"}
+            </motion.button>
           </div>
         );
 
@@ -402,71 +496,84 @@ export function CourseOnboardingWizard({ courseId, onDone, onError }: CourseOnbo
   };
 
   return (
-    <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <Card className="w-full max-w-xl relative bg-background shadow-xl rounded-2xl">
-        <CardHeader className="text-center pb-4">
-          <div className="space-y-2">
-            <h1 className="text-2xl font-bold">Пару вопросов — и начнём персональную подготовку</h1>
-            <p className="text-muted-foreground">Курс: {course.title}</p>
+    <div className="fixed inset-0 bg-[#1a1f36]/60 backdrop-blur-xl flex items-center justify-center p-4 z-50" onClick={onDone}>
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-md bg-white/95 backdrop-blur-2xl border border-white/40 rounded-3xl shadow-2xl overflow-hidden relative"
+      >
+        {/* Close Button */}
+        <button
+          onClick={onDone}
+          className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-white/80 hover:bg-white flex items-center justify-center transition-all hover:scale-110 group"
+        >
+          <X className="w-4 h-4 text-gray-600 group-hover:text-gray-900" />
+        </button>
+
+        {/* Header */}
+        <div className="px-8 pt-8 pb-6">
+          <div className="mb-6">
+            <h1 className="text-2xl font-bold text-[#1a1f36] mb-1">Начнём</h1>
+            <p className="text-sm text-gray-600">{course.title}</p>
           </div>
           
-          <div className="space-y-2">
-            <Progress value={(currentStep / TOTAL_STEPS) * 100} className="h-2" />
-            <div className="flex justify-center space-x-2">
-              {Array.from({ length: TOTAL_STEPS }, (_, i) => (
-                <div
-                  key={i}
-                  className={`w-2 h-2 rounded-full transition-colors ${
-                    i + 1 <= currentStep ? 'bg-primary' : 'bg-muted'
-                  }`}
-                />
-              ))}
-            </div>
-            <p className="text-sm text-muted-foreground">Шаг {currentStep} из {TOTAL_STEPS}</p>
+          {/* Modern Progress Bar */}
+          <div className="flex items-center gap-2">
+            {Array.from({ length: TOTAL_STEPS }, (_, i) => (
+              <div
+                key={i}
+                className={`h-1.5 rounded-full flex-1 transition-all duration-500 ${
+                  i + 1 <= currentStep
+                    ? 'bg-gradient-to-r from-yellow-500 to-emerald-500'
+                    : 'bg-gray-200'
+                }`}
+              />
+            ))}
           </div>
-        </CardHeader>
+          <p className="text-xs text-gray-500 mt-2">Шаг {currentStep} из {TOTAL_STEPS}</p>
+        </div>
 
-        <CardContent className="px-6 pb-6">
+        {/* Content */}
+        <div className="px-8 pb-8">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentStep}
-              variants={slideVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{
-                x: { type: "spring", stiffness: 300, damping: 30 },
-                opacity: { duration: 0.2 }
-              }}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3 }}
             >
               {renderStep()}
             </motion.div>
           </AnimatePresence>
+        </div>
 
-          {currentStep < TOTAL_STEPS && (
-            <div className="flex justify-between mt-8">
-              <Button
-                variant="outline"
-                onClick={handleBack}
-                disabled={currentStep === 1}
-                className="h-10"
-              >
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Назад
-              </Button>
-              
-              <Button
-                onClick={handleNext}
-                disabled={!canProceed()}
-                className="h-10"
-              >
-                Далее
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+        {/* Footer Navigation */}
+        {currentStep < TOTAL_STEPS && (
+          <div className="px-8 pb-8 flex gap-2">
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={handleBack}
+              disabled={currentStep === 1}
+              className="px-4 h-10 text-sm text-gray-600 hover:text-gray-900 font-medium transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              Назад
+            </motion.button>
+            
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={handleNext}
+              disabled={!canProceed()}
+              className="flex-1 h-10 bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-white text-sm font-semibold rounded-xl transition-all shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              Далее
+            </motion.button>
+          </div>
+        )}
+      </motion.div>
     </div>
   );
 }

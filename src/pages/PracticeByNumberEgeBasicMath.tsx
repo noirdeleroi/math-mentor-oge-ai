@@ -131,13 +131,37 @@ const PracticeByNumberEgeBasicMath = () => {
         priority: questionStatusMap[question.question_id]?.priority || 3
       }));
 
-      setQuestions(questionsWithStatus);
+      // Group by priority and shuffle within each group
+      const priorityGroups = {
+        1: questionsWithStatus.filter(q => q.priority === 1), // wrong
+        2: questionsWithStatus.filter(q => q.priority === 2), // unfinished
+        3: questionsWithStatus.filter(q => q.priority === 3), // unseen
+        4: questionsWithStatus.filter(q => q.priority === 4)  // correct
+      };
+
+      // Shuffle each group
+      Object.values(priorityGroups).forEach(group => {
+        for (let i = group.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [group[i], group[j]] = [group[j], group[i]];
+        }
+      });
+
+      // Combine groups in priority order
+      const sortedQuestions = [
+        ...priorityGroups[1], // wrong first (priority 1)
+        ...priorityGroups[2], // unfinished second (priority 2)
+        ...priorityGroups[3], // unseen third (priority 3)
+        ...priorityGroups[4]  // correct last (priority 4)
+      ];
+
+      setQuestions(sortedQuestions);
       setCurrentQuestionIndex(0);
       resetQuestionState();
       
       // Start attempt for the first question if user is logged in
-      if (questionsWithStatus.length > 0 && user) {
-        await startAttempt(questionsWithStatus[0].question_id);
+      if (sortedQuestions.length > 0 && user) {
+        await startAttempt(sortedQuestions[0].question_id);
       }
     } catch (error) {
       console.error('Error fetching questions:', error);
@@ -643,7 +667,7 @@ const PracticeByNumberEgeBasicMath = () => {
               К выбору вопросов
             </Button>
           ) : (
-            <Link to="/egemathbasic">
+            <Link to="/egemathbasic-practice">
               <Button variant="ghost" size="sm" className="hover:bg-white/20 text-white">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Назад

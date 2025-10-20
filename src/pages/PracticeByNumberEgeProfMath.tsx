@@ -116,7 +116,7 @@ const PracticeByNumberEgeProfMath = () => {
           const questionActivity = userActivity.filter(a => a.question_id === question.question_id);
           
           if (questionActivity.length === 0) {
-            questionStatusMap[question.question_id] = { status: 'unseen', priority: 1 };
+            questionStatusMap[question.question_id] = { status: 'unseen', priority: 3 };
           } else {
             const mostRecent = questionActivity[0];
             
@@ -133,23 +133,25 @@ const PracticeByNumberEgeProfMath = () => {
         });
       } else {
         allQuestions.forEach(question => {
-          questionStatusMap[question.question_id] = { status: 'unseen', priority: 1 };
+          questionStatusMap[question.question_id] = { status: 'unseen', priority: 3 };
         });
       }
 
       const questionsWithStatus = allQuestions.map(question => ({
         ...question,
         status: questionStatusMap[question.question_id]?.status || 'unseen',
-        priority: questionStatusMap[question.question_id]?.priority || 1
+        priority: questionStatusMap[question.question_id]?.priority || 3
       }));
 
+      // Group by priority and shuffle within each group
       const priorityGroups = {
-        1: questionsWithStatus.filter(q => q.priority === 1),
-        2: questionsWithStatus.filter(q => q.priority === 2),
-        3: questionsWithStatus.filter(q => q.priority === 3),
-        4: questionsWithStatus.filter(q => q.priority === 4)
+        1: questionsWithStatus.filter(q => q.priority === 1), // wrong
+        2: questionsWithStatus.filter(q => q.priority === 2), // unfinished
+        3: questionsWithStatus.filter(q => q.priority === 3), // unseen
+        4: questionsWithStatus.filter(q => q.priority === 4)  // correct
       };
 
+      // Shuffle each group
       Object.values(priorityGroups).forEach(group => {
         for (let i = group.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
@@ -157,11 +159,12 @@ const PracticeByNumberEgeProfMath = () => {
         }
       });
 
+      // Combine groups in priority order
       const sortedQuestions = [
-        ...priorityGroups[1],
-        ...priorityGroups[2],
-        ...priorityGroups[3],
-        ...priorityGroups[4]
+        ...priorityGroups[1], // wrong first (priority 1)
+        ...priorityGroups[2], // unfinished second (priority 2)
+        ...priorityGroups[3], // unseen third (priority 3)
+        ...priorityGroups[4]  // correct last (priority 4)
       ];
 
       setQuestions(sortedQuestions);
