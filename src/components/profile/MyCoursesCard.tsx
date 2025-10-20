@@ -13,12 +13,12 @@ const COURSES = [
     route: "/ogemath"
   },
   {
-    name: "Математика ЕГЭ (Базовый уровень)",
+    name: "Математика ЕГЭ (База)",
     course_id: 2,
     route: "/egemathbasic"
   },
   {
-    name: "Математика ЕГЭ (Профильный уровень)",
+    name: "Математика ЕГЭ (Профиль)",
     course_id: 3,
     route: "/egemathprof"
   }

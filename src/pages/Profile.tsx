@@ -208,27 +208,8 @@ const Profile = () => {
   return (
     <div className="min-h-screen relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)' }}>
       <FlyingMathBackground />
-      <div className="relative z-10 pt-8 pb-16 px-4 md:px-8">
+      <div className="relative z-10 pt-4 pb-16 px-4 md:px-8">
         <div className="max-w-7xl mx-auto">
-          {/* Top Navigation Bar */}
-          <div className="mb-12 flex flex-wrap items-center justify-between gap-4">
-            <Button
-              onClick={() => navigate('/mydb3')}
-              variant="ghost"
-              className="bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white border border-white/20 transition-all"
-            >
-              ← Мои курсы
-            </Button>
-            <div className="flex flex-wrap items-center gap-3">
-              <Button
-                onClick={() => navigate('/subscribe')}
-                className="bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36] font-bold shadow-lg transform hover:scale-105 transition-all duration-200"
-              >
-                Подписки
-              </Button>
-            </div>
-          </div>
-
           {/* Page Title */}
           <div className="text-center mb-12">
             <h1 className="text-5xl md:text-6xl font-display font-bold mb-4 bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent">

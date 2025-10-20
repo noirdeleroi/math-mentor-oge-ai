@@ -6,6 +6,7 @@ import { ActivityTab } from "./ActivityTab";
 import { AchievementsTab } from "./AchievementsTab";
 import { SettingsTab } from "./SettingsTab";
 import { TeacherTab } from "./TeacherTab";
+import { GoalsTab } from "./GoalsTab";
 import { StreakSettings } from "../streak/StreakSettings";
 import { ProfileInfoTab } from "./ProfileInfoTab";
 import HowToTab from "./HowToTab";
@@ -20,6 +21,7 @@ import {
   Settings,
   Crown,
   LogOut,
+  Target,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -108,6 +110,14 @@ export const ProfileTabs: React.FC<ProfileTabsProps> = ({
             </TabsTrigger>
 
             <TabsTrigger
+              value="goals"
+              className="w-full justify-start gap-3 px-4 py-3 rounded-lg text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-yellow-500/30 data-[state=active]:to-emerald-500/30 data-[state=active]:border data-[state=active]:border-white/30 hover:bg-white/10 transition-all"
+            >
+              <Target className="h-5 w-5 text-cyan-400" />
+              <span className="font-medium">Цели</span>
+            </TabsTrigger>
+
+            <TabsTrigger
               value="achievements"
               className="w-full justify-start gap-3 px-4 py-3 rounded-lg text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-yellow-500/30 data-[state=active]:to-emerald-500/30 data-[state=active]:border data-[state=active]:border-white/30 hover:bg-white/10 transition-all"
             >
@@ -131,8 +141,15 @@ export const ProfileTabs: React.FC<ProfileTabsProps> = ({
             onClick={() => navigate("/mydb3")}
             className="w-full bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36] font-bold shadow-lg transform hover:scale-105 transition-all duration-200 rounded-xl h-12 text-base"
           >
-            <Crown className="w-5 h-5 mr-2" />
             Курсы
+          </Button>
+
+          <Button
+            onClick={() => navigate("/subscribe")}
+            className="w-full bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36] font-bold shadow-lg transform hover:scale-105 transition-all duration-200 rounded-xl h-12 text-base"
+          >
+            <Crown className="w-5 h-5 mr-2" />
+            Подписки
           </Button>
 
           <Button
@@ -171,6 +188,10 @@ export const ProfileTabs: React.FC<ProfileTabsProps> = ({
 
         <TabsContent value="teacher" className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-8 mt-0 shadow-xl">
           <TeacherTab />
+        </TabsContent>
+
+        <TabsContent value="goals" className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-8 mt-0 shadow-xl">
+          <GoalsTab />
         </TabsContent>
 
         <TabsContent value="achievements" className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-8 mt-0 shadow-xl">

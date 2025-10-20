@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Calendar, Target, Trophy, Activity as ActivityIcon } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { useActivityStats } from "@/hooks/useActivityStats";
 import { format } from "date-fns";
@@ -13,12 +12,12 @@ export const ActivityTab = () => {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+      <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
         <Calendar className="h-5 w-5 text-primary" />
         Недавняя активность
       </h2>
       
-      <div className="bg-gradient-to-r from-primary/10 to-primary/5 p-4 rounded-lg border border-primary/20">
+      <div className="bg-white p-4 rounded-lg border border-gray-200">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2 font-medium text-primary">
             <Trophy className="h-5 w-5" />
@@ -37,65 +36,63 @@ export const ActivityTab = () => {
           Нет активности за {showAllHistory ? 'всё время' : 'последние 30 дней'}
         </div>
       ) : (
-        <ScrollArea className="h-96 pr-4">
-          <div className="space-y-4">
-            {courseStats.map((stats) => (
-              <div 
-                key={stats.courseId} 
-                className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <div>
-                    <h3 className="font-semibold text-gray-800 flex items-center gap-2">
-                      <ActivityIcon className="h-4 w-4 text-primary" />
-                      {stats.courseName}
-                    </h3>
-                    {stats.lastActivity && (
-                      <p className="text-xs text-gray-500 mt-1">
-                        Последняя активность: {format(new Date(stats.lastActivity), 'dd MMMM yyyy, HH:mm', { locale: ru })}
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="bg-blue-50 p-3 rounded-lg">
-                    <div className="text-xs text-blue-600 font-medium mb-1">Всего попыток</div>
-                    <div className="text-2xl font-bold text-blue-700">{stats.totalAttempts}</div>
-                  </div>
-                  
-                  <div className="bg-green-50 p-3 rounded-lg">
-                    <div className="text-xs text-green-600 font-medium mb-1">Правильных</div>
-                    <div className="text-2xl font-bold text-green-700">{stats.correctAttempts}</div>
-                  </div>
-                  
-                  <div className="bg-purple-50 p-3 rounded-lg">
-                    <div className="text-xs text-purple-600 font-medium mb-1">Точность</div>
-                    <div className="text-2xl font-bold text-purple-700">{stats.accuracy.toFixed(1)}%</div>
-                  </div>
-                  
-                  <div className="bg-orange-50 p-3 rounded-lg">
-                    <div className="text-xs text-orange-600 font-medium mb-1">Уникальных задач</div>
-                    <div className="text-2xl font-bold text-orange-700">{stats.uniqueQuestions}</div>
-                  </div>
-                </div>
-
-                <div className="mt-3">
-                  <div className="flex items-center justify-between text-xs text-gray-600 mb-1">
-                    <span>Прогресс точности</span>
-                    <span>{stats.accuracy.toFixed(0)}%</span>
-                  </div>
-                  <Progress value={stats.accuracy} className="h-2" />
+        <div className="space-y-6">
+          {courseStats.map((stats) => (
+            <div 
+              key={stats.courseId} 
+              className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-6 shadow-xl"
+            >
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <h3 className="font-semibold text-white flex items-center gap-2 text-lg">
+                    <ActivityIcon className="h-5 w-5 text-yellow-500" />
+                    {stats.courseName}
+                  </h3>
+                  {stats.lastActivity && (
+                    <p className="text-sm text-white/70 mt-1">
+                      Последняя активность: {format(new Date(stats.lastActivity), 'dd MMMM yyyy, HH:mm', { locale: ru })}
+                    </p>
+                  )}
                 </div>
               </div>
-            ))}
-          </div>
-        </ScrollArea>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-blue-500/20 backdrop-blur-sm border border-blue-500/30 p-4 rounded-xl">
+                  <div className="text-sm text-blue-300 font-medium mb-2">Всего попыток</div>
+                  <div className="text-3xl font-bold text-blue-200">{stats.totalAttempts}</div>
+                </div>
+                
+                <div className="bg-green-500/20 backdrop-blur-sm border border-green-500/30 p-4 rounded-xl">
+                  <div className="text-sm text-green-300 font-medium mb-2">Правильных</div>
+                  <div className="text-3xl font-bold text-green-200">{stats.correctAttempts}</div>
+                </div>
+                
+                <div className="bg-purple-500/20 backdrop-blur-sm border border-purple-500/30 p-4 rounded-xl">
+                  <div className="text-sm text-purple-300 font-medium mb-2">Точность</div>
+                  <div className="text-3xl font-bold text-purple-200">{stats.accuracy.toFixed(1)}%</div>
+                </div>
+                
+                <div className="bg-orange-500/20 backdrop-blur-sm border border-orange-500/30 p-4 rounded-xl">
+                  <div className="text-sm text-orange-300 font-medium mb-2">Уникальных задач</div>
+                  <div className="text-3xl font-bold text-orange-200">{stats.uniqueQuestions}</div>
+                </div>
+              </div>
+
+              <div className="mt-4">
+                <div className="flex items-center justify-between text-sm text-white/80 mb-2">
+                  <span>Прогресс точности</span>
+                  <span>{stats.accuracy.toFixed(0)}%</span>
+                </div>
+                <Progress value={stats.accuracy} className="h-3 bg-white/20" />
+              </div>
+            </div>
+          ))}
+        </div>
       )}
       
       <Button 
-        variant="outline" 
-        className="w-full mt-2"
+        variant="ghost" 
+        className="w-full mt-6 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white border border-white/20 transition-all rounded-xl h-12 text-base"
         onClick={() => setShowAllHistory(!showAllHistory)}
       >
         {showAllHistory ? 'Показать последние 30 дней' : 'Показать всю историю активности'}
