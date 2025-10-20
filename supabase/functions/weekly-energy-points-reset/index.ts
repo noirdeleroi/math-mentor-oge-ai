@@ -16,11 +16,18 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
+    // Calculate the cutoff time: exactly 7 days (168 hours) before now
+    const now = new Date();
+    const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    
+    console.log(`Current time: ${now.toISOString()}`);
+    console.log(`Looking for users with weekly_goal_set_at <= ${sevenDaysAgo.toISOString()}`);
+
     // Get all users whose weekly cycle has completed (7 days since last goal set)
     const { data: usersToReset, error: fetchError } = await supabaseClient
       .from('user_statistics')
       .select('user_id, energy_points, weekly_goal_set_at, energy_points_history')
-      .lte('weekly_goal_set_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString());
+      .lte('weekly_goal_set_at', sevenDaysAgo.toISOString());
 
     if (fetchError) {
       console.error('Error fetching users to reset:', fetchError);

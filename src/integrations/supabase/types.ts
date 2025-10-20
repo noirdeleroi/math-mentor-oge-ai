@@ -1706,6 +1706,7 @@ export type Database = {
       }
       pending_homework_feedback: {
         Row: {
+          chat_context: Json | null
           context_data: Json | null
           course_id: string
           created_at: string
@@ -1720,6 +1721,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          chat_context?: Json | null
           context_data?: Json | null
           course_id: string
           created_at?: string
@@ -1734,6 +1736,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          chat_context?: Json | null
           context_data?: Json | null
           course_id?: string
           created_at?: string
