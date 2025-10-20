@@ -34,6 +34,7 @@ interface Question {
   solution_text: string;
   difficulty?: string | number;
   problem_number_type?: number;
+  problem_image?: string;
 }
 
 interface ExamResult {
@@ -596,6 +597,16 @@ const EgemathbasicMock = () => {
                 <div className="prose max-w-none">
                   <MathRenderer text={currentQuestion?.problem_text || ""} compiler="mathjax" />
                 </div>
+                {currentQuestion?.problem_image && (
+                  <div className="flex justify-center">
+                    <img
+                      src={currentQuestion.problem_image}
+                      alt="Изображение к задаче"
+                      className="max-w-full h-auto rounded-lg shadow-sm border"
+                      style={{ maxHeight: '400px' }}
+                    />
+                  </div>
+                )}
                 <div className="flex gap-2">
                   <Input
                     value={userAnswer}
@@ -746,6 +757,18 @@ const EgemathbasicMock = () => {
                         <MathRenderer text={examResults[reviewQuestionIndex].problemText} compiler="mathjax" />
                       </div>
                     </div>
+
+                    {/* Problem Image (if available) */}
+                    {questions[reviewQuestionIndex]?.problem_image && (
+                      <div className="flex justify-center">
+                        <img
+                          src={questions[reviewQuestionIndex].problem_image as any}
+                          alt="Изображение к задаче"
+                          className="max-w-full h-auto rounded-lg shadow-sm border"
+                          style={{ maxHeight: '400px' }}
+                        />
+                      </div>
+                    )}
 
                     {/* User answer */}
                     <div>

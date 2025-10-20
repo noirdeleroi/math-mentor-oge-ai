@@ -13,6 +13,7 @@ import { useStudentSkills } from "@/hooks/useStudentSkills";
 import { useOptimizedProfile } from "@/hooks/useOptimizedProfile";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import FlyingMathBackground from "@/components/FlyingMathBackground";
 
 export interface Message {
   id: number;
@@ -192,32 +193,64 @@ const Profile = () => {
 
   if (skillsLoading || profileLoading) {
     return (
-      <div className="h-screen bg-gray-50 flex flex-col overflow-hidden">
-        <Header />
-        <main className="flex-1 pt-16 flex items-center justify-center overflow-auto">
+      <div className="min-h-screen relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)' }}>
+        <FlyingMathBackground />
+        <div className="relative z-10 h-screen flex items-center justify-center">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Загрузка профиля...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-400 mx-auto mb-4"></div>
+            <p className="text-gray-300 text-lg">Загрузка профиля...</p>
           </div>
-        </main>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <Header />
-      <main className="flex-1 pt-16 flex flex-col overflow-hidden">
-        <div className="flex-1 container mx-auto px-4 py-4 overflow-auto">
-          <ProfileTabs 
-            userData={userData}
-            userName={userName}
-            userEmail={userEmail}
-            joinedDate={joinedDate}
-            lastActivityDate={lastActivityDate}
-          />
+    <div className="min-h-screen relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)' }}>
+      <FlyingMathBackground />
+      <div className="relative z-10 pt-8 pb-16 px-4 md:px-8">
+        <div className="max-w-7xl mx-auto">
+          {/* Top Navigation Bar */}
+          <div className="mb-12 flex flex-wrap items-center justify-between gap-4">
+            <Button
+              onClick={() => navigate('/mydb3')}
+              variant="ghost"
+              className="bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white border border-white/20 transition-all"
+            >
+              ← Мои курсы
+            </Button>
+            <div className="flex flex-wrap items-center gap-3">
+              <Button
+                onClick={() => navigate('/subscribe')}
+                className="bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36] font-bold shadow-lg transform hover:scale-105 transition-all duration-200"
+              >
+                Подписки
+              </Button>
+            </div>
+          </div>
+
+          {/* Page Title */}
+          <div className="text-center mb-12">
+            <h1 className="text-5xl md:text-6xl font-display font-bold mb-4 bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent">
+              Мой профиль
+            </h1>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              Управляйте своим аккаунтом и отслеживайте прогресс
+            </p>
+          </div>
+
+          {/* Main Content */}
+          <div className="max-w-6xl mx-auto">
+            <ProfileTabs 
+              userData={userData}
+              userName={userName}
+              userEmail={userEmail}
+              joinedDate={joinedDate}
+              lastActivityDate={lastActivityDate}
+            />
+          </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 };

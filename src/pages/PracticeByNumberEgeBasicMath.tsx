@@ -22,6 +22,7 @@ interface Question {
   solution_text: string;
   difficulty?: string | number;
   problem_number_type?: number;
+  problem_image?: string;
   status?: 'correct' | 'wrong' | 'unseen' | 'unfinished';
 }
 
@@ -74,7 +75,7 @@ const PracticeByNumberEgeBasicMath = () => {
       for (const questionNumber of questionNumbers) {
         const { data, error } = await supabase
           .from('egemathbase')
-          .select('question_id, problem_text, answer, solution_text, problem_number_type')
+          .select('question_id, problem_text, answer, solution_text, problem_number_type, problem_image')
           .eq('problem_number_type', questionNumber)
           .order('question_id');
 
@@ -816,6 +817,18 @@ const PracticeByNumberEgeBasicMath = () => {
                 <div className="prose max-w-none text-[#1a1f36]">
                   <MathRenderer text={currentQuestion.problem_text || "Текст задачи не найден"} compiler="mathjax" />
                 </div>
+
+                {/* Problem Image */}
+                {currentQuestion.problem_image && (
+                  <div className="flex justify-center">
+                    <img 
+                      src={currentQuestion.problem_image} 
+                      alt="Изображение к задаче"
+                      className="max-w-full h-auto rounded-lg shadow-sm border"
+                      style={{ maxHeight: '400px' }}
+                    />
+                  </div>
+                )}
 
                 {/* Answer Input */}
                 <div className="space-y-4">
