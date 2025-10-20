@@ -30,19 +30,22 @@ export const CourseSelectionModal: React.FC<CourseSelectionModalProps> = ({
     : Object.values(COURSES).filter(course => !enrolledCourseIds.includes(course.id));
 
   const handleCourseToggle = (courseId: CourseId, checked: boolean) => {
-    if (checked) {
-      setSelectedCourses(prev => [...prev, courseId]);
-    } else {
-      setSelectedCourses(prev => prev.filter(id => id !== courseId));
-    }
+    setSelectedCourses(prev => {
+      if (checked) {
+        return prev.includes(courseId) ? prev : [...prev, courseId];
+      } else {
+        return prev.filter(id => id !== courseId);
+      }
+    });
   };
 
   const handleContinue = () => {
-    if (selectedCourses.length > 0) {
+    const uniqueSelected = Array.from(new Set(selectedCourses));
+    if (uniqueSelected.length > 0) {
       if (mode === 'delete' && onDeleteCourses) {
-        onDeleteCourses(selectedCourses);
+        onDeleteCourses(uniqueSelected);
       } else if (mode === 'add' && onAddCourses) {
-        onAddCourses(selectedCourses);
+        onAddCourses(uniqueSelected);
       }
       setSelectedCourses([]);
       onClose();
