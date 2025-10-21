@@ -32,6 +32,7 @@ const OgemathRevision = lazy(() => import("./pages/OgemathRevision"));
 const EgemathbasicRevision = lazy(() => import("./pages/EgemathbasicRevision"));
 const EgemathprofRevision = lazy(() => import("./pages/EgemathprofRevision"));
 const EgemathbasicMock = lazy(() => import("./pages/EgemathbasicMock"));
+const EgemathprofMock = lazy(() => import("./pages/EgemathprofMock"));
 const OgemathProgress2 = lazy(() => import("./pages/OgemathProgress2"));
 const EgemathbasicProgress = lazy(() => import("./pages/EgemathbasicProgress"));
 const EgemathprofProgress = lazy(() => import("./pages/EgemathprofProgress"));
@@ -48,6 +49,7 @@ const HomeworkEgeb = lazy(() => import("./pages/HomeworkEgeb"));
 const HomeworkEgeprof = lazy(() => import("./pages/HomeworkEgeprof"));
 const HomeworkFipiPractice = lazy(() => import("./pages/HomeworkFipiPractice"));
 const CellardLp2 = lazy(() => import("./pages/CellardLp2"));
+const Egeruses = lazy(() => import("./pages/Egeruses"));
 
 const queryClient = new QueryClient();
 
@@ -84,6 +86,7 @@ const App = () => (
                 <Route path="/ogemath-progress2" element={<OgemathProgress2 />} />
                 <Route path="/egemathbasic-progress" element={<EgemathbasicProgress />} />
                 <Route path="/egemathbasic-mock" element={<EgemathbasicMock />} />
+                <Route path="/egemathprof-mock" element={<EgemathprofMock />} />
                 <Route path="/egemathprof-progress" element={<EgemathprofProgress />} />
                 <Route path="/practice-by-number-ogemath" element={<PracticeByNumberOgemath />} />
                 <Route path="/practice-by-number-egebasicmath" element={<PracticeByNumberEgeBasicMath />} />
@@ -94,6 +97,7 @@ const App = () => (
                 <Route path="/egemathprof-revision" element={<EgemathprofRevision />} />
                 <Route path="/egemathprof" element={<EgeMathProf />} />
                 <Route path="/egemathbasic" element={<EgeMathBasic />} />
+                <Route path="/egeruses" element={<Egeruses />} />
               </Route>
           
               {/* protected pages – wrap in layout too if you want the same background */}

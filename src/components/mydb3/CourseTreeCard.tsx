@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Play, AlertCircle, RefreshCw, Calculator, Square, Triangle, Circle, Hexagon, Star, Zap, Target, BookOpen, Brain, Layers, ChevronDown } from 'lucide-react';
+import { Play, AlertCircle, RefreshCw, Calculator, Square, Triangle, Circle, Hexagon, Star, Zap, Target, BookOpen, Brain, Layers } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -63,15 +63,11 @@ const getTopicIcon = (index: number, topicName: string) => {
     Calculator, Square, Triangle, Circle, Hexagon, Star, 
     Zap, Target, BookOpen, Brain, Layers, Play
   ];
-  
-  // Choose icon based on topic content or just cycle through
   if (topicName.toLowerCase().includes('алгебра') || topicName.toLowerCase().includes('algebra')) return Calculator;
   if (topicName.toLowerCase().includes('геометр') || topicName.toLowerCase().includes('geometry')) return Triangle;
   if (topicName.toLowerCase().includes('функц') || topicName.toLowerCase().includes('function')) return Zap;
   if (topicName.toLowerCase().includes('число') || topicName.toLowerCase().includes('number')) return Circle;
   if (topicName.toLowerCase().includes('уравн') || topicName.toLowerCase().includes('equation')) return Target;
-  
-  // Default to cycling through icons
   return icons[index % icons.length];
 };
 
@@ -93,14 +89,12 @@ export const CourseTreeCard: React.FC<CourseTreeCardProps> = ({
   const [topics, setTopics] = useState<Topic[]>([]);
   const [isLoadingTopics, setIsLoadingTopics] = useState(true);
   const [topicsError, setTopicsError] = useState<string | null>(null);
-  const [currentTopicIndex, setCurrentTopicIndex] = useState(10); // Current topic position
-  const [progress, setProgress] = useState(1); // General progress
+  const [currentTopicIndex, setCurrentTopicIndex] = useState(10);
+  const [progress, setProgress] = useState(1);
   const [topicProgress, setTopicProgress] = useState<{[key: string]: number}>({});
 
-  // Use OGE topics if this is OGE course, otherwise fetch from API
   const useStaticTopics = course.id === 'oge-math';
   
-  // Get 5 topics around current (2 before, current, 2 after)
   const getVisibleTopics = (allTopics: Topic[], currentIndex: number) => {
     const start = Math.max(0, currentIndex - 2);
     const end = Math.min(allTopics.length, currentIndex + 3);
@@ -111,7 +105,6 @@ export const CourseTreeCard: React.FC<CourseTreeCardProps> = ({
     }));
   };
 
-  // Course ID mapping
   const getCourseId = (courseId: string) => {
     switch (courseId) {
       case 'oge-math': return '1';
@@ -121,13 +114,10 @@ export const CourseTreeCard: React.FC<CourseTreeCardProps> = ({
     }
   };
 
-  // Load progress data from mastery_snapshots
   const loadProgressData = async () => {
     if (!user) return;
-
     try {
       const courseIdNum = getCourseId(course.id);
-      
       const { data: snapshot, error } = await supabase
         .from('mastery_snapshots')
         .select('computed_summary')
@@ -138,15 +128,11 @@ export const CourseTreeCard: React.FC<CourseTreeCardProps> = ({
         .maybeSingle();
 
       if (error || !snapshot?.computed_summary) {
-        console.log('No snapshot found, using default 1% values');
         setProgress(1);
         return;
       }
 
       const computedSummary = snapshot.computed_summary as any[];
-      console.log('Loaded progress from snapshot:', computedSummary);
-
-      // Parse computed_summary data
       let generalProgress = 1;
       const topicProgressMap: {[key: string]: number} = {};
 
@@ -154,7 +140,6 @@ export const CourseTreeCard: React.FC<CourseTreeCardProps> = ({
         if (item.general_progress !== undefined) {
           generalProgress = Math.round(item.general_progress * 100);
         } else if (item.topic && item.prob !== undefined) {
-          // Extract topic number from topic name like "1.1 Натуральные и целые числа"
           const topicMatch = item.topic.match(/^(\d+\.\d+)/);
           if (topicMatch) {
             const topicNumber = topicMatch[1];
@@ -165,19 +150,15 @@ export const CourseTreeCard: React.FC<CourseTreeCardProps> = ({
 
       setProgress(generalProgress);
       setTopicProgress(topicProgressMap);
-    } catch (error) {
-      console.error('Error loading progress data:', error);
+    } catch (e) {
+      console.error('Error loading progress data:', e);
       setProgress(1);
     }
   };
 
   useEffect(() => {
-    if (user) {
-      loadProgressData();
-    }
-    
+    if (user) loadProgressData();
     if (useStaticTopics) {
-      // Use static OGE topics
       const topicsArray = OGE_MATH_TOPICS.map(item => ({
         name: item.topic_name,
         number: item.topic_number,
@@ -188,21 +169,16 @@ export const CourseTreeCard: React.FC<CourseTreeCardProps> = ({
     } else {
       fetchTopics();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [course.topicsUrl, useStaticTopics, user]);
 
   const fetchTopics = async () => {
     setIsLoadingTopics(true);
     setTopicsError(null);
-    
     try {
       const response = await fetch(course.topicsUrl);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch topics: ${response.status}`);
-      }
-      
+      if (!response.ok) throw new Error(`Failed to fetch topics: ${response.status}`);
       const data = await response.json();
-      
-      // Normalize the data
       let topicsArray: Topic[] = [];
       if (Array.isArray(data)) {
         topicsArray = data.map(item => ({
@@ -223,7 +199,6 @@ export const CourseTreeCard: React.FC<CourseTreeCardProps> = ({
           }
         }
       }
-      
       setTopics(topicsArray);
     } catch (error) {
       console.error('Error fetching topics:', error);
@@ -233,13 +208,37 @@ export const CourseTreeCard: React.FC<CourseTreeCardProps> = ({
     }
   };
 
-  const retryFetchTopics = () => {
-    fetchTopics();
-  };
+  const retryFetchTopics = () => fetchTopics();
 
   return (
     <Card className="rounded-2xl shadow-xl h-full flex flex-col bg-white/95 backdrop-blur border border-white/20">
       <CardHeader className="pb-4 bg-gradient-to-br from-yellow-500/10 to-emerald-500/10 rounded-t-2xl">
+        {/* ---- Local styles must be inside JSX to take effect ---- */}
+        <style>{`
+          .start-cta {
+            --from: #f8c978; --via: #dff3b2; --to: #8fe3c2;
+            display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+            padding: 0.9rem 1.25rem; width: 100%; border-radius: 9999px;
+            background: linear-gradient(90deg, var(--from), var(--via), var(--to));
+            color: #0b0f19; font-weight: 700; letter-spacing: .02em; text-transform: uppercase;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 8px 18px rgba(16,185,129,.10);
+            transition: transform .12s ease, filter .2s ease, box-shadow .2s ease;
+            user-select: none; -webkit-tap-highlight-color: transparent;
+          }
+          .start-cta:hover {
+            filter: brightness(1.06);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,.45), 0 10px 22px rgba(16,185,129,.14);
+            transform: translateY(-1px);
+          }
+          .start-cta:active { transform: translateY(0); filter: brightness(.98); }
+          .start-cta:focus-visible {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255,255,255,.65), 0 0 0 6px rgba(16,185,129,.45);
+          }
+          .start-cta[disabled] { opacity: .5; cursor: not-allowed; transform: none; filter: none; }
+          .start-cta__icon { width: 20px; height: 20px; opacity: .9; }
+        `}</style>
+
         <div>
           <CardTitle 
             className="text-lg font-semibold text-[#1a1f36] hover:text-yellow-600 cursor-pointer transition-colors"
@@ -247,6 +246,7 @@ export const CourseTreeCard: React.FC<CourseTreeCardProps> = ({
           >
             {course.title}
           </CardTitle>
+
           <div className="flex items-center gap-2 mt-1">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -259,8 +259,8 @@ export const CourseTreeCard: React.FC<CourseTreeCardProps> = ({
                   const IconComponent = getTopicIcon(index, topic.name);
                   const colorClass = getTopicColor(index);
                   const isCurrent = index === currentTopicIndex;
-                  const progress = topic.number ? topicProgress[topic.number] || 1 : 1;
-                  
+                  const prog = topic.number ? (topicProgress[topic.number] || 1) : 1;
+
                   return (
                     <DropdownMenuItem
                       key={`${topic.number}-header-dropdown-${index}`}
@@ -273,16 +273,14 @@ export const CourseTreeCard: React.FC<CourseTreeCardProps> = ({
                         <IconComponent className="w-4 h-4 text-white" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className={`text-sm font-medium ${
-                          isCurrent ? 'text-yellow-700' : 'text-gray-900'
-                        }`}>
+                        <div className={`text-sm font-medium ${isCurrent ? 'text-yellow-700' : 'text-gray-900'}`}>
                           {topic.name}
                         </div>
                         <div className="text-xs text-gray-500 mb-1">{topic.number}</div>
                         <div className="w-full bg-gray-200 rounded-full h-1">
                           <div 
                             className="bg-gradient-to-r from-yellow-500 to-emerald-500 h-1 rounded-full transition-all duration-300" 
-                            style={{ width: `${progress}%` }}
+                            style={{ width: `${prog}%` }}
                           />
                         </div>
                       </div>
@@ -298,27 +296,39 @@ export const CourseTreeCard: React.FC<CourseTreeCardProps> = ({
             </DropdownMenu>
           </div>
         </div>
-        
-        {/* Start Button */}
-        <Button
+
+        {/* Start Button (custom, not shadcn Button) */}
+        <button
+          type="button"
+          className="start-cta max-w-xs mx-auto"
           onClick={() => onStart(course.id)}
-          className="w-full mt-3"
-          size="sm"
         >
-          <Play className="w-4 h-4 mr-2" />
+          <svg
+            className="start-cta__icon"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path d="M8 5v14l11-7-11-7z"></path>
+          </svg>
           Начать изучение
-        </Button>
-                
+        </button>
+
         {/* Progress Bar */}
         <div className="mt-4">
           <div className="flex items-center justify-between text-sm mb-2">
             <span className="text-gray-600">Общий прогресс</span>
             <span className="font-bold text-[#1a1f36]">{progress}%</span>
           </div>
-          <Progress value={progress} className="h-2 bg-gray-200 [&>div]:bg-gradient-to-r [&>div]:from-yellow-500 [&>div]:to-emerald-500" />
+          <Progress
+            value={progress}
+            className="h-2 bg-gray-200 [&>div]:bg-gradient-to-r [&>div]:from-yellow-500 [&>div]:to-emerald-500"
+          />
         </div>
       </CardHeader>
-      
+
       <CardContent className="flex-1 flex flex-col space-y-4">
         {/* Topics Tree */}
         <div className="flex-1">
@@ -356,38 +366,36 @@ export const CourseTreeCard: React.FC<CourseTreeCardProps> = ({
                   {/* Vertical line connecting topics */}
                   <div className="absolute left-6 top-6 bottom-6 w-0.5 bg-gray-200"></div>
                   
-                  {getVisibleTopics(topics, currentTopicIndex).map((topic: any, index) => {
+                  {getVisibleTopics(topics, currentTopicIndex).map((topic: any) => {
                     const IconComponent = getTopicIcon(topic.originalIndex, topic.name);
                     const colorClass = getTopicColor(topic.originalIndex);
                     
                     return (
                       <div key={`${topic.number}-${topic.originalIndex}`} className="flex items-center gap-4 relative z-10">
-                      {/* Topic Icon */}
-                      <div className={`w-12 h-12 rounded-full ${colorClass} flex items-center justify-center flex-shrink-0 ${
-                        topic.isCurrent ? 'ring-2 ring-yellow-500 ring-offset-2' : ''
-                      }`}>
-                        <IconComponent className="w-6 h-6 text-white" />
+                        {/* Topic Icon */}
+                        <div className={`w-12 h-12 rounded-full ${colorClass} flex items-center justify-center flex-shrink-0 ${
+                          topic.isCurrent ? 'ring-2 ring-yellow-500 ring-offset-2' : ''
+                        }`}>
+                          <IconComponent className="w-6 h-6 text-white" />
                         </div>
                         
-                      {/* Topic Content */}
-                      <div className="flex-1 min-w-0">
-                        <h4 className={`text-sm font-medium leading-tight ${
-                          topic.isCurrent 
-                            ? 'text-yellow-700 font-semibold' 
-                            : 'text-gray-700'
-                        }`}>
-                          {topic.name}
-                        </h4>
+                        {/* Topic Content */}
+                        <div className="flex-1 min-w-0">
+                          <h4 className={`text-sm font-medium leading-tight ${
+                            topic.isCurrent ? 'text-yellow-700 font-semibold' : 'text-gray-700'
+                          }`}>
+                            {topic.name}
+                          </h4>
                           {/* Topic progress bar */}
-                        {topic.number && topicProgress[topic.number] !== undefined && (
-                          <div className="mt-1">
-                            <div className="w-full bg-secondary/20 rounded-full h-1.5">
-                              <div 
-                                className="bg-primary h-1.5 rounded-full transition-all duration-300" 
-                                style={{ width: `${topicProgress[topic.number]}%` }}
-                              />
+                          {topic.number && topicProgress[topic.number] !== undefined && (
+                            <div className="mt-1">
+                              <div className="w-full bg-secondary/20 rounded-full h-1.5">
+                                <div 
+                                  className="bg-primary h-1.5 rounded-full transition-all duration-300" 
+                                  style={{ width: `${topicProgress[topic.number]}%` }}
+                                />
+                              </div>
                             </div>
-                          </div>
                           )}
                           {/* Hidden topic number for data purposes */}
                           <span className="sr-only">{topic.number}</span>
