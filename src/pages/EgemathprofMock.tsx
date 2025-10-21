@@ -93,6 +93,7 @@ const EgemathprofMock = () => {
   const [isProcessingPhoto, setIsProcessingPhoto] = useState(false);
   const [photoFeedback, setPhotoFeedback] = useState<string>("");
   const [photoScores, setPhotoScores] = useState<number | null>(null);
+  const [questionsWithPhotos, setQuestionsWithPhotos] = useState<Set<string>>(new Set());
 
   // Formula booklet state
   const [showFormulaBooklet, setShowFormulaBooklet] = useState(false);
@@ -113,6 +114,40 @@ const EgemathprofMock = () => {
     const problemNumberType = currentQuestion.problem_number_type || (currentQuestionIndex + 1);
     startAttempt(currentQuestion.question_id, problemNumberType);
   }, [currentQuestionIndex, examStarted, examFinished, currentQuestion, user]);
+
+  // Check for photos uploaded in database
+  useEffect(() => {
+    if (!examStarted || !user || !examId) return;
+    
+    const checkPhotos = async () => {
+      try {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('exam_id')
+          .eq('user_id', user.id)
+          .single();
+
+        const currentExamId = profile?.exam_id || examId;
+
+        const { data: photoResults } = await supabase
+          .from('photo_analysis_outputs')
+          .select('question_id')
+          .eq('user_id', user.id)
+          .eq('exam_id', currentExamId)
+          .neq('analysis_type', 'photo_draft');
+
+        if (photoResults) {
+          const photoQuestionIds = new Set(photoResults.map(r => r.question_id));
+          setQuestionsWithPhotos(photoQuestionIds);
+        }
+      } catch (error) {
+        console.error('Error checking photos:', error);
+      }
+    };
+
+    const interval = setInterval(checkPhotos, 2000);
+    return () => clearInterval(interval);
+  }, [examStarted, user, examId]);
 
   // Timer effect - counts up to 3 hours 55 minutes (235 minutes)
   useEffect(() => {
@@ -312,7 +347,7 @@ const handleStartExam = async () => {
           question_id: qid,
           exam_id: currentExamId,
           problem_number: problemNumber.toString(),
-          analysis_type: 'photo_solution',  // keep consistent with reader
+          analysis_type: 'photo_draft',  // keep consistent with reader
           raw_output: answerText.trim(),     // marks as "attempted"
           openrouter_check: null
         })
@@ -817,18 +852,41 @@ const completeAttempt = async (isCorrect: boolean, scores: number) => {
         return null;
       }
 
-      // Filter to keep only the most recent entry for each problem_number
-      const latestResultsByProblemNumber = new Map<string, any>();
+      // Group by problem_number and pick best per problem: prefer non-draft with valid JSON {scores, review}
+      const groupedByProblem = new Map<string, any[]>();
       if (analysisResults) {
-        for (const result of analysisResults) {
-          const problemNum = result.problem_number;
-          if (problemNum && !latestResultsByProblemNumber.has(problemNum)) {
-            latestResultsByProblemNumber.set(problemNum, result);
-          }
+        for (const r of analysisResults) {
+          const key = r.problem_number as string | null;
+          if (!key) continue;
+          if (!groupedByProblem.has(key)) groupedByProblem.set(key, []);
+          groupedByProblem.get(key)!.push(r);
         }
       }
 
-      const filteredResults = Array.from(latestResultsByProblemNumber.values());
+      const parseReviewScores = (raw: string | null | undefined): { scores: number | null; review: string | null } => {
+        if (!raw) return { scores: null, review: null };
+        try {
+          const obj = JSON.parse(raw);
+          const scores = typeof obj?.scores === 'number' ? obj.scores : (typeof obj?.score === 'number' ? obj.score : null);
+          const review = typeof obj?.review === 'string' ? obj.review : null;
+          return { scores, review };
+        } catch {
+          return { scores: null, review: null };
+        }
+      };
+
+      const filteredResults: any[] = [];
+      for (const [problemNum, rows] of groupedByProblem.entries()) {
+        // rows already in desc created_at; find first non-draft with valid JSON
+        let chosen: any | null = null;
+        for (const row of rows) {
+          if (row.analysis_type === 'photo_draft') continue;
+          const parsed = parseReviewScores(row.raw_output);
+          if (parsed.scores !== null && parsed.review) { chosen = row; break; }
+        }
+        if (!chosen) chosen = rows[0];
+        filteredResults.push(chosen);
+      }
 
       if (filteredResults.length > 0) {
         setPhotoFeedback(JSON.stringify(filteredResults));
@@ -1339,8 +1397,16 @@ const completeAttempt = async (isCorrect: boolean, scores: number) => {
                         const maxPoints = reviewQuestionIndex >= 12 ? 2 : 1;
                         let earnedPoints = 0;
                         if (reviewQuestionIndex >= 12 && reviewQuestionIndex <= 18) {
-                          // Use photoScores from examResults (populated from photo_analysis_outputs table)
-                          earnedPoints = reviewResult?.photoScores !== undefined ? reviewResult.photoScores : 0;
+                          if (reviewResult?.photoScores !== undefined) {
+                            earnedPoints = reviewResult.photoScores!;
+                          } else if (reviewResult?.userAnswer?.startsWith('{')) {
+                            try {
+                              const analysis = JSON.parse(reviewResult.userAnswer);
+                              earnedPoints = analysis.score || 0;
+                            } catch {
+                              earnedPoints = 0;
+                            }
+                          }
                         } else {
                           earnedPoints = reviewResult?.isCorrect ? 1 : 0;
                         }
@@ -1352,13 +1418,23 @@ const completeAttempt = async (isCorrect: boolean, scores: number) => {
                 <CardContent>
                   <div className="p-3 bg-gray-50 rounded border">
                     <MathRenderer
-                      text={reviewResult?.userAnswer || 'Не отвечено'}
+                      text={(() => {
+                        if (reviewQuestionIndex >= 12 && reviewQuestionIndex <= 18 && reviewResult?.userAnswer?.startsWith('{')) {
+                          try {
+                            const analysis = JSON.parse(reviewResult.userAnswer);
+                            return analysis.userAnswer || 'Развернутый ответ представлен';
+                          } catch {
+                            return reviewResult?.userAnswer || 'Не отвечено';
+                          }
+                        }
+                        return reviewResult?.userAnswer || 'Не отвечено';
+                      })()}
                       compiler="mathjax"
                     />
                   </div>
-                  {reviewResult?.photoFeedback && reviewQuestionIndex >= 12 && reviewQuestionIndex <= 18 && (
+                  {reviewResult?.photoFeedback && (
                     <div className="mt-3">
-                      <strong>Рецензия:</strong>
+                      <strong>Оценка:</strong>
                       <div className="mt-1 p-3 bg-blue-50 rounded text-sm">
                         <MathRenderer text={reviewResult.photoFeedback} compiler="mathjax" />
                       </div>
@@ -1438,12 +1514,29 @@ const completeAttempt = async (isCorrect: boolean, scores: number) => {
                 <Clock className="w-5 h-5 inline mr-2" />
                 {formatTime(elapsedTime)}
               </div>
-              <Button onClick={() => setShowFormulaBooklet(true)} variant="outline" className="border-white/30 text-white hover:bg-white/10 hover:text-white" disabled={isTransitioning}>
+              <Button
+                onClick={() => setShowFormulaBooklet(true)}
+                variant="outline"
+                className="
+                  bg-transparent
+                  border-white/20 hover:border-white/40
+                  text-white/70 hover:text-white
+                  hover:bg-white/10
+                  transition-colors
+                "
+              >
                 <BookOpen className="w-4 h-4 mr-2" />
                 Справочник формул
               </Button>
-              <Button onClick={() => setShowQuestionMenu(true)} variant="outline" className="border-white/30 text-white hover:bg-white/10 hover:text-white" disabled={isTransitioning}>
-                <Menu className="w-4 h-4 mr-2" />
+              <Button onClick={() => setShowQuestionMenu(true)}
+                variant="outline"
+                className="
+                  bg-transparent
+                  border-white/20 hover:border-white/40
+                  text-white/70 hover:text-white
+                  hover:bg-white/10
+                  transition-colors
+                " >
                 Вопросы
               </Button>
               <Button onClick={handleFinishExam} variant="outline" className="bg-red-50 hover:bg-red-100 border-red-200 text-red-700 hover:text-red-700" disabled={isTransitioning}>
@@ -1489,6 +1582,16 @@ const completeAttempt = async (isCorrect: boolean, scores: number) => {
 
                 <div className="mb-6">
                   <MathRenderer text={currentQuestion?.problem_text || ''} />
+                  {isPhotoQuestion && questionsWithPhotos.has(currentQuestion.question_id) && (
+                    <div className="mt-6 flex flex-col items-center justify-center gap-2">
+                      <img
+                        src={"https://kbaazksvkvnafrwtmkcw.supabase.co/storage/v1/object/public/avatars/upload_icon.png"}
+                        alt="Фото загружено"
+                        className="w-24 h-24"
+                      />
+                      <p className="text-sm text-gray-600 font-medium">Фото загружено</p>
+                    </div>
+                  )}
                 </div>
 
                 <div className="space-y-4">
@@ -1532,10 +1635,33 @@ const completeAttempt = async (isCorrect: boolean, scores: number) => {
                   )}
 
                   {isPhotoQuestion && (
-                    <div className="flex justify-center">
+                    <div className="flex justify-center gap-3">
                       <Button variant="outline" onClick={handlePhotoAttachment} className="bg-blue-50 hover:bg-blue-100 border-blue-200" disabled={isTransitioning}>
                         <Camera className="w-4 h-4 mr-2" />
                         Прикрепить фото
+                      </Button>
+                      <Button 
+                        onClick={() => {
+                          if (!userAnswer.trim()) {
+                            toast.error('Введите ответ');
+                            return;
+                          }
+                          setExamResults(prev => {
+                            const updated = [...prev];
+                            updated[currentQuestionIndex] = {
+                              ...updated[currentQuestionIndex],
+                              userAnswer: userAnswer.trim(),
+                              attempted: true
+                            };
+                            return updated;
+                          });
+                          toast.success('Ответ записан');
+                        }}
+                        variant="outline" 
+                        className="bg-emerald-50 hover:bg-emerald-100 border-emerald-300 text-emerald-700 hover:text-emerald-800"
+                        disabled={isTransitioning}
+                      >
+                        Записать ответ
                       </Button>
                     </div>
                   )}
