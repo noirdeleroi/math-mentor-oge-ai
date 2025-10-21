@@ -1,16 +1,9 @@
+// src/components/SimulationModal.tsx
 import * as React from "react";
 import { Suspense, useMemo, useRef, useLayoutEffect, useState } from "react";
 import { SIMULATIONS, type SimulationId } from "@/simulations/SimulationRegistry";
 import type { SimulationProps } from "@/types/simulation";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-
-/**
- * Auto-fit scaler:
- * - Modal: 50vw x 40vh (shorter to avoid scroll)
- * - We measure the header, then fit the simulation into the remaining space.
- * - The sim renders as if it were full screen (window.innerWidth x window.innerHeight),
- *   then we scale it down by `min(containerW / windowW, containerH / windowH)`.
- */
 
 export default function SimulationModal({
   open,
@@ -35,29 +28,32 @@ export default function SimulationModal({
 
   const headerRef = useRef<HTMLDivElement | null>(null);
   const viewportRef = useRef<HTMLDivElement | null>(null);
-  const [scale, setScale] = useState(0.5);
+  const [scale, setScale] = useState(0.5); // default shrink
 
-  // compute scale to fit both width & height of the viewport (no scrollbars)
+  // Compute a scale that fits both width & height, then make it a bit smaller (0.9x) to avoid scroll.
   useLayoutEffect(() => {
     function recompute() {
       const vp = viewportRef.current;
       const hdr = headerRef.current;
       if (!vp || !hdr) return;
 
-      // available size = DialogContent (40vh) minus header height
-      const dialogH = vp.parentElement?.clientHeight ?? window.innerHeight * 0.4;
+      // Available space inside DialogContent
+      const dialog = vp.parentElement as HTMLElement; // DialogContent root
+      const dialogH = dialog?.clientHeight ?? window.innerHeight * 0.5;
       const headerH = hdr.clientHeight;
       const availableH = Math.max(0, dialogH - headerH);
       const availableW = vp.clientWidth;
 
+      // “Full screen” size that sims expect
       const winW = window.innerWidth;
       const winH = window.innerHeight;
 
-      // scale must satisfy both dimensions
-      const s = Math.min(availableW / winW, availableH / winH);
+      // Fit scale, then reduce a bit (10%) so it’s comfortably smaller
+      const fit = Math.min(availableW / winW, availableH / winH);
+      const comfy = fit * 0.9;
 
-      // clamp a bit lower than 0.6 to ensure breathing room on tiny screens
-      const safe = Math.min(Math.max(s, 0.25), 0.58);
+      // Clamp to a sane range so super small screens don’t explode layout
+      const safe = Math.min(Math.max(comfy, 0.25), 0.8);
       setScale(safe);
     }
 
@@ -68,23 +64,21 @@ export default function SimulationModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      {/* exact 50vw x 40vh; overflow hidden to guarantee no scrollbars */}
-      <DialogContent className="p-0 gap-0 w-[50vw] h-[40vh] max-w-none overflow-hidden">
-        <DialogHeader className="px-4 pt-3 pb-2">
-          <div ref={headerRef}>
-          <DialogTitle className="text-sm sm:text-base">
+      {/* ✅ Keep the box as-is: half-screen */}
+      <DialogContent className="p-0 gap-0 w-[50vw] h-[50vh] max-w-none overflow-hidden">
+        <DialogHeader ref={headerRef as any} className="px-4 pt-3 pb-2">
+          <DialogTitle className="text-lg">
             {titleOverride ?? meta?.title ?? "Симуляция"}
           </DialogTitle>
           {!!meta?.description && (
-            <DialogDescription className="text-[11px] sm:text-xs">
+            <DialogDescription className="text-xs">
               {meta.description}
             </DialogDescription>
           )}
-          </div>
         </DialogHeader>
 
-        {/* viewport that the sim must fit into (no scroll) */}
-        <div ref={viewportRef} className="relative w-full h-[calc(100%-0px)] overflow-hidden">
+        {/* Viewport keeps overflow-auto so you *can* scroll if needed */}
+        <div ref={viewportRef} className="relative w-full h-[calc(100%-0px)] overflow-auto">
           {simulationId && Comp ? (
             <Suspense
               fallback={
@@ -93,7 +87,7 @@ export default function SimulationModal({
                 </div>
               }
             >
-              {/* Fake full-screen stage scaled down to fit */}
+              {/* Fake full-screen stage scaled down */}
               <div
                 className="absolute top-0 left-0 origin-top-left"
                 style={{
