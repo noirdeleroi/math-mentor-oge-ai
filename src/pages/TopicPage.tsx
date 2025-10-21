@@ -231,6 +231,88 @@ const TopicPage: React.FC = () => {
             </div>
           </div>
 
+          {/* Topic Test - Same style as Textbook */}
+          {(() => {
+            const testSkills = getTopicTestSkills(moduleSlug, topicId);
+            const testQuestionCount = getTopicTestQuestionCount(testSkills);
+            const testItemId = `${moduleSlug}-${topicId}-topic-test`;
+
+            // Get progress data and calculate status
+            const matchingItems = progressData.filter(
+              (p) => p.item_id === testItemId && p.activity_type === "test"
+            );
+            const correctCount =
+              matchingItems.length > 0
+                ? Math.max(
+                    ...matchingItems.map((item) =>
+                      parseInt(item.correct_count || "0")
+                    )
+                  )
+                : 0;
+            const testStatus = getTopicTestStatus(
+              correctCount,
+              testQuestionCount
+            );
+
+            return (
+              <div className="bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-300/50 rounded-lg p-3 mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex-shrink-0">
+                    {(() => {
+                      switch (testStatus) {
+                        case "mastered":
+                          return (
+                            <div className="relative w-9 h-9 bg-purple-600 rounded-lg flex items-center justify-center">
+                              <Crown className="h-5 w-5 text-white" />
+                            </div>
+                          );
+                        case "proficient":
+                          return (
+                            <div className="w-9 h-9 bg-gradient-to-t from-orange-500 from-33% to-gray-200 to-33% rounded-lg" />
+                          );
+                        case "familiar":
+                          return (
+                            <div className="w-9 h-9 rounded-lg border-2 border-orange-500 bg-[linear-gradient(to_top,theme(colors.orange.500)_20%,white_20%)]" />
+                          );
+                        case "attempted":
+                          return (
+                            <div className="w-9 h-9 border-2 border-orange-400 rounded-lg bg-white" />
+                          );
+                        default:
+                          return (
+                            <div className="w-9 h-9 border-2 border-gray-300 rounded-lg bg-white" />
+                          );
+                      }
+                    })()}
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-sm font-semibold text-[#1a1f36] mb-0.5">
+                      Тест по теме
+                    </h3>
+                    <p className="text-xs text-gray-700">
+                      Take this test to cover ALL the skills taught in this topic
+                    </p>
+                  </div>
+                  <Button
+                    onClick={() =>
+                      setSelectedExercise({
+                        title: `Тест по теме: ${topic?.title}`,
+                        skills: testSkills,
+                        questionCount: testQuestionCount,
+                        isTest: true,
+                        itemId: testItemId,
+                      })
+                    }
+                    className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold h-9 flex-shrink-0 px-5 text-sm"
+                  >
+                    <Zap className="h-4 w-4 mr-2" />
+                    Начать тест
+                  </Button>
+                </div>
+              </div>
+            );
+          })()}
+
           <div className="grid md:grid-cols-2 gap-4 mb-4">
             {/* Skills */}
             <div>
@@ -263,91 +345,6 @@ const TopicPage: React.FC = () => {
               </ul>
             </div>
           </div>
-
-          {/* Topic Test - Compact Button */}
-          {(() => {
-            const testSkills = getTopicTestSkills(moduleSlug, topicId);
-            const testQuestionCount = getTopicTestQuestionCount(testSkills);
-            const testItemId = `${moduleSlug}-${topicId}-topic-test`;
-
-            // Get progress data and calculate status
-            const matchingItems = progressData.filter(
-              (p) => p.item_id === testItemId && p.activity_type === "test"
-            );
-            const correctCount =
-              matchingItems.length > 0
-                ? Math.max(
-                    ...matchingItems.map((item) =>
-                      parseInt(item.correct_count || "0")
-                    )
-                  )
-                : 0;
-            const testStatus = getTopicTestStatus(
-              correctCount,
-              testQuestionCount
-            );
-
-            return (
-              <div
-                onClick={() =>
-                  setSelectedExercise({
-                    title: `Тест по теме: ${topic?.title}`,
-                    skills: testSkills,
-                    questionCount: testQuestionCount,
-                    isTest: true,
-                    itemId: testItemId,
-                  })
-                }
-                className="bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-300/50 rounded-lg p-2 cursor-pointer hover:from-orange-100 hover:to-amber-100 transition-colors inline-flex items-center gap-2"
-              >
-                {/* Progress Cell */}
-                <div className="flex-shrink-0">
-                  {(() => {
-                    switch (testStatus) {
-                      case "mastered":
-                        return (
-                          <div className="relative w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
-                            <Crown className="h-4 w-4 text-white" />
-                          </div>
-                        );
-                      case "proficient":
-                        return (
-                          <div className="w-8 h-8 bg-gradient-to-t from-orange-500 from-33% to-gray-200 to-33% rounded-lg" />
-                        );
-                      case "familiar":
-                        return (
-                          <div className="w-8 h-8 rounded-lg border-2 border-orange-500 bg-[linear-gradient(to_top,theme(colors.orange.500)_20%,white_20%)]" />
-                        );
-                      case "attempted":
-                        return (
-                          <div className="w-8 h-8 border-2 border-orange-400 rounded-lg bg-white" />
-                        );
-                      default:
-                        return (
-                          <div className="w-8 h-8 border-2 border-gray-300 rounded-lg bg-white" />
-                        );
-                    }
-                  })()}
-                </div>
-
-                {/* Content */}
-                <div>
-                  <h4 className="text-xs font-bold text-orange-900 flex items-center gap-1">
-                    <Zap className="h-3 w-3 text-orange-600" />
-                    Тест по теме
-                  </h4>
-                  <p className="text-xs text-orange-700">
-                    {testQuestionCount}{" "}
-                    {testQuestionCount === 1
-                      ? "вопрос"
-                      : testQuestionCount < 5
-                      ? "вопроса"
-                      : "вопросов"}
-                  </p>
-                </div>
-              </div>
-            );
-          })()}
         </div>
 
         {/* Single block with tabs */}
