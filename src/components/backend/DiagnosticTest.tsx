@@ -51,8 +51,8 @@ export const DiagnosticTest: React.FC<DiagnosticTestProps> = ({ onComplete }) =>
   const loadQuestions = async () => {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('mcq_with_options')
+    const { data, error } = await supabase
+      .from('oge_math_skills_questions')
         .select('*')
         .in('skills', SKILLS_TO_TEST)
         .not('problem_text', 'is', null)

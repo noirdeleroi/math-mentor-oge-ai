@@ -107,8 +107,8 @@ const PracticeExercise = () => {
       }
 
       // Fetch MCQ problems
-      const { data: mcqData, error: mcqError } = await supabase
-        .from('mcq_with_options')
+    const { data: mcqData, error: mcqError } = await supabase
+      .from('oge_math_skills_questions')
         .select('question_id, problem_text, answer, option1, option2, option3, option4, skills, problem_image')
         .not('skills', 'is', null);
 

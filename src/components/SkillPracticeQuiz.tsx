@@ -66,8 +66,8 @@ const SkillPracticeQuiz: React.FC<SkillPracticeQuizProps> = ({ skill, onBackToAr
       setLoading(true);
       
       // Get questions related to this skill
-      const { data, error } = await supabase
-        .from('mcq_with_options')
+    const { data, error } = await supabase
+      .from('oge_math_skills_questions')
         .select('question_id, problem_text, answer, option1, option2, option3, option4, difficulty')
         .eq('skills', skill.id)
         .not('problem_text', 'is', null)
@@ -94,7 +94,7 @@ const SkillPracticeQuiz: React.FC<SkillPracticeQuizProps> = ({ skill, onBackToAr
           const randomOffset = Math.floor(Math.random() * Math.max(1, count - 5));
           
           const { data: randomData, error: randomError } = await supabase
-            .from('mcq_with_options')
+            .from('oge_math_skills_questions')
             .select('question_id, problem_text, answer, option1, option2, option3, option4, difficulty')
             .not('problem_text', 'is', null)
             .not('option1', 'is', null)
