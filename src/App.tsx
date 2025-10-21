@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ChatProvider } from "./contexts/ChatContext";
+import { SimulationProvider } from "./contexts/SimulationProvider";
 import Index from "./pages/Index";
 import PrivateRoute from "./components/PrivateRoute";
 import TopicsIndex from "@/pages/TopicsIndex";
@@ -58,10 +59,11 @@ const App = () => (
     <BrowserRouter>
       <AuthProvider>
         <ChatProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+          <SimulationProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
             <Routes>
               {/* pages WITHOUT the layout (plain) */}
               <Route path="/" element={<Index />} />
@@ -121,7 +123,8 @@ const App = () => (
             </Routes>
           </Suspense>
 
-          </TooltipProvider>
+            </TooltipProvider>
+          </SimulationProvider>
         </ChatProvider>
       </AuthProvider>
     </BrowserRouter>
