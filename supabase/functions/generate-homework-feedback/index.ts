@@ -31,12 +31,16 @@ serve(async (req)=>{
     const groqApiKey = Deno.env.get('GROQ_API_KEY');
     const openrouterApiKey = Deno.env.get('OPENROUTER_API_KEY');
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    let user_id = null;
     // 1. Get the pending feedback record
     const { data: feedbackRecord, error: fetchError } = await supabase.from('pending_homework_feedback').select('*').eq('id', pending_feedback_id).single();
     if (fetchError || !feedbackRecord) {
       console.error('❌  Failed to fetch feedback record:', fetchError);
       throw new Error('Feedback record not found');
     }
+    // ✅ Assign user_id safely
+    user_id = feedbackRecord.user_id;
+    console.log('User ID:', user_id);
     console.log('✅ Feedback record found:', feedbackRecord);
     // Mark as processing started
     await supabase.from('pending_homework_feedback').update({
@@ -183,6 +187,73 @@ ${slowQuestions.length > 0 ? `- Самые сложные вопросы: ${slow
           throw new Error(`OpenRouter API error: ${orResp.status}`);
         }
         const orData = await orResp.json();
+        // === Extract token usage and calculate cost ===
+        const { prompt_tokens, completion_tokens } = orData.usage || {};
+        const model = orData.model;
+        const pricingTable = {
+          "google/gemini-2.5-flash-lite-preview-09-2025": [
+            0.30,
+            2.50
+          ],
+          "google/gemini-2.5-flash-lite-preview-06-17": [
+            0.10,
+            0.40
+          ],
+          "google/gemini-2.5-flash-lite": [
+            0.10,
+            0.40
+          ],
+          "google/gemini-2.5-flash": [
+            0.30,
+            2.50
+          ],
+          "google/gemini-2.5-flash-preview-09-2025": [
+            0.30,
+            2.50
+          ],
+          "x-ai/grok-3-mini": [
+            0.30,
+            0.50
+          ],
+          "x-ai/grok-4-fast": [
+            0.20,
+            0.50
+          ],
+          "x-ai/grok-code-fast-1": [
+            0.20,
+            1.50
+          ],
+          "qwen/qwen3-coder-flash": [
+            0.30,
+            1.50
+          ],
+          "openai/o4-mini": [
+            1.10,
+            4.40
+          ],
+          "anthropic/claude-haiku-4.5": [
+            1.00,
+            5.00
+          ]
+        };
+        // Get prices per million tokens
+        const [priceIn, priceOut] = pricingTable[model] || [
+          0,
+          0
+        ];
+        const price = prompt_tokens / 1_000_000 * priceIn + completion_tokens / 1_000_000 * priceOut;
+        // === Insert into Supabase user_credits table ===
+        const { error: insertError } = await supabase.from('user_credits').insert({
+          user_id: user_id,
+          tokens_in: prompt_tokens,
+          tokens_out: completion_tokens,
+          price: price
+        });
+        if (insertError) {
+          console.error('❌ Failed to insert user credits:', insertError.message);
+        } else {
+          console.log(`✅ Stored usage for ${model}: ${prompt_tokens} in, ${completion_tokens} out, $${price.toFixed(6)} total`);
+        }
         feedbackMessage = orData.choices?.[0]?.message?.content || 'Не удалось сгенерировать обратную связь';
       } else {
         // Not a limit/quota error — bubble it up as before
