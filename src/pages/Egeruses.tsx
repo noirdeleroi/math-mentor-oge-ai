@@ -114,36 +114,63 @@ const Egeruses = () => {
     setStarting(true);
     setErrorText(null);
     try {
+      console.log('Fetching attempted topics for user:', userId);
       const { data: attempted, error: attemptedErr } = await supabase
         .from('student_essay')
         .select('essay_topic_id')
         .eq('user_id', userId);
-      if (attemptedErr) throw attemptedErr;
+      
+      if (attemptedErr) {
+        console.error('Error fetching attempted topics:', attemptedErr);
+        throw attemptedErr;
+      }
+      
+      console.log('Attempted topics:', attempted);
       const attemptedIds = new Set<string>((attempted || []).map((r: any) => r.essay_topic_id));
 
+      console.log('Fetching all topics from rus_essay_topics');
       const { data: allTopics, error: topErr } = await supabase
         .from('rus_essay_topics')
         .select('id,subject,essay_topic,rules');
-      if (topErr) throw topErr;
+      
+      if (topErr) {
+        console.error('Error fetching topics:', topErr);
+        throw topErr;
+      }
+      
+      console.log('All topics:', allTopics);
 
       const unattempted = (allTopics || []).filter((t: any) => !attemptedIds.has(t.id));
+      console.log('Unattempted topics:', unattempted);
+      
       const chosen = pickRandom(unattempted.length ? unattempted : (allTopics || []));
       if (!chosen) {
+        console.error('No topics available');
         setErrorText('Ошибка в сети... Попробуй позже');
         return;
       }
+      
+      console.log('Chosen topic:', chosen);
 
+      console.log('Inserting new essay attempt');
       const { data: inserted, error: insErr } = await supabase
         .from('student_essay')
         .insert({ user_id: userId, essay_topic_id: (chosen as any).id, text_scan: null, analysis: null, score: null })
         .select('id,user_id,essay_topic_id,text_scan,analysis,score,created_at')
         .single();
-      if (insErr) throw insErr;
+      
+      if (insErr) {
+        console.error('Error inserting essay:', insErr);
+        throw insErr;
+      }
+      
+      console.log('Inserted essay:', inserted);
 
       setCurrentTopic(chosen as Topic);
       setCurrentEssay(inserted as EssayRow);
       setAnalysisText(null);
-    } catch {
+    } catch (error) {
+      console.error('Error in handleStart:', error);
       setErrorText('Ошибка в сети... Попробуй позже');
     } finally {
       setStarting(false);
@@ -305,7 +332,7 @@ const Egeruses = () => {
                   disabled={starting || loadingPending}
                   className="inline-flex items-center justify-center px-6 h-12 rounded-xl bg-gradient-to-r from-yellow-500 to-emerald-500 text-[#1a1f36] font-bold shadow hover:from-yellow-600 hover:to-emerald-600 transition"
                 >
-                  Начать
+                  Получить тему сочинения
                 </button>
                 {loadingPending && <div className="mt-4 text-white/70">Загрузка...</div>}
                 {!!errorText && <div className="mt-4 text-red-300">{errorText}</div>}
@@ -344,10 +371,10 @@ const Egeruses = () => {
                       <textarea
                         value={telegramInput}
                         onChange={(e) => setTelegramInput(e.target.value)}
-                        className="w-full min-h-[160px] p-3 rounded-xl bg-white/10 border border_white/20 outline-none"
+                        className="w-full min-h-[160px] p-3 rounded-xl bg-white/10 border border-white/20 outline-none"
                       />
                     ) : (
-                      <div className="w-full min-h-[120px] p-3 rounded-xl bg_white/10 border border_white/20">
+                      <div className="w-full min-h-[120px] p-3 rounded-xl bg-white/10 border border-white/20">
                         <pre className="whitespace-pre-wrap font-sans">{telegramInput}</pre>
                       </div>
                     )}
