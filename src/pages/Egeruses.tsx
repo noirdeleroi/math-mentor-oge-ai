@@ -261,15 +261,12 @@ const Egeruses = () => {
         if (error) throw error;
       }
       const seq = runStatusSequence();
-      const api = fetch('/functions/v1/openrouter-essay-check', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ subject: 'ege', user_id: userId })
+      const api = supabase.functions.invoke('openrouter-essay-check', {
+        body: { subject: 'ege', user_id: userId }
       })
-        .then(async (res) => {
-          if (!res.ok) throw new Error('bad');
-          const json = await res.json();
-          return (json?.analysis as string) || null;
+        .then((res) => {
+          if (res.error) throw new Error('bad');
+          return (res.data?.analysis as string) || null;
         })
         .catch(() => {
           throw new Error('network');
