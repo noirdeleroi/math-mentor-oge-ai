@@ -1509,6 +1509,34 @@ const completeAttempt = async (isCorrect: boolean, scores: number) => {
                     />
                   </div>
 
+                  {!isPhotoQuestion && (
+                    <div className="flex justify-center">
+                      <Button 
+                        onClick={() => {
+                          if (!userAnswer.trim()) {
+                            toast.error('Введите ответ');
+                            return;
+                          }
+                          setExamResults(prev => {
+                            const updated = [...prev];
+                            updated[currentQuestionIndex] = {
+                              ...updated[currentQuestionIndex],
+                              userAnswer: userAnswer.trim(),
+                              attempted: true
+                            };
+                            return updated;
+                          });
+                          toast.success('Ответ записан');
+                        }}
+                        variant="outline" 
+                        className="bg-emerald-50 hover:bg-emerald-100 border-emerald-300 text-emerald-700 hover:text-emerald-800"
+                        disabled={isTransitioning}
+                      >
+                        Записать ответ
+                      </Button>
+                    </div>
+                  )}
+
                   {isPhotoQuestion && (
                     <div className="flex justify-center">
                       <Button variant="outline" onClick={handlePhotoAttachment} className="bg-blue-50 hover:bg-blue-100 border-blue-200" disabled={isTransitioning}>
