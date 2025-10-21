@@ -1914,6 +1914,27 @@ export type Database = {
         }
         Relationships: []
       }
+      rus_essay_topics: {
+        Row: {
+          essay_topic: string
+          id: string
+          rules: string | null
+          subject: string
+        }
+        Insert: {
+          essay_topic: string
+          id?: string
+          rules?: string | null
+          subject: string
+        }
+        Update: {
+          essay_topic?: string
+          id?: string
+          rules?: string | null
+          subject?: string
+        }
+        Relationships: []
+      }
       stories_and_telegram: {
         Row: {
           course_id: string | null
@@ -2015,6 +2036,51 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      student_essay: {
+        Row: {
+          analysis: string | null
+          created_at: string
+          essay_topic_id: string
+          id: string
+          score: number | null
+          text_scan: string | null
+          user_id: string
+        }
+        Insert: {
+          analysis?: string | null
+          created_at?: string
+          essay_topic_id: string
+          id?: string
+          score?: number | null
+          text_scan?: string | null
+          user_id: string
+        }
+        Update: {
+          analysis?: string | null
+          created_at?: string
+          essay_topic_id?: string
+          id?: string
+          score?: number | null
+          text_scan?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_essay_essay_topic_id_fkey"
+            columns: ["essay_topic_id"]
+            isOneToOne: false
+            referencedRelation: "rus_essay_topics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_essay_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       student_mastery: {
         Row: {
