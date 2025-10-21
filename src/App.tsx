@@ -51,6 +51,7 @@ const HomeworkEgeprof = lazy(() => import("./pages/HomeworkEgeprof"));
 const HomeworkFipiPractice = lazy(() => import("./pages/HomeworkFipiPractice"));
 const CellardLp2 = lazy(() => import("./pages/CellardLp2"));
 const Egeruses = lazy(() => import("./pages/Egeruses"));
+const Egeruses2 = lazy(() => import("./pages/Egeruses2"));
 
 const queryClient = new QueryClient();
 
@@ -100,6 +101,7 @@ const App = () => (
                 <Route path="/egemathprof" element={<EgeMathProf />} />
                 <Route path="/egemathbasic" element={<EgeMathBasic />} />
                 <Route path="/egeruses" element={<Egeruses />} />
+                <Route path="/egeruses2" element={<Egeruses2 />} />
               </Route>
           
               {/* protected pages – wrap in layout too if you want the same background */}
