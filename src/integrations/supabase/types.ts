@@ -966,6 +966,44 @@ export type Database = {
           },
         ]
       }
+      student_essay1: {
+        Row: {
+          analysis: string | null
+          created_at: string
+          essay_topic_id: string
+          id: string
+          score: number | null
+          text_scan: string | null
+          user_id: string
+        }
+        Insert: {
+          analysis?: string | null
+          created_at?: string
+          essay_topic_id: string
+          id?: string
+          score?: number | null
+          text_scan?: string | null
+          user_id: string
+        }
+        Update: {
+          analysis?: string | null
+          created_at?: string
+          essay_topic_id?: string
+          id?: string
+          score?: number | null
+          text_scan?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_essay1_essay_topic_id_fkey"
+            columns: ["essay_topic_id"]
+            isOneToOne: false
+            referencedRelation: "essay_topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       student_mastery: {
         Row: {
           alpha: number

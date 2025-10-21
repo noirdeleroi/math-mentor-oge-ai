@@ -75,7 +75,7 @@ const Egeruses2 = () => {
       setLoadingPending(true);
       try {
         const { data: essays, error } = await supabase
-          .from('student_essay')
+          .from('student_essay1')
           .select('id,user_id,essay_topic_id,text_scan,analysis,score,created_at')
           .eq('user_id', userId)
           .order('created_at', { ascending: false })
@@ -85,7 +85,7 @@ const Egeruses2 = () => {
           const attempt = essays[0] as EssayRow;
           setCurrentEssay(attempt);
           const { data: topic, error: topicErr } = await supabase
-            .from('rus_essay_topics')
+            .from('essay_topics')
             .select('id,subject,essay_topic,rules')
             .eq('id', attempt.essay_topic_id)
             .maybeSingle();
@@ -116,7 +116,7 @@ const Egeruses2 = () => {
     try {
       // Fetch all topics the user has attempted
       const { data: attempted, error: attemptedErr } = await supabase
-        .from('student_essay')
+        .from('student_essay1')
         .select('essay_topic_id')
         .eq('user_id', userId);
       
@@ -126,7 +126,7 @@ const Egeruses2 = () => {
 
       // Fetch all available topics
       const { data: allTopics, error: topErr } = await supabase
-        .from('rus_essay_topics')
+        .from('essay_topics')
         .select('id,subject,essay_topic,rules');
       
       if (topErr) throw topErr;
@@ -143,7 +143,7 @@ const Egeruses2 = () => {
 
       // Insert new essay attempt
       const { data: inserted, error: insErr } = await supabase
-        .from('student_essay')
+        .from('student_essay1')
         .insert({ user_id: userId, essay_topic_id: (chosen as any).id, text_scan: null, analysis: null, score: null })
         .select('id,user_id,essay_topic_id,text_scan,analysis,score,created_at')
         .single();
@@ -238,7 +238,7 @@ const Egeruses2 = () => {
       }
       {
         const { error } = await supabase
-          .from('student_essay')
+          .from('student_essay1')
           .update({ text_scan: textToUse })
           .eq('id', currentEssay.id);
         if (error) throw error;
@@ -257,7 +257,7 @@ const Egeruses2 = () => {
       const [_, analysis] = await Promise.all([seq, api]);
       if (!analysis) {
         const { data: latest, error: latestErr } = await supabase
-          .from('student_essay')
+          .from('student_essay1')
           .select('id,analysis')
           .eq('id', currentEssay.id)
           .maybeSingle();
