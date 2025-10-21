@@ -14,8 +14,8 @@ serve(async (req)=>{
   }
   try {
     // Initialize Supabase client
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     const openRouterApiKey = Deno.env.get('OPENROUTER_API_KEY');
     if (!openRouterApiKey) {
@@ -76,6 +76,73 @@ serve(async (req)=>{
       throw new Error(`OpenRouter API error: ${response.status}`);
     }
     const data = await response.json();
+    // === Extract token usage and calculate cost ===
+    const { prompt_tokens, completion_tokens } = data.usage || {};
+    const model = data.model;
+    const pricingTable = {
+      "google/gemini-2.5-flash-lite-preview-09-2025": [
+        0.30,
+        2.50
+      ],
+      "google/gemini-2.5-flash-lite-preview-06-17": [
+        0.10,
+        0.40
+      ],
+      "google/gemini-2.5-flash-lite": [
+        0.10,
+        0.40
+      ],
+      "google/gemini-2.5-flash": [
+        0.30,
+        2.50
+      ],
+      "google/gemini-2.5-flash-preview-09-2025": [
+        0.30,
+        2.50
+      ],
+      "x-ai/grok-3-mini": [
+        0.30,
+        0.50
+      ],
+      "x-ai/grok-4-fast": [
+        0.20,
+        0.50
+      ],
+      "x-ai/grok-code-fast-1": [
+        0.20,
+        1.50
+      ],
+      "qwen/qwen3-coder-flash": [
+        0.30,
+        1.50
+      ],
+      "openai/o4-mini": [
+        1.10,
+        4.40
+      ],
+      "anthropic/claude-haiku-4.5": [
+        1.00,
+        5.00
+      ]
+    };
+    // Get prices per million tokens
+    const [priceIn, priceOut] = pricingTable[model] || [
+      0,
+      0
+    ];
+    const price = prompt_tokens / 1_000_000 * priceIn + completion_tokens / 1_000_000 * priceOut;
+    // === Insert into Supabase user_credits table ===
+    const { error: insertError } = await supabase.from('user_credits').insert({
+      user_id: user_id,
+      tokens_in: prompt_tokens,
+      tokens_out: completion_tokens,
+      price: price
+    });
+    if (insertError) {
+      console.error('❌ Failed to insert user credits:', insertError.message);
+    } else {
+      console.log(`✅ Stored usage for ${model}: ${prompt_tokens} in, ${completion_tokens} out, $${price.toFixed(6)} total`);
+    }
     const feedback = data.choices?.[0]?.message?.content;
     if (!feedback) {
       throw new Error('No feedback received from OpenRouter API');
