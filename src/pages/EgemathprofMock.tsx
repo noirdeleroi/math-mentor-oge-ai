@@ -1099,9 +1099,9 @@ const completeAttempt = async (isCorrect: boolean, scores: number) => {
               <div className="flex items-center gap-3 text-white/80">
                 <Clock className="w-5 h-5" />
                 <span className="font-mono">00:00:00 / 03:55:00</span>
-                <Button onClick={() => setShowFormulaBooklet(true)} variant="outline" className="border-white/30 text-white hover:bg-white/10">
-                  <BookOpen className="w-4 h-4 mr-2" />Справочник формул
-                </Button>
+              <Button onClick={() => setShowFormulaBooklet(true)} variant="outline" className="border-white/30 text-white hover:bg-white/10 hover:text-white">
+                <BookOpen className="w-4 h-4 mr-2" />Справочник формул
+              </Button>
               </div>
             </div>
 
@@ -1258,7 +1258,7 @@ const completeAttempt = async (isCorrect: boolean, scores: number) => {
                   <Link to="/egemathprof-practice" className="flex-1">
                     <Button
                       variant="outline"
-                      className="w-full border-[#1a1f36]/30 text-[#1a1f36] hover:bg-gray-100"
+                      className="w-full border-[#1a1f36]/30 text-[#1a1f36] hover:bg-gray-100 hover:text-[#1a1f36]"
                     >
                       <ArrowLeft className="w-4 h-4 mr-2" />
                       К практике
@@ -1444,15 +1444,15 @@ const completeAttempt = async (isCorrect: boolean, scores: number) => {
                 <Clock className="w-5 h-5 inline mr-2" />
                 {formatTime(elapsedTime)}
               </div>
-              <Button onClick={() => setShowFormulaBooklet(true)} variant="outline" className="border-white/30 text-white hover:bg-white/10" disabled={isTransitioning}>
+              <Button onClick={() => setShowFormulaBooklet(true)} variant="outline" className="border-white/30 text-white hover:bg-white/10 hover:text-white" disabled={isTransitioning}>
                 <BookOpen className="w-4 h-4 mr-2" />
                 Справочник формул
               </Button>
-              <Button onClick={() => setShowQuestionMenu(true)} variant="outline" className="border-white/30 text-white hover:bg-white/10" disabled={isTransitioning}>
+              <Button onClick={() => setShowQuestionMenu(true)} variant="outline" className="border-white/30 text-white hover:bg-white/10 hover:text-white" disabled={isTransitioning}>
                 <Menu className="w-4 h-4 mr-2" />
                 Вопросы
               </Button>
-              <Button onClick={handleFinishExam} variant="outline" className="bg-red-50 hover:bg-red-100 border-red-200 text-red-700" disabled={isTransitioning}>
+              <Button onClick={handleFinishExam} variant="outline" className="bg-red-50 hover:bg-red-100 border-red-200 text-red-700 hover:text-red-700" disabled={isTransitioning}>
                 Завершить экзамен
               </Button>
             </div>
@@ -1611,10 +1611,10 @@ const completeAttempt = async (isCorrect: boolean, scores: number) => {
                     variant={isCurrent ? "default" : "outline"}
                     className={`h-14 ${
                       isCurrent
-                        ? 'bg-blue-600 hover:bg-blue-700'
+                        ? 'bg-blue-600 hover:bg-blue-700 text-white hover:text-white'
                         : hasAnswer
-                        ? 'bg-green-50 border-green-300 hover:bg-green-100'
-                        : 'hover:bg-gray-50'
+                        ? 'bg-green-50 border-green-300 hover:bg-green-100 text-green-800 hover:text-green-800'
+                        : 'hover:bg-gray-50 text-gray-700 hover:text-gray-700'
                     }`}
                     onClick={() => handleNavigateToQuestion(index)}
                   >
