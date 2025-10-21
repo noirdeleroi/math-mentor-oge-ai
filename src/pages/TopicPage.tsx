@@ -2,7 +2,9 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Play, BookOpen, Target, X, Crown, Clock, CheckCircle2, Zap } from "lucide-react";
+import {
+  ArrowLeft, Play, BookOpen, Target, X, Crown, Clock, CheckCircle2, Zap
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { StreakDisplay } from "@/components/streak/StreakDisplay";
@@ -18,7 +20,14 @@ import {
   type TopicContent,
   type ExerciseConfig,
 } from "@/lib/modules.registry";
-import { getTopicTestSkills, getTopicTestQuestionCount, getTopicTestStatus } from "@/lib/topicTestHelpers";
+import {
+  getTopicTestSkills,
+  getTopicTestQuestionCount,
+  getTopicTestStatus,
+} from "@/lib/topicTestHelpers";
+
+// ✅ Import global simulation opener
+import { useSimulation } from "@/contexts/SimulationProvider";
 
 type TopicArticleRow = {
   topic_id: string;
@@ -29,7 +38,11 @@ const TopicPage: React.FC = () => {
   const navigate = useNavigate();
   const { refetch, getProgressStatus, progressData } = useModuleProgress();
   const [refreshKey, setRefreshKey] = useState(0);
-  const [selectedVideo, setSelectedVideo] = useState<{ videoId: string; title: string; description: string } | null>(null);
+  const [selectedVideo, setSelectedVideo] = useState<{
+    videoId: string;
+    title: string;
+    description: string;
+  } | null>(null);
 
   // /module/:moduleSlug/topic/:topicId
   const { moduleSlug = "", topicId = "" } = useParams<{
@@ -81,7 +94,9 @@ const TopicPage: React.FC = () => {
   }, [topicNumber]);
 
   // State for exercise
-  const [selectedExercise, setSelectedExercise] = useState<ExerciseConfig & { itemId?: string } | null>(null);
+  const [selectedExercise, setSelectedExercise] = useState<
+    (ExerciseConfig & { itemId?: string }) | null
+  >(null);
 
   // Exercises resolved from registry
   const exercises: ExerciseConfig[] = useMemo(() => {
@@ -97,6 +112,9 @@ const TopicPage: React.FC = () => {
     }
     return list;
   }, [moduleEntry, topic]);
+
+  // ✅ Use global simulation opener
+  const { open } = useSimulation();
 
   // Guards
   if (!moduleEntry || !topic) {
@@ -129,7 +147,7 @@ const TopicPage: React.FC = () => {
               video={{
                 videoId: selectedVideo.videoId,
                 title: selectedVideo.title,
-                description: selectedVideo.description
+                description: selectedVideo.description,
               }}
               onClose={() => setSelectedVideo(null)}
             />
@@ -151,7 +169,7 @@ const TopicPage: React.FC = () => {
               onBack={() => {
                 setSelectedExercise(null);
                 refetch();
-                setRefreshKey(prev => prev + 1);
+                setRefreshKey((prev) => prev + 1);
               }}
             />
           </div>
@@ -180,7 +198,9 @@ const TopicPage: React.FC = () => {
               className="text-gray-200/90 hover:text-yellow-400 inline-block cursor-pointer transition-colors"
             >
               Тема {topicNumber} • Урок {moduleEntry.moduleNumber}:{" "}
-              {moduleEntry.title.replace(/^Модуль \d+:\s*/, "").replace(/Модуль/g, 'Урок')}
+              {moduleEntry.title
+                .replace(/^Модуль \d+:\s*/, "")
+                .replace(/Модуль/g, "Урок")}
             </Link>
           </div>
         </div>
@@ -194,7 +214,9 @@ const TopicPage: React.FC = () => {
                 <BookOpen className="h-5 w-5 text-white" />
               </div>
               <div className="flex-1">
-                <h3 className="text-base font-semibold text-[#1a1f36] mb-1">Углубленное изучение в учебнике</h3>
+                <h3 className="text-base font-semibold text-[#1a1f36] mb-1">
+                  Углубленное изучение в учебнике
+                </h3>
                 <p className="text-sm text-gray-700">
                   Для более глубокого погружения в тему прочитайте нашу статью в учебнике. Там вы найдете подробные теоретические материалы, определения всех ключевых понятий, разобранные примеры решения задач и упражнения для самостоятельной практики.
                 </p>
@@ -247,43 +269,63 @@ const TopicPage: React.FC = () => {
             const testSkills = getTopicTestSkills(moduleSlug, topicId);
             const testQuestionCount = getTopicTestQuestionCount(testSkills);
             const testItemId = `${moduleSlug}-${topicId}-topic-test`;
-            
+
             // Get progress data and calculate status
-            const matchingItems = progressData.filter(p => p.item_id === testItemId && p.activity_type === 'test');
-            const correctCount = matchingItems.length > 0 
-              ? Math.max(...matchingItems.map(item => parseInt(item.correct_count || '0')))
-              : 0;
-            const testStatus = getTopicTestStatus(correctCount, testQuestionCount);
+            const matchingItems = progressData.filter(
+              (p) => p.item_id === testItemId && p.activity_type === "test"
+            );
+            const correctCount =
+              matchingItems.length > 0
+                ? Math.max(
+                    ...matchingItems.map((item) =>
+                      parseInt(item.correct_count || "0")
+                    )
+                  )
+                : 0;
+            const testStatus = getTopicTestStatus(
+              correctCount,
+              testQuestionCount
+            );
 
             return (
-              <div 
-                onClick={() => setSelectedExercise({
-                  title: `Тест по теме: ${topic?.title}`,
-                  skills: testSkills,
-                  questionCount: testQuestionCount,
-                  isTest: true,
-                  itemId: testItemId
-                })}
+              <div
+                onClick={() =>
+                  setSelectedExercise({
+                    title: `Тест по теме: ${topic?.title}`,
+                    skills: testSkills,
+                    questionCount: testQuestionCount,
+                    isTest: true,
+                    itemId: testItemId,
+                  })
+                }
                 className="bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-300/50 rounded-lg p-2 cursor-pointer hover:from-orange-100 hover:to-amber-100 transition-colors inline-flex items-center gap-2"
               >
                 {/* Progress Cell */}
                 <div className="flex-shrink-0">
                   {(() => {
                     switch (testStatus) {
-                      case 'mastered':
+                      case "mastered":
                         return (
                           <div className="relative w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
                             <Crown className="h-4 w-4 text-white" />
                           </div>
                         );
-                      case 'proficient':
-                        return <div className="w-8 h-8 bg-gradient-to-t from-orange-500 from-33% to-gray-200 to-33% rounded-lg" />;
-                      case 'familiar':
-                        return <div className="w-8 h-8 rounded-lg border-2 border-orange-500 bg-[linear-gradient(to_top,theme(colors.orange.500)_20%,white_20%)]" />;
-                      case 'attempted':
-                        return <div className="w-8 h-8 border-2 border-orange-400 rounded-lg bg-white" />;
+                      case "proficient":
+                        return (
+                          <div className="w-8 h-8 bg-gradient-to-t from-orange-500 from-33% to-gray-200 to-33% rounded-lg" />
+                        );
+                      case "familiar":
+                        return (
+                          <div className="w-8 h-8 rounded-lg border-2 border-orange-500 bg-[linear-gradient(to_top,theme(colors.orange.500)_20%,white_20%)]" />
+                        );
+                      case "attempted":
+                        return (
+                          <div className="w-8 h-8 border-2 border-orange-400 rounded-lg bg-white" />
+                        );
                       default:
-                        return <div className="w-8 h-8 border-2 border-gray-300 rounded-lg bg-white" />;
+                        return (
+                          <div className="w-8 h-8 border-2 border-gray-300 rounded-lg bg-white" />
+                        );
                     }
                   })()}
                 </div>
@@ -295,13 +337,19 @@ const TopicPage: React.FC = () => {
                     Тест по теме
                   </h4>
                   <p className="text-xs text-orange-700">
-                    {testQuestionCount} {testQuestionCount === 1 ? 'вопрос' : testQuestionCount < 5 ? 'вопроса' : 'вопросов'}
+                    {testQuestionCount}{" "}
+                    {testQuestionCount === 1
+                      ? "вопрос"
+                      : testQuestionCount < 5
+                      ? "вопроса"
+                      : "вопросов"}
                   </p>
                 </div>
               </div>
             );
           })()}
         </div>
+
         {/* Single block with tabs */}
         <motion.div
           initial={{ opacity: 0, y: 6 }}
@@ -310,25 +358,25 @@ const TopicPage: React.FC = () => {
         >
           <Tabs defaultValue="overview">
             <TabsList className="w-full justify-between rounded-none border-b-0 bg-transparent p-0 h-auto gap-2 px-4 pt-4">
-              <TabsTrigger 
+              <TabsTrigger
                 value="overview"
                 className="flex-1 rounded-t-lg rounded-b-none border border-b-0 border-gray-200 data-[state=active]:bg-white data-[state=active]:border-gray-300 data-[state=active]:shadow-sm data-[state=inactive]:bg-gray-50/50 data-[state=inactive]:text-gray-600 px-6 py-3 font-medium"
               >
                 Обзор
               </TabsTrigger>
-              <TabsTrigger 
+              <TabsTrigger
                 value="demonstrations"
                 className="flex-1 rounded-t-lg rounded-b-none border border-b-0 border-gray-200 data-[state=active]:bg-white data-[state=active]:border-gray-300 data-[state=active]:shadow-sm data-[state=inactive]:bg-gray-50/50 data-[state=inactive]:text-gray-600 px-6 py-3 font-medium"
               >
                 Демонстрации
               </TabsTrigger>
-              <TabsTrigger 
+              <TabsTrigger
                 value="videos"
                 className="flex-1 rounded-t-lg rounded-b-none border border-b-0 border-gray-200 data-[state=active]:bg-white data-[state=active]:border-gray-300 data-[state=active]:shadow-sm data-[state=inactive]:bg-gray-50/50 data-[state=inactive]:text-gray-600 px-6 py-3 font-medium"
               >
                 Видео ({topic.videoData?.length || topic.videos || 0})
               </TabsTrigger>
-              <TabsTrigger 
+              <TabsTrigger
                 value="practice"
                 className="flex-1 rounded-t-lg rounded-b-none border border-b-0 border-gray-200 data-[state=active]:bg-white data-[state=active]:border-gray-300 data-[state=active]:shadow-sm data-[state=inactive]:bg-gray-50/50 data-[state=inactive]:text-gray-600 px-6 py-3 font-medium"
               >
@@ -352,9 +400,24 @@ const TopicPage: React.FC = () => {
               )}
             </TabsContent>
 
-            <TabsContent value="demonstrations" className="m-0 p-6">
+            {/* ✅ Updated Demonstrations tab with two buttons */}
+            <TabsContent value="demonstrations" className="m-0 p-6 space-y-3">
               <div className="text-sm text-gray-700">
-                Здесь будут демонстрации: наглядные примеры, анимации и интерактивные иллюстрации по теме.
+                Запусти интерактивные симуляции по теме.
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <Button
+                  className="bg-[#1a1f36] text-white hover:bg-[#2d3748]"
+                  onClick={() => open("divisibility")}
+                >
+                  Открыть «Признаки делимости»
+                </Button>
+                <Button
+                  variant="secondary"
+                  onClick={() => open("sci-notation")}
+                >
+                  Открыть «Scientific notation»
+                </Button>
               </div>
             </TabsContent>
 
@@ -371,7 +434,7 @@ const TopicPage: React.FC = () => {
                       </h3>
                       <p className="text-sm text-gray-600">{video.description}</p>
                     </div>
-                    
+
                     {/* Embedded YouTube Player */}
                     <div className="bg-gray-100 rounded-lg overflow-hidden aspect-video w-full max-w-4xl">
                       <iframe
@@ -390,26 +453,26 @@ const TopicPage: React.FC = () => {
             <TabsContent value="practice" className="m-0 p-6 space-y-4">
               {exercises.map((ex, i) => {
                 const itemId = `${moduleSlug}-${topicId}-ex${i}`;
-                const status = getProgressStatus(itemId, 'exercise');
+                const status = getProgressStatus(itemId, "exercise");
                 const exerciseWithId = { ...ex, itemId };
 
                 const getStatusBadge = () => {
                   switch (status) {
-                    case 'mastered':
-                      return { text: 'Освоено', color: 'bg-purple-100 text-purple-700' };
-                    case 'proficient':
-                      return { text: 'В процессе', color: 'bg-orange-100 text-orange-700' };
-                    case 'familiar':
-                      return { text: 'Начато', color: 'bg-blue-100 text-blue-700' };
-                    case 'attempted':
-                      return { text: 'Начато', color: 'bg-blue-100 text-blue-700' };
+                    case "mastered":
+                      return { text: "Освоено", color: "bg-purple-100 text-purple-700" };
+                    case "proficient":
+                      return { text: "В процессе", color: "bg-orange-100 text-orange-700" };
+                    case "familiar":
+                      return { text: "Начато", color: "bg-blue-100 text-blue-700" };
+                    case "attempted":
+                      return { text: "Начато", color: "bg-blue-100 text-blue-700" };
                     default:
-                      return { text: 'Не начато', color: 'bg-gray-100 text-gray-700' };
+                      return { text: "Не начато", color: "bg-gray-100 text-gray-700" };
                   }
                 };
 
                 const statusBadge = getStatusBadge();
-                const difficultyLabel = ex.isAdvanced ? 'Сложный' : 'Легкий';
+                const difficultyLabel = ex.isAdvanced ? "Сложный" : "Легкий";
 
                 return (
                   <div
@@ -421,20 +484,28 @@ const TopicPage: React.FC = () => {
                       <div className="flex-shrink-0">
                         {(() => {
                           switch (status) {
-                            case 'mastered':
+                            case "mastered":
                               return (
                                 <div className="relative w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center">
                                   <Crown className="h-6 w-6 text-white" />
                                 </div>
                               );
-                            case 'proficient':
-                              return <div className="w-12 h-12 bg-gradient-to-t from-orange-500 from-33% to-gray-200 to-33% rounded-lg" />;
-                            case 'familiar':
-                              return <div className="w-12 h-12 rounded-lg border-2 border-orange-500 bg-[linear-gradient(to_top,theme(colors.orange.500)_20%,white_20%)]" />;
-                            case 'attempted':
-                              return <div className="w-12 h-12 border-2 border-orange-400 rounded-lg bg-white" />;
+                            case "proficient":
+                              return (
+                                <div className="w-12 h-12 bg-gradient-to-t from-orange-500 from-33% to-gray-200 to-33% rounded-lg" />
+                              );
+                            case "familiar":
+                              return (
+                                <div className="w-12 h-12 rounded-lg border-2 border-orange-500 bg-[linear-gradient(to_top,theme(colors.orange.500)_20%,white_20%)]" />
+                              );
+                            case "attempted":
+                              return (
+                                <div className="w-12 h-12 border-2 border-orange-400 rounded-lg bg-white" />
+                              );
                             default:
-                              return <div className="w-12 h-12 border-2 border-gray-300 rounded-lg bg-white" />;
+                              return (
+                                <div className="w-12 h-12 border-2 border-gray-300 rounded-lg bg-white" />
+                              );
                           }
                         })()}
                       </div>
@@ -457,7 +528,9 @@ const TopicPage: React.FC = () => {
                           <span className="px-3 py-1 bg-green-100 text-green-700 rounded-md font-medium">
                             {difficultyLabel}
                           </span>
-                          <span className={`px-3 py-1 rounded-md font-medium ${statusBadge.color}`}>
+                          <span
+                            className={`px-3 py-1 rounded-md font-medium ${statusBadge.color}`}
+                          >
                             {statusBadge.text}
                           </span>
                         </div>
@@ -466,7 +539,9 @@ const TopicPage: React.FC = () => {
                       {/* Action buttons */}
                       <div className="flex items-center gap-3 flex-shrink-0">
                         <Button
-                          onClick={() => !ex.skills.length ? null : setSelectedExercise(exerciseWithId)}
+                          onClick={() =>
+                            !ex.skills.length ? null : setSelectedExercise(exerciseWithId)
+                          }
                           disabled={!ex.skills.length}
                           className="bg-[#1a1f36] text-white hover:bg-[#2d3748] px-6"
                         >
@@ -489,22 +564,22 @@ const TopicPage: React.FC = () => {
                 const testSkills = getTopicTestSkills(moduleSlug, topicId);
                 const testQuestionCount = getTopicTestQuestionCount(testSkills);
                 const testItemId = `${moduleSlug}-${topicId}-topic-test`;
-                const testStatus = getProgressStatus(testItemId, 'exercise');
+                const testStatus = getProgressStatus(testItemId, "exercise");
 
                 if (testSkills.length === 0) return null;
 
                 const getTestStatusBadge = () => {
                   switch (testStatus) {
-                    case 'mastered':
-                      return { text: 'Освоено', color: 'bg-purple-100 text-purple-700' };
-                    case 'proficient':
-                      return { text: 'В процессе', color: 'bg-orange-100 text-orange-700' };
-                    case 'familiar':
-                      return { text: 'Начато', color: 'bg-blue-100 text-blue-700' };
-                    case 'attempted':
-                      return { text: 'Попытка', color: 'bg-yellow-100 text-yellow-700' };
+                    case "mastered":
+                      return { text: "Освоено", color: "bg-purple-100 text-purple-700" };
+                    case "proficient":
+                      return { text: "В процессе", color: "bg-orange-100 text-orange-700" };
+                    case "familiar":
+                      return { text: "Начато", color: "bg-blue-100 text-blue-700" };
+                    case "attempted":
+                      return { text: "Попытка", color: "bg-yellow-100 text-yellow-700" };
                     default:
-                      return { text: 'Не начато', color: 'bg-gray-100 text-gray-700' };
+                      return { text: "Не начато", color: "bg-gray-100 text-gray-700" };
                   }
                 };
 
@@ -520,20 +595,28 @@ const TopicPage: React.FC = () => {
                       <div className="flex-shrink-0">
                         {(() => {
                           switch (testStatus) {
-                            case 'mastered':
+                            case "mastered":
                               return (
                                 <div className="relative w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center">
                                   <Crown className="h-6 w-6 text-white" />
                                 </div>
                               );
-                            case 'proficient':
-                              return <div className="w-12 h-12 bg-gradient-to-t from-orange-500 from-33% to-gray-200 to-33% rounded-lg" />;
-                            case 'familiar':
-                              return <div className="w-12 h-12 rounded-lg border-2 border-orange-500 bg-[linear-gradient(to_top,theme(colors.orange.500)_20%,white_20%)]" />;
-                            case 'attempted':
-                              return <div className="w-12 h-12 border-2 border-orange-400 rounded-lg bg-white" />;
+                            case "proficient":
+                              return (
+                                <div className="w-12 h-12 bg-gradient-to-t from-orange-500 from-33% to-gray-200 to-33% rounded-lg" />
+                              );
+                            case "familiar":
+                              return (
+                                <div className="w-12 h-12 rounded-lg border-2 border-orange-500 bg-[linear-gradient(to_top,theme(colors.orange.500)_20%,white_20%)]" />
+                              );
+                            case "attempted":
+                              return (
+                                <div className="w-12 h-12 border-2 border-orange-400 rounded-lg bg-white" />
+                              );
                             default:
-                              return <div className="w-12 h-12 border-2 border-gray-300 rounded-lg bg-white" />;
+                              return (
+                                <div className="w-12 h-12 border-2 border-gray-300 rounded-lg bg-white" />
+                              );
                           }
                         })()}
                       </div>
@@ -545,7 +628,12 @@ const TopicPage: React.FC = () => {
                           Тест по теме: {topic?.title}
                         </h4>
                         <p className="text-sm text-orange-800 mb-3">
-                          Проверьте усвоение материала этой темы • {testQuestionCount} {testQuestionCount === 1 ? 'вопрос' : testQuestionCount < 5 ? 'вопроса' : 'вопросов'}
+                          Проверьте усвоение материала этой темы • {testQuestionCount}{" "}
+                          {testQuestionCount === 1
+                            ? "вопрос"
+                            : testQuestionCount < 5
+                            ? "вопроса"
+                            : "вопросов"}
                         </p>
 
                         {/* Metadata badges */}
@@ -557,7 +645,9 @@ const TopicPage: React.FC = () => {
                           <span className="px-3 py-1 bg-orange-200 text-orange-900 rounded-md font-semibold">
                             Тест
                           </span>
-                          <span className={`px-3 py-1 rounded-md font-medium ${testStatusBadge.color}`}>
+                          <span
+                            className={`px-3 py-1 rounded-md font-medium ${testStatusBadge.color}`}
+                          >
                             {testStatusBadge.text}
                           </span>
                         </div>
@@ -566,13 +656,15 @@ const TopicPage: React.FC = () => {
                       {/* Action button */}
                       <div className="flex items-center gap-3 flex-shrink-0">
                         <Button
-                          onClick={() => setSelectedExercise({
-                            title: `Тест по теме: ${topic?.title}`,
-                            skills: testSkills,
-                            questionCount: testQuestionCount,
-                            isTest: true,
-                            itemId: testItemId
-                          })}
+                          onClick={() =>
+                            setSelectedExercise({
+                              title: `Тест по теме: ${topic?.title}`,
+                              skills: testSkills,
+                              questionCount: testQuestionCount,
+                              isTest: true,
+                              itemId: testItemId,
+                            })
+                          }
                           className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-6 font-semibold"
                         >
                           Начать тест
