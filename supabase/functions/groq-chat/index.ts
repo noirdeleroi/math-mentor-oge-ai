@@ -1,6 +1,7 @@
 // supabase/functions/groq-chat-katex/index.ts
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type"
@@ -25,8 +26,18 @@ serve(async (req)=>{
     if (!groqApiKey && !openrouterApiKey) {
       throw new Error("Neither GROQ_API_KEY nor OPENROUTER_API_KEY are configured in Supabase secrets");
     }
+    
+    // --- Create Supabase client ---
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    
     // --- Parse body ---
-    const { messages = [], stream = false, ...rest } = await req.json();
+    const { messages = [], stream = false, user_id, ...rest } = await req.json();
+    
+    if (!user_id) {
+      throw new Error("user_id is required");
+    }
     // --- Inject KaTeX system prompt ---
     const systemPrompt = `
 Return ONLY Markdown (no HTML tags, no code fences).
@@ -110,6 +121,45 @@ Do NOT HTML-escape math symbols; write <, >, ≤, ≥ as-is inside math.
         });
       }
       const openrouterData = await openrouterResponse.json();
+      
+      // === Extract token usage and calculate cost ===
+      const { prompt_tokens, completion_tokens } = openrouterData.usage || {};
+      const model = openrouterData.model;
+
+      const pricingTable = {
+        "google/gemini-2.5-flash-lite-preview-09-2025": [0.30, 2.50],
+        "google/gemini-2.5-flash-lite-preview-06-17": [0.10, 0.40],
+        "google/gemini-2.5-flash-lite": [0.10, 0.40],
+        "google/gemini-2.5-flash": [0.30, 2.50],
+        "google/gemini-2.5-flash-preview-09-2025": [0.30, 2.50],
+        "x-ai/grok-3-mini": [0.30, 0.50],
+        "x-ai/grok-4-fast": [0.20, 0.50],
+        "x-ai/grok-code-fast-1": [0.20, 1.50],
+        "qwen/qwen3-coder-flash": [0.30, 1.50],
+        "openai/o4-mini": [1.10, 4.40],
+        "anthropic/claude-haiku-4.5": [1.00, 5.00],
+      };
+
+      // Get prices per million tokens
+      const [priceIn, priceOut] = pricingTable[model] || [0, 0];
+      const price =
+        (prompt_tokens / 1_000_000) * priceIn +
+        (completion_tokens / 1_000_000) * priceOut;
+
+      // === Insert into Supabase user_credits table ===
+      const { error: insertError } = await supabase.from('user_credits').insert({
+        user_id: user_id,
+        tokens_in: prompt_tokens,
+        tokens_out: completion_tokens,
+        price: price,
+      });
+
+      if (insertError) {
+        console.error('❌ Failed to insert user credits:', insertError.message);
+      } else {
+        console.log(`✅ Stored usage for ${model}: ${prompt_tokens} in, ${completion_tokens} out, $${price.toFixed(6)} total`);
+      }
+      
       return new Response(JSON.stringify(openrouterData), {
         headers: {
           ...corsHeaders,

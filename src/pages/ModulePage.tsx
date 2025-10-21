@@ -369,8 +369,7 @@ const ModulePage = () => {
               }}
               questionCount={selectedExercise.questionCount}
               isModuleTest={selectedExercise.isModuleTest}
-              moduleTopics={selectedExercise.moduleTopics}
-              courseId={selectedExercise.courseId}
+              courseId={Number(selectedExercise.courseId) || 1}
               itemId={selectedExercise.itemId}
             />
           </div>
