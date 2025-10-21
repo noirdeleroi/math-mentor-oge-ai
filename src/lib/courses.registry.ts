@@ -61,6 +61,7 @@ export const COURSES: Record<CourseId, Course> = {
       '/egemathprof-practice',
       '/egemathprof-progress',
       '/egemathprof-revision',
+      '/egemathprof-mock',
       '/practice-by-number-egeprofmath',
       '/homework-egeprof'
     ],

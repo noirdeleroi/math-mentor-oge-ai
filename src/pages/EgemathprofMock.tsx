@@ -1187,10 +1187,10 @@ const completeAttempt = async (isCorrect: boolean, scores: number) => {
                 </div>
                 <Button 
                   onClick={handleStartExam} 
-                  disabled={loading || !user}
+                  disabled={!user}
                   className="bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36] px-8 py-3 text-lg font-semibold"
                 >
-                  {loading ? 'Подготовка экзамена...' : 'Начать экзамен'}
+                  Начать экзамен
                 </Button>
                 {!user && (
                   <Alert className="mt-4 bg-orange-50 border-orange-200">
