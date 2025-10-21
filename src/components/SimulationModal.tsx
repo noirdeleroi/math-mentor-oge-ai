@@ -70,7 +70,8 @@ export default function SimulationModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       {/* exact 50vw x 40vh; overflow hidden to guarantee no scrollbars */}
       <DialogContent className="p-0 gap-0 w-[50vw] h-[40vh] max-w-none overflow-hidden">
-        <DialogHeader ref={headerRef as any} className="px-4 pt-3 pb-2">
+        <DialogHeader className="px-4 pt-3 pb-2">
+          <div ref={headerRef}>
           <DialogTitle className="text-sm sm:text-base">
             {titleOverride ?? meta?.title ?? "Симуляция"}
           </DialogTitle>
@@ -79,6 +80,7 @@ export default function SimulationModal({
               {meta.description}
             </DialogDescription>
           )}
+          </div>
         </DialogHeader>
 
         {/* viewport that the sim must fit into (no scroll) */}

@@ -208,22 +208,22 @@ const TopicPage: React.FC = () => {
         {/* Lesson Description */}
         <div className="bg-white/95 backdrop-blur-sm rounded-lg border border-white/20 shadow-sm p-4 mb-4">
           {/* Textbook Link - Full Width */}
-          <div className="bg-gradient-to-br from-yellow-50 to-emerald-50 border border-yellow-300/50 rounded-lg p-4 mb-4">
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-yellow-500 to-emerald-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                <BookOpen className="h-5 w-5 text-white" />
+          <div className="bg-gradient-to-br from-yellow-50 to-emerald-50 border border-yellow-300/50 rounded-lg p-3 mb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 bg-gradient-to-br from-yellow-500 to-emerald-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                <BookOpen className="h-4 w-4 text-white" />
               </div>
               <div className="flex-1">
-                <h3 className="text-base font-semibold text-[#1a1f36] mb-1">
+                <h3 className="text-sm font-semibold text-[#1a1f36] mb-0.5">
                   Углубленное изучение в учебнике
                 </h3>
-                <p className="text-sm text-gray-700">
-                  Для более глубокого погружения в тему прочитайте нашу статью в учебнике. Там вы найдете подробные теоретические материалы, определения всех ключевых понятий, разобранные примеры решения задач и упражнения для самостоятельной практики.
+                <p className="text-xs text-gray-700">
+                  Подробная теория, примеры и упражнения для практики.
                 </p>
               </div>
               <Button
                 onClick={() => (window.location.href = `/textbook?topic=${topicNumber}`)}
-                className="bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-white font-semibold h-10 flex-shrink-0 px-6"
+                className="bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-white font-semibold h-9 flex-shrink-0 px-5 text-sm"
               >
                 <BookOpen className="h-4 w-4 mr-2" />
                 Открыть учебник
