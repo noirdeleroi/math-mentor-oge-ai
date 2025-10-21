@@ -143,10 +143,77 @@ Deno.serve(async (req)=>{
           }
         });
       }
-      const apiResult = await openrouterResponse.json();
-      const apiOutput = apiResult.choices[0].message.content.trim();
+      const apiResult111 = await openrouterResponse.json();
+      const apiOutput = apiResult111.choices[0].message.content.trim();
       is_correct = apiOutput.toLowerCase() === 'true';
       console.log(`OpenRouter API result: ${apiOutput}, is_correct: ${is_correct}`);
+      // === Extract token usage and calculate cost ===
+      const { prompt_tokens, completion_tokens } = apiResult111.usage || {};
+      const model = apiResult111.model;
+      const pricingTable = {
+        "google/gemini-2.5-flash-lite-preview-09-2025": [
+          0.30,
+          2.50
+        ],
+        "google/gemini-2.5-flash-lite-preview-06-17": [
+          0.10,
+          0.40
+        ],
+        "google/gemini-2.5-flash-lite": [
+          0.10,
+          0.40
+        ],
+        "google/gemini-2.5-flash": [
+          0.30,
+          2.50
+        ],
+        "google/gemini-2.5-flash-preview-09-2025": [
+          0.30,
+          2.50
+        ],
+        "x-ai/grok-3-mini": [
+          0.30,
+          0.50
+        ],
+        "x-ai/grok-4-fast": [
+          0.20,
+          0.50
+        ],
+        "x-ai/grok-code-fast-1": [
+          0.20,
+          1.50
+        ],
+        "qwen/qwen3-coder-flash": [
+          0.30,
+          1.50
+        ],
+        "openai/o4-mini": [
+          1.10,
+          4.40
+        ],
+        "anthropic/claude-haiku-4.5": [
+          1.00,
+          5.00
+        ]
+      };
+      // Get prices per million tokens
+      const [priceIn, priceOut] = pricingTable[model] || [
+        0,
+        0
+      ];
+      const price = prompt_tokens / 1_000_000 * priceIn + completion_tokens / 1_000_000 * priceOut;
+      // === Insert into Supabase user_credits table ===
+      const { error: insertError } = await supabaseClient.from('user_credits').insert({
+        user_id: user_id,
+        tokens_in: prompt_tokens,
+        tokens_out: completion_tokens,
+        price: price
+      });
+      if (insertError) {
+        console.error('❌ Failed to insert user credits:', insertError.message);
+      } else {
+        console.log(`✅ Stored usage for ${model}: ${prompt_tokens} in, ${completion_tokens} out, $${price.toFixed(6)} total`);
+      }
     }
     // Step 3: Get the latest attempt for this user
     const { data: latestAttempt, error: attemptError } = await supabaseClient.from('student_activity').select('attempt_id, answer_time_start, problem_number_type').eq('user_id', user_id).order('updated_at', {
@@ -207,7 +274,6 @@ Deno.serve(async (req)=>{
         }
       });
     }
-
     console.log(`Successfully checked answer for question ${question_id}`);
     return new Response(JSON.stringify({
       success: true,
