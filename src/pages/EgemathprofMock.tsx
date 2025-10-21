@@ -863,16 +863,34 @@ const completeAttempt = async (isCorrect: boolean, scores: number) => {
         }
       }
 
-      const parseReviewScores = (raw: string | null | undefined): { scores: number | null; review: string | null } => {
-        if (!raw) return { scores: null, review: null };
-        try {
-          const obj = JSON.parse(raw);
-          const scores = typeof obj?.scores === 'number' ? obj.scores : (typeof obj?.score === 'number' ? obj.score : null);
-          const review = typeof obj?.review === 'string' ? obj.review : null;
-          return { scores, review };
-        } catch {
-          return { scores: null, review: null };
+      const extractJsonObject = (raw: string | null | undefined): any | null => {
+        if (!raw) return null;
+        let s = raw.trim();
+        // Strip markdown fences ```...```
+        if (s.startsWith('```')) {
+          s = s.replace(/^```[a-zA-Z]*\n?|```$/g, '').trim();
         }
+        // Try direct parse first
+        try {
+          return JSON.parse(s);
+        } catch {}
+        // Fallback: extract first {...} block
+        const match = s.match(/\{[\s\S]*\}/);
+        if (match) {
+          try {
+            return JSON.parse(match[0]);
+          } catch {}
+        }
+        return null;
+      };
+
+      const parseReviewScores = (raw: string | null | undefined): { scores: number | null; review: string | null } => {
+        const obj = extractJsonObject(raw);
+        if (!obj) return { scores: null, review: null };
+        const rawScore = obj?.scores ?? obj?.score;
+        const scoreNum = typeof rawScore === 'number' ? rawScore : (rawScore != null ? Number(rawScore) : null);
+        const review = typeof obj?.review === 'string' ? obj.review : null;
+        return { scores: Number.isFinite(scoreNum) ? (scoreNum as number) : null, review };
       };
 
       const filteredResults: any[] = [];
@@ -921,22 +939,15 @@ const completeAttempt = async (isCorrect: boolean, scores: number) => {
           let scores = 0;
 
           if (problemNumber >= 13) {
-            try {
-              const feedbackData = JSON.parse(analysisResult.raw_output);
-              if (feedbackData.review && typeof feedbackData.scores === 'number') {
-                feedback = feedbackData.review;
-                scores = feedbackData.scores;
-                isCorrect = feedbackData.scores >= 2;
-              } else {
-                feedback = analysisResult.raw_output;
-                scores = 0;
-                isCorrect = false;
-              }
-            } catch (parseError) {
-              console.error('Error parsing stored analysis:', parseError);
-              feedback = analysisResult.raw_output;
+            const parsed = parseReviewScores(analysisResult.raw_output);
+            if (parsed.scores !== null && parsed.review) {
+              feedback = parsed.review;
+              scores = parsed.scores;
+              isCorrect = parsed.scores >= 2;
+            } else {
+              feedback = 'Ожидаем проверку решения (результаты появятся через несколько секунд)';
               scores = 0;
-              isCorrect = analysisResult.raw_output !== 'False';
+              isCorrect = false;
             }
 
             if (isCorrect) {

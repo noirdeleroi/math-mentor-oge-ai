@@ -117,6 +117,11 @@ Your task: Return the SAME JSON, but ensure review is perfectly compilable MathJ
       console.error('Polish API failed, using original feedback');
     }
 
+    // Sanitize: strip markdown code fences if present
+    if (typeof finalFeedback === 'string' && finalFeedback.trim().startsWith('```')) {
+      finalFeedback = finalFeedback.replace(/^```[a-zA-Z]*\n?|```$/g, '').trim();
+    }
+
     // Save raw output to photo_analysis_outputs table if user_id is provided
     if (user_id) {
       const { error: insertError } = await supabase
