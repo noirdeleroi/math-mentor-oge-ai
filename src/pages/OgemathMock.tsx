@@ -1520,18 +1520,7 @@ const completeAttempt = async (isCorrect: boolean, scores: number) => {
             </div>
           </div>
 
-          {loading ? (
-            <Card className="bg-white/95 backdrop-blur border border-white/20 rounded-2xl shadow-xl">
-              <CardContent className="py-12">
-                <Loading 
-                  variant="ring-dots" 
-                  size="md" 
-                  message="Загрузка вопроса..." 
-                  fullscreen={false}
-                />
-              </CardContent>
-            </Card>
-          ) : (
+          {(
             <Card className="bg-white/95 backdrop-blur border border-white/20 rounded-2xl shadow-xl">
               <CardHeader>
                 <CardTitle className="text-[#1a1f36]">
