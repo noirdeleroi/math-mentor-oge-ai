@@ -12,7 +12,7 @@ import { ChevronDown, ChevronRight, MessageCircle, X, BookOpen, Lightbulb, Arrow
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import newSyllabusData from '../data/newSyllabusStructure.json';
 import ArticleRenderer from '../components/ArticleRenderer';
-import SkillPracticeQuiz from '../components/SkillPracticeQuiz';
+import OgeExerciseQuiz from '../components/OgeExerciseQuiz';
 import { useChatContext } from '@/contexts/ChatContext';
 import { sendChatMessage } from '@/services/chatService';
 import CourseChatMessages from '@/components/chat/CourseChatMessages';
@@ -730,12 +730,12 @@ const DigitalTextbook = () => {
                     )}
                   </>
                 ) : (
-                  <SkillPracticeQuiz 
-                    skill={{
-                      id: selectedSkill,
-                      title: getAllSkillsFromStructure().find(s => s.number === selectedSkill)?.name || ''
-                    }}
-                    onBackToArticle={handleBackToArticle}
+                  <OgeExerciseQuiz 
+                    title={`Практика: ${getAllSkillsFromStructure().find(s => s.number === selectedSkill)?.name || ''}`}
+                    skills={[selectedSkill]}
+                    onBack={handleBackToArticle}
+                    questionCount={5}
+                    isModuleTest={false}
                   />
                 )}
               </div>

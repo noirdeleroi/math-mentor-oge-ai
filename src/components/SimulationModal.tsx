@@ -26,7 +26,7 @@ export default function SimulationModal({
     [onOpenChange, meta, simulationProps]
   );
 
-  const headerRef = useRef<HTMLDivElement | null>(null);
+  const headerWrapperRef = useRef<HTMLDivElement | null>(null);
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const [scale, setScale] = useState(0.5); // default shrink
 
@@ -34,7 +34,7 @@ export default function SimulationModal({
   useLayoutEffect(() => {
     function recompute() {
       const vp = viewportRef.current;
-      const hdr = headerRef.current;
+      const hdr = headerWrapperRef.current;
       if (!vp || !hdr) return;
 
       // Available space inside DialogContent
@@ -66,16 +66,18 @@ export default function SimulationModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       {/* ✅ Keep the box as-is: half-screen */}
       <DialogContent className="p-0 gap-0 w-[50vw] h-[50vh] max-w-none overflow-hidden">
-        <DialogHeader ref={headerRef as any} className="px-4 pt-3 pb-2">
-          <DialogTitle className="text-lg">
-            {titleOverride ?? meta?.title ?? "Симуляция"}
-          </DialogTitle>
-          {!!meta?.description && (
-            <DialogDescription className="text-xs">
-              {meta.description}
-            </DialogDescription>
-          )}
-        </DialogHeader>
+        <div ref={headerWrapperRef}>
+          <DialogHeader className="px-4 pt-3 pb-2">
+            <DialogTitle className="text-lg">
+              {titleOverride ?? meta?.title ?? "Симуляция"}
+            </DialogTitle>
+            {!!meta?.description && (
+              <DialogDescription className="text-xs">
+                {meta.description}
+              </DialogDescription>
+            )}
+          </DialogHeader>
+        </div>
 
         {/* Viewport keeps overflow-auto so you *can* scroll if needed */}
         <div ref={viewportRef} className="relative w-full h-[calc(100%-0px)] overflow-auto">
