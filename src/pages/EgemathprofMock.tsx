@@ -1339,16 +1339,8 @@ const completeAttempt = async (isCorrect: boolean, scores: number) => {
                         const maxPoints = reviewQuestionIndex >= 12 ? 2 : 1;
                         let earnedPoints = 0;
                         if (reviewQuestionIndex >= 12 && reviewQuestionIndex <= 18) {
-                          if (reviewResult?.photoScores !== undefined) {
-                            earnedPoints = reviewResult.photoScores!;
-                          } else if (reviewResult?.userAnswer?.startsWith('{')) {
-                            try {
-                              const analysis = JSON.parse(reviewResult.userAnswer);
-                              earnedPoints = analysis.score || 0;
-                            } catch {
-                              earnedPoints = 0;
-                            }
-                          }
+                          // Use photoScores from examResults (populated from photo_analysis_outputs table)
+                          earnedPoints = reviewResult?.photoScores !== undefined ? reviewResult.photoScores : 0;
                         } else {
                           earnedPoints = reviewResult?.isCorrect ? 1 : 0;
                         }
@@ -1360,23 +1352,13 @@ const completeAttempt = async (isCorrect: boolean, scores: number) => {
                 <CardContent>
                   <div className="p-3 bg-gray-50 rounded border">
                     <MathRenderer
-                      text={(() => {
-                        if (reviewQuestionIndex >= 12 && reviewQuestionIndex <= 18 && reviewResult?.userAnswer?.startsWith('{')) {
-                          try {
-                            const analysis = JSON.parse(reviewResult.userAnswer);
-                            return analysis.userAnswer || 'Развернутый ответ представлен';
-                          } catch {
-                            return reviewResult?.userAnswer || 'Не отвечено';
-                          }
-                        }
-                        return reviewResult?.userAnswer || 'Не отвечено';
-                      })()}
+                      text={reviewResult?.userAnswer || 'Не отвечено'}
                       compiler="mathjax"
                     />
                   </div>
-                  {reviewResult?.photoFeedback && (
+                  {reviewResult?.photoFeedback && reviewQuestionIndex >= 12 && reviewQuestionIndex <= 18 && (
                     <div className="mt-3">
-                      <strong>Оценка:</strong>
+                      <strong>Рецензия:</strong>
                       <div className="mt-1 p-3 bg-blue-50 rounded text-sm">
                         <MathRenderer text={reviewResult.photoFeedback} compiler="mathjax" />
                       </div>
