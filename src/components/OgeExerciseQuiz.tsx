@@ -1,53 +1,44 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Check, X, ArrowLeft, Trophy, Target, RotateCcw, BookOpen, Eye } from 'lucide-react';
+import { Check, X, ArrowLeft, Trophy, Target, RotateCcw, BookOpen, Eye, Sparkles } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
 import { useStreakTracking } from '@/hooks/useStreakTracking';
 import MathRenderer from '@/components/MathRenderer';
 import { toast } from '@/hooks/use-toast';
+import { getQuestionsBySkills, OgeQuestion } from '@/services/ogeQuestionsService';
 import { logTextbookActivity } from '@/utils/logTextbookActivity';
-import { useNavigate } from 'react-router-dom';
-
-interface Question {
-  question_id: string;
-  problem_text: string;
-  answer: string;
-  option1: string;
-  option2: string;
-  option3: string;
-  option4: string;
-  difficulty: number;
-  solution_text?: string;
-}
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface OgeExerciseQuizProps {
-  skills: number[];
   title: string;
+  skills: number[];
+  onBack: () => void;
   questionCount?: number;
   isModuleTest?: boolean;
-  onBack: () => void;
-  courseId?: number;
+  moduleTopics?: string[];
+  courseId?: string;
   itemId?: string;
 }
 
 const OgeExerciseQuiz: React.FC<OgeExerciseQuizProps> = ({ 
-  skills, 
   title, 
-  questionCount = 5, 
-  isModuleTest = false, 
-  onBack,
-  courseId = 1,
+  skills, 
+  onBack, 
+  questionCount = 4,
+  isModuleTest = false,
+  moduleTopics = [],
+  courseId = "1",
   itemId
 }) => {
-  const { user } = useAuth();
   const { trackActivity } = useStreakTracking();
+  const { user } = useAuth();
   const navigate = useNavigate();
   
-  const [questions, setQuestions] = useState<Question[]>([]);
+  const [questions, setQuestions] = useState<OgeQuestion[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string>('');
   const [answers, setAnswers] = useState<boolean[]>([]);
@@ -55,131 +46,342 @@ const OgeExerciseQuiz: React.FC<OgeExerciseQuizProps> = ({
   const [showFinalResults, setShowFinalResults] = useState(false);
   const [loading, setLoading] = useState(true);
   const [showSolution, setShowSolution] = useState(false);
+  const [viewedSolutionBeforeAnswer, setViewedSolutionBeforeAnswer] = useState(false);
+  const [boostingSkills, setBoostingSkills] = useState(false);
+  const solutionRef = useRef<HTMLDivElement>(null);
+  
+  const [questionStartTime, setQuestionStartTime] = useState<Date | null>(null);
 
   const options = ['А', 'Б', 'В', 'Г'];
 
   useEffect(() => {
     loadQuestions();
-    logTextbookActivity({
-      activity_type: "exercise",
-      activity: title,
-      solved_count: 0,
-      correct_count: 0,
-      total_questions: questionCount,
-      item_id: itemId || `exercise-${skills.join("-")}`
-    });
   }, [skills]);
+
+  useEffect(() => {
+    if (questions.length > 0 && !showResult) {
+      setQuestionStartTime(new Date());
+    }
+  }, [currentQuestionIndex, questions, showResult]);
 
   const loadQuestions = async () => {
     try {
       setLoading(true);
-      
-      const { data, error } = await supabase
-        .from('oge_math_skills_questions')
-        .select('question_id, problem_text, answer, option1, option2, option3, option4, difficulty, solution_text')
-        .in('skills', skills)
-        .not('problem_text', 'is', null)
-        .not('option1', 'is', null)
-        .not('option2', 'is', null)
-        .not('option3', 'is', null)
-        .not('option4', 'is', null)
-        .limit(questionCount);
-
-      if (error) throw error;
-
-      if (data && data.length > 0) {
-        setQuestions(data);
-      } else {
-        toast({
-          title: 'Ошибка',
-          description: 'Не удалось загрузить вопросы',
-          variant: 'destructive'
-        });
-      }
+      const questionsData = await getQuestionsBySkills(skills, questionCount);
+      setQuestions(questionsData);
     } catch (error) {
       console.error('Error loading questions:', error);
       toast({
-        title: 'Ошибка',
-        description: 'Не удалось загрузить вопросы',
-        variant: 'destructive'
+        title: "Ошибка",
+        description: "Не удалось загрузить вопросы",
+        variant: "destructive"
       });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleAnswerSubmit = () => {
-    const currentQuestion = questions[currentQuestionIndex];
-    const isCorrect = selectedAnswer === currentQuestion.answer;
+  const handleAnswerSelect = (optionIndex: number) => {
+    if (showResult) return;
     
-    setAnswers([...answers, isCorrect]);
-    setShowResult(true);
+    const answerLetter = options[optionIndex];
+    setSelectedAnswer(answerLetter);
   };
 
-  const handleNextQuestion = () => {
+  const handleSubmitAnswer = async () => {
+    if (!selectedAnswer || showResult) return;
+
+    const currentQuestion = questions[currentQuestionIndex];
+    const isCorrect = viewedSolutionBeforeAnswer ? false : selectedAnswer === currentQuestion.answer?.toUpperCase();
+    
+    setAnswers(prev => [...prev, isCorrect]);
+    setShowResult(true);
+
+    const duration = questionStartTime 
+      ? Math.floor((new Date().getTime() - questionStartTime.getTime()) / 1000)
+      : 0;
+
+    const solvedCount = answers.length + 1;
+    const correctCount = [...answers, isCorrect].filter(Boolean).length;
+    
+    let activityType: "exercise" | "test" | "exam";
+    if (questionCount === 10 || isModuleTest) {
+      activityType = "exam";
+    } else if (questionCount === 6) {
+      activityType = "test";
+    } else {
+      activityType = "exercise";
+    }
+    
+    logTextbookActivity({
+      activity_type: activityType,
+      activity: title,
+      solved_count: solvedCount,
+      correct_count: correctCount,
+      total_questions: questionCount,
+      skills_involved: skills.join(","),
+      item_id: itemId || `exercise-${skills.join("-")}`
+    });
+
+    if (isCorrect) {
+      trackActivity('problem', 2);
+      if ((window as any).triggerEnergyPointsAnimation) {
+        (window as any).triggerEnergyPointsAnimation(10);
+      }
+    }
+
+    if (user && currentQuestion.skills) {
+      try {
+        const { error } = await supabase.functions.invoke('process-mcq-skill-attempt', {
+          body: {
+            user_id: user.id,
+            question_id: currentQuestion.question_id,
+            skill_id: currentQuestion.skills,
+            finished_or_not: true,
+            is_correct: isCorrect,
+            difficulty: currentQuestion.difficulty || 2,
+            duration: duration,
+            course_id: courseId
+          }
+        });
+
+        if (error) {
+          console.error('Error recording MCQ skill attempt:', error);
+        } else {
+          console.log('Successfully recorded MCQ skill attempt');
+        }
+      } catch (error) {
+        console.error('Error calling process-mcq-skill-attempt:', error);
+      }
+    }
+  };
+
+  const handleNextQuestion = async () => {
     if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
+      setCurrentQuestionIndex(prev => prev + 1);
       setSelectedAnswer('');
       setShowResult(false);
       setShowSolution(false);
+      setViewedSolutionBeforeAnswer(false);
+      setQuestionStartTime(new Date());
     } else {
-      const correctAnswers = answers.filter(a => a).length;
-      const score = Math.round((correctAnswers / questions.length) * 100);
+      setShowFinalResults(true);
       
-      if (user) {
-        trackActivity('practice_test');
-        logTextbookActivity({
-          activity_type: "exercise",
-          activity: title,
-          solved_count: questions.length,
-          correct_count: correctAnswers,
-          total_questions: questions.length,
-          skills_involved: skills.join(','),
-          item_id: itemId || `exercise-${skills.join("-")}`
-        });
+      const correctCount = answers.filter(Boolean).length;
+      
+      if (isModuleTest && correctCount >= 8 && moduleTopics.length > 0 && user) {
+        setBoostingSkills(true);
+        try {
+          console.log('Calling boost-low-mastery-skills function for module test...');
+          const { data, error } = await supabase.functions.invoke('boost-low-mastery-skills', {
+            body: {
+              user_id: user.id,
+              topics: moduleTopics,
+              course_id: courseId
+            }
+          });
+
+          if (error) {
+            console.error('Error boosting skills:', error);
+          } else {
+            console.log('Skills boost result:', data);
+            if (data?.boosted_skills && data.boosted_skills.length > 0) {
+              toast({
+                title: "Прогресс обновлен! 🎉",
+                description: `Улучшено понимание для ${data.boosted_skills.length} навыков!`,
+              });
+            }
+          }
+        } catch (error) {
+          console.error('Error calling boost function:', error);
+        } finally {
+          setBoostingSkills(false);
+        }
       }
       
-      setShowFinalResults(true);
+      const totalCount = questions.length;
+      const percentage = (correctCount / totalCount) * 100;
+      
+      if (user && !isModuleTest && percentage >= 83 && questions[0]?.problem_number_type) {
+        setBoostingSkills(true);
+        try {
+          const topicId = questions[0].problem_number_type;
+          console.log(`Boosting skills for topic ${topicId} with score ${correctCount}/${totalCount}`);
+          
+          const { data, error } = await supabase.functions.invoke('boost-low-mastery-skills', {
+            body: {
+              user_id: user.id,
+              topic_id: topicId,
+              course_id: courseId
+            }
+          });
+          
+          if (error) {
+            console.error('Error boosting skills:', error);
+          } else {
+            console.log('Topic skills boost result:', data);
+            if (data?.boosted_skills && data.boosted_skills.length > 0) {
+              toast({
+                title: "Прогресс обновлен! 🎉",
+                description: `Улучшено понимание для ${data.boosted_skills.length} навыков!`,
+              });
+            }
+          }
+        } catch (error) {
+          console.error('Error calling boost-low-mastery-skills:', error);
+        } finally {
+          setBoostingSkills(false);
+        }
+      }
     }
   };
 
   const handleRetry = () => {
-    setCurrentQuestionIndex(0);
-    setSelectedAnswer('');
-    setAnswers([]);
-    setShowResult(false);
     setShowFinalResults(false);
+    setCurrentQuestionIndex(0);
+    setAnswers([]);
+    setSelectedAnswer('');
+    setShowResult(false);
     setShowSolution(false);
+    setViewedSolutionBeforeAnswer(false);
+    setQuestionStartTime(new Date());
     loadQuestions();
   };
 
-  const currentQuestion = questions[currentQuestionIndex];
-  const correctAnswers = answers.filter(a => a).length;
-  const score = Math.round((correctAnswers / questions.length) * 100);
+  const getOptionContent = (optionIndex: number) => {
+    const question = questions[currentQuestionIndex];
+    if (!question) return '';
+    
+    switch (optionIndex) {
+      case 0: return question.option1 || '';
+      case 1: return question.option2 || '';
+      case 2: return question.option3 || '';
+      case 3: return question.option4 || '';
+      default: return '';
+    }
+  };
+
+  const handleShowSolution = () => {
+    if (!showResult && !viewedSolutionBeforeAnswer) {
+      setViewedSolutionBeforeAnswer(true);
+      
+      setAnswers(prev => [...prev, false]);
+      setShowResult(true);
+      
+      const solvedCount = answers.length + 1;
+      const correctCount = answers.filter(Boolean).length;
+      
+      let activityType: "exercise" | "test" | "exam";
+      if (questionCount === 10 || isModuleTest) {
+        activityType = "exam";
+      } else if (questionCount === 6) {
+        activityType = "test";
+      } else {
+        activityType = "exercise";
+      }
+      
+      logTextbookActivity({
+        activity_type: activityType,
+        activity: title,
+        solved_count: solvedCount,
+        correct_count: correctCount,
+        total_questions: questionCount,
+        skills_involved: skills.join(","),
+        item_id: itemId || `exercise-${skills.join("-")}`
+      });
+    }
+    
+    setShowSolution(!showSolution);
+    if (!showSolution) {
+      setTimeout(() => {
+        const modal = document.querySelector('.max-h-\\[95vh\\]');
+        if (modal) {
+          modal.scrollTo({ 
+            top: modal.scrollHeight, 
+            behavior: 'smooth' 
+          });
+        }
+      }, 100);
+    }
+  };
+
+  const handleReadArticle = () => {
+    const currentQuestion = questions[currentQuestionIndex];
+    if (currentQuestion?.skills) {
+      navigate(`/textbook?skill=${currentQuestion.skills}`);
+    }
+  };
+
+  const getOptionStyle = (optionIndex: number) => {
+    const currentQuestion = questions[currentQuestionIndex];
+    
+    if (!showResult) {
+      return selectedAnswer === options[optionIndex] 
+        ? 'border-2 border-gold bg-gradient-to-r from-gold/10 to-sage/10 shadow-lg' 
+        : 'border-2 border-navy/10 hover:border-sage/30 hover:bg-sage/5 bg-white shadow-sm';
+    }
+    
+    const answerLetter = options[optionIndex];
+    const isSelected = selectedAnswer === answerLetter;
+    const isCorrectAnswer = answerLetter === currentQuestion?.answer?.toUpperCase();
+    
+    if (isCorrectAnswer) {
+      return 'border-2 border-sage bg-gradient-to-r from-sage/20 to-emerald-500/20 shadow-lg';
+    }
+    
+    if (isSelected && !isCorrectAnswer) {
+      return 'border-2 border-red-500 bg-gradient-to-r from-red-50 to-red-100 shadow-lg';
+    }
+    
+    return 'border-2 border-navy/5 opacity-50 bg-gray-50/50';
+  };
+
+  const correctAnswers = answers.filter(Boolean).length;
+  const score = answers.length > 0 ? Math.round((correctAnswers / answers.length) * 100) : 0;
 
   const getResultMessage = () => {
-    if (score >= 80) return { 
-      title: 'Превосходно!', 
-      message: 'Ты отлично справился с заданием!',
-      icon: <Trophy className="w-12 h-12 text-white" />
-    };
-    if (score >= 60) return { 
-      title: 'Хорошо!', 
-      message: 'Неплохой результат, продолжай практиковаться!',
-      icon: <Target className="w-12 h-12 text-white" />
-    };
-    return { 
-      title: 'Нужно повторить', 
-      message: 'Рекомендуем изучить теорию еще раз',
-      icon: <BookOpen className="w-12 h-12 text-white" />
-    };
+    if (correctAnswers < 2) {
+      return {
+        title: "Попробуйте еще раз!",
+        message: "Вы можете лучше! Изучите материал еще раз и попробуйте снова.",
+        icon: <RotateCcw className="w-5 h-5 text-white" />,
+        color: "text-orange-600"
+      };
+    } else if (correctAnswers === 2) {
+      return {
+        title: "Неплохо!",
+        message: "Хороший результат! Но есть куда расти.",
+        icon: <Target className="w-5 h-5 text-white" />,
+        color: "text-blue-600"
+      };
+    } else if (correctAnswers === 3) {
+      return {
+        title: "Отлично!",
+        message: "Очень хороший результат! Продолжайте в том же духе.",
+        icon: <Trophy className="w-5 h-5 text-white" />,
+        color: "text-yellow-600"
+      };
+    } else {
+      return {
+        title: "Превосходно!",
+        message: "Идеальный результат! Вы отлично освоили этот навык.",
+        icon: <Trophy className="w-5 h-5 text-white" />,
+        color: "text-green-600"
+      };
+    }
   };
 
   if (loading) {
     return (
-      <Card className="w-full max-w-4xl mx-auto">
-        <CardContent className="p-8">
-          <div className="text-center">Загрузка...</div>
+      <Card className="shadow-xl border-2 border-sage/20 bg-gradient-to-br from-white via-sage/5 to-gold/5 mx-auto rounded-2xl backdrop-blur-md">
+        <CardContent className="p-8 text-center">
+          <div className="relative">
+            <div className="animate-spin rounded-full h-12 w-12 border-3 border-sage/20 border-t-gold mx-auto mb-3"></div>
+            <Sparkles className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-5 h-5 text-gold animate-pulse" />
+          </div>
+          <p className="text-base font-semibold bg-gradient-to-r from-gold to-sage bg-clip-text text-transparent">
+            загружаем вопросы...
+          </p>
         </CardContent>
       </Card>
     );
@@ -187,108 +389,208 @@ const OgeExerciseQuiz: React.FC<OgeExerciseQuizProps> = ({
 
   if (questions.length === 0) {
     return (
-      <Card className="w-full max-w-4xl mx-auto">
-        <CardContent className="p-8">
-          <div className="text-center">
-            <p className="mb-4">Вопросы не найдены</p>
-            <Button onClick={onBack}>
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Назад
-            </Button>
+      <Card className="shadow-xl border-2 border-sage/20 bg-gradient-to-br from-white via-sage/5 to-gold/5 mx-auto rounded-2xl backdrop-blur-md">
+        <CardContent className="p-8 text-center">
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gold/20 to-sage/20 flex items-center justify-center mx-auto mb-4">
+            <Target className="w-8 h-8 text-gold" />
           </div>
+          <h2 className="text-xl font-bold bg-gradient-to-r from-gold to-sage bg-clip-text text-transparent mb-2">
+            Вопросы не найдены
+          </h2>
+          <p className="text-navy/60 mb-6 text-sm">
+            Для этого упражнения пока нет доступных вопросов
+          </p>
+          <Button onClick={onBack} className="bg-gradient-to-r from-gold to-sage hover:from-gold/90 hover:to-sage/90 text-white rounded-xl px-6 py-3 text-sm font-semibold shadow-lg hover:shadow-xl transition-all">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            назад
+          </Button>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-4">
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle>{title}</CardTitle>
-            <Button variant="ghost" size="sm" onClick={onBack}>
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Назад
+    <>
+      <Card className="shadow-2xl border-2 border-sage/30 bg-gradient-to-br from-white via-white to-sage/5 overflow-hidden mx-auto rounded-2xl max-w-6xl backdrop-blur-lg">
+        <CardHeader className="p-4 border-b border-sage/10 bg-gradient-to-r from-gold/5 via-transparent to-sage/5">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex-1">
+              <CardTitle className="text-lg font-bold bg-gradient-to-r from-gold via-sage to-gold bg-clip-text text-transparent mb-0.5">
+                {title}
+              </CardTitle>
+              <div className="flex items-center gap-2">
+                <p className="text-navy/60 text-xs font-medium">вопрос {currentQuestionIndex + 1} из {questions.length}</p>
+                {questions[currentQuestionIndex]?.skills && (
+                  <span className="text-xs text-sage/50 font-mono bg-sage/5 px-2 py-0.5 rounded-full">
+                    #{questions[currentQuestionIndex].skills}
+                  </span>
+                )}
+              </div>
+            </div>
+            <Button onClick={onBack} size="sm" variant="ghost" className="text-navy/60 hover:text-navy hover:bg-sage/10 rounded-lg px-2 py-1.5 text-xs transition-all">
+              <ArrowLeft className="w-3 h-3 mr-1" />
+              назад
             </Button>
           </div>
-          <Progress value={((currentQuestionIndex + 1) / questions.length) * 100} className="mt-4" />
-          <p className="text-sm text-muted-foreground mt-2">
-            Вопрос {currentQuestionIndex + 1} из {questions.length}
-          </p>
+          <div className="relative">
+            <div className="h-1.5 bg-gradient-to-r from-sage/10 to-gold/10 rounded-full overflow-hidden">
+              <div className="h-full bg-gradient-to-r from-gold via-sage to-gold rounded-full transition-all duration-500" 
+                   style={{width: `${(currentQuestionIndex / questions.length) * 100}%`}} />
+            </div>
+          </div>
         </CardHeader>
+        
+        <CardContent className="p-4">
+          <div className="grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-4">
+            <div className="space-y-3">
+              <div className="p-4 bg-gradient-to-br from-navy/5 to-sage/5 rounded-xl border border-navy/10">
+                <MathRenderer 
+                  text={questions[currentQuestionIndex]?.problem_text || ''} 
+                  className="text-sm text-navy font-medium leading-relaxed"
+                  compiler="mathjax"
+                />
+              </div>
 
-        <CardContent className="space-y-6">
-          <div className="prose max-w-none">
-            <MathRenderer text={currentQuestion.problem_text} />
-          </div>
-
-          <div className="space-y-3">
-            {[currentQuestion.option1, currentQuestion.option2, currentQuestion.option3, currentQuestion.option4].map((option, index) => {
-              const optionLetter = options[index];
-              const isSelected = selectedAnswer === optionLetter;
-              const isCorrect = currentQuestion.answer === optionLetter;
-              const showCorrectness = showResult && (isSelected || isCorrect);
-
-              return (
-                <Button
-                  key={index}
-                  onClick={() => !showResult && setSelectedAnswer(optionLetter)}
-                  disabled={showResult}
-                  variant={showCorrectness ? (isCorrect ? 'default' : 'destructive') : isSelected ? 'secondary' : 'outline'}
-                  className={`w-full justify-start text-left h-auto py-4 px-6 ${
-                    showCorrectness 
-                      ? isCorrect 
-                        ? 'bg-green-500 hover:bg-green-600' 
-                        : 'bg-red-500 hover:bg-red-600'
-                      : ''
-                  }`}
-                >
-                  <span className="font-bold mr-3">{optionLetter})</span>
-                  <MathRenderer text={option} />
-                  {showCorrectness && (
-                    isCorrect ? <Check className="ml-auto w-5 h-5" /> : isSelected && <X className="ml-auto w-5 h-5" />
+              {showResult && (
+                <div className="py-1">
+                  {selectedAnswer === questions[currentQuestionIndex]?.answer?.toUpperCase() ? (
+                    <div className="flex items-center space-x-2 bg-gradient-to-r from-sage/20 to-emerald-500/20 rounded-xl p-3 border border-sage">
+                      <div className="w-6 h-6 bg-gradient-to-br from-sage to-emerald-600 rounded-full flex items-center justify-center">
+                        <Check className="w-4 h-4 text-white" strokeWidth={3} />
+                      </div>
+                      <p className="text-xs font-bold text-sage">Правильно!</p>
+                    </div>
+                  ) : (
+                    <div className="flex items-center space-x-2 bg-gradient-to-r from-red-50 to-red-100 rounded-xl p-3 border border-red-400">
+                      <div className="w-6 h-6 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center">
+                        <X className="w-4 h-4 text-white" strokeWidth={3} />
+                      </div>
+                      <p className="text-xs font-bold text-red-700">Неверно</p>
+                    </div>
                   )}
-                </Button>
-              );
-            })}
+                </div>
+              )}
+
+              <div className="space-y-2">
+                {!showResult ? (
+                  <Button
+                    size="sm"
+                    onClick={handleSubmitAnswer}
+                    disabled={!selectedAnswer}
+                    className="w-full bg-gradient-to-r from-gold to-sage hover:from-gold/90 hover:to-sage/90 text-white rounded-lg px-4 py-2 text-sm font-bold shadow-md hover:shadow-lg transition-all disabled:opacity-50"
+                  >
+                    ответить
+                  </Button>
+                ) : (
+                  <Button 
+                    size="sm"
+                    onClick={handleNextQuestion} 
+                    className="w-full bg-gradient-to-r from-sage to-emerald-600 hover:from-sage/90 hover:to-emerald-700 text-white rounded-lg px-4 py-2 text-sm font-bold shadow-md hover:shadow-lg transition-all"
+                  >
+                    {currentQuestionIndex < questions.length - 1 ? 'дальше →' : 'финиш'}
+                  </Button>
+                )}
+
+                <div className="flex gap-2">
+                  {questions[currentQuestionIndex]?.solution_text && (
+                    <Button
+                      size="sm"
+                      onClick={handleShowSolution}
+                      variant="outline"
+                      className="flex-1 text-navy/70 border border-navy/20 hover:bg-sage/10 rounded-lg px-2 py-1.5 text-xs font-medium"
+                    >
+                      <Eye className="w-3 h-3 mr-1" />
+                      {showSolution ? 'скрыть' : 'решение'}
+                    </Button>
+                  )}
+                  
+                  {questions[currentQuestionIndex]?.skills && (
+                    <Button
+                      size="sm"
+                      onClick={handleReadArticle}
+                      variant="outline"
+                      className="flex-1 text-navy/70 border border-navy/20 hover:bg-gold/10 rounded-lg px-2 py-1.5 text-xs font-medium"
+                    >
+                      <BookOpen className="w-3 h-3 mr-1" />
+                      статья
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              {options.map((letter, index) => (
+                <div
+                  key={letter}
+                  className={`p-3 rounded-lg cursor-pointer transition-all duration-200 hover:scale-[1.01] ${getOptionStyle(index)}`}
+                  onClick={() => handleAnswerSelect(index)}
+                >
+                  <div className="flex items-start space-x-2">
+                    <div className={`
+                      w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0 transition-all
+                      ${!showResult && selectedAnswer === letter 
+                        ? 'bg-gradient-to-br from-gold to-sage text-white shadow-md scale-105' 
+                        : showResult && letter === questions[currentQuestionIndex]?.answer?.toUpperCase()
+                        ? 'bg-gradient-to-br from-sage to-emerald-600 text-white shadow-md'
+                        : showResult && selectedAnswer === letter && letter !== questions[currentQuestionIndex]?.answer?.toUpperCase()
+                        ? 'bg-gradient-to-br from-red-500 to-red-600 text-white shadow-md'
+                        : 'bg-gradient-to-br from-navy/10 to-sage/10 text-navy'
+                      }
+                    `}>
+                      {letter}
+                    </div>
+                    <MathRenderer 
+                      text={getOptionContent(index)} 
+                      className="flex-1 text-sm text-navy/90"
+                      compiler="mathjax"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
-          {currentQuestion.solution_text && (
-            <div className="mt-4">
-              <Button
-                variant="outline"
-                onClick={() => setShowSolution(!showSolution)}
-                className="w-full"
-              >
-                <Eye className="w-4 h-4 mr-2" />
-                {showSolution ? 'Скрыть решение' : 'Показать решение'}
-              </Button>
-              {showSolution && (
-                <Card className="mt-4 bg-muted">
-                  <CardContent className="pt-4">
-                    <MathRenderer text={currentQuestion.solution_text || ''} />
-                  </CardContent>
-                </Card>
+          {showSolution && questions[currentQuestionIndex]?.solution_text && (
+            <div 
+              ref={solutionRef}
+              className="mt-4 p-4 bg-gradient-to-br from-navy/5 to-sage/5 rounded-xl border border-navy/10"
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-gold/20 to-sage/20 flex items-center justify-center">
+                  <BookOpen className="w-3 h-3 text-gold" />
+                </div>
+                <h4 className="font-bold text-navy text-sm">Решение</h4>
+              </div>
+              {viewedSolutionBeforeAnswer && !showResult && (
+                <div className="mb-2 p-2 bg-gradient-to-r from-orange-50 to-orange-100 border border-orange-300 rounded-lg">
+                  <p className="text-orange-800 text-xs font-medium">⚠️ Просмотр решения до ответа засчитается как неверный ответ</p>
+                </div>
               )}
+              <div className="space-y-1 bg-white rounded-lg p-3">
+                {questions[currentQuestionIndex].solution_text.split('\\n').map((line: string, index: number) => (
+                  <div key={index} className="text-left">
+                    <MathRenderer 
+                      text={line.trim()} 
+                      className="text-navy text-xs leading-relaxed"
+                      compiler="mathjax"
+                    />
+                  </div>
+                ))}
+              </div>
+              
+              <div className="mt-3 pt-3 border-t border-navy/10">
+                <button
+                  onClick={() => window.open(`/textbook?skill=${questions[currentQuestionIndex].skills}`, '_blank')}
+                  className="inline-flex items-center gap-2 text-sm text-sage hover:text-gold transition-colors font-medium group"
+                >
+                  <BookOpen className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                  <span>Изучить этот навык подробнее в учебнике</span>
+                  <span className="text-gold">→</span>
+                </button>
+              </div>
             </div>
           )}
-
-          <div className="flex gap-3">
-            {!showResult ? (
-              <Button
-                onClick={handleAnswerSubmit}
-                disabled={!selectedAnswer}
-                className="flex-1"
-              >
-                Проверить ответ
-              </Button>
-            ) : (
-              <Button onClick={handleNextQuestion} className="flex-1">
-                {currentQuestionIndex < questions.length - 1 ? 'Следующий вопрос' : 'Показать результаты'}
-              </Button>
-            )}
-          </div>
         </CardContent>
       </Card>
 
@@ -393,9 +695,9 @@ const OgeExerciseQuiz: React.FC<OgeExerciseQuizProps> = ({
 
                     const { data: pendingRecord, error: insertError } = await supabase
                       .from('pending_homework_feedback')
-                      .insert([{
-                        course_id: courseId.toString(),
+                      .insert({
                         user_id: user.id,
+                        course_id: courseId,
                         feedback_type: 'textbook_exercise',
                         homework_name: title,
                         context_data: {
@@ -411,7 +713,7 @@ const OgeExerciseQuiz: React.FC<OgeExerciseQuizProps> = ({
                         processed: true,
                         processed_at: new Date().toISOString(),
                         feedback_message: feedbackMessage
-                      }])
+                      })
                       .select('id')
                       .single();
 
@@ -451,7 +753,7 @@ const OgeExerciseQuiz: React.FC<OgeExerciseQuizProps> = ({
           </div>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </>
   );
 };
 
