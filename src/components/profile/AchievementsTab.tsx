@@ -61,7 +61,7 @@ export const AchievementsTab = ({ achievements }: AchievementsTabProps) => {
           setUserStats({
             energy_points: statsRes.data.energy_points || 0,
             energy_points_history: Array.isArray(statsRes.data.energy_points_history) 
-              ? statsRes.data.energy_points_history 
+              ? (statsRes.data.energy_points_history as unknown as EnergyPointsHistory[])
               : []
           });
         }

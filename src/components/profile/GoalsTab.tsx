@@ -85,9 +85,9 @@ export const GoalsTab = () => {
           return {
             course_id: courseId,
             name: course?.name || `Курс ${courseId}`,
-            course_1_goal: goalsData?.course_1_goal,
-            course_2_goal: goalsData?.course_2_goal,
-            course_3_goal: goalsData?.course_3_goal,
+            course_1_goal: typeof goalsData?.course_1_goal === 'string' ? parseInt(goalsData.course_1_goal) : goalsData?.course_1_goal,
+            course_2_goal: typeof goalsData?.course_2_goal === 'string' ? parseInt(goalsData.course_2_goal) : goalsData?.course_2_goal,
+            course_3_goal: typeof goalsData?.course_3_goal === 'string' ? parseInt(goalsData.course_3_goal) : goalsData?.course_3_goal,
             schoolmark1: goalsData?.schoolmark1,
             schoolmark2: goalsData?.schoolmark2,
             schoolmark3: goalsData?.schoolmark3,
