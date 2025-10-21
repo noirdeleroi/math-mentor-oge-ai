@@ -1,16 +1,15 @@
-// src/components/SimulationModal.tsx
 import * as React from "react";
-import { Suspense, useMemo } from "react";
+import { Suspense, useMemo, useRef, useLayoutEffect, useState } from "react";
 import { SIMULATIONS, type SimulationId } from "@/simulations/SimulationRegistry";
 import type { SimulationProps } from "@/types/simulation";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 /**
- * Scale 0.5 “shrinks” a full-screen (100vw x 100svh) sim so it fits
- * into a 50vw x 50vh modal perfectly.
- * We give the inner wrapper 200vw x 200svh then scale 0.5.
- * This way, sims that use min-h-screen / min-h-svh still think
- * they’re full screen, but the user sees a crisp half-size view.
+ * Auto-fit scaler:
+ * - Modal: 50vw x 40vh (shorter to avoid scroll)
+ * - We measure the header, then fit the simulation into the remaining space.
+ * - The sim renders as if it were full screen (window.innerWidth x window.innerHeight),
+ *   then we scale it down by `min(containerW / windowW, containerH / windowH)`.
  */
 
 export default function SimulationModal({
@@ -34,25 +33,56 @@ export default function SimulationModal({
     [onOpenChange, meta, simulationProps]
   );
 
+  const headerRef = useRef<HTMLDivElement | null>(null);
+  const viewportRef = useRef<HTMLDivElement | null>(null);
+  const [scale, setScale] = useState(0.5);
+
+  // compute scale to fit both width & height of the viewport (no scrollbars)
+  useLayoutEffect(() => {
+    function recompute() {
+      const vp = viewportRef.current;
+      const hdr = headerRef.current;
+      if (!vp || !hdr) return;
+
+      // available size = DialogContent (40vh) minus header height
+      const dialogH = vp.parentElement?.clientHeight ?? window.innerHeight * 0.4;
+      const headerH = hdr.clientHeight;
+      const availableH = Math.max(0, dialogH - headerH);
+      const availableW = vp.clientWidth;
+
+      const winW = window.innerWidth;
+      const winH = window.innerHeight;
+
+      // scale must satisfy both dimensions
+      const s = Math.min(availableW / winW, availableH / winH);
+
+      // clamp a bit lower than 0.6 to ensure breathing room on tiny screens
+      const safe = Math.min(Math.max(s, 0.25), 0.58);
+      setScale(safe);
+    }
+
+    recompute();
+    window.addEventListener("resize", recompute);
+    return () => window.removeEventListener("resize", recompute);
+  }, []);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      {/* exact half-screen window */}
-      <DialogContent
-        className="p-0 gap-0 w-[50vw] h-[50vh] max-w-none overflow-hidden"
-      >
-        <DialogHeader className="px-4 pt-3 pb-2">
-          <DialogTitle className="text-lg">
+      {/* exact 50vw x 40vh; overflow hidden to guarantee no scrollbars */}
+      <DialogContent className="p-0 gap-0 w-[50vw] h-[40vh] max-w-none overflow-hidden">
+        <DialogHeader ref={headerRef as any} className="px-4 pt-3 pb-2">
+          <DialogTitle className="text-sm sm:text-base">
             {titleOverride ?? meta?.title ?? "Симуляция"}
           </DialogTitle>
           {!!meta?.description && (
-            <DialogDescription className="text-xs">
+            <DialogDescription className="text-[11px] sm:text-xs">
               {meta.description}
             </DialogDescription>
           )}
         </DialogHeader>
 
-        {/* Viewport for the scaled content */}
-        <div className="relative w-full h-[calc(50vh-64px)] overflow-hidden">
+        {/* viewport that the sim must fit into (no scroll) */}
+        <div ref={viewportRef} className="relative w-full h-[calc(100%-0px)] overflow-hidden">
           {simulationId && Comp ? (
             <Suspense
               fallback={
@@ -61,18 +91,13 @@ export default function SimulationModal({
                 </div>
               }
             >
-              {/* 
-                Scale wrapper:
-                - Make a “fake fullscreen” canvas (200vw x 200svh)
-                - Scale it down to 0.5 so it appears as half-size
-                - Stick to the top-left to avoid offset blur
-              */}
+              {/* Fake full-screen stage scaled down to fit */}
               <div
                 className="absolute top-0 left-0 origin-top-left"
                 style={{
-                  width: "200vw",
-                  height: "200svh",
-                  transform: "scale(0.5)",
+                  width: `${window.innerWidth}px`,
+                  height: `${window.innerHeight}px`,
+                  transform: `scale(${scale})`,
                   transformOrigin: "top left",
                 }}
               >
