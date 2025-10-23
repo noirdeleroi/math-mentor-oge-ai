@@ -83,6 +83,10 @@ const PracticeByNumberOgemath = () => {
   const [isProcessingPhoto, setIsProcessingPhoto] = useState(false);
   const [photoFeedback, setPhotoFeedback] = useState<string>("");
   const [photoScores, setPhotoScores] = useState<number | null>(null);
+  
+  // Device upload states
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [showImagePreview, setShowImagePreview] = useState(false);
 
   // Formula booklet state
   const [showFormulaBooklet, setShowFormulaBooklet] = useState(false);
@@ -208,6 +212,9 @@ const PracticeByNumberOgemath = () => {
     setSolutionViewedBeforeAnswer(false);
     setCurrentAttemptId(null);
     setAttemptStartTime(null);
+    setUploadedImage(null);
+    setPhotoFeedback("");
+    setPhotoScores(null);
   };
 
   const toggleQuestionGroup = (groupType: string) => {
@@ -854,6 +861,40 @@ const PracticeByNumberOgemath = () => {
     }
   };
 
+  // Handle device upload
+  const handleDeviceUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Check if it's an image
+    if (!file.type.startsWith('image/')) {
+      toast.error('Пожалуйста, загрузите изображение');
+      return;
+    }
+
+    // Check file size (max 20MB)
+    if (file.size > 20 * 1024 * 1024) {
+      toast.error('Файл слишком большой. Максимальный размер: 20MB');
+      return;
+    }
+
+    // Read the file as data URL
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const result = e.target?.result as string;
+      setUploadedImage(result);
+      toast.success('Фото загружено');
+    };
+    reader.onerror = () => {
+      toast.error('Ошибка при загрузке файла');
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemoveUploadedImage = () => {
+    setUploadedImage(null);
+  };
+
   const clearPhotoFeedback = () => {
     setPhotoFeedback("");
     setPhotoScores(null);
@@ -1223,16 +1264,55 @@ const PracticeByNumberOgemath = () => {
                     </div>
                   )}
 
-                  {/* Photo Attachment Button for questions 20+ */}
+                  {/* Photo Attachment Buttons for questions 20+ */}
                   {currentQuestion.problem_number_type && currentQuestion.problem_number_type >= 20 && (
-                    <div className="flex justify-center">
-                      <Button
-                        variant="outline"
-                        onClick={handlePhotoAttachment}
-                      >
-                        <Camera className="w-4 h-4 mr-2" />
-                        Загрузить через Telegram
-                      </Button>
+                    <div className="space-y-3">
+                      <div className="flex gap-3 justify-center flex-wrap">
+                        <Button
+                          variant="outline"
+                          onClick={handlePhotoAttachment}
+                        >
+                          <Camera className="w-4 h-4 mr-2" />
+                          Загрузить через Telegram
+                        </Button>
+                        
+                        <Button
+                          variant="outline"
+                          onClick={() => document.getElementById('device-upload-input')?.click()}
+                        >
+                          <Camera className="w-4 h-4 mr-2" />
+                          Загрузить с устройства
+                        </Button>
+                        <input
+                          id="device-upload-input"
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={handleDeviceUpload}
+                        />
+                      </div>
+                      
+                      {/* Image Preview */}
+                      {uploadedImage && (
+                        <div className="flex justify-center">
+                          <div className="relative inline-block">
+                            <img
+                              src={uploadedImage}
+                              alt="Uploaded solution"
+                              className="max-w-xs max-h-48 rounded-lg border-2 border-primary/20 cursor-pointer hover:opacity-90 transition-opacity"
+                              onClick={() => setShowImagePreview(true)}
+                            />
+                            <Button
+                              variant="destructive"
+                              size="icon"
+                              className="absolute -top-2 -right-2 h-6 w-6 rounded-full"
+                              onClick={handleRemoveUploadedImage}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
 
@@ -1418,6 +1498,22 @@ const PracticeByNumberOgemath = () => {
         open={showFormulaBooklet} 
         onOpenChange={setShowFormulaBooklet} 
       />
+
+      {/* Image Preview Dialog */}
+      <Dialog open={showImagePreview} onOpenChange={setShowImagePreview}>
+        <DialogContent className="max-w-4xl">
+          <DialogHeader>
+            <DialogTitle>Загруженное решение</DialogTitle>
+          </DialogHeader>
+          <div className="flex justify-center">
+            <img
+              src={uploadedImage || ''}
+              alt="Uploaded solution full size"
+              className="max-w-full max-h-[70vh] rounded-lg"
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
