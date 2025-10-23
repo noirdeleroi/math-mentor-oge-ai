@@ -83,6 +83,8 @@ const PracticeByNumberOgemath = () => {
   const [isProcessingPhoto, setIsProcessingPhoto] = useState(false);
   const [photoFeedback, setPhotoFeedback] = useState<string>("");
   const [photoScores, setPhotoScores] = useState<number | null>(null);
+  const [uploadedPhoto, setUploadedPhoto] = useState<string | null>(null);
+  const [showPhotoPreview, setShowPhotoPreview] = useState(false);
 
   // Formula booklet state
   const [showFormulaBooklet, setShowFormulaBooklet] = useState(false);
@@ -1223,16 +1225,62 @@ const PracticeByNumberOgemath = () => {
                     </div>
                   )}
 
-                  {/* Photo Attachment Button for questions 20+ */}
+                  {/* Photo Upload Button and Preview for questions 20+ */}
                   {currentQuestion.problem_number_type && currentQuestion.problem_number_type >= 20 && (
-                    <div className="flex justify-center">
-                      <Button
-                        variant="outline"
-                        onClick={handlePhotoAttachment}
-                      >
-                        <Camera className="w-4 h-4 mr-2" />
-                        Прикрепить фото
-                      </Button>
+                    <div className="space-y-4">
+                      <div className="flex justify-center">
+                        <label htmlFor="photo-upload" className="cursor-pointer">
+                          <input
+                            id="photo-upload"
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                const reader = new FileReader();
+                                reader.onloadend = () => {
+                                  setUploadedPhoto(reader.result as string);
+                                };
+                                reader.readAsDataURL(file);
+                              }
+                            }}
+                          />
+                          <Button
+                            variant="outline"
+                            type="button"
+                            className="bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-300"
+                          >
+                            <Camera className="w-4 h-4 mr-2" />
+                            {uploadedPhoto ? 'Изменить фото' : 'Загрузить фото решения'}
+                          </Button>
+                        </label>
+                      </div>
+
+                      {/* Photo Preview */}
+                      {uploadedPhoto && (
+                        <div className="flex flex-col items-center space-y-2">
+                          <div className="relative group">
+                            <img
+                              src={uploadedPhoto}
+                              alt="Загруженное решение"
+                              className="max-w-xs h-auto rounded-lg shadow-md border-2 border-blue-300 cursor-pointer hover:opacity-90 transition-opacity"
+                              onClick={() => setShowPhotoPreview(true)}
+                            />
+                            <Button
+                              variant="destructive"
+                              size="icon"
+                              className="absolute top-2 right-2 w-8 h-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                              onClick={() => setUploadedPhoto(null)}
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                          <p className="text-sm text-gray-600">
+                            Нажмите на изображение для просмотра в полном размере
+                          </p>
+                        </div>
+                      )}
                     </div>
                   )}
 
@@ -1418,6 +1466,24 @@ const PracticeByNumberOgemath = () => {
         open={showFormulaBooklet} 
         onOpenChange={setShowFormulaBooklet} 
       />
+
+      {/* Photo Preview Dialog */}
+      <Dialog open={showPhotoPreview} onOpenChange={setShowPhotoPreview}>
+        <DialogContent className="max-w-4xl">
+          <DialogHeader>
+            <DialogTitle>Загруженное решение</DialogTitle>
+          </DialogHeader>
+          <div className="flex justify-center">
+            {uploadedPhoto && (
+              <img
+                src={uploadedPhoto}
+                alt="Загруженное решение"
+                className="max-w-full h-auto rounded-lg"
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
