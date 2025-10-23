@@ -68,28 +68,30 @@ const LearningLayout: React.FC = () => {
 
       <nav className="fixed top-0 w-full z-30 backdrop-blur-lg bg-[#1a1f36]/80 border-b border-yellow-500/20">
         <div className="w-full pr-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3 pl-4">
+          <div className="flex items-center gap-2 sm:gap-3 pl-4">
             <img 
               src="https://kbaazksvkvnafrwtmkcw.supabase.co/storage/v1/object/public/avatars/logo100.png" 
               alt="Logo"
-              className="w-14 h-14 rounded-lg"
+              className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-lg"
             />
             {currentCourse ? (
               <Link 
                 to={currentCourse.homeRoute} 
-                className="font-display text-xl font-semibold text-white hover:text-yellow-500 transition-colors"
+                className="font-display text-base sm:text-lg md:text-xl font-semibold text-white hover:text-yellow-500 transition-colors truncate max-w-[120px] sm:max-w-none"
               >
                 {currentCourse.title}
               </Link>
             ) : (
-              <span className="font-display text-xl font-semibold text-white">
+              <span className="font-display text-base sm:text-lg md:text-xl font-semibold text-white">
                 EGEChat
               </span>
             )}
           </div>
-          <div className="flex items-center gap-6 ml-auto">
-            <DailyTaskStory courseId={currentCourse?.numericId?.toString() || null} />
-            <div className="relative">
+          <div className="flex items-center gap-2 sm:gap-4 md:gap-6 ml-auto">
+            <div className="hidden sm:block">
+              <DailyTaskStory courseId={currentCourse?.numericId?.toString() || null} />
+            </div>
+            <div className="relative scale-90 sm:scale-100">
               <StreakDisplay />
               <EnergyPointsHeaderAnimation
                 points={energyPointsAnimation.points}
@@ -99,12 +101,13 @@ const LearningLayout: React.FC = () => {
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="bg-yellow-500 text-[#1a1f36] px-4 py-2 rounded-lg hover:bg-yellow-400 font-medium flex items-center gap-2">
-                  {profile?.full_name || 'Пользователь'}
-                  <ChevronDown size={16} />
+                <button className="bg-yellow-500 text-[#1a1f36] px-3 py-2 sm:px-4 rounded-lg hover:bg-yellow-400 font-medium flex items-center gap-1 sm:gap-2 text-sm sm:text-base">
+                  <span className="hidden sm:inline">{profile?.full_name || 'Пользователь'}</span>
+                  <span className="sm:hidden">☰</span>
+                  <ChevronDown size={16} className="hidden sm:block" />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 bg-background/95 backdrop-blur-lg border border-border z-50">
+              <DropdownMenuContent align="end" className="w-56 bg-background/95 backdrop-blur-lg border border-border z-[100]">
                 <DropdownMenuItem asChild>
                   <Link to="/mydb3" className="cursor-pointer hover:bg-gradient-to-r hover:from-gold/30 hover:to-sage/30 hover:text-black">
                     Курсы

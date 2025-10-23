@@ -368,3 +368,26 @@ mjx-container.mjx-selected {
 .card-hover {
   @apply transition-all duration-200 hover:shadow-lg hover:-translate-y-1;
 }
+
+/* Mobile-specific optimizations */
+@media (max-width: 768px) {
+  /* Prevent zoom on input focus (iOS) */
+  input, textarea, select {
+    font-size: 16px !important;
+  }
+  
+  /* Touch-friendly minimum sizes */
+  button, a {
+    min-height: 44px;
+  }
+  
+  /* Thinner scrollbars on mobile */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+  }
+  
+  /* Optimize card hover for touch devices */
+  .card-hover:active {
+    transform: translateY(0);
+  }
+}
