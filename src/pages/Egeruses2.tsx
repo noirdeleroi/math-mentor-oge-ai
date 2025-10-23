@@ -648,19 +648,8 @@ const Egeruses2 = () => {
   };
 
   const getCriterionGlowColor = (criterion: string) => {
-    const glowMap: { [key: string]: string } = {
-      'K1': 'glow-orange', // Content - Author's position
-      'K2': 'glow-blue',   // Content - Commentary
-      'K3': 'glow-green',  // Content - Personal attitude
-      'K4': 'glow-cyan',   // Speech - Factual accuracy
-      'K5': 'glow-indigo', // Speech - Logic
-      'K6': 'glow-purple', // Speech - Ethical norms
-      'K7': 'glow-pink',   // Grammar - Spelling
-      'K8': 'glow-rose',   // Grammar - Punctuation
-      'K9': 'glow-amber',  // Grammar - Grammar rules
-      'K10': 'glow-lime'   // Grammar - Speech norms
-    };
-    return glowMap[criterion] || 'glow-gray';
+    // Use yellow glow for all criteria for better visibility
+    return 'glow-yellow';
   };
 
   const loadEssayHistory = async () => {
