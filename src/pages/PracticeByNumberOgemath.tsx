@@ -1188,8 +1188,23 @@ const PracticeByNumberOgemath = () => {
                     </Button>
                   </div>
 
-                  {/* Note for non-numeric answers */}
-                  {currentQuestion.answer && isNonNumericAnswer(currentQuestion.answer) && (
+                  {/* Note for part 2 questions (20-25) requiring photo upload */}
+                  {currentQuestion.problem_number_type && currentQuestion.problem_number_type >= 20 && (
+                    <div className="text-sm text-gray-600 bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                      <div className="font-medium text-yellow-800 mb-2">
+                        Важно: это задание требует развёрнутого решения.
+                      </div>
+                      <div className="mb-2">
+                        Пожалуйста, загрузите фотографию вашего решения, и ваш AI-учитель проверит его для вас.
+                      </div>
+                      <div className="font-medium text-yellow-700">
+                        Пишите чётко и разборчиво, решение и ответ.
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Note for non-numeric answers in part 1 */}
+                  {currentQuestion.problem_number_type && currentQuestion.problem_number_type < 20 && currentQuestion.answer && isNonNumericAnswer(currentQuestion.answer) && (
                     <div className="text-sm text-gray-600 bg-yellow-50 border border-yellow-200 rounded-lg p-3">
                       <div className="font-medium text-yellow-800 mb-2">
                         Важно: форма ответа не имеет значения.
@@ -1205,7 +1220,6 @@ const PracticeByNumberOgemath = () => {
                           <li><em>3 см</em></li>
                         </ul>
                       </div>
-
                     </div>
                   )}
 
