@@ -189,6 +189,13 @@ export default function LandingHeader() {
             FAQ
           </Link>
 
+          <Link
+            to="/egeruses2"
+            className="text-white hover:text-yellow-400 transition-colors duration-200"
+          >
+            Сочинение
+          </Link>
+
 
           <Button
             onClick={handleLoginClick}

@@ -101,6 +101,15 @@ const Header = () => {
             </Link>
 
             <Link 
+              to="/egeruses2" 
+              className={`flex items-center space-x-1 text-sm font-medium transition-colors ${
+                isActive('/egeruses2') ? 'text-primary' : 'text-gray-600 hover:text-primary'
+              }`}
+            >
+              <span>Сочинение</span>
+            </Link>
+
+            <Link 
               to="/daily-practice" 
               className={`flex items-center space-x-1 text-sm font-medium transition-colors ${
                 isActive('/daily-practice') ? 'text-primary' : 'text-gray-600 hover:text-primary'
