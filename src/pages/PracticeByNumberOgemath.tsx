@@ -1285,27 +1285,27 @@ const PracticeByNumberOgemath = () => {
             /* Practice Interface */
             questions.length > 0 && currentQuestion ? (
             <Card className="mb-6 bg-white/95 backdrop-blur border border-white/20 rounded-2xl shadow-xl">
-              <CardHeader className="border-b border-white/20">
-                  <CardTitle className="flex justify-between items-center text-[#1a1f36]">
-                    <span>Вопрос №{currentQuestion.problem_number_type} ({currentQuestionIndex + 1} из {questions.length})</span>
-                    <div className="flex items-center gap-4">
+               <CardHeader className="border-b border-white/20">
+                  <CardTitle className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 text-[#1a1f36]">
+                    <span className="text-lg sm:text-xl">Вопрос №{currentQuestion.problem_number_type} ({currentQuestionIndex + 1} из {questions.length})</span>
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4 w-full sm:w-auto">
                       <Button
                         onClick={() => setShowFormulaBooklet(true)}
                         variant="outline"
-                        className="border-[#1a1f36]/30 text-[#1a1f36] hover:bg-gray-100"
+                        className="border-[#1a1f36]/30 text-[#1a1f36] hover:bg-gray-100 w-full sm:w-auto"
                       >
-                        <BookOpen className="w-4 h-4 mr-2" />
-                        Справочник формул
+                        <BookOpen className="w-4 h-4 sm:mr-2" />
+                        <span className="hidden sm:inline">Справочник формул</span>
                       </Button>
                       <Button
                         onClick={handleFinishTest}
                         variant="outline"
-                        className="bg-red-50 hover:bg-red-100 border-red-200 text-red-700"
+                        className="bg-red-50 hover:bg-red-100 border-red-200 text-red-700 w-full sm:w-auto"
                       >
                         Завершить тест
                       </Button>
-                     <div className="flex items-center gap-2">
-                       <span className="text-sm font-normal text-gray-500">
+                     <div className="flex items-center gap-2 justify-center sm:justify-start">
+                       <span className="text-xs sm:text-sm font-normal text-gray-500">
                          ID: {currentQuestion.question_id}
                        </span>
                        {currentQuestion.status === 'correct' && (
@@ -1334,21 +1334,21 @@ const PracticeByNumberOgemath = () => {
                       src={currentQuestion.problem_image} 
                       alt="Изображение к задаче"
                       className="max-w-full h-auto rounded-lg shadow-sm border"
-                      style={{ maxHeight: '400px' }}
+                      style={{ maxHeight: '300px' }}
                     />
                   </div>
                 )}
 
                    {/* Answer Input */}
                 <div className="space-y-4">
-                  <div className="flex gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <Input
                       value={userAnswer}
                       onChange={(e) => setUserAnswer(e.target.value)}
                       placeholder="Введите ваш ответ"
                       disabled={isAnswered || solutionViewedBeforeAnswer}
                       onKeyPress={(e) => e.key === 'Enter' && !isAnswered && !solutionViewedBeforeAnswer && checkAnswer()}
-                      className="flex-1 bg-white border-gray-300 text-[#1a1f36] placeholder:text-gray-500"
+                      className="flex-1 w-full bg-white border-gray-300 text-[#1a1f36] placeholder:text-gray-500"
                     />
                     <Button
                       onClick={async () => {
@@ -1364,7 +1364,7 @@ const PracticeByNumberOgemath = () => {
                         isProcessingPhoto || 
                         (!userAnswer.trim() && uploadedImages.length === 0)
                       }
-                      className="min-w-32 bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36] shadow-md font-medium disabled:opacity-50 transition-all"
+                      className="w-full sm:w-auto min-w-32 bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36] shadow-md font-medium disabled:opacity-50 transition-all"
                     >
                       <CheckCircle className="w-4 h-4 mr-2" />
                       {isProcessingPhoto ? 'Обработка...' : 'Проверить'}

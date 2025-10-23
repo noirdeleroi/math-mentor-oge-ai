@@ -1022,9 +1022,9 @@ const PracticeByNumberEgeProfMath = () => {
             currentQuestion && (
               <Card className="bg-white/95 backdrop-blur border border-white/20 rounded-2xl shadow-xl mb-6">
                 <CardHeader className="border-b border-white/20">
-                  <CardTitle className="flex justify-between items-center text-[#1a1f36]">
-                    <span>Вопрос {currentQuestionIndex + 1} из {questions.length}</span>
-                    <span className="text-sm font-normal text-gray-600">ID: {currentQuestion.question_id}</span>
+                  <CardTitle className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4 text-[#1a1f36]">
+                    <span className="text-lg sm:text-xl">Вопрос {currentQuestionIndex + 1} из {questions.length}</span>
+                    <span className="text-xs sm:text-sm font-normal text-gray-600">ID: {currentQuestion.question_id}</span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6 pt-6">
@@ -1040,7 +1040,7 @@ const PracticeByNumberEgeProfMath = () => {
                         src={currentQuestion.problem_image} 
                         alt="Изображение к задаче"
                         className="max-w-full h-auto rounded-lg shadow-sm border"
-                        style={{ maxHeight: '400px' }}
+                        style={{ maxHeight: '300px' }}
                       />
                     </div>
                   )}
@@ -1067,19 +1067,19 @@ const PracticeByNumberEgeProfMath = () => {
 
                   {/* Answer Input */}
                   <div className="space-y-4">
-                    <div className="flex gap-2">
+                    <div className="flex flex-col sm:flex-row gap-2">
                       <Input
                         value={userAnswer}
                         onChange={(e) => setUserAnswer(e.target.value)}
                         placeholder="Введите ваш ответ"
                         disabled={isAnswered}
                         onKeyPress={(e) => e.key === 'Enter' && !isAnswered && checkAnswer()}
-                        className="flex-1 bg-white border-gray-300 text-[#1a1f36] placeholder:text-gray-500"
+                        className="flex-1 w-full bg-white border-gray-300 text-[#1a1f36] placeholder:text-gray-500"
                       />
                       <Button
                         onClick={checkAnswer}
                         disabled={isAnswered || !userAnswer.trim()}
-                        className="min-w-32 bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36] shadow-md font-medium disabled:opacity-50 transition-all"
+                        className="w-full sm:w-auto min-w-32 bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36] shadow-md font-medium disabled:opacity-50 transition-all"
                       >
                         <CheckCircle className="w-4 h-4 mr-2" />
                         Проверить
