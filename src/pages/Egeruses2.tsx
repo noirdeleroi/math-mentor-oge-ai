@@ -311,7 +311,7 @@ const Egeruses2 = () => {
             <p className="text-white/80">Выберите тему и загрузите текст через Telegram</p>
           </div>
 
-          <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-6 shadow-xl text-white">
+            <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-6 shadow-xl text-white">
             {!currentEssay && (
               <div className="text-center">
                 <button
@@ -333,19 +333,22 @@ const Egeruses2 = () => {
                   <div className="text-xl font-semibold mt-1">{currentTopic.essay_topic}</div>
                 </div>
 
+                <div className="text-center">
+                  <button
+                    onClick={handleStart}
+                    disabled={starting}
+                    className="inline-flex items-center justify-center px-6 h-12 rounded-xl bg-gradient-to-r from-yellow-500 to-emerald-500 text-[#1a1f36] font-bold shadow hover:from-yellow-600 hover:to-emerald-600 transition"
+                  >
+                    Получить тему сочинения
+                  </button>
+                </div>
+
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => setModalOpen(true)}
                     className="px-4 h-11 rounded-xl border border-white/30 hover:bg-white/10 transition"
                   >
                     Прикрепить фото
-                  </button>
-                  <button
-                    onClick={handleStart}
-                    disabled={starting}
-                    className="px-4 h-11 rounded-xl border border-white/30 hover:bg-white/10 transition"
-                  >
-                    Получить тему сочинения
                   </button>
                 </div>
 
@@ -365,7 +368,8 @@ const Egeruses2 = () => {
                       <textarea
                         value={telegramInput}
                         onChange={(e) => setTelegramInput(e.target.value)}
-                        className="w-full min-h-[160px] p-3 rounded-xl bg-white/10 border border-white/20 outline-none"
+                        rows={12}
+                        className="w-full p-3 rounded-xl bg-white/10 border border-white/20 outline-none"
                       />
                     ) : (
                       <div className="w-full min-h-[120px] p-3 rounded-xl bg-white/10 border border-white/20">

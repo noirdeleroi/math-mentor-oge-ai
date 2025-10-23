@@ -224,14 +224,14 @@ Deno.serve(async (req) => {
     const { data: prof, error: profErr } = await supabase
       .from('profiles')
       .select('telegram_input')
-      .eq('id', userId)
+      .eq('user_id', userId)
       .maybeSingle();
     if (profErr) throw profErr;
     const telegramInput = (prof?.telegram_input ?? '').toString();
 
-    // 2) Find most recent student_essay for user
+    // 2) Find most recent student_essay1 for user
     const { data: essayRows, error: essayErr } = await supabase
-      .from('student_essay')
+      .from('student_essay1')
       .select('id, essay_topic_id, created_at')
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
@@ -242,7 +242,7 @@ Deno.serve(async (req) => {
 
     // 3) Fetch topic text
     const { data: topicRow, error: topicErr } = await supabase
-      .from('rus_essay_topics')
+      .from('essay_topics')
       .select('essay_topic')
       .eq('id', essayRow.essay_topic_id)
       .maybeSingle();
@@ -272,7 +272,7 @@ Deno.serve(async (req) => {
     // 6) Persist analysis + score
     const score = parseScore(text);
     const { error: updErr } = await supabase
-      .from('student_essay')
+      .from('student_essay1')
       .update({ analysis: text, score: score ?? null })
       .eq('id', essayRow.id);
     if (updErr) throw updErr;
