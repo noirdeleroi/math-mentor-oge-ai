@@ -85,8 +85,9 @@ const PracticeByNumberOgemath = () => {
   const [photoScores, setPhotoScores] = useState<number | null>(null);
   
   // Device upload states
-  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [showImagePreview, setShowImagePreview] = useState(false);
+  const [selectedPreviewImage, setSelectedPreviewImage] = useState<string | null>(null);
 
   // Formula booklet state
   const [showFormulaBooklet, setShowFormulaBooklet] = useState(false);
@@ -212,7 +213,7 @@ const PracticeByNumberOgemath = () => {
     setSolutionViewedBeforeAnswer(false);
     setCurrentAttemptId(null);
     setAttemptStartTime(null);
-    setUploadedImage(null);
+    setUploadedImages([]);
     setPhotoFeedback("");
     setPhotoScores(null);
   };
@@ -861,38 +862,64 @@ const PracticeByNumberOgemath = () => {
     }
   };
 
-  // Handle device upload
+  // Handle device upload (multiple files)
   const handleDeviceUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
 
-    // Check if it's an image
-    if (!file.type.startsWith('image/')) {
-      toast.error('Пожалуйста, загрузите изображение');
+    // Check if adding these files would exceed the limit
+    const remainingSlots = 3 - uploadedImages.length;
+    if (remainingSlots === 0) {
+      toast.error('Максимум 3 файла');
       return;
     }
 
-    // Check file size (max 20MB)
-    if (file.size > 20 * 1024 * 1024) {
-      toast.error('Файл слишком большой. Максимальный размер: 20MB');
-      return;
-    }
+    const filesToProcess = Array.from(files).slice(0, remainingSlots);
+    const newImages: string[] = [];
+    let processedCount = 0;
 
-    // Read the file as data URL
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const result = e.target?.result as string;
-      setUploadedImage(result);
-      toast.success('Фото загружено');
-    };
-    reader.onerror = () => {
-      toast.error('Ошибка при загрузке файла');
-    };
-    reader.readAsDataURL(file);
+    filesToProcess.forEach((file) => {
+      // Check if it's an image
+      if (!file.type.startsWith('image/')) {
+        toast.error('Пожалуйста, загрузите только изображения');
+        return;
+      }
+
+      // Check file size (max 20MB)
+      if (file.size > 20 * 1024 * 1024) {
+        toast.error(`Файл ${file.name} слишком большой. Максимальный размер: 20MB`);
+        return;
+      }
+
+      // Read the file as data URL
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        newImages.push(result);
+        processedCount++;
+
+        if (processedCount === filesToProcess.length) {
+          setUploadedImages(prev => [...prev, ...newImages]);
+          toast.success(`Загружено ${newImages.length} фото`);
+        }
+      };
+      reader.onerror = () => {
+        toast.error('Ошибка при загрузке файла');
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Reset the input
+    event.target.value = '';
   };
 
-  const handleRemoveUploadedImage = () => {
-    setUploadedImage(null);
+  const handleRemoveUploadedImage = (index: number) => {
+    setUploadedImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleImageClick = (image: string) => {
+    setSelectedPreviewImage(image);
+    setShowImagePreview(true);
   };
 
   const clearPhotoFeedback = () => {
@@ -1287,30 +1314,39 @@ const PracticeByNumberOgemath = () => {
                           id="device-upload-input"
                           type="file"
                           accept="image/*"
+                          multiple
                           className="hidden"
                           onChange={handleDeviceUpload}
                         />
                       </div>
                       
-                      {/* Image Preview */}
-                      {uploadedImage && (
-                        <div className="flex justify-center">
-                          <div className="relative inline-block">
-                            <img
-                              src={uploadedImage}
-                              alt="Uploaded solution"
-                              className="max-w-xs max-h-48 rounded-lg border-2 border-primary/20 cursor-pointer hover:opacity-90 transition-opacity"
-                              onClick={() => setShowImagePreview(true)}
-                            />
-                            <Button
-                              variant="destructive"
-                              size="icon"
-                              className="absolute -top-2 -right-2 h-6 w-6 rounded-full"
-                              onClick={handleRemoveUploadedImage}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </div>
+                      {/* Image Previews */}
+                      {uploadedImages.length > 0 && (
+                        <div className="flex justify-center gap-3 flex-wrap">
+                          {uploadedImages.map((image, index) => (
+                            <div key={index} className="relative inline-block">
+                              <img
+                                src={image}
+                                alt={`Uploaded solution ${index + 1}`}
+                                className="max-w-xs max-h-48 rounded-lg border-2 border-primary/20 cursor-pointer hover:opacity-90 transition-opacity"
+                                onClick={() => handleImageClick(image)}
+                              />
+                              <Button
+                                variant="destructive"
+                                size="icon"
+                                className="absolute -top-2 -right-2 h-6 w-6 rounded-full"
+                                onClick={() => handleRemoveUploadedImage(index)}
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      
+                      {uploadedImages.length > 0 && uploadedImages.length < 3 && (
+                        <div className="text-xs text-center text-gray-500">
+                          Загружено {uploadedImages.length} из 3 фото
                         </div>
                       )}
                     </div>
@@ -1507,7 +1543,7 @@ const PracticeByNumberOgemath = () => {
           </DialogHeader>
           <div className="flex justify-center">
             <img
-              src={uploadedImage || ''}
+              src={selectedPreviewImage || ''}
               alt="Uploaded solution full size"
               className="max-w-full max-h-[70vh] rounded-lg"
             />
