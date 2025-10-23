@@ -174,18 +174,25 @@ const Egeruses2 = () => {
       const { data, error } = await supabase
         .from('profiles')
         .select('telegram_input')
-        .eq('id', userId)
+        .eq('user_id', userId)
         .maybeSingle();
       if (error) throw error;
       const txt = (data?.telegram_input ?? '').toString();
-      if (!txt.trim()) setErrorText('Ошибка в сети... Попробуй позже');
+      if (!txt.trim()) {
+        setErrorText('Текст не найден в профиле');
+        setTelegramInputLoading(false);
+        closeModal();
+        return;
+      }
       setTelegramInput(txt);
       setEditMode(false);
-    } catch {
+      closeModal();
+    } catch (err) {
+      console.error('Error fetching telegram input:', err);
       setErrorText('Ошибка в сети... Попробуй позже');
+      closeModal();
     } finally {
       setTelegramInputLoading(false);
-      closeModal();
     }
   };
 
@@ -201,7 +208,7 @@ const Egeruses2 = () => {
       const { error } = await supabase
         .from('profiles')
         .update({ telegram_input: telegramInput })
-        .eq('id', userId);
+        .eq('user_id', userId);
       if (error) throw error;
       setEditMode(false);
     } catch {
@@ -332,6 +339,13 @@ const Egeruses2 = () => {
                     className="px-4 h-11 rounded-xl border border-white/30 hover:bg-white/10 transition"
                   >
                     Прикрепить фото
+                  </button>
+                  <button
+                    onClick={handleStart}
+                    disabled={starting}
+                    className="px-4 h-11 rounded-xl border border-white/30 hover:bg-white/10 transition"
+                  >
+                    Получить тему сочинения
                   </button>
                 </div>
 

@@ -1,10 +1,9 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import type { Database } from '@/integrations/supabase/types';
 
-type UserMastery = Database['public']['Tables']['user_mastery']['Row'];
-type UserActivity = Database['public']['Tables']['user_activities']['Row'];
+// Legacy types - tables don't exist
+type UserMastery = any;
+type UserActivity = any;
 
 export type { UserMastery, UserActivity };
 
@@ -27,192 +26,60 @@ const MASTERY_THRESHOLDS = {
 
 export const useMasterySystem = () => {
   const { user } = useAuth();
-  const [userMastery, setUserMastery] = useState<UserMastery[]>([]);
-  const [userActivities, setUserActivities] = useState<UserActivity[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [userMastery] = useState<UserMastery[]>([]);
+  const [userActivities] = useState<UserActivity[]>([]);
+  const [loading] = useState(false);
 
-  // Fetch user's mastery data
-  useEffect(() => {
-    if (user) {
-      fetchUserMastery();
-      fetchUserActivities();
-    }
-  }, [user]);
-
+  // Legacy hook - tables don't exist, functions disabled
   const fetchUserMastery = async () => {
     if (!user) return;
-
-    const { data, error } = await supabase
-      .from('user_mastery')
-      .select('*')
-      .eq('user_id', user.id);
-
-    if (error) {
-      console.error('Error fetching user mastery:', error);
-    } else {
-      setUserMastery(data || []);
-    }
-    setLoading(false);
+    console.warn('user_mastery table does not exist');
   };
 
   const fetchUserActivities = async () => {
     if (!user) return;
-
-    const { data, error } = await supabase
-      .from('user_activities')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('completed_at', { ascending: false });
-
-    if (error) {
-      console.error('Error fetching user activities:', error);
-    } else {
-      setUserActivities(data || []);
-    }
+    console.warn('user_activities table does not exist');
   };
 
-  // Award points for completing an activity
+  const logActivity = async (_activityType: string, _skillId: string, _points: number) => {
+    if (!user) return;
+    console.warn('user_activities table does not exist');
+  };
+
+  const updateMastery = async (_skillId: string, _points: number, _totalPossible: number) => {
+    if (!user) return;
+    console.warn('user_mastery table does not exist');
+  };
+
   const awardPoints = async (
-    activityType: UserActivity['activity_type'],
-    unitNumber: number,
-    subunitNumber: number | null,
-    activityId: string,
-    timeSpentMinutes: number = 0
+    _activityType: UserActivity['activity_type'],
+    _unitNumber: number,
+    _subunitNumber: number | null,
+    _activityId: string,
+    _timeSpentMinutes: number = 0
   ) => {
-    if (!user) return;
-
-    const pointsEarned = POINTS_SYSTEM[activityType];
-
-    // Record the activity
-    const { error: activityError } = await supabase
-      .from('user_activities')
-      .insert({
-        user_id: user.id,
-        activity_type: activityType,
-        unit_number: unitNumber,
-        subunit_number: subunitNumber,
-        activity_id: activityId,
-        points_earned: pointsEarned,
-        time_spent_minutes: timeSpentMinutes
-      });
-
-    if (activityError) {
-      console.error('Error recording activity:', activityError);
-      return;
-    }
-
-    // Update or create mastery record
-    await updateMasteryProgress(unitNumber, subunitNumber, pointsEarned);
-    
-    // Refresh data
-    fetchUserMastery();
-    fetchUserActivities();
-
-    return pointsEarned;
+    console.warn('user_mastery table does not exist');
+    return 0;
   };
 
-  const updateMasteryProgress = async (
-    unitNumber: number,
-    subunitNumber: number | null,
-    pointsToAdd: number
-  ) => {
-    if (!user) return;
-
-    // Check if mastery record exists
-    const { data: existingMastery } = await supabase
-      .from('user_mastery')
-      .select('*')
-      .eq('user_id', user.id)
-      .eq('unit_number', unitNumber)
-      .eq('subunit_number', subunitNumber)
-      .single();
-
-    if (existingMastery) {
-      // Update existing record
-      const newPoints = existingMastery.mastery_points + pointsToAdd;
-      const newLevel = calculateMasteryLevel(newPoints, existingMastery.total_possible_points);
-
-      await supabase
-        .from('user_mastery')
-        .update({
-          mastery_points: newPoints,
-          mastery_level: newLevel
-        })
-        .eq('id', existingMastery.id);
-    } else {
-      // Create new record
-      const totalPossiblePoints = calculateTotalPossiblePoints(unitNumber, subunitNumber);
-      const newLevel = calculateMasteryLevel(pointsToAdd, totalPossiblePoints);
-
-      await supabase
-        .from('user_mastery')
-        .insert({
-          user_id: user.id,
-          unit_number: unitNumber,
-          subunit_number: subunitNumber,
-          mastery_points: pointsToAdd,
-          total_possible_points: totalPossiblePoints,
-          mastery_level: newLevel
-        });
-    }
+  const getUserMastery = (_unitNumber: number, _subunitNumber?: number): UserMastery | null => {
+    return null;
   };
 
-  const calculateTotalPossiblePoints = (unitNumber: number, subunitNumber: number | null): number => {
-    // This would be calculated based on the unit structure
-    // For now, using a simple formula
-    if (subunitNumber) {
-      // Subunit: videos + articles + practices (assuming 3-5 skills per subunit)
-      return (4 * POINTS_SYSTEM.video) + (4 * POINTS_SYSTEM.article) + (3 * POINTS_SYSTEM.practice);
-    } else {
-      // Unit: all subunit points + quizzes + unit test
-      return 500 + (2 * POINTS_SYSTEM.quiz) + POINTS_SYSTEM.unit_test; // Approximate
-    }
+  const calculateUnitProgress = (_unitNumber: number, _subunitId?: string): number => {
+    return 0;
   };
 
-  const calculateMasteryLevel = (points: number, totalPoints: number): UserMastery['mastery_level'] => {
-    const percentage = (points / totalPoints) * 100;
-    
-    if (percentage >= MASTERY_THRESHOLDS.mastered) return 'mastered';
-    if (percentage >= MASTERY_THRESHOLDS.proficient) return 'proficient';
-    if (percentage >= MASTERY_THRESHOLDS.familiar) return 'familiar';
-    if (percentage >= MASTERY_THRESHOLDS.attempted) return 'attempted';
+  const getMasteryLevel = (_progressPercentage: number): string => {
     return 'not_started';
   };
 
-  // Get mastery progress for a unit or subunit
-  const getUserMastery = (unitNumber: number, subunitNumber?: number): UserMastery | null => {
-    return userMastery.find(m => 
-      m.unit_number === unitNumber && 
-      (subunitNumber ? m.subunit_number === subunitNumber : m.subunit_number === null)
-    ) || null;
-  };
-
-  // Calculate progress percentage
-  const calculateUnitProgress = (unitNumber: number, subunitId?: string): number => {
-    const subunitNumber = subunitId ? parseFloat(subunitId.split('.')[1]) : undefined;
-    const mastery = getUserMastery(unitNumber, subunitNumber);
-    
-    if (!mastery) return 0;
-    return Math.min((mastery.mastery_points / mastery.total_possible_points) * 100, 100);
-  };
-
-  // Get mastery level from progress percentage
-  const getMasteryLevel = (progressPercentage: number): UserMastery['mastery_level'] => {
-    if (progressPercentage >= MASTERY_THRESHOLDS.mastered) return 'mastered';
-    if (progressPercentage >= MASTERY_THRESHOLDS.proficient) return 'proficient';
-    if (progressPercentage >= MASTERY_THRESHOLDS.familiar) return 'familiar';
-    if (progressPercentage >= MASTERY_THRESHOLDS.attempted) return 'attempted';
-    return 'not_started';
-  };
-
-  // Get total points earned by user
   const getTotalPoints = (): number => {
-    return userActivities.reduce((total, activity) => total + activity.points_earned, 0);
+    return 0;
   };
 
-  // Get recent activities
-  const getRecentActivities = (limit: number = 10): UserActivity[] => {
-    return userActivities.slice(0, limit);
+  const getRecentActivities = (_limit: number = 10): UserActivity[] => {
+    return [];
   };
 
   return {

@@ -7,7 +7,10 @@ export interface StudentProgressData {
 
 export const fetchStudentProgress = async (userId: string): Promise<StudentProgressData | null> => {
   try {
-    const { data, error } = await supabase
+    // Legacy - student_skills table doesn't exist
+    console.warn('student_skills table does not exist');
+    return null;
+    /* const { data, error } = await supabase
       .from('student_skills')
       .select('*')
       .eq('uid', userId)
@@ -18,7 +21,7 @@ export const fetchStudentProgress = async (userId: string): Promise<StudentProgr
       return null;
     }
 
-    return data;
+    return data; */
   } catch (error) {
     console.error('Error in fetchStudentProgress:', error);
     return null;

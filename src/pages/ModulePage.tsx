@@ -369,7 +369,7 @@ const ModulePage = () => {
               }}
               questionCount={selectedExercise.questionCount}
               isModuleTest={selectedExercise.isModuleTest}
-              courseId={Number(selectedExercise.courseId) || 1}
+              courseId={selectedExercise.courseId}
               itemId={selectedExercise.itemId}
             />
           </div>
