@@ -311,36 +311,23 @@ const Egeruses2 = () => {
             <p className="text-white/80">Выберите тему и загрузите текст через Telegram</p>
           </div>
 
-            <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-6 shadow-xl text-white">
-            {!currentEssay && (
-              <div className="text-center">
-                <button
-                  onClick={handleStart}
-                  disabled={starting || loadingPending}
-                  className="inline-flex items-center justify-center px-6 h-12 rounded-xl bg-gradient-to-r from-yellow-500 to-emerald-500 text-[#1a1f36] font-bold shadow hover:from-yellow-600 hover:to-emerald-600 transition"
-                >
-                  Получить тему сочинения
-                </button>
-                {loadingPending && <div className="mt-4 text-white/70">Загрузка...</div>}
-                {!!errorText && <div className="mt-4 text-red-300">{errorText}</div>}
-              </div>
-            )}
+          <div className="text-center mb-6">
+            <button
+              onClick={handleStart}
+              disabled={starting || loadingPending}
+              className="inline-flex items-center justify-center px-6 h-12 rounded-xl bg-gradient-to-r from-yellow-500 to-emerald-500 text-[#1a1f36] font-bold shadow hover:from-yellow-600 hover:to-emerald-600 transition"
+            >
+              {currentEssay ? 'Получить другую тему сочинения' : 'Получить тему сочинения'}
+            </button>
+            {loadingPending && <div className="mt-4 text-white/70">Загрузка...</div>}
+          </div>
 
+            <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-6 shadow-xl text-white">
             {currentEssay && currentTopic && (
               <div className="space-y-6">
                 <div>
                   <div className="text-sm text-white/70">Тема сочинения</div>
                   <div className="text-xl font-semibold mt-1">{currentTopic.essay_topic}</div>
-                </div>
-
-                <div className="text-center">
-                  <button
-                    onClick={handleStart}
-                    disabled={starting}
-                    className="inline-flex items-center justify-center px-6 h-12 rounded-xl bg-gradient-to-r from-yellow-500 to-emerald-500 text-[#1a1f36] font-bold shadow hover:from-yellow-600 hover:to-emerald-600 transition"
-                  >
-                    Получить тему сочинения
-                  </button>
                 </div>
 
                 <div className="flex items-center gap-3">
