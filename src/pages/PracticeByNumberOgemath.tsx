@@ -1231,7 +1231,7 @@ const PracticeByNumberOgemath = () => {
                         onClick={handlePhotoAttachment}
                       >
                         <Camera className="w-4 h-4 mr-2" />
-                        Прикрепить фото
+                        Загрузить через Telegram
                       </Button>
                     </div>
                   )}
