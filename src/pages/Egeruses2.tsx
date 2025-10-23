@@ -532,7 +532,7 @@ const Egeruses2 = () => {
         result += text.substring(cursor, rep.start);
       }
       const word = text.substring(rep.start, rep.end);
-      result += `<span class="error-highlight inline-block px-1 rounded border ${getCriterionHighlightColor(rep.criterion)}" data-error-index="${rep.sortedIndex}" data-criterion="${rep.criterion}">${word}</span>`;
+      result += `<span class="error-highlight inline-block px-1 rounded border cursor-pointer hover:scale-105 transition-transform ${getCriterionHighlightColor(rep.criterion)}" data-error-index="${rep.sortedIndex}" data-criterion="${rep.criterion}" onclick="handleHighlightedWordClick(${rep.sortedIndex}, '${rep.criterion}')">${word}</span>`;
       cursor = rep.end;
     }
     if (cursor < text.length) {
@@ -587,6 +587,34 @@ const Egeruses2 = () => {
       });
     }
   };
+
+  const handleHighlightedWordClick = (errorIndex: number, criterion: string) => {
+    // Find the error item in the Найденные ошибки section
+    const errorElement = document.querySelector(`[data-error-item-index="${errorIndex}"]`);
+    
+    if (errorElement) {
+      // Scroll to the error in the Найденные ошибки section
+      errorElement.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'center' 
+      });
+      
+      // Add glow effect to the error box
+      const glowColor = getCriterionGlowColor(criterion);
+      errorElement.classList.add('error-glow', glowColor);
+      setTimeout(() => {
+        errorElement.classList.remove('error-glow', glowColor);
+      }, 2000);
+    }
+  };
+
+  // Make the function available globally for onclick handlers
+  useEffect(() => {
+    (window as any).handleHighlightedWordClick = handleHighlightedWordClick;
+    return () => {
+      delete (window as any).handleHighlightedWordClick;
+    };
+  }, []);
 
   const getSortedErrors = () => {
     if (!analysisData?.errors) return [];
