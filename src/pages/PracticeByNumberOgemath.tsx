@@ -88,6 +88,7 @@ const PracticeByNumberOgemath = () => {
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [showImagePreview, setShowImagePreview] = useState(false);
   const [selectedPreviewImage, setSelectedPreviewImage] = useState<string | null>(null);
+  const [ocrProgress, setOcrProgress] = useState<string>("");
 
   // Formula booklet state
   const [showFormulaBooklet, setShowFormulaBooklet] = useState(false);
@@ -216,6 +217,7 @@ const PracticeByNumberOgemath = () => {
     setUploadedImages([]);
     setPhotoFeedback("");
     setPhotoScores(null);
+    setOcrProgress("");
   };
 
   const toggleQuestionGroup = (groupType: string) => {
@@ -927,6 +929,108 @@ const PracticeByNumberOgemath = () => {
     setPhotoScores(null);
   };
 
+  const handleDevicePhotoCheck = async () => {
+    if (!user || !currentQuestion) return;
+    if (uploadedImages.length === 0) return;
+
+    setIsProcessingPhoto(true);
+    setOcrProgress(`Обработка фото 1 из ${uploadedImages.length}...`);
+
+    try {
+      // Step 1: Process photos via new edge function
+      const { data: processData, error: processError } = await supabase.functions.invoke('process-device-photos', {
+        body: {
+          user_id: user.id,
+          images: uploadedImages,
+          question_id: currentQuestion.question_id
+        }
+      });
+
+      if (processError || !processData?.success) {
+        console.error('Error processing device photos:', processError);
+        toast.error(processData?.error || 'Произошла ошибка при обработке. Пожалуйста, попробуйте снова.');
+        setIsProcessingPhoto(false);
+        setOcrProgress("");
+        return;
+      }
+
+      // Step 2: Get the LaTeX from profiles.telegram_input
+      setOcrProgress("Анализ решения...");
+      
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('telegram_input')
+        .eq('user_id', user.id)
+        .single();
+
+      if (profileError || !profile?.telegram_input) {
+        console.error('Error getting telegram input:', profileError);
+        toast.error('Ошибка при получении данных');
+        setIsProcessingPhoto(false);
+        setOcrProgress("");
+        return;
+      }
+
+      // Step 3: Call existing analyze-photo-solution function
+      const { data: apiResponse, error: apiError } = await supabase.functions.invoke('analyze-photo-solution', {
+        body: {
+          student_solution: profile.telegram_input,
+          problem_text: currentQuestion.problem_text,
+          solution_text: currentQuestion.solution_text,
+          user_id: user.id,
+          question_id: currentQuestion.question_id,
+          problem_number: currentQuestion.problem_number_type
+        }
+      });
+
+      if (apiError) {
+        console.error('Error calling analyze-photo-solution:', apiError);
+        if (apiResponse?.retry_message) {
+          toast.error(apiResponse.retry_message);
+        } else {
+          toast.error('Ошибка API. Попробуйте ввести решение снова.');
+        }
+        setIsProcessingPhoto(false);
+        setOcrProgress("");
+        return;
+      }
+
+      // Step 4: Process feedback
+      if (apiResponse?.feedback) {
+        try {
+          const feedbackData = JSON.parse(apiResponse.feedback);
+          if (feedbackData.review && typeof feedbackData.scores === 'number') {
+            setPhotoFeedback(feedbackData.review);
+            setPhotoScores(feedbackData.scores);
+            
+            const isCorrect = feedbackData.scores > 0;
+            await updateStudentActivity(isCorrect, feedbackData.scores);
+            
+            setIsCorrect(isCorrect);
+            setIsAnswered(true);
+            
+            // Clear uploaded images for next question
+            setUploadedImages([]);
+          } else {
+            toast.error('Неверный формат ответа API');
+          }
+        } catch (parseError) {
+          console.error('Error parsing API response:', parseError);
+          setPhotoFeedback(apiResponse.feedback);
+          setPhotoScores(null);
+        }
+      } else {
+        toast.error('Не удалось получить обратную связь');
+      }
+    } catch (error) {
+      console.error('Error in handleDevicePhotoCheck:', error);
+      toast.error('Произошла ошибка при обработке решения');
+    } finally {
+      setIsProcessingPhoto(false);
+      setOcrProgress("");
+    }
+  };
+
   const questionNumbers = Array.from({ length: 25 }, (_, i) => (i + 1).toString());
 
   return (
@@ -1247,13 +1351,34 @@ const PracticeByNumberOgemath = () => {
                       className="flex-1 bg-white border-gray-300 text-[#1a1f36] placeholder:text-gray-500"
                     />
                     <Button
-                      onClick={checkAnswer}
-                      disabled={isAnswered || solutionViewedBeforeAnswer || !userAnswer.trim()}
+                      onClick={async () => {
+                        if (uploadedImages.length > 0) {
+                          await handleDevicePhotoCheck();
+                        } else {
+                          await checkAnswer();
+                        }
+                      }}
+                      disabled={
+                        isAnswered || 
+                        solutionViewedBeforeAnswer || 
+                        isProcessingPhoto || 
+                        (!userAnswer.trim() && uploadedImages.length === 0)
+                      }
                       className="min-w-32 bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36] shadow-md font-medium disabled:opacity-50 transition-all"
                     >
                       <CheckCircle className="w-4 h-4 mr-2" />
-                      Проверить
+                      {isProcessingPhoto ? 'Обработка...' : 'Проверить'}
                     </Button>
+                  </div>
+                  
+                  {/* OCR Progress Display */}
+                  {ocrProgress && (
+                    <div className="text-center text-sm text-muted-foreground">
+                      {ocrProgress}
+                    </div>
+                  )}
+
+                  <div className="space-y-4">
                   </div>
 
                   {/* Note for part 2 questions (20-25) requiring photo upload */}

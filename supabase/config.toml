@@ -1,5 +1,8 @@
 project_id = "kbaazksvkvnafrwtmkcw"
 
+[functions.process-device-photos]
+verify_jwt = true
+
 [functions.process-user-query]
 
 
