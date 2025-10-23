@@ -40,6 +40,7 @@ const Egeruses2 = () => {
   const [checking, setChecking] = useState(false);
   const [statusStep, setStatusStep] = useState<number>(0);
   const [analysisText, setAnalysisText] = useState<string | null>(null);
+  const [analysisData, setAnalysisData] = useState<any>(null);
 
   const modalBackdropRef = useRef<HTMLDivElement>(null);
 
@@ -153,6 +154,7 @@ const Egeruses2 = () => {
       setCurrentTopic(chosen as Topic);
       setCurrentEssay(inserted as EssayRow);
       setAnalysisText(null);
+      setAnalysisData(null);
     } catch {
       setErrorText('Ошибка в сети... Попробуй позже');
     } finally {
@@ -235,6 +237,7 @@ const Egeruses2 = () => {
     setChecking(true);
     setStatusStep(0);
     setAnalysisText(null);
+    setAnalysisData(null);
     setErrorText(null);
     try {
       const textToUse = telegramInput?.toString().trim();
@@ -271,10 +274,25 @@ const Egeruses2 = () => {
         if (latestErr) {
           setErrorText('Ошибка в сети... Попробуй позже');
         } else {
-          setAnalysisText(latest?.analysis ?? '—');
+          const analysisValue = latest?.analysis ?? '—';
+          try {
+            const parsed = typeof analysisValue === 'string' ? JSON.parse(analysisValue) : analysisValue;
+            setAnalysisData(parsed);
+            setAnalysisText(null);
+          } catch {
+            setAnalysisText(analysisValue);
+            setAnalysisData(null);
+          }
         }
       } else {
-        setAnalysisText(analysis);
+        try {
+          const parsed = typeof analysis === 'string' ? JSON.parse(analysis) : analysis;
+          setAnalysisData(parsed);
+          setAnalysisText(null);
+        } catch {
+          setAnalysisText(analysis);
+          setAnalysisData(null);
+        }
       }
     } catch {
       setErrorText('Ошибка в сети... Попробуй позже');
@@ -386,6 +404,92 @@ const Egeruses2 = () => {
                     </div>
                     {statusStep >= 2 && <div>Проверяем речевое оформление сочинения</div>}
                     {statusStep >= 3 && <div>Проверяем грамотность</div>}
+                  </div>
+                )}
+
+                {!!analysisData && (
+                  <div className="mt-6">
+                    <div className="text-sm text-white/70 mb-2">Анализ</div>
+                    <div className="p-4 rounded-xl bg-white/10 border border-white/20 space-y-4">
+                      <div className="text-lg font-semibold">{analysisData.greeting}</div>
+                      <div className="p-3 rounded-lg bg-emerald-500/20 border border-emerald-500/30">
+                        <div className="font-medium">{analysisData.overall_quality}</div>
+                        <div className="mt-2 text-xl font-bold">{analysisData.total_score_text}</div>
+                      </div>
+
+                      <div className="space-y-3">
+                        <div className="font-semibold text-base">{analysisData.section_I_title}</div>
+                        <div className="pl-3 space-y-2">
+                          <div>
+                            <div className="text-sm font-medium">{analysisData.k1_title}</div>
+                            <div className="text-sm text-white/80">{analysisData.k1_comment}</div>
+                            <div className="text-sm text-emerald-400">Балл: {analysisData.k1_score}/{analysisData.k1_max}</div>
+                          </div>
+                          <div>
+                            <div className="text-sm font-medium">{analysisData.k2_title}</div>
+                            <div className="text-sm text-white/80">{analysisData.k2_comment}</div>
+                            <div className="text-sm text-emerald-400">Балл: {analysisData.k2_score}/{analysisData.k2_max}</div>
+                          </div>
+                          <div>
+                            <div className="text-sm font-medium">{analysisData.k3_title}</div>
+                            <div className="text-sm text-white/80">{analysisData.k3_comment}</div>
+                            <div className="text-sm text-emerald-400">Балл: {analysisData.k3_score}/{analysisData.k3_max}</div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-3">
+                        <div className="font-semibold text-base">{analysisData.section_II_title}</div>
+                        <div className="pl-3 space-y-2">
+                          <div>
+                            <div className="text-sm font-medium">{analysisData.k4_title}</div>
+                            <div className="text-sm text-white/80">{analysisData.k4_comment}</div>
+                            <div className="text-sm text-emerald-400">Балл: {analysisData.k4_score}/{analysisData.k4_max}</div>
+                          </div>
+                          <div>
+                            <div className="text-sm font-medium">{analysisData.k5_title}</div>
+                            <div className="text-sm text-white/80">{analysisData.k5_comment}</div>
+                            <div className="text-sm text-emerald-400">Балл: {analysisData.k5_score}/{analysisData.k5_max}</div>
+                          </div>
+                          <div>
+                            <div className="text-sm font-medium">{analysisData.k6_title}</div>
+                            <div className="text-sm text-white/80">{analysisData.k6_comment}</div>
+                            <div className="text-sm text-emerald-400">Балл: {analysisData.k6_score}/{analysisData.k6_max}</div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-3">
+                        <div className="font-semibold text-base">{analysisData.section_III_title}</div>
+                        <div className="pl-3 space-y-2">
+                          <div>
+                            <div className="text-sm font-medium">{analysisData.k7_title}</div>
+                            <div className="text-sm text-white/80">{analysisData.k7_comment}</div>
+                            <div className="text-sm text-emerald-400">Балл: {analysisData.k7_score}/{analysisData.k7_max}</div>
+                          </div>
+                          <div>
+                            <div className="text-sm font-medium">{analysisData.k8_title}</div>
+                            <div className="text-sm text-white/80">{analysisData.k8_comment}</div>
+                            <div className="text-sm text-emerald-400">Балл: {analysisData.k8_score}/{analysisData.k8_max}</div>
+                          </div>
+                          <div>
+                            <div className="text-sm font-medium">{analysisData.k9_title}</div>
+                            <div className="text-sm text-white/80">{analysisData.k9_comment}</div>
+                            <div className="text-sm text-emerald-400">Балл: {analysisData.k9_score}/{analysisData.k9_max}</div>
+                          </div>
+                          <div>
+                            <div className="text-sm font-medium">{analysisData.k10_title}</div>
+                            <div className="text-sm text-white/80">{analysisData.k10_comment}</div>
+                            <div className="text-sm text-emerald-400">Балл: {analysisData.k10_score}/{analysisData.k10_max}</div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="p-3 rounded-lg bg-white/10 border border-white/20">
+                        <div className="font-medium mb-1">{analysisData.conclusion_title}</div>
+                        <div className="text-sm text-white/80">{analysisData.conclusion}</div>
+                      </div>
+                    </div>
                   </div>
                 )}
 
