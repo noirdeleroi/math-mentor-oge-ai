@@ -146,6 +146,7 @@ const DigitalTextbook = () => {
   const [selectedText, setSelectedText] = useState('');
   const [customQuestion, setCustomQuestion] = useState('');
   const [isSelecting, setIsSelecting] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { user } = useAuth();
   const { messages, isTyping, isDatabaseMode, addMessage, setIsTyping } = useChatContext();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -438,11 +439,11 @@ const DigitalTextbook = () => {
 
     return (
       <div className="space-y-6">
-        <div className="text-center mb-8">
-          <h2 className="font-display text-4xl font-bold mb-4 bg-gradient-to-r from-yellow-500 to-emerald-500 text-transparent bg-clip-text">
+        <div className="text-center mb-6 md:mb-8">
+          <h2 className="font-display text-2xl md:text-4xl font-bold mb-3 md:mb-4 bg-gradient-to-r from-yellow-500 to-emerald-500 text-transparent bg-clip-text">
             {currentTopic} {currentTopicData.name}
           </h2>
-          <p className="text-xl text-gray-300">
+          <p className="text-lg md:text-xl text-gray-300">
             Все навыки по теме - выберите для изучения
           </p>
         </div>
@@ -462,20 +463,20 @@ const DigitalTextbook = () => {
                 setSearchParams({ skill: skill.number.toString() });
               }}
             >
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className={`p-3 rounded-full ${
+              <CardContent className="p-4 md:p-6">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 md:gap-4">
+                    <div className={`p-2 md:p-3 rounded-full flex-shrink-0 ${
                       selectedSkill === skill.number
                         ? 'bg-white/20'
                         : 'bg-gradient-to-br from-yellow-500/20 to-emerald-500/20'
                     }`}>
-                      <BookOpen className={`h-5 w-5 ${
+                      <BookOpen className={`h-4 w-4 md:h-5 md:w-5 ${
                         selectedSkill === skill.number ? 'text-white' : 'text-yellow-600'
                       }`} />
                     </div>
-                    <div>
-                      <h3 className={`text-lg font-semibold ${
+                    <div className="min-w-0 flex-1">
+                      <h3 className={`text-base md:text-lg font-semibold ${
                         selectedSkill === skill.number ? 'text-white' : 'text-[#1a1f36]'
                       }`}>
                         {skill.number}. {skill.name}
@@ -485,10 +486,10 @@ const DigitalTextbook = () => {
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    className={selectedSkill === skill.number 
+                    className={`w-full md:w-auto ${selectedSkill === skill.number 
                       ? 'border-white text-white hover:bg-white/20' 
                       : 'border-gray-300 text-[#1a1f36] hover:bg-yellow-500/10'
-                    }
+                    }`}
                   >
                     Изучить
                   </Button>
@@ -545,6 +546,14 @@ const DigitalTextbook = () => {
       style={{ background: "linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)" }}
     >
 
+      {/* Mobile Menu Button */}
+      <button
+        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+        className="fixed top-4 left-4 z-50 md:hidden bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-400 hover:to-emerald-400 text-[#1a1f36] p-2 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-110 transition-all duration-300"
+      >
+        <BookOpen className="h-5 w-5" />
+      </button>
+
       {/* Chat Toggle Button - Fixed to right edge - ALWAYS VISIBLE */}
       <button
         onClick={() => setIsChatOpen(true)}
@@ -554,8 +563,16 @@ const DigitalTextbook = () => {
         <span className="font-medium">ЧАТ</span>
       </button>
       
-      {/* Left Sidebar - Fixed */}
-      <div className="w-64 h-screen bg-[#1a1f36]/80 backdrop-blur-lg border-r border-yellow-500/20 flex-shrink-0 flex flex-col overflow-auto pt-20">
+      {/* Mobile Overlay */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-30 md:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
+      {/* Left Sidebar - Responsive */}
+      <div className={`${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 fixed md:relative z-40 md:z-auto w-64 h-screen bg-[#1a1f36]/95 md:bg-[#1a1f36]/80 backdrop-blur-lg border-r border-yellow-500/20 flex-shrink-0 flex flex-col overflow-auto pt-20 md:pt-20 transition-transform duration-300 ease-in-out`}>
         
         {/* Navigation buttons */}
         <div className="p-4 space-y-2 border-b border-yellow-500/20">
@@ -617,10 +634,9 @@ const DigitalTextbook = () => {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col overflow-hidden">
 
-
         {/* Content Area */}
-        <div className="flex-1 overflow-auto relative pt-20">
-          <div className="max-w-6xl mx-auto px-4 py-6">
+        <div className="flex-1 overflow-auto relative pt-16 md:pt-20">
+          <div className="max-w-6xl mx-auto px-4 py-4 md:py-6">
             {/* Breadcrumb Navigation */}
             {(selectedModule || selectedTopic || selectedSkill) && (
               <div className="flex items-center gap-2 mb-6 text-sm text-gray-300">
@@ -665,13 +681,13 @@ const DigitalTextbook = () => {
                   <>
                     {currentArticle && (
                       <Card className="w-full bg-white/95 backdrop-blur-lg border-white/20 text-[#1a1f36]">
-                        <CardHeader className="bg-gradient-to-r from-yellow-500/10 to-emerald-500/10 border-b border-yellow-500/20">
-                          <CardTitle className="text-xl font-display text-[#1a1f36]">
+                        <CardHeader className="bg-gradient-to-r from-yellow-500/10 to-emerald-500/10 border-b border-yellow-500/20 p-4 md:p-6">
+                          <CardTitle className="text-lg md:text-xl font-display text-[#1a1f36]">
                             Навык {selectedSkill}: {getAllSkillsFromStructure().find(s => s.number === selectedSkill)?.name}
                           </CardTitle>
                         </CardHeader>
                          <CardContent 
-                          className={`p-6 relative ${isSelecting ? 'selection-mode' : ''}`}
+                          className={`p-4 md:p-6 relative ${isSelecting ? 'selection-mode' : ''}`}
                           onClick={isSelecting ? handleTextSelection : undefined}
                           style={{ 
                             cursor: isSelecting ? 'text' : 'default',
@@ -688,17 +704,17 @@ const DigitalTextbook = () => {
                           />
                           
                           {/* Practice Button */}
-                          <div className="mt-8 pt-6 border-t border-gray-200">
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <h3 className="text-lg font-semibold text-[#1a1f36]">Готовы к практике?</h3>
+                          <div className="mt-6 md:mt-8 pt-4 md:pt-6 border-t border-gray-200">
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                              <div className="flex-1">
+                                <h3 className="text-base md:text-lg font-semibold text-[#1a1f36]">Готовы к практике?</h3>
                                 <p className="text-sm text-gray-600">
                                   Закрепите знания с помощью интерактивных заданий
                                 </p>
                               </div>
                               <Button 
                                 onClick={handleStartPractice}
-                                className="flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-400 hover:to-emerald-400 text-[#1a1f36]"
+                                className="flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-400 hover:to-emerald-400 text-[#1a1f36] w-full md:w-auto"
                                 disabled={loadingMCQ}
                               >
                                 <Play className="h-4 w-4" />
@@ -746,8 +762,8 @@ const DigitalTextbook = () => {
 
       {/* Text Selection Popup */}
       {selectedText && (
-        <div className="fixed top-24 right-4 z-50 animate-fade-in">
-          <div className="bg-white/95 backdrop-blur-md border border-yellow-500/20 rounded-2xl shadow-2xl p-5 max-w-md transform transition-all duration-300 hover:scale-105">
+        <div className="fixed top-20 md:top-24 right-2 md:right-4 left-2 md:left-auto z-50 animate-fade-in">
+          <div className="bg-white/95 backdrop-blur-md border border-yellow-500/20 rounded-2xl shadow-2xl p-4 md:p-5 max-w-md mx-auto md:mx-0 transform transition-all duration-300 hover:scale-105">
             <div className="flex items-start gap-3 mb-4">
               <div className="w-8 h-8 bg-gradient-to-r from-yellow-500 to-emerald-500 rounded-full flex items-center justify-center flex-shrink-0">
                 <MessageCircle className="w-4 h-4 text-[#1a1f36]" />
