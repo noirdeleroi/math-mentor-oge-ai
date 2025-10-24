@@ -146,6 +146,7 @@ export const sendChatMessage = async (
   userMessage: Message,
   messageHistory: Message[],
   isDatabaseMode: boolean = false,
+  userId: string,
   homeworkContext?: any
 ): Promise<Message> => {
   try {
@@ -210,7 +211,7 @@ export const sendChatMessage = async (
       }));
       
       // Call Groq API for general conversation with homework context if available
-      responseText = await getChatCompletion(groqMessages, homeworkContext);
+      responseText = await getChatCompletion(groqMessages, userId, homeworkContext);
     }
     
     // Create and return AI message

@@ -383,7 +383,7 @@ ${updated.feedback_message}
 
     try {
       // Send message to AI and get response
-      const aiResponse = await sendChatMessage(newUserMessage, messages, isDatabaseMode);
+      const aiResponse = await sendChatMessage(newUserMessage, messages, isDatabaseMode, user.id);
       addMessage(aiResponse);
 
       // Save interaction to chat logs with course_id='2'

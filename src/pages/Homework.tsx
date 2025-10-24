@@ -263,7 +263,7 @@ const Homework = () => {
     setIsTyping(true);
 
     try {
-      const aiResponse = await sendChatMessage(newUserMessage, messages, isDatabaseMode);
+      const aiResponse = await sendChatMessage(newUserMessage, messages, isDatabaseMode, user.id);
       addMessage(aiResponse);
       try { await saveChatLog(newUserMessage.text, aiResponse.text, '1'); } catch (logError) {
         console.error('Error saving chat log:', logError);
@@ -284,7 +284,7 @@ const Homework = () => {
     setIsTyping(true);
 
     try {
-      const aiResponse = await sendChatMessage(userMessage, messages, false);
+      const aiResponse = await sendChatMessage(userMessage, messages, false, user.id);
       setMessages([...messages, userMessage, aiResponse]);
       try { await saveChatLog(userInput, aiResponse.text, '1'); } catch (logError) {
         console.error('Error saving chat log:', logError);

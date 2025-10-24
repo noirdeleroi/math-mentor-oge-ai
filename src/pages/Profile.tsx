@@ -154,7 +154,7 @@ const Profile = () => {
 
     try {
       // Send message to AI and get response using Groq API
-      const aiResponse = await sendChatMessage(newUserMessage, messages, isDatabaseMode);
+      const aiResponse = await sendChatMessage(newUserMessage, messages, isDatabaseMode, user.id);
       addMessage(aiResponse);
     } finally {
       setIsTyping(false);

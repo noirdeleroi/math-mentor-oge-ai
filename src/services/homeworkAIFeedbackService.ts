@@ -147,7 +147,7 @@ export async function createHomeworkSummaryJSON(sessionData: any[]): Promise<Hom
   };
 }
 
-export async function generateAIHomeworkFeedback(sessionData: any[]): Promise<string> {
+export async function generateAIHomeworkFeedback(userId: string, sessionData: any[]): Promise<string> {
   try {
     console.log('🔄 Starting AI feedback generation for session data:', sessionData.length, 'records');
     const homeworkJSON = await createHomeworkSummaryJSON(sessionData);
@@ -204,7 +204,8 @@ ${JSON.stringify(homeworkJSON, null, 2)}
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userMessage }
         ], 
-        stream: false 
+        stream: false,
+        user_id: userId
       }
     });
 

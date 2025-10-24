@@ -409,7 +409,7 @@ ${updated.feedback_message}
       }
       
       // Send message to AI and get response with context
-      const aiResponse = await sendChatMessage(newUserMessage, messages, isDatabaseMode, validContext);
+      const aiResponse = await sendChatMessage(newUserMessage, messages, isDatabaseMode, user.id, validContext);
       addMessage(aiResponse);
 
       // Save chat interaction to database

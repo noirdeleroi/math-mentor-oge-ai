@@ -32,6 +32,7 @@ Remember: You are a patient, encouraging teacher who helps students learn mathem
 // ---- Streaming path (OPTIONALLY with homeworkContext) ----
 export async function streamChatCompletion(
   messages: Message[],
+  userId: string,
   homeworkContext?: any
 ): Promise<ReadableStream<Uint8Array> | null> {
   try {
@@ -41,9 +42,9 @@ export async function streamChatCompletion(
       console.log('[groq:stream] context?', Boolean(homeworkContext), 'payload bytes:', JSON.stringify(fullMessages).length);
     } catch { /* ignore */ }
 
-    const { data, error } = await supabase.functions.invoke('groq-chat', {
-      body: { messages: fullMessages, stream: true }
-    });
+  const { data, error } = await supabase.functions.invoke('groq-chat', {
+    body: { messages: fullMessages, stream: true, user_id: userId }
+  });
     if (error) {
       console.error('Groq function error (stream):', error);
       throw new Error(`Groq function error (stream): ${error.message}`);
@@ -65,7 +66,7 @@ function extractLastQuestionId(messages: Message[]): string | null {
   return null;
 }
 
-export async function getChatCompletion(messages: Message[], homeworkContext?: any): Promise<string> {
+export async function getChatCompletion(messages: Message[], userId: string, homeworkContext?: any): Promise<string> {
   try {
     const lastMessageRaw = messages[messages.length - 1]?.content || "";
     const lastMessage = norm(lastMessageRaw);
@@ -139,9 +140,9 @@ export async function getChatCompletion(messages: Message[], homeworkContext?: a
     // Call with context first
     let data, error;
     try {
-      const res = await supabase.functions.invoke('groq-chat', {
-        body: { messages: fullMessages, stream: false }
-      });
+    const res = await supabase.functions.invoke('groq-chat', {
+      body: { messages: fullMessages, stream: false, user_id: userId }
+    });
       data = res.data;
       error = res.error;
     } catch (e: any) {
@@ -152,9 +153,9 @@ export async function getChatCompletion(messages: Message[], homeworkContext?: a
       try { fbBytes = JSON.stringify(fallbackMessages).length; } catch { /* ignore */ }
       console.log('[groq] fallback payload bytes:', fbBytes);
 
-      const fb = await supabase.functions.invoke('groq-chat', {
-        body: { messages: fallbackMessages, stream: false }
-      });
+    const fb = await supabase.functions.invoke('groq-chat', {
+      body: { messages: fallbackMessages, stream: false, user_id: userId }
+    });
       if (fb.error) {
         console.error('[groq] fallback error:', fb.error);
         return `Произошла ошибка (fallback): ${fb.error.message ?? 'unknown'}. Попробуй позже.`;

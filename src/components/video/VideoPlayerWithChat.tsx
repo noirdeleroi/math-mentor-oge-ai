@@ -6,6 +6,7 @@ import { Play, X } from "lucide-react";
 import ChatMessages from "../chat/ChatMessages";
 import ChatInput from "../chat/ChatInput";
 import { useChatContext } from "@/contexts/ChatContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { sendVideoAwareChatMessage } from "@/services/videoAwareChatService";
 import { logTextbookActivity } from "@/utils/logTextbookActivity";
 
@@ -27,6 +28,7 @@ const VideoPlayerWithChat = ({ video, onClose }: VideoPlayerWithChatProps) => {
   const [hasTrackedFinished, setHasTrackedFinished] = useState(false);
   const playerRef = useRef<HTMLDivElement>(null);
   const { messages, isTyping, addMessage, resetChat } = useChatContext();
+  const { user } = useAuth();
 
   // Load YouTube IFrame API
   useEffect(() => {
@@ -160,7 +162,8 @@ const VideoPlayerWithChat = ({ video, onClose }: VideoPlayerWithChatProps) => {
     try {
       const aiResponse = await sendVideoAwareChatMessage(
         newUserMessage, 
-        messages, 
+        messages,
+        user.id,
         useVideoContext ? subtitleContext : "",
         video.title
       );

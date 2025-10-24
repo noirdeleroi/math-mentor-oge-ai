@@ -109,7 +109,7 @@ const ChatDock = () => {
     setIsTyping(true);
 
     try {
-      const aiResponse = await sendChatMessage(newUserMessage, messages, isDatabaseMode);
+      const aiResponse = await sendChatMessage(newUserMessage, messages, isDatabaseMode, user.id);
       addMessage(aiResponse);
     } finally {
       setIsTyping(false);

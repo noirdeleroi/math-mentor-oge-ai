@@ -12,6 +12,7 @@ export interface Message {
 export const sendVideoAwareChatMessage = async (
   userMessage: Message,
   messageHistory: Message[],
+  userId: string,
   subtitleContext: string = "",
   videoTitle: string = ""
 ): Promise<Message> => {
@@ -46,7 +47,7 @@ export const sendVideoAwareChatMessage = async (
     });
 
     // Get AI response
-    const responseText = await getChatCompletion(groqMessages);
+    const responseText = await getChatCompletion(groqMessages, userId);
 
     // Create response message with subtitle context indicator
     let finalResponse = responseText;

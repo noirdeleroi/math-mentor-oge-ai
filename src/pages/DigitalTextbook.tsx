@@ -323,7 +323,7 @@ const DigitalTextbook = () => {
 
     try {
       // Send message to AI and get response
-      const aiResponse = await sendChatMessage(newUserMessage, messages, isDatabaseMode);
+      const aiResponse = await sendChatMessage(newUserMessage, messages, isDatabaseMode, user.id);
       addMessage(aiResponse);
       
       // Save chat interaction to database

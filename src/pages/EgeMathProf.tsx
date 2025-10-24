@@ -354,7 +354,7 @@ ${updated.feedback_message}
     setIsTyping(true);
 
     try {
-      const aiResponse = await sendChatMessage(newUserMessage, messages, isDatabaseMode);
+      const aiResponse = await sendChatMessage(newUserMessage, messages, isDatabaseMode, user.id);
       addMessage(aiResponse);
       
       // Save chat interaction to database with course_id='3'

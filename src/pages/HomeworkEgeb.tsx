@@ -719,7 +719,7 @@ const HomeworkEgeb = () => {
     setMessages([...messages, userMessage]);
     setIsTyping(true);
     try {
-      const aiResponse = await sendChatMessage(userMessage, messages, false);
+      const aiResponse = await sendChatMessage(userMessage, messages, false, user.id);
       setMessages([...messages, userMessage, aiResponse]);
       try { await saveChatLog(userInput, aiResponse.text, '2'); } catch {}
     } catch {
@@ -1255,7 +1255,7 @@ const HomeworkEgeb = () => {
 
       {selectedText && selectionPosition && (
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="fixed z-50 bg-white rounded-lg shadow-xl border-2 p-3" style={{ left: `${selectionPosition.x}px`, top: `${selectionPosition.y}px`, transform: 'translate(-50%, -100%)', borderColor: '#10b981' }}>
-          <Button onClick={() => { const newUserMessage = { id: Date.now(), text: `Объясни мне это: "${selectedText}"`, isUser: true, timestamp: new Date() } as any; addMessage(newUserMessage); setIsTyping(true); (async () => { try { const aiResponse = await sendChatMessage(newUserMessage, messages, isDatabaseMode); addMessage(aiResponse); try { await saveChatLog(newUserMessage.text, aiResponse.text, '2'); } catch {} } finally { setIsTyping(false); } })(); setSelectedText(''); }} className="bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36] flex items-center gap-2">
+          <Button onClick={() => { const newUserMessage = { id: Date.now(), text: `Объясни мне это: "${selectedText}"`, isUser: true, timestamp: new Date() } as any; addMessage(newUserMessage); setIsTyping(true); (async () => { try { const aiResponse = await sendChatMessage(newUserMessage, messages, isDatabaseMode, user.id); addMessage(aiResponse); try { await saveChatLog(newUserMessage.text, aiResponse.text, '2'); } catch {} } finally { setIsTyping(false); } })(); setSelectedText(''); }} className="bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36] flex items-center gap-2">
             <MessageSquare className="w-4 h-4" />
             Спросить Ёжика
           </Button>
