@@ -501,10 +501,10 @@ ${updated.feedback_message}
       {isMobile && !isSidebarOpen && (
         <button
           onClick={() => setIsSidebarOpen(true)}
-          className="fixed top-4 left-4 z-50 p-2 rounded-lg bg-sidebar border border-border shadow-lg"
+          className="fixed top-20 left-4 z-50 p-2 rounded-lg bg-background border border-border shadow-lg hover:bg-accent transition-colors"
           aria-label="Open menu"
         >
-          <Menu className="w-6 h-6 text-sidebar-foreground" />
+          <Menu className="w-6 h-6 text-foreground" />
         </button>
       )}
 
