@@ -32,7 +32,7 @@ export default function QuestionBankOGE() {
           {questionTypes.map(({ label, number }) => (
             <a
               key={label}
-              href={`/questionbankoge/${label}/`}
+              href={`/questionbankoge/${label}/index.html`}
               target="_blank"
               rel="noopener noreferrer"
             >
