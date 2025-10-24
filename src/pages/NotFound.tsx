@@ -1,6 +1,7 @@
-
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import { useEffect } from "react";
+import FlyingStarsBackground from "@/components/FlyingStarsBackground";
+import { Button } from "@/components/ui/button";
 
 const NotFound = () => {
   const location = useLocation();
@@ -13,13 +14,18 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">404</h1>
-        <p className="text-xl text-gray-600 mb-4">Упс! Страница не найдена</p>
-        <a href="/" className="text-blue-500 hover:text-blue-700 underline">
-          Вернуться на главную
-        </a>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 relative overflow-hidden">
+      <FlyingStarsBackground />
+      <div className="text-center z-10 px-4">
+        <h1 className="text-8xl font-bold mb-6 bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
+          404
+        </h1>
+        <p className="text-2xl text-foreground/80 mb-8">
+          Упс! Страница не найдена
+        </p>
+        <Button asChild size="lg" className="shadow-lg">
+          <Link to="/">Вернуться на главную</Link>
+        </Button>
       </div>
     </div>
   );
