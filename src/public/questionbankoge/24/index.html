@@ -1,0 +1,1454 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Задание 24 - Банк заданий ОГЭ</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, hsl(222.2 47.4% 11.2%) 0%, hsl(222.2 47.4% 11.2%) 50%, hsl(221 83% 53% / 0.05) 100%);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+      color: hsl(210 40% 98%);
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(to right, hsl(221 83% 53%), hsl(217 91% 60%), hsl(280 100% 70%));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+
+    .header p {
+      color: hsl(215 20.2% 65.1%);
+      font-size: 1.125rem;
+    }
+
+    .question-item {
+      background: hsl(222.2 84% 4.9% / 0.5);
+      backdrop-filter: blur(8px);
+      border: 1px solid hsl(221 83% 53% / 0.2);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .question-item:hover {
+      border-color: hsl(221 83% 53% / 0.4);
+      box-shadow: 0 10px 30px -10px hsl(221 83% 53% / 0.3);
+    }
+
+    .question-number {
+      font-size: 0.875rem;
+      color: hsl(280 100% 70%);
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .problem-image {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+
+    .problem-text {
+      font-size: 1.125rem;
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+      color: hsl(210 40% 98%);
+    }
+
+    .answer-section {
+      margin-bottom: 1rem;
+    }
+
+    .answer-input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: hsl(217.2 32.6% 17.5%);
+      border: 1px solid hsl(217.2 32.6% 17.5%);
+      border-radius: 8px;
+      color: hsl(210 40% 98%);
+      font-size: 1rem;
+      margin-bottom: 0.75rem;
+      transition: all 0.2s;
+    }
+
+    .answer-input:focus {
+      outline: none;
+      border-color: hsl(221 83% 53%);
+      box-shadow: 0 0 0 3px hsl(221 83% 53% / 0.1);
+    }
+
+    .show-answer-btn,
+    .show-solution-btn {
+      padding: 0.625rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .show-answer-btn {
+      background: hsl(221 83% 53%);
+      color: white;
+      margin-right: 0.75rem;
+    }
+
+    .show-answer-btn:hover {
+      background: hsl(217 91% 60%);
+      transform: translateY(-1px);
+    }
+
+    .show-solution-btn {
+      background: hsl(217.2 32.6% 17.5%);
+      color: hsl(210 40% 98%);
+      border: 1px solid hsl(217.2 32.6% 17.5%);
+    }
+
+    .show-solution-btn:hover {
+      border-color: hsl(221 83% 53%);
+    }
+
+    .answer-display {
+      margin-top: 0.75rem;
+      padding: 0.75rem;
+      background: hsl(142 76% 36% / 0.1);
+      border: 1px solid hsl(142 76% 36%);
+      border-radius: 8px;
+      color: hsl(142 76% 36%);
+      font-weight: 600;
+      display: none;
+    }
+
+    .answer-display.visible {
+      display: block;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .modal.visible {
+      display: flex;
+    }
+
+    .modal-content {
+      background: hsl(222.2 84% 4.9%);
+      border: 1px solid hsl(221 83% 53% / 0.3);
+      border-radius: 16px;
+      padding: 2rem;
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .modal-content h2 {
+      margin-bottom: 1rem;
+      color: hsl(210 40% 98%);
+    }
+
+    .modal-content p {
+      color: hsl(215 20.2% 65.1%);
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+    }
+
+    .modal-button {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .modal-button.primary {
+      background: hsl(221 83% 53%);
+      color: white;
+    }
+
+    .modal-button.primary:hover {
+      background: hsl(217 91% 60%);
+    }
+
+    .modal-button.secondary {
+      background: hsl(217.2 32.6% 17.5%);
+      color: hsl(210 40% 98%);
+    }
+
+    .modal-button.secondary:hover {
+      background: hsl(217.2 32.6% 20%);
+    }
+
+    @media (max-width: 640px) {
+      .header h1 {
+        font-size: 2rem;
+      }
+
+      .question-item {
+        padding: 1.5rem;
+      }
+
+      .show-answer-btn {
+        margin-bottom: 0.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>{{TITLE}}</h1>
+      <p>Банк заданий ОГЭ по математике</p>
+    </div>
+
+    <div id="questions">
+      
+      <div class="question-item">
+        <div class="question-number">Вопрос 1</div>
+        
+        <div class="problem-text">\[ \text{На средней линии трапеции } ABCD \text{ с основаниями } AD \text{ и } BC \text{ выбрали} \]
+\[ \text{произвольную точку } F. \text{ Докажите, что сумма площадей треугольников } BFC \]
+\[ \text{и } AFD \text{ равна половине площади трапеции.} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(0, '$S_{BFC} + S_{AFD} = \frac{1}{2} \cdot S_{ABCD}
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="solutionModal" class="modal">
+    <div class="modal-content">
+      <h2>Хотите посмотреть решение?</h2>
+      <p>Создайте аккаунт или войдите, чтобы получить доступ к подробным решениям всех задач.</p>
+      <div class="modal-buttons">
+        <a href="/auth" class="modal-button primary">Войти / Создать аккаунт</a>
+        <button class="modal-button secondary" onclick="closeSolutionModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showAnswer(index, answer) {
+      const answerDiv = document.getElementById(`answer-${index}`);
+      answerDiv.textContent = `Ответ: ${answer}`;
+      answerDiv.classList.add('visible');
+    }
+
+    function showSolutionModal() {
+      document.getElementById('solutionModal').classList.add('visible');
+    }
+
+    function closeSolutionModal() {
+      document.getElementById('solutionModal').classList.remove('visible');
+    }
+
+    // Close modal on outside click
+    document.getElementById('solutionModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeSolutionModal();
+      }
+    });
+  </script>
+</body>
+</html>
+)">
+            Показать ответ
+          </button>
+          <div id="answer-0" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 2</div>
+        
+        <div class="problem-text">\[ \text{Основания } BC \text{ и } AD \text{ трапеции } ABCD \text{ равны соответственно } 4{,}5 \text{ и } 18, \]
+\[ \text{BD = 9. Докажите, что треугольники } CBD \text{ и } BDA \text{ подобны.} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(1, 'Треугольники $CBD$ и $BDA$ подобны.')">
+            Показать ответ
+          </button>
+          <div id="answer-1" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 3</div>
+        
+        <div class="problem-text">\[ \text{Через точку пересечения диагоналей параллелограмма } ABCD \text{ проведена прямая,} \]
+\[ \text{пересекающая стороны } AB \text{ и } CD \text{ в точках } E \text{ и } F \text{ соответственно.} \]
+\[ \text{Докажите, что отрезки } AE \text{ и } CF \text{ равны.} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(2, 'AE = CF')">
+            Показать ответ
+          </button>
+          <div id="answer-2" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 4</div>
+        
+        <div class="problem-text">\[ \text{Окружности с центрами в точках } M \text{ и } N \text{ пересекаются в точках } S \text{ и } T, \]
+\[ \text{причём точки } M \text{ и } N \text{ лежат по одну сторону от прямой } ST. \]
+\[ \text{Докажите, что прямые } MN \text{ и } ST \text{ перпендикулярны.} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(3, 'Прямые $MN$ и $ST$ перпендикулярны.')">
+            Показать ответ
+          </button>
+          <div id="answer-3" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 5</div>
+        
+        <div class="problem-text">\[ \text{Основания } BC \text{ и } AD \text{ трапеции } ABCD \text{ равны соответственно } 9 \text{ и } 36, \]
+\[ BD = 18. \]
+\[ \text{Докажем, что треугольники } CBD \text{ и } BDA \text{ подобны.} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(4, '$\triangle CBD \sim \triangle BDA
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="solutionModal" class="modal">
+    <div class="modal-content">
+      <h2>Хотите посмотреть решение?</h2>
+      <p>Создайте аккаунт или войдите, чтобы получить доступ к подробным решениям всех задач.</p>
+      <div class="modal-buttons">
+        <a href="/auth" class="modal-button primary">Войти / Создать аккаунт</a>
+        <button class="modal-button secondary" onclick="closeSolutionModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showAnswer(index, answer) {
+      const answerDiv = document.getElementById(`answer-${index}`);
+      answerDiv.textContent = `Ответ: ${answer}`;
+      answerDiv.classList.add('visible');
+    }
+
+    function showSolutionModal() {
+      document.getElementById('solutionModal').classList.add('visible');
+    }
+
+    function closeSolutionModal() {
+      document.getElementById('solutionModal').classList.remove('visible');
+    }
+
+    // Close modal on outside click
+    document.getElementById('solutionModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeSolutionModal();
+      }
+    });
+  </script>
+</body>
+</html>
+)">
+            Показать ответ
+          </button>
+          <div id="answer-4" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 6</div>
+        
+        <div class="problem-text">\[ \text{Окружности с центрами в точках } I \text{ и } J \text{ не имеют общих точек,} \]
+\[ \text{и ни одна из них не лежит внутри другой.} \]
+\[ \text{Внутренняя общая касательная к этим окружностям делит отрезок,} \]
+\[ \text{соединяющий их центры, в отношении } m:n. \]
+\[ \text{Докажите, что диаметры этих окружностей относятся как } m:n. \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(5, '$m:n
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="solutionModal" class="modal">
+    <div class="modal-content">
+      <h2>Хотите посмотреть решение?</h2>
+      <p>Создайте аккаунт или войдите, чтобы получить доступ к подробным решениям всех задач.</p>
+      <div class="modal-buttons">
+        <a href="/auth" class="modal-button primary">Войти / Создать аккаунт</a>
+        <button class="modal-button secondary" onclick="closeSolutionModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showAnswer(index, answer) {
+      const answerDiv = document.getElementById(`answer-${index}`);
+      answerDiv.textContent = `Ответ: ${answer}`;
+      answerDiv.classList.add('visible');
+    }
+
+    function showSolutionModal() {
+      document.getElementById('solutionModal').classList.add('visible');
+    }
+
+    function closeSolutionModal() {
+      document.getElementById('solutionModal').classList.remove('visible');
+    }
+
+    // Close modal on outside click
+    document.getElementById('solutionModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeSolutionModal();
+      }
+    });
+  </script>
+</body>
+</html>
+)">
+            Показать ответ
+          </button>
+          <div id="answer-5" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 7</div>
+        
+        <div class="problem-text">\[ \text{Биссектрисы углов } B \text{ и } C \text{ четырёхугольника } ABCD \text{ пересекаются} \]
+\[ \text{в точке } O, \text{ лежащей на стороне } AD. \]
+\[ \text{Докажите, что точка } O \text{ равноудалена от прямых } AB, BC \text{ и } CD. \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(6, '$h_{AB} = h_{BC} = h_{CD}
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="solutionModal" class="modal">
+    <div class="modal-content">
+      <h2>Хотите посмотреть решение?</h2>
+      <p>Создайте аккаунт или войдите, чтобы получить доступ к подробным решениям всех задач.</p>
+      <div class="modal-buttons">
+        <a href="/auth" class="modal-button primary">Войти / Создать аккаунт</a>
+        <button class="modal-button secondary" onclick="closeSolutionModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showAnswer(index, answer) {
+      const answerDiv = document.getElementById(`answer-${index}`);
+      answerDiv.textContent = `Ответ: ${answer}`;
+      answerDiv.classList.add('visible');
+    }
+
+    function showSolutionModal() {
+      document.getElementById('solutionModal').classList.add('visible');
+    }
+
+    function closeSolutionModal() {
+      document.getElementById('solutionModal').classList.remove('visible');
+    }
+
+    // Close modal on outside click
+    document.getElementById('solutionModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeSolutionModal();
+      }
+    });
+  </script>
+</body>
+</html>
+)">
+            Показать ответ
+          </button>
+          <div id="answer-6" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 8</div>
+        
+        <div class="problem-text">\[ \text{Точка } E \text{ — середина боковой стороны } AB \text{ трапеции } ABCD. \]  
+\[ \text{Докажите, что площадь треугольника } ECD \text{ равна половине площади трапеции.} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(7, '$S_{ECD} = \frac{S_{\text{трапеции}}}{2}
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="solutionModal" class="modal">
+    <div class="modal-content">
+      <h2>Хотите посмотреть решение?</h2>
+      <p>Создайте аккаунт или войдите, чтобы получить доступ к подробным решениям всех задач.</p>
+      <div class="modal-buttons">
+        <a href="/auth" class="modal-button primary">Войти / Создать аккаунт</a>
+        <button class="modal-button secondary" onclick="closeSolutionModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showAnswer(index, answer) {
+      const answerDiv = document.getElementById(`answer-${index}`);
+      answerDiv.textContent = `Ответ: ${answer}`;
+      answerDiv.classList.add('visible');
+    }
+
+    function showSolutionModal() {
+      document.getElementById('solutionModal').classList.add('visible');
+    }
+
+    function closeSolutionModal() {
+      document.getElementById('solutionModal').classList.remove('visible');
+    }
+
+    // Close modal on outside click
+    document.getElementById('solutionModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeSolutionModal();
+      }
+    });
+  </script>
+</body>
+</html>
+)">
+            Показать ответ
+          </button>
+          <div id="answer-7" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 9</div>
+        
+        <div class="problem-text">\[ \text{В треугольнике } ABC \text{ с тупым углом } BAC \text{ проведены высоты } BB_1 \text{ и } CC_1. \]
+\[ \text{Докажите, что треугольники } AB_1C_1 \text{ и } ABC \text{ подобны.} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(8, '$\triangle AB_{1}C_{1} \sim \triangle ABC
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="solutionModal" class="modal">
+    <div class="modal-content">
+      <h2>Хотите посмотреть решение?</h2>
+      <p>Создайте аккаунт или войдите, чтобы получить доступ к подробным решениям всех задач.</p>
+      <div class="modal-buttons">
+        <a href="/auth" class="modal-button primary">Войти / Создать аккаунт</a>
+        <button class="modal-button secondary" onclick="closeSolutionModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showAnswer(index, answer) {
+      const answerDiv = document.getElementById(`answer-${index}`);
+      answerDiv.textContent = `Ответ: ${answer}`;
+      answerDiv.classList.add('visible');
+    }
+
+    function showSolutionModal() {
+      document.getElementById('solutionModal').classList.add('visible');
+    }
+
+    function closeSolutionModal() {
+      document.getElementById('solutionModal').classList.remove('visible');
+    }
+
+    // Close modal on outside click
+    document.getElementById('solutionModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeSolutionModal();
+      }
+    });
+  </script>
+</body>
+</html>
+)">
+            Показать ответ
+          </button>
+          <div id="answer-8" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 10</div>
+        
+        <div class="problem-text">\[ \text{Через точку пересечения диагоналей параллелограмма } ABCD \text{ проведена прямая,} \]
+\[ \text{пересекающая стороны } BC \text{ и } AD \text{ в точках } K \text{ и } M \text{ соответственно.} \]
+\[ \text{Докажите, что отрезки } BK \text{ и } DM \text{ равны.} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(9, 'BK = DM')">
+            Показать ответ
+          </button>
+          <div id="answer-9" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 11</div>
+        
+        <div class="problem-text">\[ \text{Основания } BC \text{ и } AD \text{ трапеции } ABCD \text{ равны соответственно } 3 \text{ и } 12, \]
+\[ BD = 6. \]
+\[ \text{Докажите, что треугольники } CBD \text{ и } BDA \text{ подобны.} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(10, '$\triangle CBD \sim \triangle BDA
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="solutionModal" class="modal">
+    <div class="modal-content">
+      <h2>Хотите посмотреть решение?</h2>
+      <p>Создайте аккаунт или войдите, чтобы получить доступ к подробным решениям всех задач.</p>
+      <div class="modal-buttons">
+        <a href="/auth" class="modal-button primary">Войти / Создать аккаунт</a>
+        <button class="modal-button secondary" onclick="closeSolutionModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showAnswer(index, answer) {
+      const answerDiv = document.getElementById(`answer-${index}`);
+      answerDiv.textContent = `Ответ: ${answer}`;
+      answerDiv.classList.add('visible');
+    }
+
+    function showSolutionModal() {
+      document.getElementById('solutionModal').classList.add('visible');
+    }
+
+    function closeSolutionModal() {
+      document.getElementById('solutionModal').classList.remove('visible');
+    }
+
+    // Close modal on outside click
+    document.getElementById('solutionModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeSolutionModal();
+      }
+    });
+  </script>
+</body>
+</html>
+)">
+            Показать ответ
+          </button>
+          <div id="answer-10" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 12</div>
+        
+        <div class="problem-text">Сторона \(BC\) параллелограмма \(ABCD\) вдвое больше стороны \(AB\). Точка \(K\) — середина стороны \(BC\). Докажите, что \(AK\) — биссектриса угла \(BAD\).</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(11, 'Доказательство')">
+            Показать ответ
+          </button>
+          <div id="answer-11" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 13</div>
+        
+        <div class="problem-text">\[ \text{Основания } BC \text{ и } AD \text{ трапеции } ABCD \text{ равны соответственно } 7 \text{ и } 28, \]
+\[ BD = 14. \]
+\[ \text{Докажите, что треугольники } CBD \text{ и } BDA \text{ подобны.} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(12, '$\triangle CBD \sim \triangle BDA
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="solutionModal" class="modal">
+    <div class="modal-content">
+      <h2>Хотите посмотреть решение?</h2>
+      <p>Создайте аккаунт или войдите, чтобы получить доступ к подробным решениям всех задач.</p>
+      <div class="modal-buttons">
+        <a href="/auth" class="modal-button primary">Войти / Создать аккаунт</a>
+        <button class="modal-button secondary" onclick="closeSolutionModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showAnswer(index, answer) {
+      const answerDiv = document.getElementById(`answer-${index}`);
+      answerDiv.textContent = `Ответ: ${answer}`;
+      answerDiv.classList.add('visible');
+    }
+
+    function showSolutionModal() {
+      document.getElementById('solutionModal').classList.add('visible');
+    }
+
+    function closeSolutionModal() {
+      document.getElementById('solutionModal').classList.remove('visible');
+    }
+
+    // Close modal on outside click
+    document.getElementById('solutionModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeSolutionModal();
+      }
+    });
+  </script>
+</body>
+</html>
+)">
+            Показать ответ
+          </button>
+          <div id="answer-12" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 14</div>
+        
+        <div class="problem-text">В треугольнике \(ABC\) с тупым углом \(\angle ACB\) проведены высоты \(AA_1\) и \(BB_1\). Докажите, что треугольники \(A_1CB_1\) и \(ACB\) подобны.</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(13, 'Доказательство')">
+            Показать ответ
+          </button>
+          <div id="answer-13" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 15</div>
+        
+        <div class="problem-text">Биссектрисы углов \(A\) и \(B\) четырёхугольника \(ABCD\) пересекаются в точке \(K\), лежащей на стороне \(CD\). Докажите, что точка \(K\) равноудалена от прямых \(AB\), \(BC\) и \(AD\).</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(14, 'Доказательство')">
+            Показать ответ
+          </button>
+          <div id="answer-14" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 16</div>
+        
+        <div class="problem-text">\[ \text{Окружности с центрами в точках } P \text{ и } Q \text{ пересекаются} \]
+\[ \text{в точках } K \text{ и } L, \text{ причём точки } P \text{ и } Q \text{ лежат} \]
+\[ \text{по одну сторону от прямой } KL. \]
+\[ \text{Докажите, что прямые } PQ \text{ и } KL \text{ перпендикулярны.} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(15, 'Прямые $PQ$ и $KL$ перпендикулярны.')">
+            Показать ответ
+          </button>
+          <div id="answer-15" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 17</div>
+        
+        <div class="problem-text">\[ \text{Основания } BC \text{ и } AD \text{ трапеции } ABCD \text{ равны соответственно } 8 \text{ и } 32, \]
+\[ BD = 16. \]
+\[ \text{Докажите, что треугольники } CBD \text{ и } BDA \text{ подобны.} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(16, 'Треугольники $CBD$ и $BDA$ подобны.')">
+            Показать ответ
+          </button>
+          <div id="answer-16" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 18</div>
+        
+        <div class="problem-text">\[ \text{Биссектрисы углов } B \text{ и } C \text{ параллелограмма } ABCD \text{ пересекаются} \]
+\[ \text{в точке } M, \text{ лежащей на стороне } AD. \]
+\[ \text{Докажите, что } M \text{ — середина } AD. \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(17, 'M — середина AD')">
+            Показать ответ
+          </button>
+          <div id="answer-17" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 19</div>
+        
+        <div class="problem-text">\[ \text{В треугольнике } ABC \text{ с тупым углом } ABC \text{ проведены высоты } AA_1 \text{ и } CC_1. \]
+\[ \text{Докажите, что треугольники } A_1BC_1 \text{ и } ABC \text{ подобны.} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(18, 'Треугольники $A_1BC_1$ и $ABC$ подобны.')">
+            Показать ответ
+          </button>
+          <div id="answer-18" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 20</div>
+        
+        <div class="problem-text">\[ \text{На средней линии трапеции } ABCD \text{ с основаниями } AD \text{ и } BC \text{ выбрали} \]
+\[ \text{произвольную точку } E. \text{ Докажите, что сумма площадей треугольников } BEC \]
+\[ \text{и } AED \text{ равна половине площади трапеции.} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(19, '$S_{AED} + S_{BEC} = \frac{1}{2} S_{ABCD}
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="solutionModal" class="modal">
+    <div class="modal-content">
+      <h2>Хотите посмотреть решение?</h2>
+      <p>Создайте аккаунт или войдите, чтобы получить доступ к подробным решениям всех задач.</p>
+      <div class="modal-buttons">
+        <a href="/auth" class="modal-button primary">Войти / Создать аккаунт</a>
+        <button class="modal-button secondary" onclick="closeSolutionModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showAnswer(index, answer) {
+      const answerDiv = document.getElementById(`answer-${index}`);
+      answerDiv.textContent = `Ответ: ${answer}`;
+      answerDiv.classList.add('visible');
+    }
+
+    function showSolutionModal() {
+      document.getElementById('solutionModal').classList.add('visible');
+    }
+
+    function closeSolutionModal() {
+      document.getElementById('solutionModal').classList.remove('visible');
+    }
+
+    // Close modal on outside click
+    document.getElementById('solutionModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeSolutionModal();
+      }
+    });
+  </script>
+</body>
+</html>
+)">
+            Показать ответ
+          </button>
+          <div id="answer-19" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 21</div>
+        
+        <div class="problem-text">\[ \text{В выпуклом четырёхугольнике } ABCD \text{ углы } CDB \text{ и } CAB \text{ равны.} \]
+\[ \text{Докажите, что углы } BCA \text{ и } BDA \text{ также равны.} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(20, '$\angle BCA = \angle BDA
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="solutionModal" class="modal">
+    <div class="modal-content">
+      <h2>Хотите посмотреть решение?</h2>
+      <p>Создайте аккаунт или войдите, чтобы получить доступ к подробным решениям всех задач.</p>
+      <div class="modal-buttons">
+        <a href="/auth" class="modal-button primary">Войти / Создать аккаунт</a>
+        <button class="modal-button secondary" onclick="closeSolutionModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showAnswer(index, answer) {
+      const answerDiv = document.getElementById(`answer-${index}`);
+      answerDiv.textContent = `Ответ: ${answer}`;
+      answerDiv.classList.add('visible');
+    }
+
+    function showSolutionModal() {
+      document.getElementById('solutionModal').classList.add('visible');
+    }
+
+    function closeSolutionModal() {
+      document.getElementById('solutionModal').classList.remove('visible');
+    }
+
+    // Close modal on outside click
+    document.getElementById('solutionModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeSolutionModal();
+      }
+    });
+  </script>
+</body>
+</html>
+)">
+            Показать ответ
+          </button>
+          <div id="answer-20" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 22</div>
+        
+        <div class="problem-text">\[ \text{В трапеции } ABCD \text{ с основаниями } AD \text{ и } BC \text{ диагонали} \]
+\[ \text{пересекаются в точке } O. \text{ Докажите, что площади треугольников } AOB \]
+\[ \text{и } COD \text{ равны.} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(21, '$S_{AOB} = S_{COD}
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="solutionModal" class="modal">
+    <div class="modal-content">
+      <h2>Хотите посмотреть решение?</h2>
+      <p>Создайте аккаунт или войдите, чтобы получить доступ к подробным решениям всех задач.</p>
+      <div class="modal-buttons">
+        <a href="/auth" class="modal-button primary">Войти / Создать аккаунт</a>
+        <button class="modal-button secondary" onclick="closeSolutionModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showAnswer(index, answer) {
+      const answerDiv = document.getElementById(`answer-${index}`);
+      answerDiv.textContent = `Ответ: ${answer}`;
+      answerDiv.classList.add('visible');
+    }
+
+    function showSolutionModal() {
+      document.getElementById('solutionModal').classList.add('visible');
+    }
+
+    function closeSolutionModal() {
+      document.getElementById('solutionModal').classList.remove('visible');
+    }
+
+    // Close modal on outside click
+    document.getElementById('solutionModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeSolutionModal();
+      }
+    });
+  </script>
+</body>
+</html>
+)">
+            Показать ответ
+          </button>
+          <div id="answer-21" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 23</div>
+        
+        <div class="problem-text">\[ \text{В остроугольном треугольнике } ABC \text{ проведены высоты } AA_1 \text{ и } CC_1. \]
+\[ \text{Докажите, что углы } AA_1C_1 \text{ и } ACC_1 \text{ равны.} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(22, '$\angle AA_1C_1 = \angle ACC_1
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="solutionModal" class="modal">
+    <div class="modal-content">
+      <h2>Хотите посмотреть решение?</h2>
+      <p>Создайте аккаунт или войдите, чтобы получить доступ к подробным решениям всех задач.</p>
+      <div class="modal-buttons">
+        <a href="/auth" class="modal-button primary">Войти / Создать аккаунт</a>
+        <button class="modal-button secondary" onclick="closeSolutionModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showAnswer(index, answer) {
+      const answerDiv = document.getElementById(`answer-${index}`);
+      answerDiv.textContent = `Ответ: ${answer}`;
+      answerDiv.classList.add('visible');
+    }
+
+    function showSolutionModal() {
+      document.getElementById('solutionModal').classList.add('visible');
+    }
+
+    function closeSolutionModal() {
+      document.getElementById('solutionModal').classList.remove('visible');
+    }
+
+    // Close modal on outside click
+    document.getElementById('solutionModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeSolutionModal();
+      }
+    });
+  </script>
+</body>
+</html>
+)">
+            Показать ответ
+          </button>
+          <div id="answer-22" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 24</div>
+        
+        <div class="problem-text">\[ \text{Сторона } AB \text{ параллелограмма } ABCD \text{ вдвое больше стороны } AD. \]
+\[ \text{Точка } L \text{ — середина стороны } AB. \]
+\[ \text{Докажите, что } DL \text{ — биссектриса угла } ADC. \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(23, 'DL — биссектриса угла ADC.')">
+            Показать ответ
+          </button>
+          <div id="answer-23" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 25</div>
+        
+        <div class="problem-text">\[ \text{Биссектрисы углов } A \text{ и } B \text{ параллелограмма } ABCD \text{ пересекаются} \]
+\[ \text{в точке } N, \text{ лежащей на стороне } CD. \]
+\[ \text{Докажите, что } N \text{ — середина } CD. \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(24, 'N — середина CD.')">
+            Показать ответ
+          </button>
+          <div id="answer-24" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 26</div>
+        
+        <div class="problem-text">\[ \text{В остроугольном треугольнике } ABC \text{ проведены высоты } BB_1 \text{ и } CC_1. \]
+\[ \text{Докажите, что углы } BB_1C_1 \text{ и } BCC_1 \text{ равны.} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(25, '$\angle BB_1C_1 = \angle BCC_1
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="solutionModal" class="modal">
+    <div class="modal-content">
+      <h2>Хотите посмотреть решение?</h2>
+      <p>Создайте аккаунт или войдите, чтобы получить доступ к подробным решениям всех задач.</p>
+      <div class="modal-buttons">
+        <a href="/auth" class="modal-button primary">Войти / Создать аккаунт</a>
+        <button class="modal-button secondary" onclick="closeSolutionModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showAnswer(index, answer) {
+      const answerDiv = document.getElementById(`answer-${index}`);
+      answerDiv.textContent = `Ответ: ${answer}`;
+      answerDiv.classList.add('visible');
+    }
+
+    function showSolutionModal() {
+      document.getElementById('solutionModal').classList.add('visible');
+    }
+
+    function closeSolutionModal() {
+      document.getElementById('solutionModal').classList.remove('visible');
+    }
+
+    // Close modal on outside click
+    document.getElementById('solutionModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeSolutionModal();
+      }
+    });
+  </script>
+</body>
+</html>
+)">
+            Показать ответ
+          </button>
+          <div id="answer-25" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 27</div>
+        
+        <div class="problem-text">\[ \text{Биссектрисы углов } C \text{ и } D \text{ параллелограмма } ABCD \text{ пересекаются} \]
+\[ \text{в точке } L, \text{ лежащей на стороне } AB. \]
+\[ \text{Докажите, что } L \text{ — середина } AB. \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(26, '$L$ — середина стороны $AB$.')">
+            Показать ответ
+          </button>
+          <div id="answer-26" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 28</div>
+        
+        <div class="problem-text">\[ \text{Биссектрисы углов } A \text{ и } B \text{ четырёхугольника } ABCD \text{ пересекаются} \]
+\[ \text{в точке } K, \text{ лежащей на стороне } CD. \]
+\[ \text{Докажите, что точка } K \text{ равноудалена от прямых } AB, BC \text{ и } AD. \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(27, 'расстояние$(K, AB) = \text{расстояние}(K, AD) = \text{расстояние}(K, BC)
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="solutionModal" class="modal">
+    <div class="modal-content">
+      <h2>Хотите посмотреть решение?</h2>
+      <p>Создайте аккаунт или войдите, чтобы получить доступ к подробным решениям всех задач.</p>
+      <div class="modal-buttons">
+        <a href="/auth" class="modal-button primary">Войти / Создать аккаунт</a>
+        <button class="modal-button secondary" onclick="closeSolutionModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showAnswer(index, answer) {
+      const answerDiv = document.getElementById(`answer-${index}`);
+      answerDiv.textContent = `Ответ: ${answer}`;
+      answerDiv.classList.add('visible');
+    }
+
+    function showSolutionModal() {
+      document.getElementById('solutionModal').classList.add('visible');
+    }
+
+    function closeSolutionModal() {
+      document.getElementById('solutionModal').classList.remove('visible');
+    }
+
+    // Close modal on outside click
+    document.getElementById('solutionModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeSolutionModal();
+      }
+    });
+  </script>
+</body>
+</html>
+)">
+            Показать ответ
+          </button>
+          <div id="answer-27" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 29</div>
+        
+        <div class="problem-text">\[ \text{Биссектрисы углов } C \text{ и } D \text{ четырёхугольника } ABCD \text{ пересекаются} \]
+\[ \text{в точке } P, \text{ лежащей на стороне } AB. \]
+\[ \text{Докажите, что точка } P \text{ равноудалена от прямых } BC, CD \text{ и } AD. \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(28, '$h_1 = h_2
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="solutionModal" class="modal">
+    <div class="modal-content">
+      <h2>Хотите посмотреть решение?</h2>
+      <p>Создайте аккаунт или войдите, чтобы получить доступ к подробным решениям всех задач.</p>
+      <div class="modal-buttons">
+        <a href="/auth" class="modal-button primary">Войти / Создать аккаунт</a>
+        <button class="modal-button secondary" onclick="closeSolutionModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showAnswer(index, answer) {
+      const answerDiv = document.getElementById(`answer-${index}`);
+      answerDiv.textContent = `Ответ: ${answer}`;
+      answerDiv.classList.add('visible');
+    }
+
+    function showSolutionModal() {
+      document.getElementById('solutionModal').classList.add('visible');
+    }
+
+    function closeSolutionModal() {
+      document.getElementById('solutionModal').classList.remove('visible');
+    }
+
+    // Close modal on outside click
+    document.getElementById('solutionModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeSolutionModal();
+      }
+    });
+  </script>
+</body>
+</html>
+)">
+            Показать ответ
+          </button>
+          <div id="answer-28" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 30</div>
+        
+        <div class="problem-text">\[ \text{В выпуклом четырёхугольнике } ABCD \text{ углы } \angle ABD \text{ и } \angle ACD \text{ равны.} \]
+\[ \text{Докажите, что углы } \angle DAC \text{ и } \angle DBC \text{ также равны.} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(29, '$\angle DAC = \angle DBC
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="solutionModal" class="modal">
+    <div class="modal-content">
+      <h2>Хотите посмотреть решение?</h2>
+      <p>Создайте аккаунт или войдите, чтобы получить доступ к подробным решениям всех задач.</p>
+      <div class="modal-buttons">
+        <a href="/auth" class="modal-button primary">Войти / Создать аккаунт</a>
+        <button class="modal-button secondary" onclick="closeSolutionModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showAnswer(index, answer) {
+      const answerDiv = document.getElementById(`answer-${index}`);
+      answerDiv.textContent = `Ответ: ${answer}`;
+      answerDiv.classList.add('visible');
+    }
+
+    function showSolutionModal() {
+      document.getElementById('solutionModal').classList.add('visible');
+    }
+
+    function closeSolutionModal() {
+      document.getElementById('solutionModal').classList.remove('visible');
+    }
+
+    // Close modal on outside click
+    document.getElementById('solutionModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeSolutionModal();
+      }
+    });
+  </script>
+</body>
+</html>
+)">
+            Показать ответ
+          </button>
+          <div id="answer-29" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="solutionModal" class="modal">
+    <div class="modal-content">
+      <h2>Хотите посмотреть решение?</h2>
+      <p>Создайте аккаунт или войдите, чтобы получить доступ к подробным решениям всех задач.</p>
+      <div class="modal-buttons">
+        <a href="/auth" class="modal-button primary">Войти / Создать аккаунт</a>
+        <button class="modal-button secondary" onclick="closeSolutionModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showAnswer(index, answer) {
+      const answerDiv = document.getElementById(`answer-${index}`);
+      answerDiv.textContent = `Ответ: ${answer}`;
+      answerDiv.classList.add('visible');
+    }
+
+    function showSolutionModal() {
+      document.getElementById('solutionModal').classList.add('visible');
+    }
+
+    function closeSolutionModal() {
+      document.getElementById('solutionModal').classList.remove('visible');
+    }
+
+    // Close modal on outside click
+    document.getElementById('solutionModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeSolutionModal();
+      }
+    });
+  </script>
+</body>
+</html>
