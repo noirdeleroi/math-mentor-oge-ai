@@ -247,29 +247,32 @@ export const GoalsTab = () => {
                     size="sm"
                     onClick={() => handleSave(goal.course_id)}
                     disabled={saving}
-                    className="bg-green-500/20 hover:bg-green-500/30 text-green-300 border border-green-500/30"
+                    className="bg-green-500/20 hover:bg-green-500/30 text-green-300 border border-green-500/30 text-xs px-2 py-1 h-8"
                   >
-                    <Save className="h-4 w-4 mr-1" />
-                    Сохранить
+                    <Save className="h-3 w-3 mr-1" />
+                    <span className="hidden sm:inline">Сохранить</span>
+                    <span className="sm:hidden">Сохр.</span>
                   </Button>
                   <Button
                     size="sm"
                     variant="ghost"
                     onClick={() => setEditingCourse(null)}
-                    className="bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/30"
+                    className="bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/30 text-xs px-2 py-1 h-8"
                   >
-                    <X className="h-4 w-4 mr-1" />
-                    Отмена
+                    <X className="h-3 w-3 mr-1" />
+                    <span className="hidden sm:inline">Отмена</span>
+                    <span className="sm:hidden">Отм.</span>
                   </Button>
                 </div>
               ) : (
                 <Button
                   size="sm"
                   onClick={() => setEditingCourse(goal.course_id)}
-                  className="bg-white/10 hover:bg-white/20 text-white border border-white/20"
+                  className="bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs px-2 py-1 h-8"
                 >
-                  <Edit3 className="h-4 w-4 mr-1" />
-                  Редактировать
+                  <Edit3 className="h-3 w-3 mr-1" />
+                  <span className="hidden sm:inline">Редактировать</span>
+                  <span className="sm:hidden">Ред.</span>
                 </Button>
               )}
             </div>

@@ -73,7 +73,7 @@ const ModulePage = () => {
         </Link>
       </h3>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
         {/* Left Column - Learn */}
         <div>
           <h4 className="text-sm font-medium text-gray-600 mb-3 uppercase tracking-wide">Изучение</h4>
@@ -89,13 +89,13 @@ const ModulePage = () => {
                   }
                 }}
               >
-                <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-blue-100 rounded-full">
+                <div className="flex items-center space-x-3 min-w-0 flex-1">
+                  <div className="p-2 bg-blue-100 rounded-full flex-shrink-0">
                     <Play className="h-4 w-4 text-blue-600" />
                   </div>
-                  <span className="text-sm font-medium">Видео {i + 1}</span>
+                  <span className="text-sm font-medium truncate">Видео {i + 1}</span>
                 </div>
-                <span className="text-sm text-blue-600">
+                <span className="text-sm text-blue-600 flex-shrink-0 ml-2">
                   {topic.videoData && topic.videoData[i] ? "Доступно" : "Не начато"}
                 </span>
               </div>
@@ -128,13 +128,13 @@ const ModulePage = () => {
                 });
               }}
             >
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-purple-100 rounded-full">
+              <div className="flex items-center space-x-3 min-w-0 flex-1">
+                <div className="p-2 bg-purple-100 rounded-full flex-shrink-0">
                   <BookOpen className="h-4 w-4 text-purple-600" />
                 </div>
-                <span className="text-sm font-medium">Обзор</span>
+                <span className="text-sm font-medium truncate">Обзор</span>
               </div>
-              <span className="text-sm text-purple-600">Откроется</span>
+              <span className="text-sm text-purple-600 flex-shrink-0 ml-2">Откроется</span>
             </div>
 
             {/* Read Textbook */}
@@ -142,13 +142,13 @@ const ModulePage = () => {
               className="flex items-center justify-between p-3 bg-white/70 rounded-lg border border-purple-200/40 hover:bg-white/90 cursor-pointer transition-colors"
               onClick={() => (window.location.href = `/textbook?topic=${module.topicMapping[topicIndex]}`)}
             >
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-purple-100 rounded-full">
+              <div className="flex items-center space-x-3 min-w-0 flex-1">
+                <div className="p-2 bg-purple-100 rounded-full flex-shrink-0">
                   <BookOpen className="h-4 w-4 text-purple-600" />
                 </div>
-                <span className="text-sm font-medium">Читать учебник</span>
+                <span className="text-sm font-medium truncate">Читать учебник</span>
               </div>
-              <span className="text-sm text-gray-600">Доступно</span>
+              <span className="text-sm text-gray-600 flex-shrink-0 ml-2">Доступно</span>
             </div>
           </div>
         </div>
@@ -192,11 +192,11 @@ const ModulePage = () => {
                     exerciseData.skills.length > 0 ? 'hover:bg-white hover:shadow-md cursor-pointer' : 'opacity-50 cursor-not-allowed'
                   }`}
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-green-100 rounded-full">
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <div className="p-2 bg-green-100 rounded-full flex-shrink-0">
                       <Target className="h-4 w-4 text-green-600" />
                     </div>
-                    <span className="text-sm font-medium">
+                    <span className="text-sm font-medium truncate">
                       {exerciseData.title}
                       {exerciseData.isAdvanced && (
                         <span className="ml-2 text-[10px] px-2 py-0.5 rounded-full bg-orange-100 text-orange-700">

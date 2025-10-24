@@ -209,11 +209,11 @@ const TopicPage: React.FC = () => {
         <div className="bg-white/95 backdrop-blur-sm rounded-lg border border-white/20 shadow-sm p-4 mb-4">
           {/* Textbook Link - Full Width */}
           <div className="bg-gradient-to-br from-yellow-50 to-emerald-50 border border-yellow-300/50 rounded-lg p-3 mb-4">
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col md:flex-row items-start md:items-center gap-3">
               <div className="w-9 h-9 bg-gradient-to-br from-yellow-500 to-emerald-500 rounded-lg flex items-center justify-center flex-shrink-0">
                 <BookOpen className="h-4 w-4 text-white" />
               </div>
-              <div className="flex-1">
+              <div className="flex-1 w-full">
                 <h3 className="text-sm font-semibold text-[#1a1f36] mb-0.5">
                   Углубленное изучение в учебнике
                 </h3>
@@ -223,7 +223,7 @@ const TopicPage: React.FC = () => {
               </div>
               <Button
                 onClick={() => (window.location.href = `/textbook?topic=${topicNumber}`)}
-                className="bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-white font-semibold h-9 flex-shrink-0 px-5 text-sm"
+                className="bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-white font-semibold h-9 w-full md:w-auto flex-shrink-0 px-5 text-sm"
               >
                 <BookOpen className="h-4 w-4 mr-2" />
                 Открыть учебник
@@ -256,7 +256,7 @@ const TopicPage: React.FC = () => {
 
             return (
               <div className="bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-300/50 rounded-lg p-3 mb-4">
-                <div className="flex items-center gap-3">
+                <div className="flex flex-col md:flex-row items-start md:items-center gap-3">
                   <div className="flex-shrink-0">
                     {(() => {
                       switch (testStatus) {
@@ -285,7 +285,7 @@ const TopicPage: React.FC = () => {
                       }
                     })()}
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 w-full">
                     <h3 className="text-sm font-semibold text-[#1a1f36] mb-0.5">
                       Тест по теме
                     </h3>
@@ -303,7 +303,7 @@ const TopicPage: React.FC = () => {
                         itemId: testItemId,
                       })
                     }
-                    className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold h-9 flex-shrink-0 px-5 text-sm"
+                    className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold h-9 w-full md:w-auto flex-shrink-0 px-5 text-sm"
                   >
                     <Zap className="h-4 w-4 mr-2" />
                     Начать тест
@@ -354,30 +354,34 @@ const TopicPage: React.FC = () => {
           className="bg-white/95 text-[#1a1f36] backdrop-blur-sm rounded-lg border border-white/20 shadow-sm"
         >
           <Tabs defaultValue="overview">
-            <TabsList className="w-full justify-between rounded-none border-b-0 bg-transparent p-0 h-auto gap-2 px-4 pt-4">
+            <TabsList className="w-full justify-between rounded-none border-b-0 bg-transparent p-0 h-auto gap-1 md:gap-2 px-2 md:px-4 pt-4">
               <TabsTrigger
                 value="overview"
-                className="flex-1 rounded-t-lg rounded-b-none border border-b-0 border-gray-200 data-[state=active]:bg-white data-[state=active]:border-gray-300 data-[state=active]:shadow-sm data-[state=inactive]:bg-gray-50/50 data-[state=inactive]:text-gray-600 px-6 py-3 font-medium"
+                className="flex-1 rounded-t-lg rounded-b-none border border-b-0 border-gray-200 data-[state=active]:bg-white data-[state=active]:border-gray-300 data-[state=active]:shadow-sm data-[state=inactive]:bg-gray-50/50 data-[state=inactive]:text-gray-600 px-2 md:px-6 py-2 md:py-3 font-medium text-xs md:text-sm"
               >
-                Обзор
+                <span className="hidden sm:inline">Обзор</span>
+                <span className="sm:hidden">Обзор</span>
               </TabsTrigger>
               <TabsTrigger
                 value="demonstrations"
-                className="flex-1 rounded-t-lg rounded-b-none border border-b-0 border-gray-200 data-[state=active]:bg-white data-[state=active]:border-gray-300 data-[state=active]:shadow-sm data-[state=inactive]:bg-gray-50/50 data-[state=inactive]:text-gray-600 px-6 py-3 font-medium"
+                className="flex-1 rounded-t-lg rounded-b-none border border-b-0 border-gray-200 data-[state=active]:bg-white data-[state=active]:border-gray-300 data-[state=active]:shadow-sm data-[state=inactive]:bg-gray-50/50 data-[state=inactive]:text-gray-600 px-2 md:px-6 py-2 md:py-3 font-medium text-xs md:text-sm"
               >
-                Демонстрации
+                <span className="hidden sm:inline">Демонстрации</span>
+                <span className="sm:hidden">Демо</span>
               </TabsTrigger>
               <TabsTrigger
                 value="videos"
-                className="flex-1 rounded-t-lg rounded-b-none border border-b-0 border-gray-200 data-[state=active]:bg-white data-[state=active]:border-gray-300 data-[state=active]:shadow-sm data-[state=inactive]:bg-gray-50/50 data-[state=inactive]:text-gray-600 px-6 py-3 font-medium"
+                className="flex-1 rounded-t-lg rounded-b-none border border-b-0 border-gray-200 data-[state=active]:bg-white data-[state=active]:border-gray-300 data-[state=active]:shadow-sm data-[state=inactive]:bg-gray-50/50 data-[state=inactive]:text-gray-600 px-2 md:px-6 py-2 md:py-3 font-medium text-xs md:text-sm"
               >
-                Видео ({topic.videoData?.length || topic.videos || 0})
+                <span className="hidden sm:inline">Видео ({topic.videoData?.length || topic.videos || 0})</span>
+                <span className="sm:hidden">Видео</span>
               </TabsTrigger>
               <TabsTrigger
                 value="practice"
-                className="flex-1 rounded-t-lg rounded-b-none border border-b-0 border-gray-200 data-[state=active]:bg-white data-[state=active]:border-gray-300 data-[state=active]:shadow-sm data-[state=inactive]:bg-gray-50/50 data-[state=inactive]:text-gray-600 px-6 py-3 font-medium"
+                className="flex-1 rounded-t-lg rounded-b-none border border-b-0 border-gray-200 data-[state=active]:bg-white data-[state=active]:border-gray-300 data-[state=active]:shadow-sm data-[state=inactive]:bg-gray-50/50 data-[state=inactive]:text-gray-600 px-2 md:px-6 py-2 md:py-3 font-medium text-xs md:text-sm"
               >
-                Упражнения ({exercises.length})
+                <span className="hidden sm:inline">Упражнения ({exercises.length})</span>
+                <span className="sm:hidden">Упр.</span>
               </TabsTrigger>
             </TabsList>
 

@@ -107,12 +107,12 @@ export const ProfileInfoTab = ({ userName, userEmail, joinedDate, lastActivityDa
   }
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-2 gap-6">
+    <div className="space-y-4 md:space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
         {/* Profile Card - Left Half */}
-        <Card className="p-6 bg-white shadow-md rounded-xl border-0">
-          <div className="flex flex-col items-center text-center mb-6">
-            <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center mb-4 overflow-hidden">
+        <Card className="p-4 md:p-6 bg-white shadow-md rounded-xl border-0">
+          <div className="flex flex-col items-center text-center mb-4 md:mb-6">
+            <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-primary/10 flex items-center justify-center mb-3 md:mb-4 overflow-hidden">
               {avatarUrl ? (
                 <img 
                   src={avatarUrl} 
@@ -120,32 +120,32 @@ export const ProfileInfoTab = ({ userName, userEmail, joinedDate, lastActivityDa
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <User className="h-12 w-12 text-primary" />
+                <User className="h-10 w-10 md:h-12 md:w-12 text-primary" />
               )}
             </div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold text-gray-800">{userName}</h1>
+            <div className="flex flex-col md:flex-row items-center gap-2 mb-2">
+              <h1 className="text-xl md:text-2xl font-bold text-gray-800">{userName}</h1>
               <div className="flex items-center gap-1 px-2 py-1 bg-primary/10 rounded-full">
-                <span className="text-xl">{earnedBadge.emoji}</span>
+                <span className="text-lg md:text-xl">{earnedBadge.emoji}</span>
                 <span className="text-xs font-semibold text-primary">{earnedBadge.name}</span>
               </div>
             </div>
-            <p className="text-gray-600">{userEmail}</p>
+            <p className="text-sm md:text-base text-gray-600 mb-2">{userEmail}</p>
             {profile?.bio && (
-              <p className="text-sm text-gray-500 mt-2 max-w-xs">{profile.bio}</p>
+              <p className="text-xs md:text-sm text-gray-500 mt-2 max-w-xs">{profile.bio}</p>
             )}
-            <div className="flex items-center gap-2 text-sm text-gray-500 mt-2">
+            <div className="flex flex-col md:flex-row items-center gap-1 md:gap-2 text-xs md:text-sm text-gray-500 mt-2">
               <span>Присоединился: {joinedDate}</span>
-              <span>•</span>
+              <span className="hidden md:inline">•</span>
               <span>Последняя активность: {lastActivityDate}</span>
             </div>
             <Button
               variant="outline"
               size="sm"
               onClick={() => setIsEditing(true)}
-              className="mt-3"
+              className="mt-3 text-xs md:text-sm"
             >
-              <Edit2 className="w-4 h-4 mr-1" />
+              <Edit2 className="w-3 h-3 md:w-4 md:h-4 mr-1" />
               Редактировать
             </Button>
           </div>
@@ -157,14 +157,14 @@ export const ProfileInfoTab = ({ userName, userEmail, joinedDate, lastActivityDa
 
       {/* Telegram Bot Integration */}
       <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200 shadow-lg rounded-xl overflow-hidden">
-        <div className="p-6">
+        <div className="p-4 md:p-6">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
-              <MessageSquare className="w-6 h-6 text-white" />
+            <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
+              <MessageSquare className="w-5 h-5 md:w-6 md:h-6 text-white" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-gray-800">Telegram Бот</h3>
-              <p className="text-sm text-gray-600">Загружай фото решений</p>
+              <h3 className="text-base md:text-lg font-semibold text-gray-800">Telegram Бот</h3>
+              <p className="text-xs md:text-sm text-gray-600">Загружай фото решений</p>
             </div>
           </div>
           

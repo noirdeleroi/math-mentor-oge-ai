@@ -66,6 +66,86 @@ const EgerusesAnalytics = () => {
   const [loading, setLoading] = useState(true);
   const [essayType, setEssayType] = useState<'ege' | 'oge'>('ege');
 
+  // Criteria data from JSON
+  const criteriaData = {
+    "критерии": [
+      {
+        "код": "К1",
+        "название": "Отражение позиции автора (рассказчика) по указанной проблеме исходного текста",
+        "категория": "Содержание сочинения",
+        "макс_балл": 1
+      },
+      {
+        "код": "К2",
+        "название": "Комментарий к позиции автора (рассказчика) по указанной проблеме исходного текста",
+        "категория": "Содержание сочинения",
+        "макс_балл": 3
+      },
+      {
+        "код": "К3",
+        "название": "Собственное отношение экзаменуемого к позиции автора (рассказчика) по указанной проблеме исходного текста",
+        "категория": "Содержание сочинения",
+        "макс_балл": 2
+      },
+      {
+        "код": "К4",
+        "название": "Фактическая точность речи",
+        "категория": "Речевое оформление",
+        "макс_балл": 1
+      },
+      {
+        "код": "К5",
+        "название": "Логичность речи",
+        "категория": "Речевое оформление",
+        "макс_балл": 2
+      },
+      {
+        "код": "К6",
+        "название": "Соблюдение этических норм",
+        "категория": "Речевое оформление",
+        "макс_балл": 1
+      },
+      {
+        "код": "К7",
+        "название": "Соблюдение орфографических норм",
+        "категория": "Грамотность",
+        "макс_балл": 3
+      },
+      {
+        "код": "К8",
+        "название": "Соблюдение пунктуационных норм",
+        "категория": "Грамотность",
+        "макс_балл": 3
+      },
+      {
+        "код": "К9",
+        "название": "Соблюдение грамматических норм",
+        "категория": "Грамотность",
+        "макс_балл": 3
+      },
+      {
+        "код": "К10",
+        "название": "Соблюдение речевых норм",
+        "категория": "Грамотность",
+        "макс_балл": 3
+      }
+    ],
+    "категории": {
+      "Содержание сочинения": {
+        "метка": "🧠 Содержание сочинения",
+        "критерии": ["К1", "К2", "К3"]
+      },
+      "Речевое оформление": {
+        "метка": "💬 Речевое оформление",
+        "критерии": ["К4", "К5", "К6"]
+      },
+      "Грамотность": {
+        "метка": "✍️ Грамотность",
+        "критерии": ["К7", "К8", "К9", "К10"]
+      }
+    }
+  };
+
   const pageBg = useMemo(
     () => ({ background: 'linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)' }),
     []
@@ -216,8 +296,13 @@ const EgerusesAnalytics = () => {
       const maxScore = c.maxMark;
       const percentage = maxScore > 0 ? (avgScore / maxScore) * 100 : 0;
       
+      // Find the full criterion name from criteriaData
+      const criterionInfo = criteriaData.критерии.find(crit => crit.код === c.label);
+      const fullName = criterionInfo?.название || c.label;
+      
       return {
         name: c.label,
+        fullName: fullName,
         score: percentage, // Use percentage for radar
         actualScore: avgScore,
         maxScore: maxScore,
@@ -286,21 +371,29 @@ const EgerusesAnalytics = () => {
       const percentage = data.score;
       const actualScore = data.actualScore;
       const maxScore = data.maxScore;
+      const fullName = data.fullName || label;
       
       let feedback = "";
+      let feedbackColor = "";
       if (percentage >= 80) {
-        feedback = "Отличная работа! Продолжайте в том же духе.";
+        feedback = "Сильно";
+        feedbackColor = "text-green-400";
       } else if (percentage >= 50) {
-        feedback = "Хорошо, но есть место для улучшения.";
+        feedback = "Нужно улучшение";
+        feedbackColor = "text-yellow-400";
       } else {
-        feedback = "Требует дополнительной работы.";
+        feedback = "Работать над этим";
+        feedbackColor = "text-red-400";
       }
       
       return (
-        <div className="bg-black/90 border border-white/30 rounded-lg p-3 text-white text-sm max-w-xs">
+        <div className="bg-black/90 border border-white/30 rounded-lg p-3 text-white text-sm max-w-sm">
           <p className="font-semibold text-emerald-400">{label}</p>
-          <p className="text-white/80">{actualScore.toFixed(1)} / {maxScore}</p>
-          <p className="text-yellow-400 text-xs mt-1">{feedback}</p>
+          <p className="text-white/70 text-xs mt-1 leading-tight">{fullName}</p>
+          <p className="text-white/80 mt-2">{actualScore.toFixed(1)} / {maxScore}</p>
+          <p className={`text-xs mt-1 ${feedbackColor}`}>
+            {percentage.toFixed(0)}% ({feedback})
+          </p>
         </div>
       );
     }
@@ -464,16 +557,31 @@ const EgerusesAnalytics = () => {
 
           {/* Criteria Tab */}
           <TabsContent value="criteria" className="space-y-6">
-            {/* Enhanced Charts Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Centered Layout */}
+            <div className="flex flex-col items-center space-y-8 max-w-4xl mx-auto">
               {/* 1️⃣ Radar (Spider) Chart — "Skill Map" */}
-              <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-6 shadow-xl">
+              <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-6 shadow-xl w-full">
                 <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
                   🕸️ Карта навыков
                 </h2>
                 
                 <ResponsiveContainer width="100%" height={400}>
                   <RadarChart data={stats.radarData}>
+                    <defs>
+                      <linearGradient id="performanceGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        {stats.radarData.map((point, index) => {
+                          const percentage = point.score;
+                          let color = '#ef4444'; // Red for <50%
+                          if (percentage >= 80) color = '#22c55e'; // Green for 80-100%
+                          else if (percentage >= 50) color = '#facc15'; // Yellow for 50-79%
+                          
+                          const offset = (index / (stats.radarData.length - 1)) * 100;
+                          return (
+                            <stop key={index} offset={`${offset}%`} stopColor={color} />
+                          );
+                        })}
+                      </linearGradient>
+                    </defs>
                     <PolarGrid stroke="#ffffff30" />
                     <PolarAngleAxis 
                       dataKey="name" 
@@ -489,10 +597,10 @@ const EgerusesAnalytics = () => {
                     <Radar 
                       name="Процент выполнения" 
                       dataKey="score" 
-                      stroke="#10b981" 
-                      fill="#10b981" 
-                      fillOpacity={0.6}
-                      strokeWidth={2}
+                      stroke="url(#performanceGradient)" 
+                      fill="url(#performanceGradient)" 
+                      fillOpacity={0.7}
+                      strokeWidth={3}
                     />
                     <Tooltip content={<RadarTooltip />} />
                   </RadarChart>
@@ -515,90 +623,61 @@ const EgerusesAnalytics = () => {
                 </div>
               </div>
 
-              {/* 2️⃣ Bar Chart — "Criterion Scores" */}
-              <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-6 shadow-xl">
-                <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+              {/* Criteria Performance Cards - Below the radar chart */}
+              <div className="w-full">
+                <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2 text-center">
                   📊 Баллы по критериям
                 </h2>
-                
-                <ResponsiveContainer width="100%" height={400}>
-                  <BarChart data={stats.barData} layout="horizontal">
-                    <CartesianGrid strokeDasharray="3 3" stroke="#ffffff20" />
-                    <XAxis 
-                      type="number" 
-                      stroke="#ffffff70" 
-                      style={{ fontSize: '12px' }}
-                      domain={[0, 'dataMax']}
-                    />
-                    <YAxis 
-                      type="category" 
-                      dataKey="name" 
-                      stroke="#ffffff70" 
-                      style={{ fontSize: '12px' }}
-                      width={60}
-                    />
-                    <Tooltip content={<BarTooltip />} />
-                    <Bar dataKey="score" radius={[0, 8, 8, 0]}>
-                      {stats.barData.map((entry, index) => {
-                        let color = entry.fill;
-                        if (entry.percentage >= 80) color = '#22c55e'; // Green
-                        else if (entry.percentage >= 50) color = '#f59e0b'; // Yellow
-                        else color = '#ef4444'; // Red
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {stats.barData.map((criteria, idx) => {
+                    // Find the full criterion name from criteriaData
+                    const criterionInfo = criteriaData.критерии.find(c => c.код === criteria.name);
+                    const fullName = criterionInfo?.название || criteria.name;
+                    
+                    const getPerformanceLevel = (percentage: number) => {
+                      if (percentage >= 80) return { level: "Сильно", color: "text-green-400", bg: "bg-green-500/20" };
+                      if (percentage >= 50) return { level: "Нужно улучшить", color: "text-yellow-400", bg: "bg-yellow-500/20" };
+                      return { level: "Работать над этим", color: "text-red-400", bg: "bg-red-500/20" };
+                    };
+                    
+                    const performance = getPerformanceLevel(criteria.percentage);
+                    
+                    return (
+                      <div key={idx} className={`bg-white/10 backdrop-blur border border-white/20 rounded-xl p-4 shadow-lg ${performance.bg}`}>
+                        <div className="flex justify-between items-center mb-3">
+                          <span className="text-sm font-bold text-white">{criteria.name}</span>
+                          <span className={`text-xs font-semibold ${performance.color}`}>
+                            {performance.level}
+                          </span>
+                        </div>
                         
-                        return <Cell key={`cell-${index}`} fill={color} />;
-                      })}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-                
-                {/* Score Legend */}
-                <div className="mt-4 text-xs text-white/70">
-                  <p>Показаны средние баллы по всем сочинениям</p>
+                        <div className="text-sm text-white/80 mb-2 leading-tight">
+                          {fullName}
+                        </div>
+                        
+                        <div className="text-lg font-bold text-white mb-2">
+                          {criteria.score.toFixed(1)} / {criteria.maxScore}
+                        </div>
+                        
+                        <div className="w-full bg-white/20 rounded-full h-2 mb-2">
+                          <div 
+                            className="h-2 rounded-full transition-all duration-500"
+                            style={{ 
+                              width: `${criteria.percentage}%`,
+                              backgroundColor: criteria.percentage >= 80 ? '#22c55e' : 
+                                             criteria.percentage >= 50 ? '#f59e0b' : '#ef4444'
+                            }}
+                          />
+                        </div>
+                        
+                        <div className="text-xs text-white/60">
+                          {criteria.percentage.toFixed(0)}% от максимума
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
-            </div>
-
-            {/* Criteria Performance Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {stats.barData.map((criteria, idx) => {
-                const getPerformanceLevel = (percentage: number) => {
-                  if (percentage >= 80) return { level: "Сильно", color: "text-green-400", bg: "bg-green-500/20" };
-                  if (percentage >= 50) return { level: "Нужно улучшить", color: "text-yellow-400", bg: "bg-yellow-500/20" };
-                  return { level: "Работать над этим", color: "text-red-400", bg: "bg-red-500/20" };
-                };
-                
-                const performance = getPerformanceLevel(criteria.percentage);
-                
-                return (
-                  <div key={idx} className={`bg-white/10 backdrop-blur border border-white/20 rounded-xl p-4 shadow-lg ${performance.bg}`}>
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm font-medium text-white">{criteria.name}</span>
-                      <span className={`text-xs font-semibold ${performance.color}`}>
-                        {performance.level}
-                      </span>
-                    </div>
-                    
-                    <div className="text-2xl font-bold text-white mb-1">
-                      {criteria.score.toFixed(1)} / {criteria.maxScore}
-                    </div>
-                    
-                    <div className="w-full bg-white/20 rounded-full h-2 mb-2">
-                      <div 
-                        className="h-2 rounded-full transition-all duration-500"
-                        style={{ 
-                          width: `${criteria.percentage}%`,
-                          backgroundColor: criteria.percentage >= 80 ? '#22c55e' : 
-                                         criteria.percentage >= 50 ? '#f59e0b' : '#ef4444'
-                        }}
-                      />
-                    </div>
-                    
-                    <div className="text-xs text-white/60">
-                      {criteria.percentage.toFixed(0)}% от максимума
-                    </div>
-                  </div>
-                );
-              })}
             </div>
           </TabsContent>
 

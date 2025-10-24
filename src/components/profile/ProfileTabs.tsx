@@ -234,7 +234,7 @@ export const ProfileTabs: React.FC<ProfileTabsProps> = ({
 
       {/* Content Area */}
       <div className={`flex-1 min-w-0 ${isMobile ? 'w-full' : ''}`}>
-        <TabsContent value="profile" className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-8 mt-0 shadow-xl">
+        <TabsContent value="profile" className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-4 md:p-8 mt-0 shadow-xl">
           <ProfileInfoTab
             userName={userName}
             userEmail={userEmail}
@@ -243,31 +243,31 @@ export const ProfileTabs: React.FC<ProfileTabsProps> = ({
           />
         </TabsContent>
 
-        <TabsContent value="guide" className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-8 mt-0 shadow-xl">
+        <TabsContent value="guide" className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-4 md:p-8 mt-0 shadow-xl">
           <HowToTab />
         </TabsContent>
 
-        <TabsContent value="streak" className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-8 mt-0 shadow-xl">
+        <TabsContent value="streak" className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-4 md:p-8 mt-0 shadow-xl">
           <StreakSettings />
         </TabsContent>
 
-        <TabsContent value="activity" className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-8 mt-0 shadow-xl">
+        <TabsContent value="activity" className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-4 md:p-8 mt-0 shadow-xl">
           <ActivityTab />
         </TabsContent>
 
-        <TabsContent value="teacher" className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-8 mt-0 shadow-xl">
+        <TabsContent value="teacher" className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-4 md:p-8 mt-0 shadow-xl">
           <TeacherTab />
         </TabsContent>
 
-        <TabsContent value="goals" className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-8 mt-0 shadow-xl">
+        <TabsContent value="goals" className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-4 md:p-8 mt-0 shadow-xl">
           <GoalsTab />
         </TabsContent>
 
-        <TabsContent value="achievements" className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-8 mt-0 shadow-xl">
+        <TabsContent value="achievements" className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-4 md:p-8 mt-0 shadow-xl">
           <AchievementsTab achievements={userData.achievements} />
         </TabsContent>
 
-        <TabsContent value="settings" className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-8 mt-0 shadow-xl">
+        <TabsContent value="settings" className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-4 md:p-8 mt-0 shadow-xl">
           <SettingsTab />
         </TabsContent>
       </div>

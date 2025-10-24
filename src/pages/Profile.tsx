@@ -211,11 +211,11 @@ const Profile = () => {
       <div className="relative z-10 pt-4 pb-16 px-4 md:px-8">
         <div className="max-w-7xl mx-auto">
           {/* Page Title */}
-          <div className="text-center mb-12">
-            <h1 className="text-5xl md:text-6xl font-display font-bold mb-4 bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent">
+          <div className="text-center mb-8 md:mb-12">
+            <h1 className="text-3xl md:text-5xl lg:text-6xl font-display font-bold mb-4 bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent">
               Мой профиль
             </h1>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+            <p className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto px-4">
               Управляйте своим аккаунтом и отслеживайте прогресс
             </p>
           </div>

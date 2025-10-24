@@ -141,15 +141,15 @@ export const TeacherTab = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-white mb-2">Выбор AI-наставника</h2>
-        <p className="text-white">
+        <h2 className="text-xl md:text-2xl font-bold text-white mb-2">Выбор AI-наставника</h2>
+        <p className="text-sm md:text-base text-white px-4">
           Выберите AI-наставника, который подходит вашему стилю обучения
         </p>
       </div>
 
-      <div className="grid gap-6">
+      <div className="grid gap-4 md:gap-6">
         {aiTutors.map((teacher) => (
           <Card
             key={teacher.id}
@@ -158,40 +158,40 @@ export const TeacherTab = () => {
             }`}
             onClick={() => handleSelectTeacher(teacher.id)}
           >
-            <CardHeader>
-              <div className="flex items-start gap-4">
-                <Avatar className="w-16 h-16">
+            <CardHeader className="p-4 md:p-6">
+              <div className="flex flex-col md:flex-row items-start gap-3 md:gap-4">
+                <Avatar className="w-12 h-12 md:w-16 md:h-16 mx-auto md:mx-0">
                   <AvatarImage src={teacher.avatar} alt={teacher.name} />
                   <AvatarFallback>
                     {teacher.name.split(" ").map((n) => n[0]).join("")}
                   </AvatarFallback>
                 </Avatar>
 
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-xl">{teacher.name}</CardTitle>
-                    <div className="flex items-center gap-1">
+                <div className="flex-1 w-full">
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
+                    <CardTitle className="text-lg md:text-xl text-center md:text-left">{teacher.name}</CardTitle>
+                    <div className="flex items-center justify-center md:justify-end gap-1 mt-1 md:mt-0">
                       <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                      <span className="font-semibold">{teacher.rating}</span>
+                      <span className="font-semibold text-sm md:text-base">{teacher.rating}</span>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
-                    <div className="flex items-center gap-1">
-                      <Clock className="w-4 h-4" />
+                  <div className="grid grid-cols-1 md:flex md:items-center gap-2 md:gap-4 mt-2 text-xs md:text-sm text-gray-600">
+                    <div className="flex items-center justify-center md:justify-start gap-1">
+                      <Clock className="w-3 h-3 md:w-4 md:h-4" />
                       <span>{teacher.experience} лет опыта</span>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <MapPin className="w-4 h-4" />
+                    <div className="flex items-center justify-center md:justify-start gap-1">
+                      <MapPin className="w-3 h-3 md:w-4 md:h-4" />
                       <span>{teacher.location}</span>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Users className="w-4 h-4" />
+                    <div className="flex items-center justify-center md:justify-start gap-1">
+                      <Users className="w-3 h-3 md:w-4 md:h-4" />
                       <span>{teacher.studentsCount} учеников</span>
                     </div>
                   </div>
 
-                  <div className="flex flex-wrap gap-2 mt-3">
+                  <div className="flex flex-wrap justify-center md:justify-start gap-2 mt-3">
                     {teacher.specialization.map((spec) => (
                       <Badge key={spec} variant="secondary" className="text-xs">
                         {spec}
@@ -202,30 +202,32 @@ export const TeacherTab = () => {
               </div>
             </CardHeader>
 
-            <CardContent>
-              <p className="text-gray-700 mb-4">{teacher.description}</p>
+            <CardContent className="p-4 md:p-6 pt-0">
+              <p className="text-sm md:text-base text-gray-700 mb-4 text-center md:text-left">{teacher.description}</p>
 
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <div className="text-sm text-gray-600">Доступность:</div>
-                  <div className="text-sm font-medium">{teacher.availability}</div>
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                <div className="text-center md:text-left space-y-1">
+                  <div className="text-xs md:text-sm text-gray-600">Доступность:</div>
+                  <div className="text-sm md:text-base font-medium">{teacher.availability}</div>
                 </div>
 
-                <div className="text-right space-y-1">
-                  <div className="text-2xl font-bold text-primary">Бесплатно</div>
-                  <div className="text-sm text-gray-600">всегда</div>
+                <div className="text-center md:text-right space-y-1">
+                  <div className="text-xl md:text-2xl font-bold text-primary">Бесплатно</div>
+                  <div className="text-xs md:text-sm text-gray-600">всегда</div>
                 </div>
               </div>
 
-              <div className="flex gap-3 mt-4">
+              <div className="flex flex-col md:flex-row gap-2 md:gap-3 mt-4">
                 <Button
-                  className="flex-1"
+                  className="w-full md:flex-1"
                   variant={selectedTeacher === teacher.id ? "default" : "outline"}
+                  size="sm"
                 >
                   {selectedTeacher === teacher.id ? "Выбран" : "Выбрать"}
                 </Button>
-                <Button variant="outline" size="icon">
-                  <MessageCircle className="w-4 h-4" />
+                <Button variant="outline" size="sm" className="w-full md:w-auto">
+                  <MessageCircle className="w-4 h-4 mr-2" />
+                  Чат
                 </Button>
               </div>
             </CardContent>
@@ -235,22 +237,22 @@ export const TeacherTab = () => {
 
       {selectedTeacher && (
         <Card className="bg-gradient-to-r from-primary/10 to-purple-100 border-primary/20">
-          <CardContent className="p-6">
+          <CardContent className="p-4 md:p-6">
             <div className="text-center">
-              <h3 className="text-lg font-semibold mb-2">AI-наставник выбран!</h3>
-              <p className="text-gray-600 mb-4">
+              <h3 className="text-base md:text-lg font-semibold mb-2">AI-наставник выбран!</h3>
+              <p className="text-sm md:text-base text-gray-600 mb-4 px-2">
                 Теперь ваш персональный AI-наставник готов помочь вам в изучении математики
               </p>
-              <Button className="w-full sm:w-auto">Начать обучение</Button>
+              <Button className="w-full md:w-auto" size="sm">Начать обучение</Button>
             </div>
           </CardContent>
         </Card>
       )}
 
       <Dialog open={showThankYouModal} onOpenChange={setShowThankYouModal}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md mx-4">
           <DialogHeader>
-            <DialogTitle className="flex items-center justify-between">
+            <DialogTitle className="flex items-center justify-between text-base md:text-lg">
               <span>Ваш AI-наставник</span>
               <Button variant="ghost" size="icon" onClick={() => setShowThankYouModal(false)}>
                 <X className="h-4 w-4" />
@@ -260,7 +262,7 @@ export const TeacherTab = () => {
           <div className="text-center space-y-4 py-4">
             {selectedTeacher && (
               <>
-                <Avatar className="w-20 h-20 mx-auto">
+                <Avatar className="w-16 h-16 md:w-20 md:h-20 mx-auto">
                   <AvatarImage
                     src={aiTutors.find((t) => t.id === selectedTeacher)?.avatar}
                     alt="Выбранный наставник"
@@ -270,12 +272,12 @@ export const TeacherTab = () => {
                   </AvatarFallback>
                 </Avatar>
                 <div className="space-y-2">
-                  <h3 className="text-lg font-semibold">
+                  <h3 className="text-base md:text-lg font-semibold">
                     {aiTutors.find((t) => t.id === selectedTeacher)?.name}
                   </h3>
-                  <p className="text-gray-600 leading-relaxed">{selectedTutorMessage}</p>
+                  <p className="text-sm md:text-base text-gray-600 leading-relaxed px-2">{selectedTutorMessage}</p>
                 </div>
-                <Button className="w-full" onClick={() => setShowThankYouModal(false)}>
+                <Button className="w-full" size="sm" onClick={() => setShowThankYouModal(false)}>
                   Начать обучение
                 </Button>
               </>
