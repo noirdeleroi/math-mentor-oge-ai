@@ -15,6 +15,7 @@ const availableCoursesData: Course[] = [
   { id: 'oge-math', name: 'ОГЭ математика' },
   { id: 'ege-basic', name: 'ЕГЭ базовая математика' },
   { id: 'ege-advanced', name: 'ЕГЭ профильная математика' },
+  { id: 'essay-checking', name: 'Проверка сочинений по ЕГЭ и ОГЭ' },
 ];
 
 export const useDashboardLogic = () => {
@@ -225,6 +226,9 @@ export const useDashboardLogic = () => {
         break;
       case 'ege-advanced':
         navigate('/egemathprof');
+        break;
+      case 'essay-checking':
+        navigate('/egeruses2');
         break;
       default:
         console.warn('Unknown course ID:', courseId);

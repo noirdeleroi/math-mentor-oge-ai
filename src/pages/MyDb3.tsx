@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Plus, LogOut, User, Crown } from 'lucide-react';
 import { UserInfoStripe } from '@/components/mydb3/UserInfoStripe';
 import { CourseTreeCard } from '@/components/mydb3/CourseTreeCard';
+import { EssayCheckingCard } from '@/components/mydb3/EssayCheckingCard';
 import { CourseSelectionModal } from '@/components/mydb3/CourseSelectionModal';
 import { CourseOnboardingWizard } from '@/components/mydb3/CourseOnboardingWizard';
 import { useDashboardLogic } from '@/hooks/useDashboardLogic';
@@ -171,6 +172,11 @@ const MyDb3 = () => {
         .update({ courses: newCourseNumbers })
         .eq('user_id', user.id);
 
+      // Skip initialization for essay checking course
+      if (courseId === 'essay-checking') {
+        continue; // Just update the profile, no other actions needed
+      }
+
       // Check if mastery rows already exist for this user+course
       const { count: masteryCount, error: masteryCountError } = await supabase
         .from('student_mastery')
@@ -295,6 +301,23 @@ const MyDb3 = () => {
       // Filter out removed courses
       const updatedCourses = currentCourses.filter((num) => !removeCourseNumbers.includes(num));
 
+      // For math courses, delete mastery data
+      const coursesToRemove = courseIds.filter(id => id !== 'essay-checking');
+      
+      for (const courseId of coursesToRemove) {
+        const courseNumber = courseIdToNumber[courseId];
+        try {
+          await supabase.functions.invoke('delete-mastery-data', {
+            body: { 
+              user_id: user.id,
+              course_id: courseNumber.toString()
+            }
+          });
+        } catch (error) {
+          console.error('Error deleting mastery data for course:', courseId, error);
+        }
+      }
+
       // Update profile only; preserve student_mastery and student_mastery_status
       const { error: updateError } = await supabase
         .from('profiles')
@@ -385,11 +408,19 @@ const MyDb3 = () => {
               <div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                   {enrolledCourses.map((course) => (
-                    <CourseTreeCard
-                      key={course.id}
-                      course={course}
-                      onStart={handleStartCourse}
-                    />
+                    course.id === 'essay-checking' ? (
+                      <EssayCheckingCard
+                        key={course.id}
+                        courseId={course.id}
+                        onStart={handleStartCourse}
+                      />
+                    ) : (
+                      <CourseTreeCard
+                        key={course.id}
+                        course={course}
+                        onStart={handleStartCourse}
+                      />
+                    )
                   ))}
                   
                   {/* Add course card */}

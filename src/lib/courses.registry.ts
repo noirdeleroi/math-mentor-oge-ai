@@ -1,6 +1,6 @@
 import { modulesRegistry } from './modules.registry';
 
-export type CourseId = 'oge-math' | 'ege-basic' | 'ege-advanced';
+export type CourseId = 'oge-math' | 'ege-basic' | 'ege-advanced' | 'essay-checking';
 
 export interface Course {
   id: CourseId;
@@ -66,6 +66,15 @@ export const COURSES: Record<CourseId, Course> = {
       '/homework-egeprof'
     ],
     topicsUrl: 'https://kbaazksvkvnafrwtmkcw.supabase.co/storage/v1/object/public/jsons_for_topic_skills/ege_math_profil_topics_only_with_names.json'
+  },
+  'essay-checking': {
+    id: 'essay-checking',
+    numericId: 4,
+    title: 'Проверка сочинений по ЕГЭ и ОГЭ',
+    tag: 'Essays',
+    homeRoute: '/egeruses2',
+    staticRoutes: ['/egeruses2'],
+    topicsUrl: ''
   }
 };
 
@@ -130,6 +139,7 @@ export const courseIdToNumber: Record<CourseId, number> = {
   'oge-math': 1,
   'ege-basic': 2,
   'ege-advanced': 3,
+  'essay-checking': 4,
 };
 
 export interface Topic {
