@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Задание 16 - Банк заданий ОГЭ</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, hsl(222.2 47.4% 11.2%) 0%, hsl(222.2 47.4% 11.2%) 50%, hsl(221 83% 53% / 0.05) 100%);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+      color: hsl(210 40% 98%);
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(to right, hsl(221 83% 53%), hsl(217 91% 60%), hsl(280 100% 70%));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+
+    .header p {
+      color: hsl(215 20.2% 65.1%);
+      font-size: 1.125rem;
+    }
+
+    .question-item {
+      background: hsl(222.2 84% 4.9% / 0.5);
+      backdrop-filter: blur(8px);
+      border: 1px solid hsl(221 83% 53% / 0.2);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .question-item:hover {
+      border-color: hsl(221 83% 53% / 0.4);
+      box-shadow: 0 10px 30px -10px hsl(221 83% 53% / 0.3);
+    }
+
+    .question-number {
+      font-size: 0.875rem;
+      color: hsl(280 100% 70%);
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .problem-image {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+
+    .problem-text {
+      font-size: 1.125rem;
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+      color: hsl(210 40% 98%);
+    }
+
+    .answer-section {
+      margin-bottom: 1rem;
+    }
+
+    .answer-input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: hsl(217.2 32.6% 17.5%);
+      border: 1px solid hsl(217.2 32.6% 17.5%);
+      border-radius: 8px;
+      color: hsl(210 40% 98%);
+      font-size: 1rem;
+      margin-bottom: 0.75rem;
+      transition: all 0.2s;
+    }
+
+    .answer-input:focus {
+      outline: none;
+      border-color: hsl(221 83% 53%);
+      box-shadow: 0 0 0 3px hsl(221 83% 53% / 0.1);
+    }
+
+    .show-answer-btn,
+    .show-solution-btn {
+      padding: 0.625rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .show-answer-btn {
+      background: hsl(221 83% 53%);
+      color: white;
+      margin-right: 0.75rem;
+    }
+
+    .show-answer-btn:hover {
+      background: hsl(217 91% 60%);
+      transform: translateY(-1px);
+    }
+
+    .show-solution-btn {
+      background: hsl(217.2 32.6% 17.5%);
+      color: hsl(210 40% 98%);
+      border: 1px solid hsl(217.2 32.6% 17.5%);
+    }
+
+    .show-solution-btn:hover {
+      border-color: hsl(221 83% 53%);
+    }
+
+    .answer-display {
+      margin-top: 0.75rem;
+      padding: 0.75rem;
+      background: hsl(142 76% 36% / 0.1);
+      border: 1px solid hsl(142 76% 36%);
+      border-radius: 8px;
+      color: hsl(142 76% 36%);
+      font-weight: 600;
+      display: none;
+    }
+
+    .answer-display.visible {
+      display: block;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .modal.visible {
+      display: flex;
+    }
+
+    .modal-content {
+      background: hsl(222.2 84% 4.9%);
+      border: 1px solid hsl(221 83% 53% / 0.3);
+      border-radius: 16px;
+      padding: 2rem;
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .modal-content h2 {
+      margin-bottom: 1rem;
+      color: hsl(210 40% 98%);
+    }
+
+    .modal-content p {
+      color: hsl(215 20.2% 65.1%);
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+    }
+
+    .modal-button {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .modal-button.primary {
+      background: hsl(221 83% 53%);
+      color: white;
+    }
+
+    .modal-button.primary:hover {
+      background: hsl(217 91% 60%);
+    }
+
+    .modal-button.secondary {
+      background: hsl(217.2 32.6% 17.5%);
+      color: hsl(210 40% 98%);
+    }
+
+    .modal-button.secondary:hover {
+      background: hsl(217.2 32.6% 20%);
+    }
+
+    @media (max-width: 640px) {
+      .header h1 {
+        font-size: 2rem;
+      }
+
+      .question-item {
+        padding: 1.5rem;
+      }
+
+      .show-answer-btn {
+        margin-bottom: 0.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>{{TITLE}}</h1>
+      <p>Банк заданий ОГЭ по математике</p>
+    </div>
+
+    <div id="questions">
+      
+      <div class="question-item">
+        <div class="question-number">Вопрос 1</div>
+        
+        <div class="problem-text">\[ \text{Четырёхугольник } ABCD \text{ описан около окружности,} \]
+\[ \text{где } AB = 6, BC = 8, CD = 11. \]
+\[ \text{Найдите } AD. \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(0, '9')">
+            Показать ответ
+          </button>
+          <div id="answer-0" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 2</div>
+        
+        <div class="problem-text">\[ \text{Радиус окружности, вписанной в равнобедренную трапецию, равен } 34. \]
+\[ \text{Найдите высоту этой трапеции.} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(1, '68')">
+            Показать ответ
+          </button>
+          <div id="answer-1" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 3</div>
+        
+        <div class="problem-text">\[ \text{Четырёхугольник } ABCD \text{ вписан в окружность.} \]
+\[ \text{Угол } ABC \text{ равен } 56^\circ, \text{ угол } CAD \text{ равен } 42^\circ. \]
+\[ \text{Найдите угол } ABD. \]
+\[ \text{Ответ дайте в градусах.} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(2, '14')">
+            Показать ответ
+          </button>
+          <div id="answer-2" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 4</div>
+        
+        <div class="problem-text">\[ \text{Трапеция } ABCD \text{ с основаниями } AD \text{ и } BC \text{ описана около окружности, } AB=11, BC=6, CD=9. \]
+\[ \text{Найдите } AD. \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(3, '14')">
+            Показать ответ
+          </button>
+          <div id="answer-3" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 5</div>
+        
+        <div class="problem-text">\[ \text{Угол } A \text{ трапеции } ABCD \text{ с основаниями } AD \text{ и } BC, \text{ вписанной в окружность, равен } 54^\circ. \]
+\[ \text{Найдите угол } B \text{ этой трапеции. Ответ дайте в градусах.} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(4, '126')">
+            Показать ответ
+          </button>
+          <div id="answer-4" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 6</div>
+        
+        <div class="problem-text">\[ \text{Радиус окружности, описанной около квадрата, равен } 28\sqrt{2}. \]
+\[ \text{Найдите длину стороны этого квадрата.} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(5, '56')">
+            Показать ответ
+          </button>
+          <div id="answer-5" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 7</div>
+        
+        <div class="problem-text">\[ \text{Радиус окружности, вписанной в равнобедренную трапецию, равен } 14. \]
+\[ \text{Найдите высоту этой трапеции.} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(6, '28')">
+            Показать ответ
+          </button>
+          <div id="answer-6" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 8</div>
+        
+        <div class="problem-text">\[ \text{Четырёхугольник } ABCD \text{ вписан в окружность.} \]
+\[ \text{Угол } ABC \text{ равен } 112^\circ, \]
+\[ \text{угол } CAD \text{ равен } 70^\circ. \]
+\[ \text{Найдите угол } ABD. \]
+\[ \text{Ответ дайте в градусах.} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(7, '42')">
+            Показать ответ
+          </button>
+          <div id="answer-7" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 9</div>
+        
+        <div class="problem-text">Четырёхугольник \(ABCD\) описан около окружности, \(AB=8\), \(BC=20\), \(CD=17\). Найдите \(AD\).</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(8, '5')">
+            Показать ответ
+          </button>
+          <div id="answer-8" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 10</div>
+        
+        <div class="problem-text">\[ \text{Радиус окружности, вписанной в равносторонний треугольник, равен } 2\sqrt{3}. \]
+\[ \text{Найдите длину стороны этого треугольника.} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(9, '12')">
+            Показать ответ
+          </button>
+          <div id="answer-9" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 11</div>
+        
+        <div class="problem-text">\[ \text{Радиус окружности, описанной около равностороннего треугольника, равен } 9\sqrt{3}. \]
+\[ \text{Найдите длину стороны этого треугольника.} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(10, '27')">
+            Показать ответ
+          </button>
+          <div id="answer-10" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 12</div>
+        
+        <div class="problem-text">\[ \text{Радиус окружности, описанной около равностороннего треугольника, равен } 5\sqrt{3}. \]
+\[ \text{Найдите длину стороны этого треугольника.} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(11, '15')">
+            Показать ответ
+          </button>
+          <div id="answer-11" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 13</div>
+        
+        <div class="problem-text">\[ \text{Диагональ прямоугольника образует угол } 86^\circ \text{ с одной из его сторон.} \]
+\[ \text{Найдите острый угол между диагоналями этого прямоугольника.} \]
+\[ \text{Ответ дайте в градусах.} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(12, '8')">
+            Показать ответ
+          </button>
+          <div id="answer-12" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 14</div>
+        
+        <div class="problem-text">\[ \text{Сторона квадрата равна } 14\sqrt{2}. \text{ Найдите радиус окружности,} \]
+\[ \text{описанной около этого квадрата.} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(13, '14')">
+            Показать ответ
+          </button>
+          <div id="answer-13" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 15</div>
+        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//16_10_pr_pic.png" alt="Problem image" class="problem-image" />
+        <div class="problem-text">Угол \(A\) трапеции \(ABCD\) с основаниями \(AD\) и \(BC\), вписанной в окружность, равен \(52^\circ\). Найдите угол \(B\) этой трапеции. Ответ дайте в градусах.</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(14, '128')">
+            Показать ответ
+          </button>
+          <div id="answer-14" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 16</div>
+        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//740.png" alt="Problem image" class="problem-image" />
+        <div class="problem-text">\[ \text{Четырёхугольник } ABCD \text{ вписан в окружность.} \]
+\[ \text{Угол } ABC \text{ равен } 70^\circ, \text{ угол } CAD \text{ равен } 49^\circ. \]
+\[ \text{Найдите угол } ABD. \]
+\[ \text{Ответ дайте в градусах.} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(15, '21')">
+            Показать ответ
+          </button>
+          <div id="answer-15" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 17</div>
+        
+        <div class="problem-text">\[ \text{На окружности по разные стороны от диаметра } AB \text{ взяты точки } M \text{ и } N. \]
+\[ \text{Известно, что } \angle NBA = 44^\circ. \]
+\[ \text{Найдите угол } NMB. \]
+\[ \text{Ответ дайте в градусах.} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(16, '46')">
+            Показать ответ
+          </button>
+          <div id="answer-16" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 18</div>
+        
+        <div class="problem-text">\[ \text{Сторона квадрата равна } 18\sqrt{2}. \]
+\[ \text{Найдите радиус окружности,} \]
+\[ \text{описанной около этого квадрата.} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(17, '18')">
+            Показать ответ
+          </button>
+          <div id="answer-17" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 19</div>
+        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//275.png" alt="Problem image" class="problem-image" />
+        <div class="problem-text">\[ \text{В треугольнике } ABC \text{ угол } C \text{ равен } 135^\circ, \]
+\[ AB = 14\sqrt{2}. \]
+\[ \text{Найдите радиус окружности, описанной} \]
+\[ \text{около этого треугольника.} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(18, '14')">
+            Показать ответ
+          </button>
+          <div id="answer-18" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 20</div>
+        
+        <div class="problem-text">\[ \text{Угол } A \text{ четырёхугольника } ABCD, \text{ вписанного в окружность, равен } 54^\circ. \]
+\[ \text{Найдите угол } C \text{ этого четырёхугольника.} \]
+\[ \text{Ответ дайте в градусах.} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(19, '126')">
+            Показать ответ
+          </button>
+          <div id="answer-19" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 21</div>
+        
+        <div class="problem-text">\[ \text{Найдите площадь квадрата, описанного около окружности радиуса } 19. \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(20, '1444')">
+            Показать ответ
+          </button>
+          <div id="answer-20" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 22</div>
+        
+        <div class="problem-text">\[ \text{Отрезки } AC \text{ и } BD \text{ — диаметры окружности с центром в точке } O. \]
+\[ \text{Угол } ACB \text{ равен } 54^\circ. \]
+\[ \text{Найдите угол } AOD. \]
+\[ \text{Ответ дайте в градусах.} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(21, '72')">
+            Показать ответ
+          </button>
+          <div id="answer-21" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 23</div>
+        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//16_31_pr_pic.png" alt="Problem image" class="problem-image" />
+        <div class="problem-text">Через точку \(A\), лежащую вне окружности, проведены две прямые. Одна прямая касается окружности в точке \(K\). Другая прямая пересекает окружность в точках \(B\) и \(C\), причём \(AB=4\), \(AC=64\). Найдите \(AK\).</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(22, '16')">
+            Показать ответ
+          </button>
+          <div id="answer-22" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 24</div>
+        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//436.png" alt="Problem image" class="problem-image" />
+        <div class="problem-text">\[ \text{Треугольник } ABC \text{ вписан в окружность с центром в точке } O. \]
+\[ \text{Точки } O \text{ и } C \text{ лежат в одной полуплоскости} \]
+\[ \text{относительно прямой } AB. \]
+\[ \text{Найдите угол } ACB, \text{ если угол } AOB \text{ равен } 153^\circ. \]
+\[ \text{Ответ дайте в градусах.} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(23, '76.5')">
+            Показать ответ
+          </button>
+          <div id="answer-23" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 25</div>
+        
+        <div class="problem-text">Радиус окружности, вписанной в равнобедренную трапецию, равен $22$. Найдите высоту этой трапеции.</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(24, '44')">
+            Показать ответ
+          </button>
+          <div id="answer-24" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 26</div>
+        
+        <div class="problem-text">\[ \text{Сторона квадрата равна } 16\sqrt{2}. \]
+\[ \text{Найдите радиус окружности, описанной около этого квадрата.} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(25, '16')">
+            Показать ответ
+          </button>
+          <div id="answer-25" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 27</div>
+        
+        <div class="problem-text">\[ \text{Треугольник } ABC \text{ вписан в окружность с центром в точке } O. \]
+\[ \text{Точки } O \text{ и } C \text{ лежат в одной полуплоскости} \]
+\[ \text{относительно прямой } AB. \]
+\[ \text{Найдите угол } ACB, \text{ если угол } AOB \text{ равен } 173^\circ. \]
+\[ \text{Ответ дайте в градусах.} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(26, '86.5')">
+            Показать ответ
+          </button>
+          <div id="answer-26" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 28</div>
+        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//16_11_pr_pic.png" alt="Problem image" class="problem-image" />
+        <div class="problem-text">Угол \(A\) трапеции \(ABCD\) с основаниями \(AD\) и \(BC\), вписанной в окружность, равен \(77^\circ\). Найдите угол \(C\) этой трапеции. Ответ дайте в градусах.</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(27, '103')">
+            Показать ответ
+          </button>
+          <div id="answer-27" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 29</div>
+        
+        <div class="problem-text">\[ \text{На окружности по разные стороны от диаметра } AB \text{ взяты точки } M \text{ и } N. \]
+\[ \text{Известно, что } \angle NBA = 34^\circ. \]
+\[ \text{Найдите угол } NMB. \]
+\[ \text{Ответ дайте в градусах.} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(28, '56')">
+            Показать ответ
+          </button>
+          <div id="answer-28" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 30</div>
+        
+        <div class="problem-text">\[ \text{Угол } A \text{ трапеции } ABCD \text{ с основаниями } AD \text{ и } BC, \]
+\[ \text{вписанной в окружность, равен } 108^\circ. \]
+\[ \text{Найдите угол } B \text{ этой трапеции.} \]
+\[ \text{Ответ дайте в градусах.} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(29, '72')">
+            Показать ответ
+          </button>
+          <div id="answer-29" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="solutionModal" class="modal">
+    <div class="modal-content">
+      <h2>Хотите посмотреть решение?</h2>
+      <p>Создайте аккаунт или войдите, чтобы получить доступ к подробным решениям всех задач.</p>
+      <div class="modal-buttons">
+        <a href="/auth" class="modal-button primary">Войти / Создать аккаунт</a>
+        <button class="modal-button secondary" onclick="closeSolutionModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showAnswer(index, answer) {
+      const answerDiv = document.getElementById(`answer-${index}`);
+      answerDiv.textContent = `Ответ: ${answer}`;
+      answerDiv.classList.add('visible');
+    }
+
+    function showSolutionModal() {
+      document.getElementById('solutionModal').classList.add('visible');
+    }
+
+    function closeSolutionModal() {
+      document.getElementById('solutionModal').classList.remove('visible');
+    }
+
+    // Close modal on outside click
+    document.getElementById('solutionModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeSolutionModal();
+      }
+    });
+  </script>
+</body>
+</html>

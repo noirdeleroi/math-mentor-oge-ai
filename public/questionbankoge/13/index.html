@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Задание 13 - Банк заданий ОГЭ</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, hsl(222.2 47.4% 11.2%) 0%, hsl(222.2 47.4% 11.2%) 50%, hsl(221 83% 53% / 0.05) 100%);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+      color: hsl(210 40% 98%);
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(to right, hsl(221 83% 53%), hsl(217 91% 60%), hsl(280 100% 70%));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+
+    .header p {
+      color: hsl(215 20.2% 65.1%);
+      font-size: 1.125rem;
+    }
+
+    .question-item {
+      background: hsl(222.2 84% 4.9% / 0.5);
+      backdrop-filter: blur(8px);
+      border: 1px solid hsl(221 83% 53% / 0.2);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .question-item:hover {
+      border-color: hsl(221 83% 53% / 0.4);
+      box-shadow: 0 10px 30px -10px hsl(221 83% 53% / 0.3);
+    }
+
+    .question-number {
+      font-size: 0.875rem;
+      color: hsl(280 100% 70%);
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .problem-image {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+
+    .problem-text {
+      font-size: 1.125rem;
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+      color: hsl(210 40% 98%);
+    }
+
+    .answer-section {
+      margin-bottom: 1rem;
+    }
+
+    .answer-input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: hsl(217.2 32.6% 17.5%);
+      border: 1px solid hsl(217.2 32.6% 17.5%);
+      border-radius: 8px;
+      color: hsl(210 40% 98%);
+      font-size: 1rem;
+      margin-bottom: 0.75rem;
+      transition: all 0.2s;
+    }
+
+    .answer-input:focus {
+      outline: none;
+      border-color: hsl(221 83% 53%);
+      box-shadow: 0 0 0 3px hsl(221 83% 53% / 0.1);
+    }
+
+    .show-answer-btn,
+    .show-solution-btn {
+      padding: 0.625rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .show-answer-btn {
+      background: hsl(221 83% 53%);
+      color: white;
+      margin-right: 0.75rem;
+    }
+
+    .show-answer-btn:hover {
+      background: hsl(217 91% 60%);
+      transform: translateY(-1px);
+    }
+
+    .show-solution-btn {
+      background: hsl(217.2 32.6% 17.5%);
+      color: hsl(210 40% 98%);
+      border: 1px solid hsl(217.2 32.6% 17.5%);
+    }
+
+    .show-solution-btn:hover {
+      border-color: hsl(221 83% 53%);
+    }
+
+    .answer-display {
+      margin-top: 0.75rem;
+      padding: 0.75rem;
+      background: hsl(142 76% 36% / 0.1);
+      border: 1px solid hsl(142 76% 36%);
+      border-radius: 8px;
+      color: hsl(142 76% 36%);
+      font-weight: 600;
+      display: none;
+    }
+
+    .answer-display.visible {
+      display: block;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .modal.visible {
+      display: flex;
+    }
+
+    .modal-content {
+      background: hsl(222.2 84% 4.9%);
+      border: 1px solid hsl(221 83% 53% / 0.3);
+      border-radius: 16px;
+      padding: 2rem;
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .modal-content h2 {
+      margin-bottom: 1rem;
+      color: hsl(210 40% 98%);
+    }
+
+    .modal-content p {
+      color: hsl(215 20.2% 65.1%);
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+    }
+
+    .modal-button {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .modal-button.primary {
+      background: hsl(221 83% 53%);
+      color: white;
+    }
+
+    .modal-button.primary:hover {
+      background: hsl(217 91% 60%);
+    }
+
+    .modal-button.secondary {
+      background: hsl(217.2 32.6% 17.5%);
+      color: hsl(210 40% 98%);
+    }
+
+    .modal-button.secondary:hover {
+      background: hsl(217.2 32.6% 20%);
+    }
+
+    @media (max-width: 640px) {
+      .header h1 {
+        font-size: 2rem;
+      }
+
+      .question-item {
+        padding: 1.5rem;
+      }
+
+      .show-answer-btn {
+        margin-bottom: 0.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>{{TITLE}}</h1>
+      <p>Банк заданий ОГЭ по математике</p>
+    </div>
+
+    <div id="questions">
+      
+      <div class="question-item">
+        <div class="question-number">Вопрос 1</div>
+        
+        <div class="problem-text">Укажите неравенство, которое не имеет решений:
+\[
+\]
+1) \(x^{2}-15<0\) 
+\[
+\] 
+2) \(x^{2}+15<0\) 
+\[
+\] 
+3) \(x^{2}+15>0\) 
+\[
+\] 
+4) \(x^{2}-15>0\)</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(0, '2')">
+            Показать ответ
+          </button>
+          <div id="answer-0" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 2</div>
+        
+        <div class="problem-text">\[ \text{Выберите правильный ответ.} \]
+\[ \text{Укажите решение неравенства } x^2 - 64 \geq 0. \]
+\[ \text{1) } [-8; 8] \]
+\[ \text{2) } (-\infty; -8] \cup [8; +\infty) \]
+\[ \text{3) нет решений} \]
+\[ \text{4) } (-\infty; +\infty) \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(1, '$x \in (-\infty; -8] \cup [8; +\infty)
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="solutionModal" class="modal">
+    <div class="modal-content">
+      <h2>Хотите посмотреть решение?</h2>
+      <p>Создайте аккаунт или войдите, чтобы получить доступ к подробным решениям всех задач.</p>
+      <div class="modal-buttons">
+        <a href="/auth" class="modal-button primary">Войти / Создать аккаунт</a>
+        <button class="modal-button secondary" onclick="closeSolutionModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showAnswer(index, answer) {
+      const answerDiv = document.getElementById(`answer-${index}`);
+      answerDiv.textContent = `Ответ: ${answer}`;
+      answerDiv.classList.add('visible');
+    }
+
+    function showSolutionModal() {
+      document.getElementById('solutionModal').classList.add('visible');
+    }
+
+    function closeSolutionModal() {
+      document.getElementById('solutionModal').classList.remove('visible');
+    }
+
+    // Close modal on outside click
+    document.getElementById('solutionModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeSolutionModal();
+      }
+    });
+  </script>
+</body>
+</html>
+)">
+            Показать ответ
+          </button>
+          <div id="answer-1" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 3</div>
+        
+        <div class="problem-text">\[ \text{Выберите правильный ответ.} \]
+\[ \text{Укажите решение неравенства } x^2 - 25 > 0. \]
+\[ \text{1) } (-\infty; -5) \cup (5; +\infty) \]
+\[ \text{2) } (-5; 5) \]
+\[ \text{3) нет решений} \]
+\[ \text{4) } (-\infty; +\infty) \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(2, '1')">
+            Показать ответ
+          </button>
+          <div id="answer-2" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 4</div>
+        
+        <div class="problem-text">\[ \text{Выберите правильный ответ.} \]
+\[ \text{Укажите решение неравенства } -9-6x>9x+9. \]
+\[ \text{1) } (-\infty;-1,2) \]
+\[ \text{2) } (0;+\infty) \]
+\[ \text{3) } (-1,2;+\infty) \]
+\[ \text{4) } (-\infty;0) \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(3, '1')">
+            Показать ответ
+          </button>
+          <div id="answer-3" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 5</div>
+        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2207.png" alt="Problem image" class="problem-image" />
+        <div class="problem-text">\[ \text{Выберите правильный ответ.} \]
+\[ \text{Укажите решение неравенства} \]
+\[ (x+5)(x-2)<0. \]
+\[ \text{1) } \xrightarrow{\mathrm{L}} \]
+\[ \text{2) } \xrightarrow[-5]{ } \]
+\[ \text{3) } \frac{2}{-5}-2 \]
+\[ \text{4) } \underset{-5}{-5} \quad 2 \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(4, '4')">
+            Показать ответ
+          </button>
+          <div id="answer-4" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 6</div>
+        
+        <div class="problem-text">Укажите решение неравенства
+\[\]
+$(x+3)(x-5) \leq 0$.
+
+\[\]
+1). $(-\infty ; -3]$
+\[\]
+2). [-3; 5]
+\[\]
+3). $(-\infty ; -5]$
+\[\]
+4). $(-\infty ; -3] \cup [5; +\infty]$</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(5, '2')">
+            Показать ответ
+          </button>
+          <div id="answer-5" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 7</div>
+        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//13_19_pr_pic.png" alt="Problem image" class="problem-image" />
+        <div class="problem-text">Укажите решение системы неравенств 
+\[
+\begin{cases}
+x + 2{,}7 \leqslant 0,\\
+x + 4 \geqslant 1.
+\end{cases}
+\]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(6, '3')">
+            Показать ответ
+          </button>
+          <div id="answer-6" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 8</div>
+        
+        <div class="problem-text">\[ \text{Выберите правильный ответ.} \]
+\[ \text{Укажите решение неравенства } x^2 - 64 > 0. \]
+\[ \text{1) } (-\infty;+\infty) \]
+\[ \text{2) } (-8;8) \]
+\[ \text{3) } (-\infty;-8) \cup (8;+\infty) \]
+\[ \text{4) нет решений} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(7, '$x \in (-\infty; -8) \cup (8; +\infty)
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="solutionModal" class="modal">
+    <div class="modal-content">
+      <h2>Хотите посмотреть решение?</h2>
+      <p>Создайте аккаунт или войдите, чтобы получить доступ к подробным решениям всех задач.</p>
+      <div class="modal-buttons">
+        <a href="/auth" class="modal-button primary">Войти / Создать аккаунт</a>
+        <button class="modal-button secondary" onclick="closeSolutionModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showAnswer(index, answer) {
+      const answerDiv = document.getElementById(`answer-${index}`);
+      answerDiv.textContent = `Ответ: ${answer}`;
+      answerDiv.classList.add('visible');
+    }
+
+    function showSolutionModal() {
+      document.getElementById('solutionModal').classList.add('visible');
+    }
+
+    function closeSolutionModal() {
+      document.getElementById('solutionModal').classList.remove('visible');
+    }
+
+    // Close modal on outside click
+    document.getElementById('solutionModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeSolutionModal();
+      }
+    });
+  </script>
+</body>
+</html>
+)">
+            Показать ответ
+          </button>
+          <div id="answer-7" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 9</div>
+        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1569.png" alt="Problem image" class="problem-image" />
+        <div class="problem-text">\[ \text{Выберите правильный ответ.} \]
+\[ \text{Укажите неравенство, решение которого изображено на рисунке.} \]
+\[ x^2 - 25 > 0 \]
+\[ x^2 - 25 < 0 \]
+\[ x^2 + 25 < 0 \]
+\[ x^2 + 25 > 0 \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(8, '1')">
+            Показать ответ
+          </button>
+          <div id="answer-8" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 10</div>
+        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1947.png" alt="Problem image" class="problem-image" />
+        <div class="problem-text">\[
+\text{Укажите решение системы неравенств}
+\]
+\[
+\begin{cases}
+\text{-9 + 3x < 0}, \\
+\text{2 - 3x > -10}.
+\end{cases}
+\]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(9, 'x < 3')">
+            Показать ответ
+          </button>
+          <div id="answer-9" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 11</div>
+        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1255.png" alt="Problem image" class="problem-image" />
+        <div class="problem-text">\[ \text{Выберите правильный ответ.} \]
+\[ \text{Укажите неравенство, решение которого изображено на рисунке.} \]
+\[ 1) \ x^2 - 1 \geq 0 \]
+\[ 2) \ x^2 - x \geq 0 \]
+\[ 3) \ x^2 - 1 \leq 0 \]
+\[ 4) \ x^2 - x \leq 0 \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(10, '2')">
+            Показать ответ
+          </button>
+          <div id="answer-10" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 12</div>
+        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1644.png" alt="Problem image" class="problem-image" />
+        <div class="problem-text">\[ \text{Выберите правильный ответ.} \]
+\[ \text{Укажите неравенство, решение которого изображено на рисунке.} \]
+\[ x^2 - 36 > 0 \]
+\[ x^2 + 36 > 0 \]
+\[ x^2 - 36 < 0 \]
+\[ x^2 + 36 < 0 \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(11, '3) \( x^2 - 36 < 0 \)')">
+            Показать ответ
+          </button>
+          <div id="answer-11" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 13</div>
+        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//700.png" alt="Problem image" class="problem-image" />
+        <div class="problem-text">\[ \text{Выберите правильный ответ.} \]
+\[ \text{Укажите решение неравенства } 8x - x^2 > 0. \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(12, '2')">
+            Показать ответ
+          </button>
+          <div id="answer-12" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 14</div>
+        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1690.png" alt="Problem image" class="problem-image" />
+        <div class="problem-text">\[
+\text{Выберите правильный ответ.}
+\]
+\[
+\text{Укажите решение системы неравенств}
+\]
+\[
+\begin{cases}
+-35+5x>0, \\
+6-3x>-3.
+\end{cases}
+\]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(13, '3')">
+            Показать ответ
+          </button>
+          <div id="answer-13" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 15</div>
+        
+        <div class="problem-text">\[ \text{Выберите правильный ответ.} \]
+\[ \text{Укажите решение системы неравенств} \]
+\[
+\left\{\begin{array}{l}
+x-5,2 \geq 0 \\
+x+4 \leq 10
+\end{array}\right.
+\]
+\[ \text{1) } (-\infty ; 5,2] \cup[6 ;+\infty) \]
+\[ \text{2) } [5,2 ;+\infty) \]
+\[ \text{3) } [6 ;+\infty) \]
+\[ \text{4) } [5,2 ; 6] \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(14, '4')">
+            Показать ответ
+          </button>
+          <div id="answer-14" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 16</div>
+        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1176.png" alt="Problem image" class="problem-image" />
+        <div class="problem-text">$
+\text{Выберите правильный ответ.}
+$
+$
+\text{Укажите решение системы неравенств}
+$
+$
+\begin{cases}
+-9+3x>0, \\
+2-3x>-10.
+\end{cases}
+$</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(15, '2')">
+            Показать ответ
+          </button>
+          <div id="answer-15" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 17</div>
+        
+        <div class="problem-text">\[ \text{Выберите правильный ответ. Укажите решение неравенства } -9-6x<9x+9. \]
+\[ \text{1) } (-\infty;-1{,}2) \]
+\[ \text{2) } (-1{,}2;+\infty) \]
+\[ \text{3) } (0;+\infty) \]
+\[ \text{4) } (-\infty;0) \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(16, '2')">
+            Показать ответ
+          </button>
+          <div id="answer-16" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 18</div>
+        
+        <div class="problem-text">\[ \text{Выберите правильный ответ.} \]
+\[ \text{Укажите решение неравенства} \]
+\[ \sqrt{2x-1} \ge 3 \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(17, '$x \in (-\infty; -3] \cup [8; +\infty)
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="solutionModal" class="modal">
+    <div class="modal-content">
+      <h2>Хотите посмотреть решение?</h2>
+      <p>Создайте аккаунт или войдите, чтобы получить доступ к подробным решениям всех задач.</p>
+      <div class="modal-buttons">
+        <a href="/auth" class="modal-button primary">Войти / Создать аккаунт</a>
+        <button class="modal-button secondary" onclick="closeSolutionModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showAnswer(index, answer) {
+      const answerDiv = document.getElementById(`answer-${index}`);
+      answerDiv.textContent = `Ответ: ${answer}`;
+      answerDiv.classList.add('visible');
+    }
+
+    function showSolutionModal() {
+      document.getElementById('solutionModal').classList.add('visible');
+    }
+
+    function closeSolutionModal() {
+      document.getElementById('solutionModal').classList.remove('visible');
+    }
+
+    // Close modal on outside click
+    document.getElementById('solutionModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeSolutionModal();
+      }
+    });
+  </script>
+</body>
+</html>
+)">
+            Показать ответ
+          </button>
+          <div id="answer-17" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 19</div>
+        
+        <div class="problem-text">\[ \text{Укажите решение неравенства } \sqrt{x^2 - 4x + 4} \le 2 \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(18, '[-4; 8]')">
+            Показать ответ
+          </button>
+          <div id="answer-18" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 20</div>
+        
+        <div class="problem-text">Выберите правильный ответ.
+Укажите решение системы неравенств
+\[
+\left\{\begin{array}{l}
+-9+3 x<0 \\
+2-3 x>-10
+\end{array}\right.
+\]
+1) \( (-\infty ; 3) \)
+\[\]
+2) \( (-\infty ; 4) \)
+\[\]
+3) \( (3 ;+\infty) \)
+\[\]
+4) \( (3 ; 4) \)</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(19, '1')">
+            Показать ответ
+          </button>
+          <div id="answer-19" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 21</div>
+        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2181.png" alt="Problem image" class="problem-image" />
+        <div class="problem-text">\[ \text{Выберите правильный ответ.} \]
+\[ \text{Укажите решение неравенства} \]
+\[ (x+8)(x-3) < 0. \]
+\[ \text{1)} \]
+\[ \text{2)} \]
+\[ \text{3)} \]
+\[ \text{4)} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(20, '(-8, 3)')">
+            Показать ответ
+          </button>
+          <div id="answer-20" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 22</div>
+        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1054.png" alt="Problem image" class="problem-image" />
+        <div class="problem-text">\[ \text{Выберите правильный ответ.} \]
+\[ \text{Укажите неравенство, решение которого изображено на рисунке.} \]
+\[ x^2 + 16 \geq 0 \]
+\[ x^2 - 16 \leq 0 \]
+\[ x^2 + 16 \leq 0 \]
+\[ x^2 - 16 \geq 0 \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(21, '2')">
+            Показать ответ
+          </button>
+          <div id="answer-21" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 23</div>
+        
+        <div class="problem-text">\[ \text{Выберите правильный ответ.} \]
+\[ \text{Укажите решение неравенства} \]
+\[ \sqrt{x^2-4x+4} \le 2 \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(22, '3')">
+            Показать ответ
+          </button>
+          <div id="answer-22" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 24</div>
+        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//86.png" alt="Problem image" class="problem-image" />
+        <div class="problem-text">\[ \text{Выберите правильный ответ.} \]
+\[ \text{Укажите решение системы неравенств} \]
+\[
+\begin{cases}
+x + 2{,}7 \leq 0, \\
+x + 4 \geq 1.
+\end{cases}
+\]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(23, '3')">
+            Показать ответ
+          </button>
+          <div id="answer-23" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 25</div>
+        
+        <div class="problem-text">\[ \text{Укажите решение неравенства } \sqrt{x^2 - 4x + 4} \le 3 \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(24, '4')">
+            Показать ответ
+          </button>
+          <div id="answer-24" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 26</div>
+        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//747.png" alt="Problem image" class="problem-image" />
+        <div class="problem-text">\[ \text{Выберите правильный ответ.} \]
+\[ \text{Укажите неравенство, решение которого изображено на рисунке.} \]
+\[ x^2 - 5x \leq 0 \]
+\[ x^2 - 25 \leq 0 \]
+\[ x^2 - 5x \geq 0 \]
+\[ x^2 - 25 \geq 0 \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(25, '1')">
+            Показать ответ
+          </button>
+          <div id="answer-25" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 27</div>
+        
+        <div class="problem-text">\[ \text{Выберите правильный ответ.} \]
+\[ \text{Укажите решение неравенства } x^2 - 36 \leq 0. \]
+\[ \text{1) } (-\infty ; +\infty) \]
+\[ \text{2) } (-\infty ; -6] \cup [6 ; +\infty) \]
+\[ \text{3) } [-6 ; 6] \]
+\[ \text{4) нет решений} \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(26, '[-6; 6]')">
+            Показать ответ
+          </button>
+          <div id="answer-26" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 28</div>
+        
+        <div class="problem-text">\[ \text{Выберите правильный ответ.} \]
+\[ \text{Укажите решение неравенства} \]
+\[ -3 - x \geq x - 6. \]
+\[ \text{1) } (-\infty; 1{,}5] \]
+\[ \text{2) } [1{,}5; +\infty) \]
+\[ \text{3) } (-\infty; 4{,}5] \]
+\[ \text{4) } [4{,}5; +\infty) \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(27, '$x \in (-\infty ; 1,5]
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="solutionModal" class="modal">
+    <div class="modal-content">
+      <h2>Хотите посмотреть решение?</h2>
+      <p>Создайте аккаунт или войдите, чтобы получить доступ к подробным решениям всех задач.</p>
+      <div class="modal-buttons">
+        <a href="/auth" class="modal-button primary">Войти / Создать аккаунт</a>
+        <button class="modal-button secondary" onclick="closeSolutionModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showAnswer(index, answer) {
+      const answerDiv = document.getElementById(`answer-${index}`);
+      answerDiv.textContent = `Ответ: ${answer}`;
+      answerDiv.classList.add('visible');
+    }
+
+    function showSolutionModal() {
+      document.getElementById('solutionModal').classList.add('visible');
+    }
+
+    function closeSolutionModal() {
+      document.getElementById('solutionModal').classList.remove('visible');
+    }
+
+    // Close modal on outside click
+    document.getElementById('solutionModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeSolutionModal();
+      }
+    });
+  </script>
+</body>
+</html>
+)">
+            Показать ответ
+          </button>
+          <div id="answer-27" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 29</div>
+        
+        <div class="problem-text">\[ \text{Выберите правильный ответ.} \]
+\[ \text{Укажите решение неравенства} \]
+\[ x^2 - 49 > 0. \]
+\[ \text{1) } (-7; 7) \]
+\[ \text{2) нет решений} \]
+\[ \text{3) } (-\infty; +\infty) \]
+\[ \text{4) } (-\infty; -7) \cup (7; +\infty) \]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(28, '4')">
+            Показать ответ
+          </button>
+          <div id="answer-28" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+      <div class="question-item">
+        <div class="question-number">Вопрос 30</div>
+        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//484.png" alt="Problem image" class="problem-image" />
+        <div class="problem-text">\[ \text{Выберите правильный ответ.} \]
+\[ \text{Укажите решение системы неравенств} \]
+\[ 
+\begin{cases}
+-12 + 3x > 0, \\
+9 - 4x > -3.
+\end{cases}
+\]</div>
+        <div class="answer-section">
+          <input type="text" class="answer-input" placeholder="Ваш ответ" />
+          <button class="show-answer-btn" onclick="showAnswer(29, '1')">
+            Показать ответ
+          </button>
+          <div id="answer-29" class="answer-display"></div>
+        </div>
+        <button class="show-solution-btn" onclick="showSolutionModal()">
+          Показать решение
+        </button>
+      </div>
+    
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="solutionModal" class="modal">
+    <div class="modal-content">
+      <h2>Хотите посмотреть решение?</h2>
+      <p>Создайте аккаунт или войдите, чтобы получить доступ к подробным решениям всех задач.</p>
+      <div class="modal-buttons">
+        <a href="/auth" class="modal-button primary">Войти / Создать аккаунт</a>
+        <button class="modal-button secondary" onclick="closeSolutionModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showAnswer(index, answer) {
+      const answerDiv = document.getElementById(`answer-${index}`);
+      answerDiv.textContent = `Ответ: ${answer}`;
+      answerDiv.classList.add('visible');
+    }
+
+    function showSolutionModal() {
+      document.getElementById('solutionModal').classList.add('visible');
+    }
+
+    function closeSolutionModal() {
+      document.getElementById('solutionModal').classList.remove('visible');
+    }
+
+    // Close modal on outside click
+    document.getElementById('solutionModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeSolutionModal();
+      }
+    });
+  </script>
+</body>
+</html>
