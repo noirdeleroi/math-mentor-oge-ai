@@ -28,6 +28,7 @@ const EgeMathProf = lazy(() => import("./pages/EgeMathProf"));
 const EgeMathBasic = lazy(() => import("./pages/EgeMathBasic"));
 const OgeMath = lazy(() => import("./pages/OgeMath"));
 const OgemathPractice = lazy(() => import("./pages/OgemathPractice"));
+const QuestionBankOGE = lazy(() => import("./pages/QuestionBankOGE"));
 const OgemathMock = lazy(() => import("./pages/OgemathMock"));
 const OgemathRevision = lazy(() => import("./pages/OgemathRevision"));
 const EgemathbasicRevision = lazy(() => import("./pages/EgemathbasicRevision"));
@@ -83,8 +84,9 @@ const App = () => (
                 {/* put any other pages that should share the look here: */}
                 <Route path="/textbook" element={<DigitalTextbook />} />
                 <Route path="/book-test" element={<BookTest />} />
-                <Route path="/ogemath" element={<OgeMath />} />
-                <Route path="/ogemath-practice" element={<OgemathPractice />} />
+            <Route path="/ogemath" element={<OgeMath />} />
+            <Route path="/ogemath-practice" element={<OgemathPractice />} />
+            <Route path="/questionbankoge" element={<QuestionBankOGE />} />
                 <Route path="/ogemath-mock" element={<OgemathMock />} />
                 <Route path="/ogemath-revision" element={<OgemathRevision />} />
                 <Route path="/ogemath-progress2" element={<OgemathProgress2 />} />

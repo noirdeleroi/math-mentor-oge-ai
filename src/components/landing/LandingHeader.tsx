@@ -140,7 +140,7 @@ export default function LandingHeader() {
       { label: "ЕГЭ профильный уровень (математика)", disabled: true, tooltip: "Скоро" }
     ],
     practice: [
-      { label: "ОГЭ математика", href: "/questions" },
+      { label: "ОГЭ математика", href: "/questionbankoge" },
       { label: "ЕГЭ базовый уровень (математика)", disabled: true, tooltip: "Скоро" },
       { label: "ЕГЭ профильный уровень (математика)", disabled: true, tooltip: "Скоро" }
     ]

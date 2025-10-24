@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{TITLE}} - Банк заданий ОГЭ</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, hsl(222.2 47.4% 11.2%) 0%, hsl(222.2 47.4% 11.2%) 50%, hsl(221 83% 53% / 0.05) 100%);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+      color: hsl(210 40% 98%);
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(to right, hsl(221 83% 53%), hsl(217 91% 60%), hsl(280 100% 70%));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+
+    .header p {
+      color: hsl(215 20.2% 65.1%);
+      font-size: 1.125rem;
+    }
+
+    .question-item {
+      background: hsl(222.2 84% 4.9% / 0.5);
+      backdrop-filter: blur(8px);
+      border: 1px solid hsl(221 83% 53% / 0.2);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .question-item:hover {
+      border-color: hsl(221 83% 53% / 0.4);
+      box-shadow: 0 10px 30px -10px hsl(221 83% 53% / 0.3);
+    }
+
+    .question-number {
+      font-size: 0.875rem;
+      color: hsl(280 100% 70%);
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .problem-image {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+
+    .problem-text {
+      font-size: 1.125rem;
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+      color: hsl(210 40% 98%);
+    }
+
+    .answer-section {
+      margin-bottom: 1rem;
+    }
+
+    .answer-input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: hsl(217.2 32.6% 17.5%);
+      border: 1px solid hsl(217.2 32.6% 17.5%);
+      border-radius: 8px;
+      color: hsl(210 40% 98%);
+      font-size: 1rem;
+      margin-bottom: 0.75rem;
+      transition: all 0.2s;
+    }
+
+    .answer-input:focus {
+      outline: none;
+      border-color: hsl(221 83% 53%);
+      box-shadow: 0 0 0 3px hsl(221 83% 53% / 0.1);
+    }
+
+    .show-answer-btn,
+    .show-solution-btn {
+      padding: 0.625rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .show-answer-btn {
+      background: hsl(221 83% 53%);
+      color: white;
+      margin-right: 0.75rem;
+    }
+
+    .show-answer-btn:hover {
+      background: hsl(217 91% 60%);
+      transform: translateY(-1px);
+    }
+
+    .show-solution-btn {
+      background: hsl(217.2 32.6% 17.5%);
+      color: hsl(210 40% 98%);
+      border: 1px solid hsl(217.2 32.6% 17.5%);
+    }
+
+    .show-solution-btn:hover {
+      border-color: hsl(221 83% 53%);
+    }
+
+    .answer-display {
+      margin-top: 0.75rem;
+      padding: 0.75rem;
+      background: hsl(142 76% 36% / 0.1);
+      border: 1px solid hsl(142 76% 36%);
+      border-radius: 8px;
+      color: hsl(142 76% 36%);
+      font-weight: 600;
+      display: none;
+    }
+
+    .answer-display.visible {
+      display: block;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .modal.visible {
+      display: flex;
+    }
+
+    .modal-content {
+      background: hsl(222.2 84% 4.9%);
+      border: 1px solid hsl(221 83% 53% / 0.3);
+      border-radius: 16px;
+      padding: 2rem;
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .modal-content h2 {
+      margin-bottom: 1rem;
+      color: hsl(210 40% 98%);
+    }
+
+    .modal-content p {
+      color: hsl(215 20.2% 65.1%);
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+    }
+
+    .modal-button {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .modal-button.primary {
+      background: hsl(221 83% 53%);
+      color: white;
+    }
+
+    .modal-button.primary:hover {
+      background: hsl(217 91% 60%);
+    }
+
+    .modal-button.secondary {
+      background: hsl(217.2 32.6% 17.5%);
+      color: hsl(210 40% 98%);
+    }
+
+    .modal-button.secondary:hover {
+      background: hsl(217.2 32.6% 20%);
+    }
+
+    @media (max-width: 640px) {
+      .header h1 {
+        font-size: 2rem;
+      }
+
+      .question-item {
+        padding: 1.5rem;
+      }
+
+      .show-answer-btn {
+        margin-bottom: 0.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>{{TITLE}}</h1>
+      <p>Банк заданий ОГЭ по математике</p>
+    </div>
+
+    <div id="questions">
+      {{QUESTIONS}}
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="solutionModal" class="modal">
+    <div class="modal-content">
+      <h2>Хотите посмотреть решение?</h2>
+      <p>Создайте аккаунт или войдите, чтобы получить доступ к подробным решениям всех задач.</p>
+      <div class="modal-buttons">
+        <a href="/auth" class="modal-button primary">Войти / Создать аккаунт</a>
+        <button class="modal-button secondary" onclick="closeSolutionModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showAnswer(index, answer) {
+      const answerDiv = document.getElementById(`answer-${index}`);
+      answerDiv.textContent = `Ответ: ${answer}`;
+      answerDiv.classList.add('visible');
+    }
+
+    function showSolutionModal() {
+      document.getElementById('solutionModal').classList.add('visible');
+    }
+
+    function closeSolutionModal() {
+      document.getElementById('solutionModal').classList.remove('visible');
+    }
+
+    // Close modal on outside click
+    document.getElementById('solutionModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeSolutionModal();
+      }
+    });
+  </script>
+</body>
+</html>
