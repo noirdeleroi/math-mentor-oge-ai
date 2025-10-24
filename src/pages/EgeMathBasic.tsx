@@ -11,6 +11,8 @@ import { saveChatLog, loadChatHistory } from "@/services/chatLogsService";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { type Message } from "@/contexts/ChatContext";
+import { Menu, X } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const EgeMathBasic = () => {
   const navigate = useNavigate();
@@ -28,6 +30,10 @@ const EgeMathBasic = () => {
   // Homework context state
   const [homeworkContext, setHomeworkContext] = useState<any>(null);
   const [contextExpiresAt, setContextExpiresAt] = useState<Date | null>(null);
+  
+  // Mobile drawer state
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const isMobile = useIsMobile();
   
   // Refs for pending feedback handling
   const handledFeedbackRef = useRef<boolean>(false);
@@ -476,49 +482,87 @@ ${updated.feedback_message}
     }
   };
 
+  // Sidebar content component
+  const SidebarContent = () => (
+    <div className="p-4 space-y-2">
+      <Button
+        onClick={() => { handlePracticeClick(); if (isMobile) setIsSidebarOpen(false); }}
+        variant="ghost"
+        className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+      >
+        Практика
+      </Button>
+      
+      <Button
+        onClick={() => { handleTextbookClick(); if (isMobile) setIsSidebarOpen(false); }}
+        variant="ghost"
+        className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+      >
+        Учебник
+      </Button>
+      
+      <Button
+        onClick={() => { handleProgressClick(); if (isMobile) setIsSidebarOpen(false); }}
+        variant="ghost"
+        className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+      >
+        Прогресс
+      </Button>
+
+      <Button
+        onClick={() => { handleCreateTask(); if (isMobile) setIsSidebarOpen(false); }}
+        variant="ghost"
+        className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+      >
+        Создать задание
+      </Button>
+    </div>
+  );
+
   return (
     <div className="flex h-[calc(100vh-68px)] w-full bg-background overflow-hidden">
-      {/* Left Sidebar - keep fewer buttons */}
-      <div className="w-64 h-full bg-sidebar border-r border-border flex-shrink-0">
-        
-        {/* Menu items (fewer than OGE, keep as-is) */}
-        <div className="p-4 space-y-2">
-          <Button
-            onClick={handlePracticeClick}
-            variant="ghost"
-            className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-          >
-            Практика
-          </Button>
-          
-          <Button
-            onClick={handleTextbookClick}
-            variant="ghost"
-            className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-          >
-            Учебник
-          </Button>
-          
-          <Button
-            onClick={handleProgressClick}
-            variant="ghost"
-            className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-          >
-            Прогресс
-          </Button>
+      {/* Mobile Hamburger Button */}
+      {isMobile && !isSidebarOpen && (
+        <button
+          onClick={() => setIsSidebarOpen(true)}
+          className="fixed top-4 left-4 z-50 p-2 rounded-lg bg-sidebar border border-border shadow-lg"
+          aria-label="Open menu"
+        >
+          <Menu className="w-6 h-6 text-sidebar-foreground" />
+        </button>
+      )}
 
-          <Button
-            onClick={handleCreateTask}
-            variant="ghost"
-            className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-          >
-            Создать задание
-          </Button>
+      {/* Mobile Drawer Overlay + Sidebar */}
+      {isMobile && isSidebarOpen && (
+        <>
+          <div 
+            className="fixed inset-0 bg-black/60 z-40"
+            onClick={() => setIsSidebarOpen(false)}
+          />
+          <div className="fixed inset-y-0 left-0 w-64 bg-sidebar border-r border-border z-50 transform transition-transform duration-300 ease-in-out overflow-y-auto">
+            <div className="flex justify-end p-4">
+              <button
+                onClick={() => setIsSidebarOpen(false)}
+                className="p-2 rounded-lg hover:bg-sidebar-accent"
+                aria-label="Close menu"
+              >
+                <X className="w-5 h-5 text-sidebar-foreground" />
+              </button>
+            </div>
+            <SidebarContent />
+          </div>
+        </>
+      )}
+
+      {/* Desktop Fixed Sidebar */}
+      {!isMobile && (
+        <div className="w-64 h-full bg-sidebar border-r border-border flex-shrink-0">
+          <SidebarContent />
         </div>
-      </div>
+      )}
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col h-full min-h-0">
+      <div className={`flex-1 flex flex-col h-full min-h-0 ${isMobile ? 'w-full' : ''}`}>
         {/* NOTE: Removed the page-level header (keep LearningLayout header only) */}
 
         {/* Chat Messages Area */}

@@ -14,6 +14,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { generateAIHomeworkFeedback } from "@/services/homeworkAIFeedbackService";
 import { type Message } from "@/contexts/ChatContext";
+import { Menu, X } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 const OgeMath = () => {
   const navigate = useNavigate();
   const {
@@ -41,6 +43,10 @@ const OgeMath = () => {
   // State for homework context
   const [homeworkContext, setHomeworkContext] = useState<any>(null);
   const [contextExpiresAt, setContextExpiresAt] = useState<Date | null>(null);
+  
+  // Mobile drawer state
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   // Initialize KaTeX
   useKaTeXInitializer();
@@ -508,43 +514,101 @@ ${updated.feedback_message}
       setIsTyping(false);
     }
   };
-  return <div className="flex h-[calc(100vh-68px)] w-full bg-background overflow-hidden">
-      {/* Left Sidebar - Fixed */}
-      <div className="w-64 h-full bg-sidebar border-r border-border flex-shrink-0 flex flex-col overflow-hidden">
-        {/* Logo area */}
-        
-        
-        {/* Menu items */}
-        <div className="p-4 space-y-2 flex-shrink-0">
-          <Button onClick={handlePracticeClick} variant="ghost" className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
-            Практика
-          </Button>
-          
-          <Button onClick={() => navigate('/cellard-lp2')} variant="ghost" className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
-            Платформа
-          </Button>
-          
-          <Button onClick={() => navigate('/textbook')} variant="ghost" className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
-            Учебник
-          </Button>
-          
-          <Button onClick={handleProgressClick} variant="ghost" className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
-            Прогресс
-          </Button>
-          
-          <Button onClick={handleCreateTask} variant="ghost" className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
-            Создать задание
-          </Button>
-        </div>
 
-        {/* Daily Task Story - 2 inches below Progress button */}
-        <div className="px-4 mt-[144px] flex-1 overflow-y-auto">
-          <DailyTaskStory />
-        </div>
+  // Sidebar content component
+  const SidebarContent = () => (
+    <>
+      <div className="p-4 space-y-2 flex-shrink-0">
+        <Button 
+          onClick={() => { handlePracticeClick(); if (isMobile) setIsSidebarOpen(false); }} 
+          variant="ghost" 
+          className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+        >
+          Практика
+        </Button>
+        
+        <Button 
+          onClick={() => { navigate('/cellard-lp2'); if (isMobile) setIsSidebarOpen(false); }} 
+          variant="ghost" 
+          className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+        >
+          Платформа
+        </Button>
+        
+        <Button 
+          onClick={() => { navigate('/textbook'); if (isMobile) setIsSidebarOpen(false); }} 
+          variant="ghost" 
+          className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+        >
+          Учебник
+        </Button>
+        
+        <Button 
+          onClick={() => { handleProgressClick(); if (isMobile) setIsSidebarOpen(false); }} 
+          variant="ghost" 
+          className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+        >
+          Прогресс
+        </Button>
+        
+        <Button 
+          onClick={() => { handleCreateTask(); if (isMobile) setIsSidebarOpen(false); }} 
+          variant="ghost" 
+          className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+        >
+          Создать задание
+        </Button>
       </div>
 
+      <div className="px-4 mt-[144px] flex-1 overflow-y-auto">
+        <DailyTaskStory />
+      </div>
+    </>
+  );
+
+  return <div className="flex h-[calc(100vh-68px)] w-full bg-background overflow-hidden">
+      {/* Mobile Hamburger Button */}
+      {isMobile && !isSidebarOpen && (
+        <button
+          onClick={() => setIsSidebarOpen(true)}
+          className="fixed top-4 left-4 z-50 p-2 rounded-lg bg-sidebar border border-border shadow-lg"
+          aria-label="Open menu"
+        >
+          <Menu className="w-6 h-6 text-sidebar-foreground" />
+        </button>
+      )}
+
+      {/* Mobile Drawer Overlay + Sidebar */}
+      {isMobile && isSidebarOpen && (
+        <>
+          <div 
+            className="fixed inset-0 bg-black/60 z-40"
+            onClick={() => setIsSidebarOpen(false)}
+          />
+          <div className="fixed inset-y-0 left-0 w-64 bg-sidebar border-r border-border z-50 transform transition-transform duration-300 ease-in-out overflow-y-auto flex flex-col">
+            <div className="flex justify-end p-4">
+              <button
+                onClick={() => setIsSidebarOpen(false)}
+                className="p-2 rounded-lg hover:bg-sidebar-accent"
+                aria-label="Close menu"
+              >
+                <X className="w-5 h-5 text-sidebar-foreground" />
+              </button>
+            </div>
+            <SidebarContent />
+          </div>
+        </>
+      )}
+
+      {/* Desktop Fixed Sidebar */}
+      {!isMobile && (
+        <div className="w-64 h-full bg-sidebar border-r border-border flex-shrink-0 flex flex-col overflow-hidden">
+          <SidebarContent />
+        </div>
+      )}
+
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col h-full min-h-0">
+      <div className={`flex-1 flex flex-col h-full min-h-0 ${isMobile ? 'w-full' : ''}`}>
         {/* Homework Context Indicator */}
         {homeworkContext && contextExpiresAt && new Date() < contextExpiresAt && (
           <div className="px-4 py-2 bg-blue-50 dark:bg-blue-950 border-b border-blue-200 dark:border-blue-800">
