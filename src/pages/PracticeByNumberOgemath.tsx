@@ -28,6 +28,63 @@ interface Question {
   status?: 'correct' | 'wrong' | 'unseen' | 'unfinished';
 }
 
+// Photo analysis feedback types
+interface PhotoAnalysisFeedback {
+  scores: number;
+  review: {
+    meta: {
+      rubric_max_score: number;
+      notes: string;
+    };
+    final_answer: {
+      student_latex: string;
+      correct_latex: string;
+      is_correct: boolean;
+    };
+    errors: Array<{
+      id: string;
+      type: string;
+      severity: 'minor' | 'major';
+      message: string;
+      student_latex: string;
+      expected_latex: string;
+      explanation_latex: string;
+      affects_final_answer: boolean;
+      location: {
+        line_start: number;
+        line_end: number;
+        char_start: number;
+        char_end: number;
+        snippet: string;
+        bboxes: any[];
+      };
+      step_ref: {
+        correct_step_index: number;
+        student_match_quality: 'exact' | 'approx' | 'none';
+      };
+      suggested_fix_latex: string;
+    }>;
+    step_alignment: Array<{
+      correct_step_index: number;
+      correct_step_latex: string;
+      student: {
+        line_start: number;
+        line_end: number;
+        char_start: number;
+        char_end: number;
+        snippet: string;
+      };
+      match_quality: 'exact' | 'approx' | 'none';
+    }>;
+    marks: Array<{
+      target_error_id: string;
+      style: 'underline' | 'strike' | 'circle' | 'box' | 'arrow';
+      note_latex: string;
+    }>;
+    overview_latex: string;
+  };
+}
+
 const PracticeByNumberOgemath = () => {
   // Helper function to check if answer is non-numeric
   const isNonNumericAnswer = (answer: string): boolean => {
@@ -83,6 +140,8 @@ const PracticeByNumberOgemath = () => {
   const [isProcessingPhoto, setIsProcessingPhoto] = useState(false);
   const [photoFeedback, setPhotoFeedback] = useState<string>("");
   const [photoScores, setPhotoScores] = useState<number | null>(null);
+  const [structuredPhotoFeedback, setStructuredPhotoFeedback] = useState<PhotoAnalysisFeedback | null>(null);
+  const [studentSolution, setStudentSolution] = useState<string>("");
   
   // Device upload states
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
@@ -217,6 +276,8 @@ const PracticeByNumberOgemath = () => {
     setUploadedImages([]);
     setPhotoFeedback("");
     setPhotoScores(null);
+    setStructuredPhotoFeedback(null);
+    setStudentSolution("");
     setOcrProgress("");
   };
 
@@ -831,7 +892,9 @@ const PracticeByNumberOgemath = () => {
           // Parse JSON response
           const feedbackData = JSON.parse(apiResponse.feedback);
           if (feedbackData.review && typeof feedbackData.scores === 'number') {
-            setPhotoFeedback(feedbackData.review);
+            // Set structured feedback
+            setStructuredPhotoFeedback(feedbackData);
+            setPhotoFeedback(feedbackData.review.overview_latex || '');
             setPhotoScores(feedbackData.scores);
             
             // Handle photo submission using direct update
@@ -851,6 +914,7 @@ const PracticeByNumberOgemath = () => {
           // Fallback to treating as plain text
           setPhotoFeedback(apiResponse.feedback);
           setPhotoScores(null);
+          setStructuredPhotoFeedback(null);
           setShowUploadPrompt(false);
         }
       } else {
@@ -927,6 +991,30 @@ const PracticeByNumberOgemath = () => {
   const clearPhotoFeedback = () => {
     setPhotoFeedback("");
     setPhotoScores(null);
+    setStructuredPhotoFeedback(null);
+    setStudentSolution("");
+  };
+
+  const fetchStudentSolution = async (problemSubmissionId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('telegram_uploads')
+        .select('extracted_text')
+        .eq('problem_submission_id', problemSubmissionId)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (error) {
+        console.error('Error fetching student solution:', error);
+        return null;
+      }
+
+      return data?.extracted_text || '';
+    } catch (error) {
+      console.error('Error in fetchStudentSolution:', error);
+      return null;
+    }
   };
 
   const handleDevicePhotoCheck = async () => {
@@ -952,6 +1040,14 @@ const PracticeByNumberOgemath = () => {
         setIsProcessingPhoto(false);
         setOcrProgress("");
         return;
+      }
+
+      // Fetch student solution if problem_submission_id is available
+      if (processData?.problem_submission_id) {
+        const solution = await fetchStudentSolution(processData.problem_submission_id);
+        if (solution) {
+          setStudentSolution(solution);
+        }
       }
 
       // Step 2: Get the LaTeX from profiles.telegram_input
@@ -1000,7 +1096,9 @@ const PracticeByNumberOgemath = () => {
         try {
           const feedbackData = JSON.parse(apiResponse.feedback);
           if (feedbackData.review && typeof feedbackData.scores === 'number') {
-            setPhotoFeedback(feedbackData.review);
+            // Set structured feedback
+            setStructuredPhotoFeedback(feedbackData);
+            setPhotoFeedback(feedbackData.review.overview_latex || '');
             setPhotoScores(feedbackData.scores);
             
             const isCorrect = feedbackData.scores > 0;
@@ -1018,6 +1116,7 @@ const PracticeByNumberOgemath = () => {
           console.error('Error parsing API response:', parseError);
           setPhotoFeedback(apiResponse.feedback);
           setPhotoScores(null);
+          setStructuredPhotoFeedback(null);
         }
       } else {
         toast.error('Не удалось получить обратную связь');
@@ -1568,12 +1667,181 @@ const PracticeByNumberOgemath = () => {
                     </CardHeader>
                     <CardContent>
                       <div className="prose max-w-none">
-                        <MathRenderer text={photoFeedback} compiler="mathjax" />
+                        {/* Student Solution */}
+                        {studentSolution && (
+                          <div className="mb-6">
+                            <h3 className="text-lg font-semibold text-blue-800 mb-3">Ваше решение</h3>
+                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                              <MathRenderer text={studentSolution} compiler="mathjax" />
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Overview */}
+                        <div className="mb-6">
+                          <h3 className="text-lg font-semibold text-green-800 mb-3">Общая оценка</h3>
+                          <MathRenderer text={photoFeedback} compiler="mathjax" />
+                        </div>
+
+                        {/* Score Display */}
                         {photoScores !== null && (
-                          <div className="mt-4 p-3 bg-green-100 rounded-lg border">
-                            <p className="text-lg font-semibold text-green-800">
-                              Баллы: {photoScores} из 2
-                            </p>
+                          <div className="mb-6 p-4 bg-green-100 rounded-lg border">
+                            <div className="flex items-center justify-between">
+                              <span className="text-lg font-semibold text-green-800">
+                                Баллы: {photoScores} из 2
+                              </span>
+                              <div className="flex space-x-2">
+                                {[1, 2].map((score) => (
+                                  <div
+                                    key={score}
+                                    className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                                      score <= photoScores
+                                        ? 'bg-green-500 text-white'
+                                        : 'bg-gray-300 text-gray-600'
+                                    }`}
+                                  >
+                                    {score}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Structured Feedback */}
+                        {structuredPhotoFeedback && (
+                          <div className="space-y-6">
+                            {/* Final Answer Comparison */}
+                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                              <h4 className="font-semibold text-blue-800 mb-3">Сравнение ответов</h4>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                  <p className="text-sm font-medium text-blue-700 mb-2">Ваш ответ:</p>
+                                  <div className="bg-white p-3 rounded border">
+                                    <MathRenderer 
+                                      text={structuredPhotoFeedback.review.final_answer.student_latex} 
+                                      compiler="mathjax" 
+                                    />
+                                  </div>
+                                </div>
+                                <div>
+                                  <p className="text-sm font-medium text-blue-700 mb-2">Правильный ответ:</p>
+                                  <div className="bg-white p-3 rounded border">
+                                    <MathRenderer 
+                                      text={structuredPhotoFeedback.review.final_answer.correct_latex} 
+                                      compiler="mathjax" 
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="mt-3 flex items-center">
+                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-sm font-medium ${
+                                  structuredPhotoFeedback.review.final_answer.is_correct
+                                    ? 'bg-green-100 text-green-800'
+                                    : 'bg-red-100 text-red-800'
+                                }`}>
+                                  {structuredPhotoFeedback.review.final_answer.is_correct ? '✓ Правильно' : '✗ Неправильно'}
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Errors */}
+                            {structuredPhotoFeedback.review.errors.length > 0 && (
+                              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                                <h4 className="font-semibold text-red-800 mb-3">
+                                  Найденные ошибки ({structuredPhotoFeedback.review.errors.length})
+                                </h4>
+                                <div className="space-y-4">
+                                  {structuredPhotoFeedback.review.errors.map((error, index) => (
+                                    <div key={error.id} className="bg-white border border-red-200 rounded-lg p-4">
+                                      <div className="flex items-start justify-between mb-2">
+                                        <div className="flex items-center space-x-2">
+                                          <span className="text-sm font-medium text-red-700">
+                                            Ошибка {index + 1}
+                                          </span>
+                                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                            error.severity === 'major' 
+                                              ? 'bg-red-100 text-red-800' 
+                                              : 'bg-yellow-100 text-yellow-800'
+                                          }`}>
+                                            {error.severity === 'major' ? 'Критическая' : 'Незначительная'}
+                                          </span>
+                                        </div>
+                                        <span className="text-xs text-gray-500">{error.type}</span>
+                                      </div>
+                                      
+                                      <p className="text-sm text-gray-700 mb-3">{error.message}</p>
+                                      
+                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                                        <div>
+                                          <p className="text-xs font-medium text-gray-600 mb-1">Ваше решение:</p>
+                                          <div className="bg-gray-50 p-2 rounded text-sm">
+                                            <MathRenderer text={error.student_latex} compiler="mathjax" />
+                                          </div>
+                                        </div>
+                                        <div>
+                                          <p className="text-xs font-medium text-gray-600 mb-1">Правильно должно быть:</p>
+                                          <div className="bg-gray-50 p-2 rounded text-sm">
+                                            <MathRenderer text={error.expected_latex} compiler="mathjax" />
+                                          </div>
+                                        </div>
+                                      </div>
+                                      
+                                      <div className="bg-blue-50 p-3 rounded">
+                                        <p className="text-xs font-medium text-blue-700 mb-1">Объяснение:</p>
+                                        <MathRenderer text={error.explanation_latex} compiler="mathjax" />
+                                      </div>
+                                      
+                                      {error.suggested_fix_latex && (
+                                        <div className="bg-green-50 p-3 rounded mt-2">
+                                          <p className="text-xs font-medium text-green-700 mb-1">Рекомендация:</p>
+                                          <MathRenderer text={error.suggested_fix_latex} compiler="mathjax" />
+                                        </div>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Step Alignment */}
+                            {structuredPhotoFeedback.review.step_alignment.length > 0 && (
+                              <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                                <h4 className="font-semibold text-purple-800 mb-3">Пошаговое сравнение</h4>
+                                <div className="space-y-3">
+                                  {structuredPhotoFeedback.review.step_alignment.map((step, index) => (
+                                    <div key={index} className="bg-white border border-purple-200 rounded-lg p-3">
+                                      <div className="flex items-center justify-between mb-2">
+                                        <span className="text-sm font-medium text-purple-700">
+                                          Шаг {step.correct_step_index + 1}
+                                        </span>
+                                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                          step.match_quality === 'exact' 
+                                            ? 'bg-green-100 text-green-800'
+                                            : step.match_quality === 'approx'
+                                            ? 'bg-yellow-100 text-yellow-800'
+                                            : 'bg-red-100 text-red-800'
+                                        }`}>
+                                          {step.match_quality === 'exact' ? 'Точно' : 
+                                           step.match_quality === 'approx' ? 'Примерно' : 'Не найдено'}
+                                        </span>
+                                      </div>
+                                      <div className="bg-gray-50 p-2 rounded">
+                                        <MathRenderer text={step.correct_step_latex} compiler="mathjax" />
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Evaluator Notes */}
+                            {structuredPhotoFeedback.review.meta.notes && (
+                              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                                <h4 className="font-semibold text-gray-800 mb-2">Комментарий преподавателя</h4>
+                                <p className="text-sm text-gray-700">{structuredPhotoFeedback.review.meta.notes}</p>
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>
