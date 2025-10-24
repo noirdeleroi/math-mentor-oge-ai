@@ -18,6 +18,7 @@ const MyDb3 = () => {
   const [modalMode, setModalMode] = useState<'add' | 'delete'>('add');
   const [wizardQueue, setWizardQueue] = useState<CourseId[]>([]);
   const [currentWizardCourse, setCurrentWizardCourse] = useState<CourseId | null>(null);
+  const [showTestWizard, setShowTestWizard] = useState(false);
   
   const {
     myCourses,
@@ -432,11 +433,22 @@ const MyDb3 = () => {
                         size="lg"
                         className="w-20 h-20 rounded-full border-2 border-dashed border-yellow-500/50 hover:border-yellow-500 hover:bg-yellow-500/10 bg-white/5 backdrop-blur-sm text-white transition-all duration-200 mb-4"
                       >
-                        <Plus className="w-8 h-8 text-yellow-400" />
+                       <Plus className="w-8 h-8 text-yellow-400" />
                       </Button>
                       <p className="text-gray-300">Добавить курс</p>
                     </div>
                   </div>
+                </div>
+
+                {/* Test Wizard Button */}
+                <div className="mt-6">
+                  <Button
+                    onClick={() => setShowTestWizard(true)}
+                    variant="outline"
+                    className="text-sm"
+                  >
+                    🧪 Тест Визард (Дизайн)
+                  </Button>
                 </div>
               </div>
             )}
@@ -460,6 +472,21 @@ const MyDb3 = () => {
           courseId={currentWizardCourse}
           onDone={handleWizardDone}
           onError={handleWizardError}
+        />
+      )}
+
+      {/* Test Wizard (No DB Effects) */}
+      {showTestWizard && (
+        <CourseOnboardingWizard
+          courseId="oge-math"
+          onDone={() => {
+            setShowTestWizard(false);
+            console.log('Test wizard closed - no database changes made');
+          }}
+          onError={() => {
+            setShowTestWizard(false);
+            console.error('Test wizard error');
+          }}
         />
       )}
     </div>
