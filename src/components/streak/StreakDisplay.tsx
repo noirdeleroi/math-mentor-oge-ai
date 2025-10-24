@@ -8,6 +8,7 @@ import { User, ChevronDown } from 'lucide-react';
 import { EnergyPointsHeaderAnimation } from './EnergyPointsHeaderAnimation';
 import { getCurrentEnergyPoints } from '@/services/energyPoints';
 import { getBadgeForPoints, getPointsLabel } from '@/utils/streakBadges';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface StreakData {
   weeklyGoalPoints: number;
@@ -21,6 +22,7 @@ export const StreakDisplay = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { getAvatarUrl, getDisplayName } = useProfile();
+  const isMobile = useIsMobile();
   const [streakData, setStreakData] = useState<StreakData>({
     weeklyGoalPoints: 60,
     todayProgress: 0,
@@ -140,21 +142,30 @@ export const StreakDisplay = () => {
 
       {/* Clickable Streak Info with Linear Progress Bar */}
       <div className="flex flex-col gap-1">
-        <button 
-          onClick={() => setShowDropdown(!showDropdown)}
-          className="flex items-center gap-3 text-sm text-white hover:opacity-80 transition-opacity duration-200 px-2"
-        >
-          <div className="flex items-center gap-1">
-            <span className="text-base">📅</span>
-            <span className="font-medium">{streakData.currentStreak}</span>
-
-          </div>
-          <div className="flex items-center gap-1">
-            <span className="text-base">🔥</span>
-            <span className="font-medium">{Math.round(streakData.energyPoints)}</span>
-          </div>
-          <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${showDropdown ? 'rotate-180' : ''}`} />
-        </button>
+        {isMobile ? (
+          <button 
+            onClick={() => setShowDropdown(!showDropdown)}
+            className="flex items-center gap-1 text-sm text-white hover:opacity-80 transition-opacity duration-200 px-1.5 py-1"
+          >
+            <span className="text-xl">🔥</span>
+            <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${showDropdown ? 'rotate-180' : ''}`} />
+          </button>
+        ) : (
+          <button 
+            onClick={() => setShowDropdown(!showDropdown)}
+            className="flex items-center gap-3 text-sm text-white hover:opacity-80 transition-opacity duration-200 px-2"
+          >
+            <div className="flex items-center gap-1">
+              <span className="text-base">📅</span>
+              <span className="font-medium">{streakData.currentStreak}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <span className="text-base">🔥</span>
+              <span className="font-medium">{Math.round(streakData.energyPoints)}</span>
+            </div>
+            <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${showDropdown ? 'rotate-180' : ''}`} />
+          </button>
+        )}
         
         {/* Linear Progress Bar */}
         <div className="w-full h-1 bg-white/30 rounded-full overflow-hidden">

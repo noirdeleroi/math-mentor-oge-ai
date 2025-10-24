@@ -88,10 +88,10 @@ const LearningLayout: React.FC = () => {
             )}
           </div>
           <div className="flex items-center gap-2 sm:gap-4 md:gap-6 ml-auto">
-            <div className="hidden sm:block">
+            <div>
               <DailyTaskStory courseId={currentCourse?.numericId?.toString() || null} />
             </div>
-            <div className="relative scale-90 sm:scale-100">
+            <div className="relative scale-75 sm:scale-100">
               <StreakDisplay />
               <EnergyPointsHeaderAnimation
                 points={energyPointsAnimation.points}
