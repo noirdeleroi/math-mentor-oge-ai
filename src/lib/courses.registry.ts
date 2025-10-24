@@ -30,7 +30,6 @@ export const COURSES: Record<CourseId, Course> = {
       '/ogemath-progress2',
       '/ogemath-revision',
       '/practice-by-number-ogemath',
-      '/ogemath2',
       '/topics',
       '/homework-fipi-practice'
     ],
