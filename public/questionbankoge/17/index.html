@@ -4,6 +4,31 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Задание 17 - Банк заданий ОГЭ</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true,
+        processEnvironments: true,
+        packages: {'[+]': ['ams', 'newcommand', 'configmacros']}
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        ignoreHtmlClass: 'tex2jax_ignore',
+        processHtmlClass: 'tex2jax_process'
+      },
+      startup: {
+        ready: () => {
+          MathJax.startup.defaultReady();
+          MathJax.startup.defaultDocument();
+        }
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   <style>
     * {
       margin: 0;
@@ -12,141 +37,226 @@
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: linear-gradient(135deg, hsl(222.2 47.4% 11.2%) 0%, hsl(222.2 47.4% 11.2%) 50%, hsl(221 83% 53% / 0.05) 100%);
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%);
       min-height: 100vh;
-      padding: 2rem 1rem;
-      color: hsl(210 40% 98%);
+      color: #ffffff;
+      overflow-x: hidden;
+    }
+
+    /* Flying Math Background Animation */
+    .flying-math {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .math-symbol {
+      position: absolute;
+      color: rgba(255, 255, 255, 0.1);
+      font-size: 2rem;
+      animation: float 20s infinite linear;
+      user-select: none;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100px) rotate(360deg);
+        opacity: 0;
+      }
     }
 
     .container {
-      max-width: 900px;
+      max-width: 1200px;
       margin: 0 auto;
+      padding: 2rem 1rem;
+      position: relative;
+      z-index: 10;
     }
 
     .header {
       text-align: center;
       margin-bottom: 3rem;
+      padding: 2rem 0;
     }
 
     .header h1 {
-      font-size: 2.5rem;
+      font-family: 'Playfair Display', serif;
+      font-size: 3rem;
       font-weight: 700;
-      background: linear-gradient(to right, hsl(221 83% 53%), hsl(217 91% 60%), hsl(280 100% 70%));
+      background: linear-gradient(135deg, #fbbf24 0%, #10b981 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      margin-bottom: 0.5rem;
+      margin-bottom: 1rem;
+      line-height: 1.2;
     }
 
     .header p {
-      color: hsl(215 20.2% 65.1%);
-      font-size: 1.125rem;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 1.25rem;
+      font-weight: 500;
+    }
+
+    .header .subtitle {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 1rem;
+      margin-top: 0.5rem;
     }
 
     .question-item {
-      background: hsl(222.2 84% 4.9% / 0.5);
-      backdrop-filter: blur(8px);
-      border: 1px solid hsl(221 83% 53% / 0.2);
-      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
       padding: 2rem;
-      margin-bottom: 1.5rem;
+      margin-bottom: 2rem;
       transition: all 0.3s ease;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     }
 
     .question-item:hover {
-      border-color: hsl(221 83% 53% / 0.4);
-      box-shadow: 0 10px 30px -10px hsl(221 83% 53% / 0.3);
+      border-color: rgba(251, 191, 36, 0.4);
+      box-shadow: 0 20px 40px rgba(251, 191, 36, 0.1);
+      transform: translateY(-2px);
     }
 
     .question-number {
       font-size: 0.875rem;
-      color: hsl(280 100% 70%);
+      color: #fbbf24;
       font-weight: 600;
       margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
 
     .problem-image {
       max-width: 100%;
+      width: 100%;
+      max-width: 600px;
       height: auto;
-      border-radius: 8px;
-      margin-bottom: 1rem;
+      border-radius: 12px;
+      margin: 0 auto 1.5rem auto;
+      display: block;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      object-fit: contain;
     }
 
     .problem-text {
       font-size: 1.125rem;
       line-height: 1.7;
       margin-bottom: 1.5rem;
-      color: hsl(210 40% 98%);
+      color: #ffffff;
+      font-weight: 400;
     }
 
     .answer-section {
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem;
     }
 
     .answer-input {
       width: 100%;
-      padding: 0.75rem 1rem;
-      background: hsl(217.2 32.6% 17.5%);
-      border: 1px solid hsl(217.2 32.6% 17.5%);
-      border-radius: 8px;
-      color: hsl(210 40% 98%);
+      padding: 1rem 1.25rem;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      color: #ffffff;
       font-size: 1rem;
-      margin-bottom: 0.75rem;
-      transition: all 0.2s;
+      margin-bottom: 1rem;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(8px);
     }
 
     .answer-input:focus {
       outline: none;
-      border-color: hsl(221 83% 53%);
-      box-shadow: 0 0 0 3px hsl(221 83% 53% / 0.1);
+      border-color: #fbbf24;
+      box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .answer-input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
     }
 
     .show-answer-btn,
     .show-solution-btn {
-      padding: 0.625rem 1.5rem;
+      padding: 0.75rem 1.5rem;
       border: none;
-      border-radius: 8px;
+      border-radius: 12px;
       font-size: 0.875rem;
-      font-weight: 500;
+      font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
     .show-answer-btn {
-      background: hsl(221 83% 53%);
-      color: white;
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      color: #1a1f36;
       margin-right: 0.75rem;
+      box-shadow: 0 4px 16px rgba(251, 191, 36, 0.3);
     }
 
     .show-answer-btn:hover {
-      background: hsl(217 91% 60%);
-      transform: translateY(-1px);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(251, 191, 36, 0.4);
     }
 
     .show-solution-btn {
-      background: hsl(217.2 32.6% 17.5%);
-      color: hsl(210 40% 98%);
-      border: 1px solid hsl(217.2 32.6% 17.5%);
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
     }
 
     .show-solution-btn:hover {
-      border-color: hsl(221 83% 53%);
+      border-color: #fbbf24;
+      background: rgba(251, 191, 36, 0.1);
+      transform: translateY(-1px);
     }
 
     .answer-display {
-      margin-top: 0.75rem;
-      padding: 0.75rem;
-      background: hsl(142 76% 36% / 0.1);
-      border: 1px solid hsl(142 76% 36%);
-      border-radius: 8px;
-      color: hsl(142 76% 36%);
+      margin-top: 1rem;
+      padding: 1rem 1.25rem;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 12px;
+      color: #10b981;
       font-weight: 600;
       display: none;
+      backdrop-filter: blur(8px);
     }
 
     .answer-display.visible {
       display: block;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     /* Modal */
@@ -159,620 +269,659 @@
       align-items: center;
       justify-content: center;
       padding: 1rem;
+      backdrop-filter: blur(8px);
     }
 
     .modal.visible {
       display: flex;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
     }
 
     .modal-content {
-      background: hsl(222.2 84% 4.9%);
-      border: 1px solid hsl(221 83% 53% / 0.3);
-      border-radius: 16px;
-      padding: 2rem;
+      background: rgba(26, 31, 54, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 2.5rem;
       max-width: 500px;
       width: 100%;
       text-align: center;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
     }
 
     .modal-content h2 {
+      font-family: 'Playfair Display', serif;
       margin-bottom: 1rem;
-      color: hsl(210 40% 98%);
+      color: #ffffff;
+      font-size: 1.5rem;
+      font-weight: 700;
     }
 
     .modal-content p {
-      color: hsl(215 20.2% 65.1%);
+      color: rgba(255, 255, 255, 0.8);
       margin-bottom: 1.5rem;
       line-height: 1.6;
+      font-size: 1rem;
     }
 
     .modal-buttons {
       display: flex;
-      gap: 0.75rem;
+      gap: 1rem;
       justify-content: center;
+      flex-wrap: wrap;
     }
 
     .modal-button {
-      padding: 0.75rem 1.5rem;
+      padding: 0.875rem 1.75rem;
       border: none;
-      border-radius: 8px;
+      border-radius: 12px;
       font-size: 0.875rem;
-      font-weight: 500;
+      font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
     .modal-button.primary {
-      background: hsl(221 83% 53%);
-      color: white;
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      color: #1a1f36;
+      box-shadow: 0 4px 16px rgba(251, 191, 36, 0.3);
     }
 
     .modal-button.primary:hover {
-      background: hsl(217 91% 60%);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(251, 191, 36, 0.4);
     }
 
     .modal-button.secondary {
-      background: hsl(217.2 32.6% 17.5%);
-      color: hsl(210 40% 98%);
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
     }
 
     .modal-button.secondary:hover {
-      background: hsl(217.2 32.6% 20%);
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-1px);
     }
 
-    @media (max-width: 640px) {
+    /* MathJax styling to match the app */
+    mjx-container {
+      user-select: text;
+    }
+    
+    mjx-container * {
+      user-select: none;
+    }
+    
+    /* MathJax selection and display styling */
+    mjx-container {
+      user-select: text;
+    }
+    
+    /* Selection highlighting for regular text and MathJax fallback */
+    ::selection {
+      background: rgba(251, 191, 36, 0.3);
+    }
+    
+    /* MathJax selection overlay */
+    .mjx-selection-highlight {
+      background: rgba(251, 191, 36, 0.3) !important;
+    }
+    
+    /* Force selection visibility on MathJax elements */
+    mjx-container.mjx-selected {
+      background: rgba(251, 191, 36, 0.3);
+    }
+
+    /* General image styling for any images in the content */
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto 1rem auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2.5rem;
+      }
+
+      .header p {
+        font-size: 1.125rem;
+      }
+
+      .question-item {
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .show-answer-btn {
+        margin-bottom: 0.75rem;
+        margin-right: 0;
+        width: 100%;
+      }
+
+      .show-solution-btn {
+        width: 100%;
+      }
+
+      .problem-image {
+        max-width: 100%;
+        margin: 0 auto 1rem auto;
+      }
+
+      .modal-content {
+        padding: 2rem;
+        margin: 1rem;
+      }
+
+      .modal-buttons {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .modal-button {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 1rem 0.75rem;
+      }
+
       .header h1 {
         font-size: 2rem;
       }
 
       .question-item {
-        padding: 1.5rem;
+        padding: 1.25rem;
       }
 
-      .show-answer-btn {
-        margin-bottom: 0.5rem;
+      .problem-text {
+        font-size: 1rem;
       }
     }
   </style>
 </head>
 <body>
+  <!-- Flying Math Background -->
+  <div class="flying-math" id="flyingMath"></div>
+
   <div class="container">
     <div class="header">
-      <h1>{{TITLE}}</h1>
+      <h1>Задание 17</h1>
       <p>Банк заданий ОГЭ по математике</p>
     </div>
 
     <div id="questions">
       
-      <div class="question-item">
-        <div class="question-number">Вопрос 1</div>
-        
-        <div class="problem-text">\[ \text{Один из углов равнобедренной трапеции равен } 43^\circ. \]
-\[ \text{Найдите больший угол этой трапеции.} \]
-\[ \text{Ответ дайте в градусах.} \]</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(0, '137')">
-            Показать ответ
-          </button>
-          <div id="answer-0" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 2</div>
-        
-        <div class="problem-text">\[ \text{Основания трапеции равны } 3 \text{ и } 9, \text{ а высота равна } 5. \]
-\[ \text{Найдите среднюю линию этой трапеции.} \]</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(1, '6')">
-            Показать ответ
-          </button>
-          <div id="answer-1" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 3</div>
-        
-        <div class="problem-text">\[ \text{Один из углов ромба равен } 114^\circ. \]
-\[ \text{Найдите меньший угол этого ромба.} \]
-\[ \text{Ответ дайте в градусах.} \]</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(2, '66')">
-            Показать ответ
-          </button>
-          <div id="answer-2" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 4</div>
-        
-        <div class="problem-text">\[ \text{Периметр ромба равен } 60, \text{ а один из углов равен } 30^\circ. \]
-\[ \text{Найдите площадь этого ромба.} \]</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(3, '112.5')">
-            Показать ответ
-          </button>
-          <div id="answer-3" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 5</div>
-        
-        <div class="problem-text">\[ \text{Диагонали } AC \text{ и } BD \text{ параллелограмма } ABCD \text{ пересекаются в точке } O, \]
-\[ AC = 14, \ BD = 18, \ AB = 5. \]
-\[ \text{Найдите } DO. \]</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(4, '9')">
-            Показать ответ
-          </button>
-          <div id="answer-4" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 6</div>
-        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1050.png" alt="Problem image" class="problem-image" />
-        <div class="problem-text">\[ \text{В равнобедренной трапеции основания равны } 4 \text{ и } 8, \]
-\[ \text{а один из углов между боковой стороной и основанием равен } 45^\circ. \]
-\[ \text{Найдите площадь этой трапеции.} \]</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(5, '12')">
-            Показать ответ
-          </button>
-          <div id="answer-5" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 7</div>
-        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2223.png" alt="Problem image" class="problem-image" />
-        <div class="problem-text">\[ \text{Найдите площадь параллелограмма,} \]  
-\[ \text{изображённого на рисунке.} \]</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(6, '120')">
-            Показать ответ
-          </button>
-          <div id="answer-6" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 8</div>
-        
-        <div class="problem-text">\[ \text{Основания трапеции равны } 14 \text{ и } 19. \]
-\[ \text{Найдите больший из отрезков, на которые делит среднюю линию} \]
-\[ \text{этой трапеции одна из её диагоналей.} \]</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(7, '9,5')">
-            Показать ответ
-          </button>
-          <div id="answer-7" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 9</div>
-        
-        <div class="problem-text">\[ \text{Высота равнобедренной трапеции, проведённая из вершины } C, \] 
-\[ \text{делит основание } AD \text{ на отрезки длиной } 17 \text{ и } 19. \]
-\[ \text{Найдите длину основания } BC. \]</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(8, '2')">
-            Показать ответ
-          </button>
-          <div id="answer-8" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 10</div>
-        
-        <div class="problem-text">\[
-\text{Сумма двух углов равнобедренной трапеции равна } 94^\circ.
-\]
-\[
-\text{Найдите больший угол этой трапеции. Ответ дайте в градусах.}
-\]</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(9, '133')">
-            Показать ответ
-          </button>
-          <div id="answer-9" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 11</div>
-        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//17_29_pr_pic.png" alt="Problem image" class="problem-image" />
-        <div class="problem-text">В равнобедренной трапеции высота равна $5$, большее основание равно $15$, угол при основании равен $45^\circ$. Найдите меньшее основание.</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(10, '5')">
-            Показать ответ
-          </button>
-          <div id="answer-10" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 12</div>
-        
-        <div class="problem-text">\[ \text{Один из углов равнобедренной трапеции равен } 29^\circ. \]
-\[ \text{Найдите больший угол этой трапеции.} \]
-\[ \text{Ответ дайте в градусах.} \]</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(11, '151')">
-            Показать ответ
-          </button>
-          <div id="answer-11" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 13</div>
-        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//122.png" alt="Problem image" class="problem-image" />
-        <div class="problem-text">\[ \text{Диагональ } AC \text{ параллелограмма } ABCD \text{ образует с его сторонами углы,} \]
-\[ \text{равные } 25^\circ \text{ и } 30^\circ. \]
-\[ \text{Найдите больший угол этого параллелограмма.} \]
-\[ \text{Ответ дайте в градусах.} \]</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(12, '125')">
-            Показать ответ
-          </button>
-          <div id="answer-12" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 14</div>
-        
-        <div class="problem-text">Основания трапеции равны \(13\) и \(23\), а высота равна \(5\). Найдите площадь этой трапеции.</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(13, '90')">
-            Показать ответ
-          </button>
-          <div id="answer-13" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 15</div>
-        
-        <div class="problem-text">\[ \text{Один из углов ромба равен } 62^\circ. \]
-\[ \text{Найдите больший угол этого ромба.} \]
-\[ \text{Ответ дайте в градусах.} \]</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(14, '118')">
-            Показать ответ
-          </button>
-          <div id="answer-14" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 16</div>
-        
-        <div class="problem-text">\[ \text{Диагонали } AC \text{ и } BD \text{ параллелограмма } ABCD \text{ пересекаются в точке } O, \]
-\[ AC = 6, \quad BD = 12, \quad AB = 4. \]
-\[ \text{Найдите } DO. \]</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(15, '6')">
-            Показать ответ
-          </button>
-          <div id="answer-15" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 17</div>
-        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//17_27_pr_pic.png" alt="Problem image" class="problem-image" />
-        <div class="problem-text">Высота равнобедренной трапеции, проведённая из вершины \(C\), делит основание \(AD\) на отрезки длиной \(1\) и \(11\). Найдите длину основания \(BC\).</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(16, '10')">
-            Показать ответ
-          </button>
-          <div id="answer-16" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 18</div>
-        
-        <div class="problem-text">\[ \text{Один из углов прямоугольной трапеции равен } 121^\circ. \]
-\[ \text{Найдите меньший угол этой трапеции.} \]
-\[ \text{Ответ дайте в градусах.} \]</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(17, '59')">
-            Показать ответ
-          </button>
-          <div id="answer-17" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 19</div>
-        
-        <div class="problem-text">\[ \text{Найдите площадь параллелограмма,} \]
-\[ \text{изображённого на рисунке.} \]</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(18, '20')">
-            Показать ответ
-          </button>
-          <div id="answer-18" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 20</div>
-        
-        <div class="problem-text">\[ \text{Сторона ромба равна } 46, \text{ а один из углов этого ромба равен } 150^\circ. \]
-\[ \text{Найдите высоту этого ромба.} \]</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(19, '23')">
-            Показать ответ
-          </button>
-          <div id="answer-19" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 21</div>
-        
-        <div class="problem-text">\[ \text{Периметр ромба равен } 72, \text{ а один из углов равен } 30^\circ. \]  
-\[ \text{Найдите площадь этого ромба.} \]</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(20, '162')">
-            Показать ответ
-          </button>
-          <div id="answer-20" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 22</div>
-        
-        <div class="problem-text">\[ \text{Основания трапеции равны } 10 \text{ и } 11. \]
-\[ \text{Найдите больший из отрезков, на которые делит среднюю линию} \]
-\[ \text{этой трапеции одна из её диагоналей.} \]</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(21, '5.5')">
-            Показать ответ
-          </button>
-          <div id="answer-21" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 23</div>
-        
-        <div class="problem-text">\[ \text{Один из углов равнобедренной трапеции равен } 113^\circ. \]
-\[ \text{Найдите меньший угол этой трапеции.} \]
-\[ \text{Ответ дайте в градусах.} \]</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(22, '67')">
-            Показать ответ
-          </button>
-          <div id="answer-22" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 24</div>
-        
-        <div class="problem-text">Один из углов параллелограмма равен \(96^\circ\). Найдите меньший угол этого параллелограмма. Ответ дайте в градусах.</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(23, '84')">
-            Показать ответ
-          </button>
-          <div id="answer-23" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 25</div>
-        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1242.png" alt="Problem image" class="problem-image" />
-        <div class="problem-text">\[ \text{В равнобедренной трапеции известна высота,} \]
-\[ \text{большее основание и угол при основании} \]
-\[ \text{(см. рисунок). Найдите меньшее основание.} \]</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(24, '4')">
-            Показать ответ
-          </button>
-          <div id="answer-24" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 26</div>
-        
-        <div class="problem-text">\[ \text{Основания трапеции равны } 1 \text{ и } 11. \]
-\[ \text{Найдите больший из отрезков, на которые делит среднюю линию} \]
-\[ \text{этой трапеции одна из её диагоналей.} \]</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(25, '5.5')">
-            Показать ответ
-          </button>
-          <div id="answer-25" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 27</div>
-        
-        <div class="problem-text">\[ \text{Основания трапеции равны } 8 \text{ и } 17. \]
-\[ \text{Найдите больший из отрезков, на которые делит среднюю линию} \]
-\[ \text{этой трапеции одна из её диагоналей.} \]</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(26, '8,5')">
-            Показать ответ
-          </button>
-          <div id="answer-26" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 28</div>
-        
-        <div class="problem-text">\[ \text{Основания трапеции равны } 1 \text{ и } 5, \text{ а высота равна } 3. \]
-\[ \text{Найдите среднюю линию этой трапеции.} \]</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(27, '3')">
-            Показать ответ
-          </button>
-          <div id="answer-27" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 29</div>
-        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2028.png" alt="Problem image" class="problem-image" />
-        <div class="problem-text">\[ \text{Найдите площадь параллелограмма,} \]
-\[ \text{изображённого на рисунке.} \]</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(28, '44')">
-            Показать ответ
-          </button>
-          <div id="answer-28" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 30</div>
-        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//860.png" alt="Problem image" class="problem-image" />
-        <div class="problem-text">\[ \text{Диагональ } AC \text{ параллелограмма } ABCD \text{ образует с его сторонами углы,} \]
-\[ \text{равные } 45^\circ \text{ и } 40^\circ. \]
-\[ \text{Найдите больший угол этого параллелограмма.} \]
-\[ \text{Ответ дайте в градусах.} \]</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(29, '95')">
-            Показать ответ
-          </button>
-          <div id="answer-29" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
+       <div class="question-item">
+         <div class="question-number">Вопрос 1</div>
+         
+         <div class="problem-text">\[ \text{Один из углов равнобедренной трапеции равен } 43^\circ. \]<br>\[ \text{Найдите больший угол этой трапеции.} \]<br>\[ \text{Ответ дайте в градусах.} \]</div>
+         <button class="show-answer-btn"
+                 data-answer="137"
+                 onclick="showAnswer(0, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-0" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 2</div>
+         
+         <div class="problem-text">\[ \text{Основания трапеции равны } 3 \text{ и } 9, \text{ а высота равна } 5. \]<br>\[ \text{Найдите среднюю линию этой трапеции.} \]</div>
+         <button class="show-answer-btn"
+                 data-answer="6"
+                 onclick="showAnswer(1, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-1" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 3</div>
+         
+         <div class="problem-text">\[ \text{Один из углов ромба равен } 114^\circ. \]<br>\[ \text{Найдите меньший угол этого ромба.} \]<br>\[ \text{Ответ дайте в градусах.} \]</div>
+         <button class="show-answer-btn"
+                 data-answer="66"
+                 onclick="showAnswer(2, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-2" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 4</div>
+         
+         <div class="problem-text">\[ \text{Периметр ромба равен } 60, \text{ а один из углов равен } 30^\circ. \]<br>\[ \text{Найдите площадь этого ромба.} \]</div>
+         <button class="show-answer-btn"
+                 data-answer="112.5"
+                 onclick="showAnswer(3, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-3" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 5</div>
+         
+         <div class="problem-text">\[ \text{Диагонали } AC \text{ и } BD \text{ параллелограмма } ABCD \text{ пересекаются в точке } O, \]<br>\[ AC = 14, \ BD = 18, \ AB = 5. \]<br>\[ \text{Найдите } DO. \]</div>
+         <button class="show-answer-btn"
+                 data-answer="9"
+                 onclick="showAnswer(4, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-4" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 6</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1050.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text">\[ \text{В равнобедренной трапеции основания равны } 4 \text{ и } 8, \]<br>\[ \text{а один из углов между боковой стороной и основанием равен } 45^\circ. \]<br>\[ \text{Найдите площадь этой трапеции.} \]</div>
+         <button class="show-answer-btn"
+                 data-answer="12"
+                 onclick="showAnswer(5, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-5" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 7</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2223.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text">\[ \text{Найдите площадь параллелограмма,} \]  <br>\[ \text{изображённого на рисунке.} \]</div>
+         <button class="show-answer-btn"
+                 data-answer="120"
+                 onclick="showAnswer(6, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-6" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 8</div>
+         
+         <div class="problem-text">\[ \text{Основания трапеции равны } 14 \text{ и } 19. \]<br>\[ \text{Найдите больший из отрезков, на которые делит среднюю линию} \]<br>\[ \text{этой трапеции одна из её диагоналей.} \]</div>
+         <button class="show-answer-btn"
+                 data-answer="9,5"
+                 onclick="showAnswer(7, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-7" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 9</div>
+         
+         <div class="problem-text">\[ \text{Высота равнобедренной трапеции, проведённая из вершины } C, \] <br>\[ \text{делит основание } AD \text{ на отрезки длиной } 17 \text{ и } 19. \]<br>\[ \text{Найдите длину основания } BC. \]</div>
+         <button class="show-answer-btn"
+                 data-answer="2"
+                 onclick="showAnswer(8, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-8" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 10</div>
+         
+         <div class="problem-text">\[<br>\text{Сумма двух углов равнобедренной трапеции равна } 94^\circ.<br>\]<br>\[<br>\text{Найдите больший угол этой трапеции. Ответ дайте в градусах.}<br>\]</div>
+         <button class="show-answer-btn"
+                 data-answer="133"
+                 onclick="showAnswer(9, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-9" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 11</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//17_29_pr_pic.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text">В равнобедренной трапеции высота равна $5$, большее основание равно $15$, угол при основании равен $45^\circ$. Найдите меньшее основание.</div>
+         <button class="show-answer-btn"
+                 data-answer="5"
+                 onclick="showAnswer(10, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-10" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 12</div>
+         
+         <div class="problem-text">\[ \text{Один из углов равнобедренной трапеции равен } 29^\circ. \]<br>\[ \text{Найдите больший угол этой трапеции.} \]<br>\[ \text{Ответ дайте в градусах.} \]</div>
+         <button class="show-answer-btn"
+                 data-answer="151"
+                 onclick="showAnswer(11, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-11" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 13</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//122.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text">\[ \text{Диагональ } AC \text{ параллелограмма } ABCD \text{ образует с его сторонами углы,} \]<br>\[ \text{равные } 25^\circ \text{ и } 30^\circ. \]<br>\[ \text{Найдите больший угол этого параллелограмма.} \]<br>\[ \text{Ответ дайте в градусах.} \]</div>
+         <button class="show-answer-btn"
+                 data-answer="125"
+                 onclick="showAnswer(12, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-12" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 14</div>
+         
+         <div class="problem-text">Основания трапеции равны \(13\) и \(23\), а высота равна \(5\). Найдите площадь этой трапеции.</div>
+         <button class="show-answer-btn"
+                 data-answer="90"
+                 onclick="showAnswer(13, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-13" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 15</div>
+         
+         <div class="problem-text">\[ \text{Один из углов ромба равен } 62^\circ. \]<br>\[ \text{Найдите больший угол этого ромба.} \]<br>\[ \text{Ответ дайте в градусах.} \]</div>
+         <button class="show-answer-btn"
+                 data-answer="118"
+                 onclick="showAnswer(14, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-14" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 16</div>
+         
+         <div class="problem-text">\[ \text{Диагонали } AC \text{ и } BD \text{ параллелограмма } ABCD \text{ пересекаются в точке } O, \]<br>\[ AC = 6, \quad BD = 12, \quad AB = 4. \]<br>\[ \text{Найдите } DO. \]</div>
+         <button class="show-answer-btn"
+                 data-answer="6"
+                 onclick="showAnswer(15, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-15" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 17</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//17_27_pr_pic.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text">Высота равнобедренной трапеции, проведённая из вершины \(C\), делит основание \(AD\) на отрезки длиной \(1\) и \(11\). Найдите длину основания \(BC\).</div>
+         <button class="show-answer-btn"
+                 data-answer="10"
+                 onclick="showAnswer(16, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-16" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 18</div>
+         
+         <div class="problem-text">\[ \text{Один из углов прямоугольной трапеции равен } 121^\circ. \]<br>\[ \text{Найдите меньший угол этой трапеции.} \]<br>\[ \text{Ответ дайте в градусах.} \]</div>
+         <button class="show-answer-btn"
+                 data-answer="59"
+                 onclick="showAnswer(17, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-17" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 19</div>
+         
+         <div class="problem-text">\[ \text{Найдите площадь параллелограмма,} \]<br>\[ \text{изображённого на рисунке.} \]</div>
+         <button class="show-answer-btn"
+                 data-answer="20"
+                 onclick="showAnswer(18, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-18" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 20</div>
+         
+         <div class="problem-text">\[ \text{Сторона ромба равна } 46, \text{ а один из углов этого ромба равен } 150^\circ. \]<br>\[ \text{Найдите высоту этого ромба.} \]</div>
+         <button class="show-answer-btn"
+                 data-answer="23"
+                 onclick="showAnswer(19, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-19" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 21</div>
+         
+         <div class="problem-text">\[ \text{Периметр ромба равен } 72, \text{ а один из углов равен } 30^\circ. \]  <br>\[ \text{Найдите площадь этого ромба.} \]</div>
+         <button class="show-answer-btn"
+                 data-answer="162"
+                 onclick="showAnswer(20, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-20" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 22</div>
+         
+         <div class="problem-text">\[ \text{Основания трапеции равны } 10 \text{ и } 11. \]<br>\[ \text{Найдите больший из отрезков, на которые делит среднюю линию} \]<br>\[ \text{этой трапеции одна из её диагоналей.} \]</div>
+         <button class="show-answer-btn"
+                 data-answer="5.5"
+                 onclick="showAnswer(21, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-21" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 23</div>
+         
+         <div class="problem-text">\[ \text{Один из углов равнобедренной трапеции равен } 113^\circ. \]<br>\[ \text{Найдите меньший угол этой трапеции.} \]<br>\[ \text{Ответ дайте в градусах.} \]</div>
+         <button class="show-answer-btn"
+                 data-answer="67"
+                 onclick="showAnswer(22, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-22" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 24</div>
+         
+         <div class="problem-text">Один из углов параллелограмма равен \(96^\circ\). Найдите меньший угол этого параллелограмма. Ответ дайте в градусах.</div>
+         <button class="show-answer-btn"
+                 data-answer="84"
+                 onclick="showAnswer(23, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-23" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 25</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1242.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text">\[ \text{В равнобедренной трапеции известна высота,} \]<br>\[ \text{большее основание и угол при основании} \]<br>\[ \text{(см. рисунок). Найдите меньшее основание.} \]</div>
+         <button class="show-answer-btn"
+                 data-answer="4"
+                 onclick="showAnswer(24, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-24" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 26</div>
+         
+         <div class="problem-text">\[ \text{Основания трапеции равны } 1 \text{ и } 11. \]<br>\[ \text{Найдите больший из отрезков, на которые делит среднюю линию} \]<br>\[ \text{этой трапеции одна из её диагоналей.} \]</div>
+         <button class="show-answer-btn"
+                 data-answer="5.5"
+                 onclick="showAnswer(25, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-25" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 27</div>
+         
+         <div class="problem-text">\[ \text{Основания трапеции равны } 8 \text{ и } 17. \]<br>\[ \text{Найдите больший из отрезков, на которые делит среднюю линию} \]<br>\[ \text{этой трапеции одна из её диагоналей.} \]</div>
+         <button class="show-answer-btn"
+                 data-answer="8,5"
+                 onclick="showAnswer(26, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-26" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 28</div>
+         
+         <div class="problem-text">\[ \text{Основания трапеции равны } 1 \text{ и } 5, \text{ а высота равна } 3. \]<br>\[ \text{Найдите среднюю линию этой трапеции.} \]</div>
+         <button class="show-answer-btn"
+                 data-answer="3"
+                 onclick="showAnswer(27, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-27" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 29</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2028.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text">\[ \text{Найдите площадь параллелограмма,} \]<br>\[ \text{изображённого на рисунке.} \]</div>
+         <button class="show-answer-btn"
+                 data-answer="44"
+                 onclick="showAnswer(28, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-28" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 30</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//860.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text">\[ \text{Диагональ } AC \text{ параллелограмма } ABCD \text{ образует с его сторонами углы,} \]<br>\[ \text{равные } 45^\circ \text{ и } 40^\circ. \]<br>\[ \text{Найдите больший угол этого параллелограмма.} \]<br>\[ \text{Ответ дайте в градусах.} \]</div>
+         <button class="show-answer-btn"
+                 data-answer="95"
+                 onclick="showAnswer(29, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-29" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
     </div>
   </div>
 
@@ -789,10 +938,46 @@
   </div>
 
   <script>
+    // Flying Math Background Animation
+    function createFlyingMath() {
+      const mathSymbols = ['π', '∑', '∫', '√', '∞', 'α', 'β', 'γ', 'δ', 'ε', 'θ', 'λ', 'μ', 'σ', 'φ', 'ψ', 'ω', 'Δ', 'Ω', '±', '×', '÷', '=', '≠', '≤', '≥', '∈', '∉', '∪', '∩', '⊂', '⊃'];
+      const container = document.getElementById('flyingMath');
+      
+      function addMathSymbol() {
+        const symbol = document.createElement('div');
+        symbol.className = 'math-symbol';
+        symbol.textContent = mathSymbols[Math.floor(Math.random() * mathSymbols.length)];
+        symbol.style.left = Math.random() * 100 + '%';
+        symbol.style.animationDuration = (Math.random() * 10 + 15) + 's';
+        symbol.style.animationDelay = Math.random() * 5 + 's';
+        container.appendChild(symbol);
+        
+        // Remove symbol after animation
+        setTimeout(() => {
+          if (symbol.parentNode) {
+            symbol.parentNode.removeChild(symbol);
+          }
+        }, 25000);
+      }
+      
+      // Add symbols periodically
+      setInterval(addMathSymbol, 2000);
+      
+      // Add initial symbols
+      for (let i = 0; i < 5; i++) {
+        setTimeout(addMathSymbol, i * 1000);
+      }
+    }
+
     function showAnswer(index, answer) {
       const answerDiv = document.getElementById(`answer-${index}`);
       answerDiv.textContent = `Ответ: ${answer}`;
       answerDiv.classList.add('visible');
+      
+      // Re-render MathJax for the newly shown content
+      if (window.MathJax) {
+        MathJax.typesetPromise([answerDiv]);
+      }
     }
 
     function showSolutionModal() {
@@ -809,6 +994,26 @@
         closeSolutionModal();
       }
     });
+
+    // Initialize flying math animation
+    document.addEventListener('DOMContentLoaded', createFlyingMath);
+    
+    // Initialize MathJax rendering
+    function initializeMathJax() {
+      if (window.MathJax) {
+        MathJax.typesetPromise();
+      }
+    }
+    
+    // Re-render MathJax when content changes
+    function reRenderMathJax(element) {
+      if (window.MathJax && element) {
+        MathJax.typesetPromise([element]);
+      }
+    }
+    
+    // Initialize MathJax on page load
+    document.addEventListener('DOMContentLoaded', initializeMathJax);
   </script>
 </body>
 </html>

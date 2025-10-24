@@ -4,6 +4,31 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Задание 1-5 - Банк заданий ОГЭ</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true,
+        processEnvironments: true,
+        packages: {'[+]': ['ams', 'newcommand', 'configmacros']}
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        ignoreHtmlClass: 'tex2jax_ignore',
+        processHtmlClass: 'tex2jax_process'
+      },
+      startup: {
+        ready: () => {
+          MathJax.startup.defaultReady();
+          MathJax.startup.defaultDocument();
+        }
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   <style>
     * {
       margin: 0;
@@ -12,141 +37,226 @@
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: linear-gradient(135deg, hsl(222.2 47.4% 11.2%) 0%, hsl(222.2 47.4% 11.2%) 50%, hsl(221 83% 53% / 0.05) 100%);
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%);
       min-height: 100vh;
-      padding: 2rem 1rem;
-      color: hsl(210 40% 98%);
+      color: #ffffff;
+      overflow-x: hidden;
+    }
+
+    /* Flying Math Background Animation */
+    .flying-math {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .math-symbol {
+      position: absolute;
+      color: rgba(255, 255, 255, 0.1);
+      font-size: 2rem;
+      animation: float 20s infinite linear;
+      user-select: none;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100px) rotate(360deg);
+        opacity: 0;
+      }
     }
 
     .container {
-      max-width: 900px;
+      max-width: 1200px;
       margin: 0 auto;
+      padding: 2rem 1rem;
+      position: relative;
+      z-index: 10;
     }
 
     .header {
       text-align: center;
       margin-bottom: 3rem;
+      padding: 2rem 0;
     }
 
     .header h1 {
-      font-size: 2.5rem;
+      font-family: 'Playfair Display', serif;
+      font-size: 3rem;
       font-weight: 700;
-      background: linear-gradient(to right, hsl(221 83% 53%), hsl(217 91% 60%), hsl(280 100% 70%));
+      background: linear-gradient(135deg, #fbbf24 0%, #10b981 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      margin-bottom: 0.5rem;
+      margin-bottom: 1rem;
+      line-height: 1.2;
     }
 
     .header p {
-      color: hsl(215 20.2% 65.1%);
-      font-size: 1.125rem;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 1.25rem;
+      font-weight: 500;
+    }
+
+    .header .subtitle {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 1rem;
+      margin-top: 0.5rem;
     }
 
     .question-item {
-      background: hsl(222.2 84% 4.9% / 0.5);
-      backdrop-filter: blur(8px);
-      border: 1px solid hsl(221 83% 53% / 0.2);
-      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
       padding: 2rem;
-      margin-bottom: 1.5rem;
+      margin-bottom: 2rem;
       transition: all 0.3s ease;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     }
 
     .question-item:hover {
-      border-color: hsl(221 83% 53% / 0.4);
-      box-shadow: 0 10px 30px -10px hsl(221 83% 53% / 0.3);
+      border-color: rgba(251, 191, 36, 0.4);
+      box-shadow: 0 20px 40px rgba(251, 191, 36, 0.1);
+      transform: translateY(-2px);
     }
 
     .question-number {
       font-size: 0.875rem;
-      color: hsl(280 100% 70%);
+      color: #fbbf24;
       font-weight: 600;
       margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
 
     .problem-image {
       max-width: 100%;
+      width: 100%;
+      max-width: 600px;
       height: auto;
-      border-radius: 8px;
-      margin-bottom: 1rem;
+      border-radius: 12px;
+      margin: 0 auto 1.5rem auto;
+      display: block;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      object-fit: contain;
     }
 
     .problem-text {
       font-size: 1.125rem;
       line-height: 1.7;
       margin-bottom: 1.5rem;
-      color: hsl(210 40% 98%);
+      color: #ffffff;
+      font-weight: 400;
     }
 
     .answer-section {
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem;
     }
 
     .answer-input {
       width: 100%;
-      padding: 0.75rem 1rem;
-      background: hsl(217.2 32.6% 17.5%);
-      border: 1px solid hsl(217.2 32.6% 17.5%);
-      border-radius: 8px;
-      color: hsl(210 40% 98%);
+      padding: 1rem 1.25rem;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      color: #ffffff;
       font-size: 1rem;
-      margin-bottom: 0.75rem;
-      transition: all 0.2s;
+      margin-bottom: 1rem;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(8px);
     }
 
     .answer-input:focus {
       outline: none;
-      border-color: hsl(221 83% 53%);
-      box-shadow: 0 0 0 3px hsl(221 83% 53% / 0.1);
+      border-color: #fbbf24;
+      box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .answer-input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
     }
 
     .show-answer-btn,
     .show-solution-btn {
-      padding: 0.625rem 1.5rem;
+      padding: 0.75rem 1.5rem;
       border: none;
-      border-radius: 8px;
+      border-radius: 12px;
       font-size: 0.875rem;
-      font-weight: 500;
+      font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
     .show-answer-btn {
-      background: hsl(221 83% 53%);
-      color: white;
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      color: #1a1f36;
       margin-right: 0.75rem;
+      box-shadow: 0 4px 16px rgba(251, 191, 36, 0.3);
     }
 
     .show-answer-btn:hover {
-      background: hsl(217 91% 60%);
-      transform: translateY(-1px);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(251, 191, 36, 0.4);
     }
 
     .show-solution-btn {
-      background: hsl(217.2 32.6% 17.5%);
-      color: hsl(210 40% 98%);
-      border: 1px solid hsl(217.2 32.6% 17.5%);
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
     }
 
     .show-solution-btn:hover {
-      border-color: hsl(221 83% 53%);
+      border-color: #fbbf24;
+      background: rgba(251, 191, 36, 0.1);
+      transform: translateY(-1px);
     }
 
     .answer-display {
-      margin-top: 0.75rem;
-      padding: 0.75rem;
-      background: hsl(142 76% 36% / 0.1);
-      border: 1px solid hsl(142 76% 36%);
-      border-radius: 8px;
-      color: hsl(142 76% 36%);
+      margin-top: 1rem;
+      padding: 1rem 1.25rem;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 12px;
+      color: #10b981;
       font-weight: 600;
       display: none;
+      backdrop-filter: blur(8px);
     }
 
     .answer-display.visible {
       display: block;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     /* Modal */
@@ -159,1320 +269,659 @@
       align-items: center;
       justify-content: center;
       padding: 1rem;
+      backdrop-filter: blur(8px);
     }
 
     .modal.visible {
       display: flex;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
     }
 
     .modal-content {
-      background: hsl(222.2 84% 4.9%);
-      border: 1px solid hsl(221 83% 53% / 0.3);
-      border-radius: 16px;
-      padding: 2rem;
+      background: rgba(26, 31, 54, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 2.5rem;
       max-width: 500px;
       width: 100%;
       text-align: center;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
     }
 
     .modal-content h2 {
+      font-family: 'Playfair Display', serif;
       margin-bottom: 1rem;
-      color: hsl(210 40% 98%);
+      color: #ffffff;
+      font-size: 1.5rem;
+      font-weight: 700;
     }
 
     .modal-content p {
-      color: hsl(215 20.2% 65.1%);
+      color: rgba(255, 255, 255, 0.8);
       margin-bottom: 1.5rem;
       line-height: 1.6;
+      font-size: 1rem;
     }
 
     .modal-buttons {
       display: flex;
-      gap: 0.75rem;
+      gap: 1rem;
       justify-content: center;
+      flex-wrap: wrap;
     }
 
     .modal-button {
-      padding: 0.75rem 1.5rem;
+      padding: 0.875rem 1.75rem;
       border: none;
-      border-radius: 8px;
+      border-radius: 12px;
       font-size: 0.875rem;
-      font-weight: 500;
+      font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
     .modal-button.primary {
-      background: hsl(221 83% 53%);
-      color: white;
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      color: #1a1f36;
+      box-shadow: 0 4px 16px rgba(251, 191, 36, 0.3);
     }
 
     .modal-button.primary:hover {
-      background: hsl(217 91% 60%);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(251, 191, 36, 0.4);
     }
 
     .modal-button.secondary {
-      background: hsl(217.2 32.6% 17.5%);
-      color: hsl(210 40% 98%);
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
     }
 
     .modal-button.secondary:hover {
-      background: hsl(217.2 32.6% 20%);
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-1px);
     }
 
-    @media (max-width: 640px) {
+    /* MathJax styling to match the app */
+    mjx-container {
+      user-select: text;
+    }
+    
+    mjx-container * {
+      user-select: none;
+    }
+    
+    /* MathJax selection and display styling */
+    mjx-container {
+      user-select: text;
+    }
+    
+    /* Selection highlighting for regular text and MathJax fallback */
+    ::selection {
+      background: rgba(251, 191, 36, 0.3);
+    }
+    
+    /* MathJax selection overlay */
+    .mjx-selection-highlight {
+      background: rgba(251, 191, 36, 0.3) !important;
+    }
+    
+    /* Force selection visibility on MathJax elements */
+    mjx-container.mjx-selected {
+      background: rgba(251, 191, 36, 0.3);
+    }
+
+    /* General image styling for any images in the content */
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto 1rem auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2.5rem;
+      }
+
+      .header p {
+        font-size: 1.125rem;
+      }
+
+      .question-item {
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .show-answer-btn {
+        margin-bottom: 0.75rem;
+        margin-right: 0;
+        width: 100%;
+      }
+
+      .show-solution-btn {
+        width: 100%;
+      }
+
+      .problem-image {
+        max-width: 100%;
+        margin: 0 auto 1rem auto;
+      }
+
+      .modal-content {
+        padding: 2rem;
+        margin: 1rem;
+      }
+
+      .modal-buttons {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .modal-button {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 1rem 0.75rem;
+      }
+
       .header h1 {
         font-size: 2rem;
       }
 
       .question-item {
-        padding: 1.5rem;
+        padding: 1.25rem;
       }
 
-      .show-answer-btn {
-        margin-bottom: 0.5rem;
+      .problem-text {
+        font-size: 1rem;
       }
     }
   </style>
 </head>
 <body>
+  <!-- Flying Math Background -->
+  <div class="flying-math" id="flyingMath"></div>
+
   <div class="container">
     <div class="header">
-      <h1>{{TITLE}}</h1>
+      <h1>Задание 1-5</h1>
       <p>Банк заданий ОГЭ по математике</p>
     </div>
 
     <div id="questions">
       
-      <div class="question-item">
-        <div class="question-number">Вопрос 1</div>
-        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//dorogi_5.png" alt="Problem image" class="problem-image" />
-        <div class="problem-text">Ваня летом отдыхает у дедушки и бабушки в деревне Николаевка. Ваня с дедушкой собираются съездить на велосипедах в село Игнатьево на железнодорожную станцию. Из Николаевки в Игнатьево можно проехать по шоссе до деревени Сосновки, где нужно свернуть под прямым углом направо на другое шоссе, ведущее в Игнатьево через поселок Дачный. Из Николаевки в Игнатьево можно проехать через поселок Дачный и не заезжая в Сосновку, но тогда первую часть пути надо будет ехать по прямой лесной дорожке. Есть и третий маршрут: доехать по прямой тропинке мимо озера до деревни Кулички и там, повернув налево, по шоссе добраться до Игнатьево.
-
-\[
-\]
-
-По шоссе Ваня с дедушкой едут со скоростью 20 км/ч, а по лесной дорожке и тропинке – 15 км/ч. Расстояние по шоссе от Николаевки до Сосновки равно 15 км, от Игнатьево до Сосновки – 24 км, от Игнатьево до Дачного – 16 км, а от Игнатьево до Куличек – 8 км.
-
-\[
-\]
-
-Определите, на какой маршрут до станции потребуется меньше всего времени. В ответе укажите, сколько минут потратят на дорогу Ваня с дедушкой, если поедут этим маршрутом.</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(0, '116')">
-            Показать ответ
-          </button>
-          <div id="answer-0" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 2</div>
-        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//kvartiri_4.png" alt="Problem image" class="problem-image" />
-        <div class="problem-text">На рисунке изображён план двухкомнатной квартиры в многоэтажном жилом доме. Внизу рисунка даны обозначения окна и двери, а также указано, что длина стороны клетки на плане соответствует 0,4 м. Вход в квартиру находится в прихожей. В квартире есть две застеклённые лоджии: меньшая из них примыкает к кухне, большая – к спальне. На улицу также выходит окно гостиной. Кроме указанных помещений в квартире есть ещё санузел и кладовая, причём площадь санузла больше площади кладовой. 
-
-\[
-\]
---------------------------------
-\[
-\]
-
-Паркетная доска размером 20 см на 40 см продаётся в упаковках по 8 штук. Сколько упаковок паркетной доски нужно купить, чтобы выложить пол спальни?</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(1, '25')">
-            Показать ответ
-          </button>
-          <div id="answer-1" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 3</div>
-        
-        <div class="problem-text">Хозяин дачного участка строит баню с парным отделением. Парное отделение имеет размеры: длина 2,6 м, ширина 2,5 м, высота 2,2 м. Окон в парном отделении нет, для доступа внутрь планируется дверь шириной 60 см, высота дверного проёма 1,8 м. Для прогрева парного отделения можно использовать электрическую или дровяную печь. В таблице представлены характеристики трёх печей.
-\[
-\begin{array}{|c|c|c|c|c|}
-\hline
-\text{Номер печи} & \text{Тип} & \text{Объём помещения} & \text{Масса} & \text{Стоимость} \\
-& & \text{(куб. м)} & \text{(кг)} & \text{(руб.)} \\ 
-\hline
-1 & \text{дровяная} & 8-13 & 42 & 19000 \\
-\hline 
-2 & \text{дровяная} & 10-15.5 & 48 & 20700 \\
-\hline 
-3 & \text{электрическая} & 9-15 & 15 & 16500 \\
-\hline
-\end{array}
-\]
-
-Для установки дровяной печи дополнительных затрат не потребуется. Установка электрической печи потребует подведения специального кабеля, что обойдётся в 6200 руб.
-\[
-\]
---------------------------------
-\[
-\]
-Во сколько рублей обойдётся покупка дровяной печи, подходящей по объёму парного отделения, с доставкой, если доставка печи до дачного участка будет стоить 1400 рублей?</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(2, '22100')">
-            Показать ответ
-          </button>
-          <div id="answer-2" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 4</div>
-        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//dorogi_6.png" alt="Problem image" class="problem-image" />
-        <div class="problem-text">Володя летом отдыхает у дедушки в деревне Ёлочки. В воскресенье они собираются съездить на машине в село Кленовое. Из деревни Ёлочки в село Кленовое можно проехать по прямой грунтовой дороге. Есть более длинный путь: по прямолинейному шоссе через деревню Сосенки до деревни Жуки, где нужно повернуть под прямым углом направо на другое шоссе, ведущее в село Кленовое. Есть и третий маршрут: в деревне Сосенки можно свернуть на прямую грунтовую дорогу в село Кленовое, которая идёт мимо пруда.
-\[
-\]
-Шоссе и грунтовые дороги образуют прямоугольные треугольники.
-
-\[
-\]
-
-По шоссе Володя с дедушкой едут со скоростью 80 км/ч, а по грунтовой дороге – со скоростью 40 км/ч. На плане изображено взаимное расположение населённых пунктов, длина стороны каждой клетки равна 4 км.
-
-\[
-\]
-Пользуясь описанием, определите, какими цифрами на плане обозначены населённые пункты. Заполните таблищу, в бланк ответов перенесите последовательность трёх цифр без пробелов, запятых и других дополнительных символов.
-$
-\begin{array}{|l|l|l|l|}
-\hline
-\text{Насел. пункты} & \text{д. Ёлочки} & \text{с. Кленовое} & \text{д. Жуки} \\
-\hline
-\text{Цифры} & \text{} & \text{} & \text{} \\
-\hline
-\end{array}
-$</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(3, '421')">
-            Показать ответ
-          </button>
-          <div id="answer-3" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 5</div>
-        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//dorogi_7.png" alt="Problem image" class="problem-image" />
-        <div class="problem-text">Коля летом отдыхает у дедушки и бабушки в деревне Марьевке. Коля с дедушкой собираются съездить на велосипедах в село Сосновое на железнодорожную станцию. Из Марьевки в Сосновое можно проехать по прямой лесной дорожке. Есть более длинный путь по шоссе – через деревню Николаевку до деревни Запрудье, где нужно повернуть под прямым углом направо на другое шоссе, ведущее в Сосновое. Есть и третий маршрут: в Николаевке можно свернуть на прямую тропинку, которая идёт мимо озера прямо в Сосновое.
-\[
-\]
-По шоссе Коля с дедушкой едут со скоростью 20 км/ч, а по лесной дорожке и тропинке – 15 км/ч. Расстояние по шоссе от Марьевки до Николаевки равно 12 км, от Марьевки до Запрудья – 20 км, а от Запрудья до Соснового – 15 км.
-
-
-\[
-\]
-На сколько процентов скорость, с которой едут Коля с дедушкой по тропинке, меньше их скорости по шоссе?</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(4, '25')">
-            Показать ответ
-          </button>
-          <div id="answer-4" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 6</div>
-        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//bumaga_1.png" alt="Problem image" class="problem-image" />
-        <div class="problem-text">Общепринятые форматы листов бумаги обозначают буквой А и цифрой: А0, А1, А2 и так далее. Лист формата А0 имеет форму прямоугольника площадью 1 кв. м. Если лист формата А0 разрезать пополам параллельно меньшей стороне, получатся два одинаковых листа формата А1. Если лист А1 разрезать пополам таким же образом, получатся два листа формата А2 и т.д.
-
-
-\[
-\]
-
-Отношение большей стороны к меньшей стороне листа каждого формата одно и то же, поэтому листы всех форматов подобны. Это нужно, чтобы пропорции текста и его расположение на листе сохранялись при изменении формата листа.
-В таблице даны размеры (с точностью до мм) четырёх листов, имеющих форматы А3, А4, А5 и А6:
-
-$
-\begin{array}{|c|c|c|}
-\hline
-\text{Порядковые номера} & \text{Ширина (мм)} & \text{Длина (мм)} \\
-\hline
-1 & 148 & 210 \\
-\hline
-2 & 297 & 420 \\
-\hline
-3 & 105 & 148 \\
-\hline
-4 & 210 & 297 \\
-\hline
-\end{array}
-$
-
-Таблица 1
-
-\[
-\]
-
---------------------------------
-
-\[
-\]
-
-Сколько листов бумаги формата A5 получится при разрезании одного листа бумаги формата A2?</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(5, '8')">
-            Показать ответ
-          </button>
-          <div id="answer-5" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 7</div>
-        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//dorogi_3.png" alt="Problem image" class="problem-image" />
-        <div class="problem-text">На рисунке изображён план сельской местности.
-
-\[
-\]
-
-Таня на летних каникулах приезжает в гости к дедушке в деревню Антоновку (на плане обозначена цифрой 1). В конце каникул дедушка на машине собирается отвезти Таню на автобусную станцию, которая находится в деревне Богданово. Из Антоновки в Богданово можно проехать по просёлочной дороге вдоль реки. Есть другой путь — по шоссе до деревни Ванютино, где нужно повернуть под прямым углом налево на другое шоссе, ведущее в Богданово. Третий маршрут проходит по просёлочной дороге мимо пруда до деревни Горюново, где можно свернуть на шоссе до Богданово. Четвёртый маршрут пролегает по шоссе до деревни Доломино, от Доломино до Горюново по просёлочной дороге мимо конюшни и от Горюново до Богданово по шоссе. Ещё один маршрут проходит по шоссе до деревни Егорки, по просёлочной дороге мимо конюшни от Егорки до Жилино и по шоссе от Жилино до Богданово.
-
-\[
-\]
-Шоссе и просёлочные дороги образуют прямоугольные треугольники.
-
-\[
-\]
-По шоссе Таня с дедушкой едут со скоростью 50 км/ч, а по просёлочным дорогам — со скоростью 30 км/ч. Расстояние от Антоновки до Доломино равно 12 км, от Доломино до Егорки — 4 км, от Егорки до Ванютино — 12 км, от Горюново до Ванютино — 15 км, от Ванютино до Жилино — 9 км, а от Жилино до Богданово — 12 км.
-
-\[
-\]
-За какое наименьшее количество минут Таня с дедушкой могут добраться из Доломино в Горюново?</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(6, '27,6')">
-            Показать ответ
-          </button>
-          <div id="answer-6" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 8</div>
-        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//kvartiri_1.png" alt="Problem image" class="problem-image" />
-        <div class="problem-text">На рисунке изображен план двухкомнатной квартиры в многоэтажном жилом доме. В правой части рисунка даны обозначения двери и окна, а также указано, что длина стороны клетки на плане соответствует 0,4 м. Вход в квартиру находится в прихожей. Слева от входа в квартиру располагаются кухня и санузел, причем площадь кухни больше площади санузла. Наименьшую площадь имеет кладовая. Из гостиной есть двери в коридор и на кухню. В квартире есть застекленная лоджия, куда можно попасть, пройдя через спальню.
-
-\[
-\]
---------------------------------
-\[
-\]
-
-Для помещений, указанных в таблице, определите, какими цифрами они обозначены на плане. Заполните таблицу, в бланк перенесите последовательность пяти цифр.
-
-\[
-\begin{array}{|l|l|l|l|l|l|}
-\hline
-\text{Помещения} & \text{кухня} & \text{гостиная} & \text{кладовая} & \text{прихожая} & \text{спальня} \\
-\hline
-\text{Цифры} & & & & & \\
-\hline
-\end{array}
-\]</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(7, '76324')">
-            Показать ответ
-          </button>
-          <div id="answer-7" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 9</div>
-        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//internet_1.png" alt="Problem image" class="problem-image" />
-        <div class="problem-text">На рисунке точками показано количество минут исходящих вызовов и трафик мобильного интернета в гигабайтах, израсходованных абонентом в процессе пользования смартфоном, за каждый месяц 2019 года. Для удобства точки, соответствующие минутам и гигабайтам, соединены сплошными и пунктирными линиями соответственно.
-
-\[
-\]
-
-В течение года абонент пользовался тарифом «Стандартный», абонентская плата по которому составляла 350 рублей в месяц. При условии нахождения абонента на территории РФ в абонентскую плату тарифа «Стандартный» входит:
-\[
-\]
-- пакет минут, включающий 300 минут исходящих вызовов на номера, зарегистрированные на территории РФ;
-\[
-\]
-- пакет интернета, включающий 3 гигабайта мобильного интернета;
-\[
-\]
-- пакет SMS, включающий 120 SMS в месяц;
-\[
-\]
-- безлимитные бесплатные входящие вызовы.
-
-\[
-\]
-Стоимость минут, интернета и SMS сверх пакета тарифа указана в таблице.
-$
-\begin{array}{|l|l|}
-\hline
-\text{Исходящие вызовы} & \text{3 руб./мин} \\
-\hline
-\text{Мобильный интернет (пакет)} & \text{90 руб. за 0{,}5 ГБ} \\
-\hline
-\text{SMS} & \text{2 руб./шт.} \\
-\hline
-\end{array}
-$
-
-Абонент не пользовался услугами связи в роуминге. За весь год абонент отправил 110 SMS.
-
-\[
-\]
---------------------------------
-
-\[
-\]
-
-Сколько месяцев в 2019 году абонент превысил лимит и по пакету минут, и по пакету мобильного интернета?</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(8, '2')">
-            Показать ответ
-          </button>
-          <div id="answer-8" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 10</div>
-        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//dorogi_9.png" alt="Problem image" class="problem-image" />
-        <div class="problem-text">Миша летом отдыхает у дедушки и бабушки в деревне Анино. Миша с дедушкой собираются съездить на велосипедах в село Игнатьево на железнодорожную станцию. Из Анино в Игнатьево можно проехать по шоссе до деревни Сосновка, где нужно свернуть под прямым углом направо на другое шоссе, ведущее в Игнатьево через посёлок Дачный. Из Анино в Игнатьево можно проехать через посёлок Дачный и не заезжая в Сосновку, но тогда первую часть пути надо будет ехать по прямой лесной дорожке. Есть и третий маршрут: доехать по прямой тропинке мимо птицефабрики до деревни Мальцево и там, повернув налево, по шоссе добраться до Игнатьево.
-
-\[
-\]
-По шоссе Миша с дедушкой едут со скоростью 20 км/ч, а по лесной дорожке и тропинке – 15 км/ч. Расстояние по шоссе от Анино до Сосновки равно 15 км, от Игнатъево до Сосновки – 24 км, от Игнатьево до Дачного – 16 км, а от Игнатьево до Мальцево – 8 км.
-
-\[
-\]
-
-Пользуясь описанием, определите, какими цифрами на плане обозначены населённые пункты. В ответ запишите полученную последовательность пяти цифр.
-
-$
-\begin{array}{|c|c|c|c|c|c|}
-\hline
-\text{Насел. пункты} & \text{д. Мальцево} & \text{с. Игнатьево} & \text{д. Сосновка} & \text{п. Дачный} & \text{д. Анино} \\
-\hline
-\text{Цифры} & \text{} & \text{} & \text{} & \text{} & \text{} \\
-\hline
-\end{array}
-$</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(9, '21435')">
-            Показать ответ
-          </button>
-          <div id="answer-9" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 11</div>
-        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//uchastki_4.png" alt="Problem image" class="problem-image" />
-        <div class="problem-text">На плане изображён дачный участок по адресу: п. Сосновка, ул. Зелёная, д. 19 (сторона каждой клетки на плане равна 2 м). Участок имеет прямоугольную форму. Выезд и въезд осуществляются через единственные ворота.
-
-\[
-\]
-
-При входе на участок слева от ворот находится гараж. Справа от ворот находится сарай площадью 24 кв. м, а чуть подальше – жилой дом. Напротив жилого дома расположены яблоневые посадки. Также на участке есть баня, к которой ведёт дорожка, выложенная плиткой, и огород с теплицей внутри (огород отмечен на плане цифрой 6).
-
-\[
-\]
-Все дорожки внутри участка имеют ширину 1 м и вымощены тротуарной плиткой размером 1 м ×1 м.   Между гаражом и сараем находится площадка, вымощенная такой же плиткой.
-
-\[
-\]
-К участку подведено электричество. Имеется магистральное газоснабжение.
-
-\[
-\]
-------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-\[
-\]
-Для объектов, указанных в таблице, определите, какими цифрами они обозначены на плане. Заполните таблицу, в бланк ответов перенесите последовательность четырёх цифр без пробелов, запятых и других символов.
-
-$
-\begin{array}{|c|c|c|c|c|}
-\hline
-\text{Объекты} & \text{яблони} & \text{теплица} & \text{сарай} & \text{жилой дом} \\
-\hline
-\text{Цифры} & \text{} & \text{} & \text{} & \text{} \\
-\hline
-\end{array}
-$</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(10, '3517')">
-            Показать ответ
-          </button>
-          <div id="answer-10" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 12</div>
-        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//dorogi_10.png" alt="Problem image" class="problem-image" />
-        <div class="problem-text">Гриша летом отдыхает у дедушки в деревне Грушёвка. В пятницу они собираются съездить на велосипедах в село Абрамово на ярмарку. Из деревни Грушёвка в село Абрамово можно проехать по прямой лесной дорожке. Есть более длинный путь: по прямолинейному шоссе через деревню Таловка до деревни Новая, где нужно повернуть под прямым углом направо на другое шоссе, ведущее в село Абрамово. Есть и третий маршрут: в деревне Таловка можно свернуть на прямую тропинку в село Абрамово, которая идёт мимо озера.
-
-\[
-\]
-Лесная дорожка и тропинка образуют с шоссе прямоугольные треугольники.
-
-\[
-\]
-
-По шоссе Гриша с дедушкой едут со скоростью 15 км/ч, а по лесной дорожке и тропинке – со скоростью 12 км/ч. На плане изображено взаимное расположение населённых пунктов, длина стороны каждой клетки равна 2 км.
-
-\[
-\]
-Пользуясь описанием, определите, какими цифрами на плане обозначены населённые пункты. Заполните таблицу, в бланк ответов перенесите последовательность трёх цифр без пробелов, запятых и других дополнительных символов.
-
-$
-\begin{array}{|c|c|c|c|}
-\hline
-\text{Насел. пункты} & \text{д. Новая} & \text{с. Абрамово} & \text{д. Таловка} \\
-\hline
-\text{Цифры} & \text{} & \text{} & \text{} \\
-\hline
-\end{array}
-$</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(11, '142')">
-            Показать ответ
-          </button>
-          <div id="answer-11" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 13</div>
-        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//kvartiri_3.png" alt="Problem image" class="problem-image" />
-        <div class="problem-text">На рисунке изображён план двухкомнатной квартиры в многоэтажном жилом доме. В правой части рисунка даны обозначения двери и окна, а также указано, что длина стороны клетки на плане соответствует 0,4 м. Вход в квартиру находится в прихожей. В квартире есть три окна. Самое широкое из них – в гостиной. Также окна есть в спальне и кухне. Самая маленькая площадь в квартире у санузла, который имеет общую стену с кухней. Балкон и лоджия в этой квартире отсутствуют.
-
-\[
-\]
---------------------------------
-\[
-\]
-
-Сколько процентов составляет площадь кухни от площади всей квартиры?</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(12, '21')">
-            Показать ответ
-          </button>
-          <div id="answer-12" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 14</div>
-        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//dorogi_3.png" alt="Problem image" class="problem-image" />
-        <div class="problem-text">На рисунке изображён план сельской местности.
-
-\[
-\]
-
-Таня на летних каникулах приезжает в гости к дедушке в деревню Антоновку (на плане обозначена цифрой 1). В конце каникул дедушка на машине собирается отвезти Таню на автобусную станцию, которая находится в деревне Богданово. Из Антоновки в Богданово можно проехать по просёлочной дороге вдоль реки. Есть другой путь — по шоссе до деревни Ванютино, где нужно повернуть под прямым углом налево на другое шоссе, ведущее в Богданово. Третий маршрут проходит по просёлочной дороге мимо пруда до деревни Горюново, где можно свернуть на шоссе до Богданово. Четвёртый маршрут пролегает по шоссе до деревни Доломино, от Доломино до Горюново по просёлочной дороге мимо конюшни и от Горюново до Богданово по шоссе. Ещё один маршрут проходит по шоссе до деревни Егорки, по просёлочной дороге мимо конюшни от Егорки до Жилино и по шоссе от Жилино до Богданово.
-
-\[
-\]
-
-Шоссе и просёлочные дороги образуют прямоугольные треугольники.
-
-\[
-\]
-
-По шоссе Таня с дедушкой едут со скоростью 50 км/ч, а по просёлочным дорогам — со скоростью 30 км/ч. Расстояние от Антоновки до Доломино равно 12 км, от Доломино до Егорки — 4 км, от Егорки до Ванютино — 12 км, от Горюново до Ванютино — 15 км, от Ванютино до Жилино — 9 км, а от Жилино до Богданово — 12 км.
-
-\[
-\]
-
-Сколько минут затратят на дорогу Таня с дедушкой из Антоновки в Богданово, если поедут через Егорку и Жилино мимо конюшни?</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(13, '54')">
-            Показать ответ
-          </button>
-          <div id="answer-13" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 15</div>
-        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//kvartiri_1.png" alt="Problem image" class="problem-image" />
-        <div class="problem-text">На рисунке изображен план двухкомнатной квартиры в многоэтажном жилом доме. В правой части рисунка даны обозначения двери и окна, а также указано, что длина стороны клетки на плане соответствует 0,4 м. Вход в квартиру находится в прихожей. Слева от входа в квартиру располагаются кухня и санузел, причем площадь кухни больше площади санузла. Наименьшую площадь имеет кладовая. Из гостиной есть двери в коридор и на кухню. В квартире есть застекленная лоджия, куда можно попасть, пройдя через спальню.
-
-\[
-\]
---------------------------------
-
-\[
-\]
-Плитка для пола размером 20 см $\times 10$ см продаётся в упаковках по 10 штук. Сколько упаковок плитки необходимо купить, чтобы выложить пол лоджии?</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(14, '17')">
-            Показать ответ
-          </button>
-          <div id="answer-14" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 16</div>
-        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//shini_2.png" alt="Problem image" class="problem-image" />
-        <div class="problem-text">Автомобильное колесо, как правило, представляет из себя металлический диск с установленной на него резиновой шиной. Диаметр диска совпадает с диаметром внутреннего отверстия в шине.
-Для маркировки автомобильных шин применяется единая система обозначений. Например, 195/65 R15 (рис. 1). Первое число (число 195 в приведённом примере) обозначает ширину шины в миллиметрах (параметр $B$ на рисунке 2). Второе число (число 65 в приведённом примере) - процентное отношение высоты боковины (параметр $H$ на рисунке 2) к ширине шины, то есть $100 \cdot \frac{H}{B}$.
-Последующая буква обозначает тип конструкции шины. В данном примере буква R означает, что шина радиальная, то есть нити каркаса в боковине шины расположены вдоль радиусов колеса. На всех легковых автомобилях применяются шины радиальной конструкции.
-За обозначением типа конструкции шины идёт число, указывающее диаметр диска колеса $d$ в дюймах (в одном дюйме 25,4 мм). Таким образом, общий диаметр колеса $D$ легко найти, зная диаметр и высоту боковины.
-Возможны дополнительные маркировки, обозначающие допустимые нагрузки на шину, сезонность использования, тип дорожного покрытия и другие параметры.
-Завод производит легковые автомобили определённой модели и устанавливает на них колёса с шинами маркировки $215 / 60 \mathrm{R} 16$.
-
-\[
-\]
-
---------------------------------
-
-\[
-\]
-
-На сколько миллиметров радиус колеса с маркировкой 205/55 R17 меньше, чем радиус колеса с маркировкой 235/50 R17?</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(15, '4,75')">
-            Показать ответ
-          </button>
-          <div id="answer-15" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 17</div>
-        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//bumaga_2.png" alt="Problem image" class="problem-image" />
-        <div class="problem-text">Общепринятые форматы листов бумаги обозначают буквой А и цифрой: А0, А1, А2 и так далее. Лист формата А0 имеет форму прямоугольника площадью 1 кв. м. Если лист формата А0 разрезать пополам параллельно меньшей стороне, получатся два одинаковых листа формата А1. Если лист А1 разрезать пополам таким же образом, получатся два листа формата А2 и т.д.
-
-\[
-\]
-
-Отношение большей стороны к меньшей стороне листа каждого формата одно и то же, поэтому листы всех форматов подобны. Это нужно, чтобы пропорции текста и его расположение на листе сохранялись при изменении формата листа.
-В таблице даны размеры (с точностью до мм) четырёх листов, имеющих форматы А3, А4, А5 и А6:
-
-$
-\begin{array}{|c|c|c|}
-\hline
-\text{Порядковые номера} & \text{Ширина (мм)} & \text{Длина (мм)} \\
-\hline
-1 & 105 & 148 \\
-\hline
-2 & 210 & 297 \\
-\hline
-3 & 297 & 420 \\
-\hline
-4 & 148 & 210 \\
-\hline
-\end{array}
-$
-
-Таблица 1
-
-\[
-\]
-
---------------------------------
-
-\[
-\]
-
-Для листов бумаги форматов А3, А4, А5 и А6 определите, какими порядковыми номерами обозначены их размеры в таблице 1. Заполните таблицу, в бланк ответов перенесите последовательность четырёх цифр, соответствующих номерам листов, без пробелов, запятых и дополнительных символов.
-
-$
-\begin{array}{|c|c|c|c|c|}
-\hline
-\text{Форматы бумаги} & \text{А3} & \text{А4} & \text{А5} & \text{А6} \\
-\hline
-\text{Порядковые номера} & \text{} & \text{} & \text{} & \text{} \\
-\hline
-\end{array}
-$</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(16, '3241')">
-            Показать ответ
-          </button>
-          <div id="answer-16" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 18</div>
-        
-        <div class="problem-text">Хозяин дачного участка строит баню с парным отделением. Парное отделение имеет размеры: длина 3,5 м, ширина 2,2 м, высота 2 м. Окон в парном отделении нет, для доступа внутрь планируется дверь шириной 60 см, высота дверного проёма 1,8 м. Для прогрева парного отделения можно использовать электрическую или дровяную печь. В таблице представлены характеристики трёх печей.
-\[
-\begin{array}{|c|c|c|c|c|}
-\hline
-\text{Номер} & \text{Тип} & \text{Объём} & \text{Масса} & \text{Стоимость} \\
-\text{печи} & & \text{помещения} & \text{(кг)} & \text{(руб.)} \\
-& & \text{(куб. м)} & & \\
-\hline
-1 & \text{дровяная} & 8-12 & 40 & 18000 \\
-\hline
-2 & \text{дровяная} & 10-16 & 48 & 19500 \\
-\hline
-3 & \text{электрическая} & 9-15.5 & 15 & 15000 \\
-\hline
-\end{array}
-\]
-
-Для установки дровяной печи дополнительных затрат не потребуется. Установка электрической печи потребует подведения специального кабеля, что обойдётся в 6500 руб.
-\[
-\]
----------------------------------------------------------------------------------------------------------------------------------------------------------
-\[
-\]
-На сколько рублей покупка дровяной печи, подходящей по объёму парного отделения, обойдётся дороже электрической без учёта установки?</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(17, '4500')">
-            Показать ответ
-          </button>
-          <div id="answer-17" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 19</div>
-        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//kvartiri_3.png" alt="Problem image" class="problem-image" />
-        <div class="problem-text">На рисунке изображён план двухкомнатной квартиры в многоэтажном жилом доме. В правой части рисунка даны обозначения двери и окна, а также указано, что длина стороны клетки на плане соответствует 0,4 м. Вход в квартиру находится в прихожей. В квартире есть три окна. Самое широкое из них – в гостиной. Также окна есть в спальне и кухне. Самая маленькая площадь в квартире у санузла, который имеет общую стену с кухней. Балкон и лоджия в этой квартире отсутствуют.
-
-\[
-\]
---------------------------------
-\[
-\]
-
-Для помещений, указанных в таблице, определите, какими цифрами они обозначены на плане. Заполните таблицу, в бланк перенесите последовательность пяти цифр.
-
-\[
-\begin{array}{|l|l|l|l|l|l|}
-\hline
-\text{Помещения} & \text{спальня} & \text{санузел} & \text{кухня} & \text{гостиная} & \text{прихожая} \\
-\hline
-\text{Цифры} & & & & & \\
-\hline
-\end{array}
-\]</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(18, '53412')">
-            Показать ответ
-          </button>
-          <div id="answer-18" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 20</div>
-        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//uchastki_3.png" alt="Problem image" class="problem-image" />
-        <div class="problem-text">На плане изображено домохозяйство по адресу: СНТ «Прибор», 2-я Линия, д. 26 (сторона каждой клетки на плане равна 2 м). Участок имеет прямоугольную форму. Выезд и въезд осуществляются через единственные ворота.
-
-\[
-\]
-
-При входе на участок справа от ворот находится гараж, а слева в углу участка расположен сарай, отмеченный на плане цифрой 1. Площадь, занятая сараем, равна 24 кв. м.
-
-\[
-\]
-
-Жилой дом находится в глубине территории и обозначен на плане цифрой 6. Помимо гаража, жилого дома и сарая, на участке имеется летняя беседка, расположенная напротив входа в дом, и мангал рядом с ней. На участке также растут ели. В центре участка расположен цветник.
-
-\[
-\]
-
-Все дорожки внутри участка имеют ширину 1 м и вымощены тротуарной плиткой размером $50 ~см \times 50 ~см$. Перед гаражом и между домом и беседкой имеются площадки площадью 40 и 16 кв. м соответственно, вымощенные такой же плиткой.
-
-\[
-\]
-
-К домохозяйству подведено электричество. Имеется магистральное газоснабжение.
-
-\[
-\]
-
---------------------------------
-
-\[
-\]
-
-
-
-Сколько процентов площади всего участка занимает сарай?</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(19, '4')">
-            Показать ответ
-          </button>
-          <div id="answer-19" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 21</div>
-        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//dorogi_7.png" alt="Problem image" class="problem-image" />
-        <div class="problem-text">Коля летом отдыхает у дедушки и бабушки в деревне Марьевке. Коля с дедушкой собираются съездить на велосипедах в село Сосновое на железнодорожную станцию. Из Марьевки в Сосновое можно проехать по прямой лесной дорожке. Есть более длинный путь по шоссе – через деревню Николаевку до деревни Запрудье, где нужно повернуть под прямым углом направо на другое шоссе, ведущее в Сосновое. Есть и третий маршрут: в Николаевке можно свернуть на прямую тропинку, которая идёт мимо озера прямо в Сосновое.
-
-\[
-\]
-По шоссе Коля с дедушкой едут со скоростью 20 км/ч, а по лесной дорожке и тропинке – 15 км/ч. Расстояние по шоссе от Марьевки до Николаевки равно 12 км, от Марьевки до Запрудья – 20 км, а от Запрудья до Соснового – 15 км.
-\[
-\]
-Найдите расстояние от д. Николаевка до с. Сосновое по прямой. Ответ дайте в километрах.</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(20, '17')">
-            Показать ответ
-          </button>
-          <div id="answer-20" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 22</div>
-        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//internet_1.png" alt="Problem image" class="problem-image" />
-        <div class="problem-text">На рисунке точками показано количество минут исходящих вызовов и трафик мобильного интернета в гигабайтах, израсходованных абонентом в процессе пользования смартфоном, за каждый месяц 2019 года. Для удобства точки, соответствующие минутам и гигабайтам, соединены сплошными и пунктирными линиями соответственно.
-
-\[
-\]
-
-В течение года абонент пользовался тарифом «Стандартный», абонентская плата по которому составляла 350 рублей в месяц. При условии нахождения абонента на территории РФ в абонентскую плату тарифа «Стандартный» входит:
-\[
-\]
-- пакет минут, включающий 300 минут исходящих вызовов на номера, зарегистрированные на территории РФ;
-\[
-\]
-- пакет интернета, включающий 3 гигабайта мобильного интернета;
-\[
-\]
-- пакет SMS, включающий 120 SMS в месяц;
-\[
-\]
-- безлимитные бесплатные входящие вызовы.
-
-\[
-\]
-Стоимость минут, интернета и SMS сверх пакета тарифа указана в таблице.
-$
-\begin{array}{|l|l|}
-\hline
-\text{Исходящие вызовы} & \text{3 руб./мин} \\
-\hline
-\text{Мобильный интернет (пакет)} & \text{90 руб. за 0{,}5 ГБ} \\
-\hline
-\text{SMS} & \text{2 руб./шт.} \\
-\hline
-\end{array}
-$
-
-Абонент не пользовался услугами связи в роуминге. За весь год абонент отправил 110 SMS.
-
-\[
-\]
---------------------------------
-
-\[
-\]
-Известно, что в 2019 году абонентская плата по тарифу «Стандартный» выросла на 75% по сравнению с 2018 годом. Сколько рублей составляла абонентская плата в 2018 году?</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(21, '200')">
-            Показать ответ
-          </button>
-          <div id="answer-21" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 23</div>
-        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//internet_1.png" alt="Problem image" class="problem-image" />
-        <div class="problem-text">На рисунке точками показано количество минут исходящих вызовов и трафик мобильного интернета в гигабайтах, израсходованных абонентом в процессе пользования смартфоном, за каждый месяц 2019 года. Для удобства точки, соответствующие минутам и гигабайтам, соединены сплошными и пунктирными линиями соответственно.
-
-\[
-\]
-
-В течение года абонент пользовался тарифом «Стандартный», абонентская плата по которому составляла 350 рублей в месяц. При условии нахождения абонента на территории РФ в абонентскую плату тарифа «Стандартный» входит:
-\[
-\]
-- пакет минут, включающий 300 минут исходящих вызовов на номера, зарегистрированные на территории РФ;
-\[
-\]
-- пакет интернета, включающий 3 гигабайта мобильного интернета;
-\[
-\]
-- пакет SMS, включающий 120 SMS в месяц;
-\[
-\]
-- безлимитные бесплатные входящие вызовы.
-
-\[
-\]
-Стоимость минут, интернета и SMS сверх пакета тарифа указана в таблице.
-$
-\begin{array}{|l|l|}
-\hline
-\text{Исходящие вызовы} & \text{3 руб./мин} \\
-\hline
-\text{Мобильный интернет (пакет)} & \text{90 руб. за 0{,}5 ГБ} \\
-\hline
-\text{SMS} & \text{2 руб./шт.} \\
-\hline
-\end{array}
-$
-
-Абонент не пользовался услугами связи в роуминге. За весь год абонент отправил 110 SMS.
-
-\[
-\]
---------------------------------
-
-\[
-\]
-
-В конце 2019 года оператор связи предложил абоненту перейти на новый тариф, условия которого приведены в таблице.
-$
-\begin{array}{|l|l|}
-\hline
-\text{Стоимость перехода на тариф} & 0\ \text{руб.} \\
-\hline
-\text{Абонентская плата в месяц} & 430\ \text{руб.} \\
-\hline
-\text{В абонентскую плату включены пакеты:} & \\
-\hline
-\text{пакет исходящих вызовов} & 400\ \text{минут} \\
-\hline
-\text{пакет мобильного интернета} & 4\ \text{ГБ} \\
-\hline
-\text{пакет SMS} & 120\ \text{SMS} \\
-\hline
-\text{После расходования пакетов:} & \\
-\hline
-\text{входящие вызовы} & 0\ \text{руб./мин} \\
-\hline
-\text{исходящие вызовы*} & 4\ \text{руб./мин} \\
-\hline
-\text{мобильный интернет (пакет)} & 180\ \text{руб. за 0,5 ГБ} \\
-\hline
-\text{SMS} & 2\ \text{руб./шт.} \\
-\hline
-\end{array}
-$
-*исходящие вызовы на номера, зарегистрированные на территории РФ Абонент решает, перейти ли ему на новый тариф, посчитав, сколько бы он потратил на услуги связи за 2019 г., если бы пользовался им. Если получится меньше, чем он потратил фактически за 2019 г., то абонент примет решение сменить тариф.
-Перейдёт ли абонент на новый тариф? В ответе запишите ежемесячную абонентскую плату по тарифу, который выберет абонент на 2020 год.</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(22, '430')">
-            Показать ответ
-          </button>
-          <div id="answer-22" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 24</div>
-        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//dorogi_2.png" alt="Problem image" class="problem-image" />
-        <div class="problem-text">Серёжа летом отдыхает с папой в деревне Пирожки. В среду они собираются съездить на машине в село Княжеское. Из деревни Пирожки в село Княжеское можно проехать по прямой грунтовой дороге. Есть более длинный путь: по прямолинейному шоссе через деревню Васильево до деревни Рябиновка, где нужно повернуть под прямым углом налево на другое шоссе, ведущее в село Княжеское. Есть и третий маршрут: в деревне Васильево можно свернуть на прямую грунтовую дорогу в село Княжеское, которая идёт мимо пруда.
-
-\[
-\]
-Шоссе и грунтовые дороги образуют прямоугольные треугольники.
-
-\[
-\]
-По шоссе Серёжа с папой едут со скоростью 60 км/ч, а по грунтовой дороге — со скоростью 40 км/ч. На плане изображено взаимное расположение населённых пунктов, длина стороны каждой клетки равна 2 км.
-
-\[
-\]
-Сколько минут затратят на дорогу из деревни Пирожки в село Княжеское Серёжа с папой, если они поедут по прямой грунтовой дороге?</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(23, '51')">
-            Показать ответ
-          </button>
-          <div id="answer-23" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 25</div>
-        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//dorogi_7.png" alt="Problem image" class="problem-image" />
-        <div class="problem-text">Коля летом отдыхает у дедушки и бабушки в деревне Марьевке. Коля с дедушкой собираются съездить на велосипедах в село Сосновое на железнодорожную станцию. Из Марьевки в Сосновое можно проехать по прямой лесной дорожке. Есть более длинный путь по шоссе – через деревню Николаевку до деревни Запрудье, где нужно повернуть под прямым углом направо на другое шоссе, ведущее в Сосновое. Есть и третий маршрут: в Николаевке можно свернуть на прямую тропинку, которая идёт мимо озера прямо в Сосновое.
-
-По шоссе Коля с дедушкой едут со скоростью 20 км/ч, а по лесной дорожке и тропинке – 15 км/ч. Расстояние по шоссе от Марьевки до Николаевки равно 12 км, от Марьевки до Запрудья – 20 км, а от Запрудья до Соснового – 15 км.
-
-
-Пользуясь описанием, определите, какими цифрами на плане обозначены населённые пункты. В ответ запишите полученную последовательность четырёх цифр.
-$
-\begin{array}{|c|c|c|c|c|}
-\hline
-\text{Насел. пункты} & \text{д. Запрудье} & \text{д. Марьевка} & \text{д. Николаевка} & \text{с. Сосновое} \\
-\hline
-\text{Цифры} & \text{} & \text{} & \text{} & \text{} \\
-\hline
-\end{array}
-$</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(24, '1432')">
-            Показать ответ
-          </button>
-          <div id="answer-24" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 26</div>
-        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//kvartiri_5.png" alt="Problem image" class="problem-image" />
-        <div class="problem-text">На рисунке изображён план двухкомнатной квартиры с панорамной лоджией в многоэтажном жилом доме. В правой части рисунка даны обозначения двери и окна (и остекления лоджии), а также указано, что длина стороны клетки на плане соответствует 0,3 м. Вход в квартиру находится в прихожей. Самое большое по площади помещение – гостиная. В спальне, гостиной и кухне есть двери и окна, выходящие на лоджию, но в кухне окно шире, чем в других комнатах. Остекление лоджии со стороны гостиной закруглено. В квартире есть два помещения, в которых нет окон, – это прихожия и санузел.
-\[
-\]
-
---------------------------------
-\[
-\]
-
-
-В квартире планируется установить стиральную машину. Характеристики стиральных машин, условия подключения и доставки приведены в таблице. Планируется купить стиральную машину с вертикальной загрузкой, не превосходящую 85 см по высоте.
-
-\[
-\begin{array}{|l|l|l|l|l|l|l|}
-\hline
-\text{Модель} & \text{Вместимость} & \text{Тип} & \text{Стоимость} & \text{Подключение} & \text{Доставка} & \text{Габариты} \\
-& \text{(кг)} & \text{загрузки} & \text{(руб.)} & \text{(руб.)} & \text{(\%)} & \text{(см)} \\
-\hline
-A & 7 & \text{верт.} & 28000 & 1700 & \text{бесплатно} & 85 \times 60 \times 45 \\
-\hline
-Б & 5 & \text{фронт.} & 24000 & 4500 & 10 & 85 \times 60 \times 40 \\
-\hline
-B & 5 & \text{фронт.} & 25000 & 5000 & 10 & 85 \times 60 \times 40 \\
-\hline
-Г & 6.5 & \text{фронт.} & 24000 & 4500 & 10 & 85 \times 60 \times 44 \\
-\hline
-Д & 6 & \text{фронт.} & 28000 & 1700 & \text{бесплатно} & 85 \times 60 \times 45 \\
-\hline
-Е & 6 & \text{верт.} & 27600 & 2300 & \text{бесплатно} & 89 \times 60 \times 40 \\
-\hline
-Ж & 6 & \text{верт.} & 27585 & 1900 & 10 & 89 \times 60 \times 40 \\
-\hline
-3 & 6 & \text{фронт.} & 20000 & 6300 & 15 & 85 \times 60 \times 42 \\
-\hline
-И & 5 & \text{фронт.} & 27000 & 1800 & \text{бесплатно} & 85 \times 60 \times 40 \\
-\hline
-K & 5 & \text{верт.} & 27000 & 1800 & \text{бесплатно} & 85 \times 60 \times 40 \\
-\hline
-\end{array}
-\]
-
-Сколько рублей будет стоить наиболее дешёвый подходящий вариант вместе с подключением и доставкой?</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(25, '28800')">
-            Показать ответ
-          </button>
-          <div id="answer-25" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 27</div>
-        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//internet_1.png" alt="Problem image" class="problem-image" />
-        <div class="problem-text">На рисунке точками показано количество минут исходящих вызовов и трафик мобильного интернета в гигабайтах, израсходованных абонентом в процессе пользования смартфоном, за каждый месяц 2019 года. Для удобства точки, соответствующие минутам и гигабайтам, соединены сплошными и пунктирными линиями соответственно.
-
-\[
-\]
-
-В течение года абонент пользовался тарифом «Стандартный», абонентская плата по которому составляла 350 рублей в месяц. При условии нахождения абонента на территории РФ в абонентскую плату тарифа «Стандартный» входит:
-\[
-\]
-- пакет минут, включающий 300 минут исходящих вызовов на номера, зарегистрированные на территории РФ;
-\[
-\]
-- пакет интернета, включающий 3 гигабайта мобильного интернета;
-\[
-\]
-- пакет SMS, включающий 120 SMS в месяц;
-\[
-\]
-- безлимитные бесплатные входящие вызовы.
-
-\[
-\]
-Стоимость минут, интернета и SMS сверх пакета тарифа указана в таблице.
-$
-\begin{array}{|l|l|}
-\hline
-\text{Исходящие вызовы} & \text{3 руб./мин} \\
-\hline
-\text{Мобильный интернет (пакет)} & \text{90 руб. за 0{,}5 ГБ} \\
-\hline
-\text{SMS} & \text{2 руб./шт.} \\
-\hline
-\end{array}
-$
-
-Абонент не пользовался услугами связи в роуминге. За весь год абонент отправил 110 SMS.
-
-\[
-\]
---------------------------------
-
-\[
-\]
-
-Определите, какие месяцы соответствуют указанному в таблице количеству исходящих вызов.
-Заполните таблицу, в бланк ответов перенесите числа, соответствующие номерам месяцев, без пробелов, запятых и других дополнительных символов (например, для месяцев май, январь, ноябрь, август в ответ нужно записать число 51118).
-\[
-\begin{array}{|c|c|c|c|c|}
-\hline \text{Исходящие вызовы} & 375\text{ мин} & 150\text{ мин} & 275\text{ мин} & 300\text{ мин} \\
-\hline \text{Номер месяца} & & & & \\
-\hline
-\end{array}
-\]</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(26, '7325')">
-            Показать ответ
-          </button>
-          <div id="answer-26" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 28</div>
-        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//kvartiri_1.png" alt="Problem image" class="problem-image" />
-        <div class="problem-text">На рисунке изображен план двухкомнатной квартиры в многоэтажном жилом доме. В правой части рисунка даны обозначения двери и окна, а также указано, что длина стороны клетки на плане соответствует 0,4 м. Вход в квартиру находится в прихожей. Слева от входа в квартиру располагаются кухня и санузел, причем площадь кухни больше площади санузла. Наименьшую площадь имеет кладовая. Из гостиной есть двери в коридор и на кухню. В квартире есть застекленная лоджия, куда можно попасть, пройдя через спальню.
-
-\[
-\]
---------------------------------
-\[
-\]
-
-В квартире планируется заменить электрическую плиту. Характеристики электроплит, условия подключения и доставки приведены в таблице. Планируется купить электрическую плиту шириной 50 см с духовкой объемом не менее 52 л.
-
-$
-\begin{array}{|l|l|l|l|l|l|l|}
-\hline
-\text{Модель} & \text{Объём духовки (л)} & \text{Макс. темп. } (^{\circ}\mathrm{C}) & \text{Стоимость плиты (руб.)} & \text{Стоимость подключения (руб.)} & \text{Доставка (\% от стоимости)} & \text{Габариты (см)} \\
-\hline
-A & 50 & 280 & 8890 & 1700 & \text{бесплатно} & 85 \times 50 \times 54 \\
-\hline
-Б & 50 & 300 & 9790 & 750 & 10 & 85 \times 50 \times 54 \\
-\hline
-В & 50 & 250 & 11690 & 700 & 10 & 85 \times 60 \times 60 \\
-\hline
-Г & 52 & 250 & 17490 & 800 & 10 & 85 \times 60 \times 60 \\
-\hline
-Д & 70 & 275 & 17990 & 1400 & \text{бесплатно} & 85 \times 60 \times 45 \\
-\hline
-Е & 58 & 250 & 18890 & 1500 & \text{бесплатно} & 85 \times 50 \times 60 \\
-\hline
-Ж & 54 & 270 & 18900 & 750 & 15 & 85 \times 50 \times 60 \\
-\hline
-З & 46 & 250 & 20990 & 750 & 10 & 87 \times 50 \times 60 \\
-\hline
-И & 70 & 275 & 21690 & 1500 & \text{бесплатно} & 85 \times 50 \times 60 \\
-\hline
-К & 67 & 250 & 22990 & 1500 & \text{бесплатно} & 85 \times 50 \times 60 \\
-\hline
-\end{array}
-$
-
-Сколько рублей будет стоить наиболее дешевый подходящий вариант вместе с подключением и доставкой?</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(27, '20390')">
-            Показать ответ
-          </button>
-          <div id="answer-27" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 29</div>
-        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//kvartiri_5.png" alt="Problem image" class="problem-image" />
-        <div class="problem-text">На рисунке изображён план двухкомнатной квартиры с панорамной лоджией в многоэтажном жилом доме. В правой части рисунка даны обозначения двери и окна (и остекления лоджии), а также указано, что длина стороны клетки на плане соответствует 0,3 м. Вход в квартиру находится в прихожей. Самое большое по площади помещение – гостиная. В спальне, гостиной и кухне есть двери и окна, выходящие на лоджию, но в кухне окно шире, чем в других комнатах. Остекление лоджии со стороны гостиной закруглено. В квартире есть два помещения, в которых нет окон, – это прихожия и санузел.
-\[
-\]
---------------------------------
-\[
-\]
-
-Найдите радиус закругления остекления лоджии со стороны гостиной. Ответ дайте в сантиметрах.</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(28, '120')">
-            Показать ответ
-          </button>
-          <div id="answer-28" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
-      <div class="question-item">
-        <div class="question-number">Вопрос 30</div>
-        <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//internet_1.png" alt="Problem image" class="problem-image" />
-        <div class="problem-text">На рисунке точками показано количество минут исходящих вызовов и трафик мобильного интернета в гигабайтах, израсходованных абонентом в процессе пользования смартфоном, за каждый месяц 2019 года. Для удобства точки, соответствующие минутам и гигабайтам, соединены сплошными и пунктирными линиями соответственно.
-
-\[
-\]
-
-В течение года абонент пользовался тарифом «Стандартный», абонентская плата по которому составляла 350 рублей в месяц. При условии нахождения абонента на территории РФ в абонентскую плату тарифа «Стандартный» входит:
-\[
-\]
-- пакет минут, включающий 300 минут исходящих вызовов на номера, зарегистрированные на территории РФ;
-\[
-\]
-- пакет интернета, включающий 3 гигабайта мобильного интернета;
-\[
-\]
-- пакет SMS, включающий 120 SMS в месяц;
-\[
-\]
-- безлимитные бесплатные входящие вызовы.
-
-\[
-\]
-Стоимость минут, интернета и SMS сверх пакета тарифа указана в таблице.
-$
-\begin{array}{|l|l|}
-\hline
-\text{Исходящие вызовы} & \text{3 руб./мин} \\
-\hline
-\text{Мобильный интернет (пакет)} & \text{90 руб. за 0{,}5 ГБ} \\
-\hline
-\text{SMS} & \text{2 руб./шт.} \\
-\hline
-\end{array}
-$
-
-Абонент не пользовался услугами связи в роуминге. За весь год абонент отправил 110 SMS.
-
-\[
-\]
---------------------------------
-
-\[
-\]
-
-На сколько процентов увеличился трафик мобильного интернета в феврале по сравнению с январём 2019 года?</div>
-        <div class="answer-section">
-          <input type="text" class="answer-input" placeholder="Ваш ответ" />
-          <button class="show-answer-btn" onclick="showAnswer(29, '40')">
-            Показать ответ
-          </button>
-          <div id="answer-29" class="answer-display"></div>
-        </div>
-        <button class="show-solution-btn" onclick="showSolutionModal()">
-          Показать решение
-        </button>
-      </div>
-    
+       <div class="question-item">
+         <div class="question-number">Вопрос 1</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//dorogi_5.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text">Ваня летом отдыхает у дедушки и бабушки в деревне Николаевка. Ваня с дедушкой собираются съездить на велосипедах в село Игнатьево на железнодорожную станцию. Из Николаевки в Игнатьево можно проехать по шоссе до деревени Сосновки, где нужно свернуть под прямым углом направо на другое шоссе, ведущее в Игнатьево через поселок Дачный. Из Николаевки в Игнатьево можно проехать через поселок Дачный и не заезжая в Сосновку, но тогда первую часть пути надо будет ехать по прямой лесной дорожке. Есть и третий маршрут: доехать по прямой тропинке мимо озера до деревни Кулички и там, повернув налево, по шоссе добраться до Игнатьево.<br><br>\[<br>\]<br><br>По шоссе Ваня с дедушкой едут со скоростью 20 км/ч, а по лесной дорожке и тропинке – 15 км/ч. Расстояние по шоссе от Николаевки до Сосновки равно 15 км, от Игнатьево до Сосновки – 24 км, от Игнатьево до Дачного – 16 км, а от Игнатьево до Куличек – 8 км.<br><br>\[<br>\]<br><br>Определите, на какой маршрут до станции потребуется меньше всего времени. В ответе укажите, сколько минут потратят на дорогу Ваня с дедушкой, если поедут этим маршрутом.</div>
+         <button class="show-answer-btn"
+                 data-answer="116"
+                 onclick="showAnswer(0, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-0" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 2</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//kvartiri_4.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text">На рисунке изображён план двухкомнатной квартиры в многоэтажном жилом доме. Внизу рисунка даны обозначения окна и двери, а также указано, что длина стороны клетки на плане соответствует 0,4 м. Вход в квартиру находится в прихожей. В квартире есть две застеклённые лоджии: меньшая из них примыкает к кухне, большая – к спальне. На улицу также выходит окно гостиной. Кроме указанных помещений в квартире есть ещё санузел и кладовая, причём площадь санузла больше площади кладовой. <br><br>\[<br>\]<br>--------------------------------<br>\[<br>\]<br><br>Паркетная доска размером 20 см на 40 см продаётся в упаковках по 8 штук. Сколько упаковок паркетной доски нужно купить, чтобы выложить пол спальни?</div>
+         <button class="show-answer-btn"
+                 data-answer="25"
+                 onclick="showAnswer(1, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-1" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 3</div>
+         
+         <div class="problem-text">Хозяин дачного участка строит баню с парным отделением. Парное отделение имеет размеры: длина 2,6 м, ширина 2,5 м, высота 2,2 м. Окон в парном отделении нет, для доступа внутрь планируется дверь шириной 60 см, высота дверного проёма 1,8 м. Для прогрева парного отделения можно использовать электрическую или дровяную печь. В таблице представлены характеристики трёх печей.<br>\[<br>\begin{array}{|c|c|c|c|c|}<br>\hline<br>\text{Номер печи} &amp; \text{Тип} &amp; \text{Объём помещения} &amp; \text{Масса} &amp; \text{Стоимость} \\<br>&amp; &amp; \text{(куб. м)} &amp; \text{(кг)} &amp; \text{(руб.)} \\ <br>\hline<br>1 &amp; \text{дровяная} &amp; 8-13 &amp; 42 &amp; 19000 \\<br>\hline <br>2 &amp; \text{дровяная} &amp; 10-15.5 &amp; 48 &amp; 20700 \\<br>\hline <br>3 &amp; \text{электрическая} &amp; 9-15 &amp; 15 &amp; 16500 \\<br>\hline<br>\end{array}<br>\]<br><br>Для установки дровяной печи дополнительных затрат не потребуется. Установка электрической печи потребует подведения специального кабеля, что обойдётся в 6200 руб.<br>\[<br>\]<br>--------------------------------<br>\[<br>\]<br>Во сколько рублей обойдётся покупка дровяной печи, подходящей по объёму парного отделения, с доставкой, если доставка печи до дачного участка будет стоить 1400 рублей?</div>
+         <button class="show-answer-btn"
+                 data-answer="22100"
+                 onclick="showAnswer(2, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-2" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 4</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//dorogi_6.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text">Володя летом отдыхает у дедушки в деревне Ёлочки. В воскресенье они собираются съездить на машине в село Кленовое. Из деревни Ёлочки в село Кленовое можно проехать по прямой грунтовой дороге. Есть более длинный путь: по прямолинейному шоссе через деревню Сосенки до деревни Жуки, где нужно повернуть под прямым углом направо на другое шоссе, ведущее в село Кленовое. Есть и третий маршрут: в деревне Сосенки можно свернуть на прямую грунтовую дорогу в село Кленовое, которая идёт мимо пруда.<br>\[<br>\]<br>Шоссе и грунтовые дороги образуют прямоугольные треугольники.<br><br>\[<br>\]<br><br>По шоссе Володя с дедушкой едут со скоростью 80 км/ч, а по грунтовой дороге – со скоростью 40 км/ч. На плане изображено взаимное расположение населённых пунктов, длина стороны каждой клетки равна 4 км.<br><br>\[<br>\]<br>Пользуясь описанием, определите, какими цифрами на плане обозначены населённые пункты. Заполните таблищу, в бланк ответов перенесите последовательность трёх цифр без пробелов, запятых и других дополнительных символов.<br>$<br>\begin{array}{|l|l|l|l|}<br>\hline<br>\text{Насел. пункты} &amp; \text{д. Ёлочки} &amp; \text{с. Кленовое} &amp; \text{д. Жуки} \\<br>\hline<br>\text{Цифры} &amp; \text{} &amp; \text{} &amp; \text{} \\<br>\hline<br>\end{array}<br>$</div>
+         <button class="show-answer-btn"
+                 data-answer="421"
+                 onclick="showAnswer(3, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-3" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 5</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//dorogi_7.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text">Коля летом отдыхает у дедушки и бабушки в деревне Марьевке. Коля с дедушкой собираются съездить на велосипедах в село Сосновое на железнодорожную станцию. Из Марьевки в Сосновое можно проехать по прямой лесной дорожке. Есть более длинный путь по шоссе – через деревню Николаевку до деревни Запрудье, где нужно повернуть под прямым углом направо на другое шоссе, ведущее в Сосновое. Есть и третий маршрут: в Николаевке можно свернуть на прямую тропинку, которая идёт мимо озера прямо в Сосновое.<br>\[<br>\]<br>По шоссе Коля с дедушкой едут со скоростью 20 км/ч, а по лесной дорожке и тропинке – 15 км/ч. Расстояние по шоссе от Марьевки до Николаевки равно 12 км, от Марьевки до Запрудья – 20 км, а от Запрудья до Соснового – 15 км.<br><br><br>\[<br>\]<br>На сколько процентов скорость, с которой едут Коля с дедушкой по тропинке, меньше их скорости по шоссе?</div>
+         <button class="show-answer-btn"
+                 data-answer="25"
+                 onclick="showAnswer(4, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-4" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 6</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//bumaga_1.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text">Общепринятые форматы листов бумаги обозначают буквой А и цифрой: А0, А1, А2 и так далее. Лист формата А0 имеет форму прямоугольника площадью 1 кв. м. Если лист формата А0 разрезать пополам параллельно меньшей стороне, получатся два одинаковых листа формата А1. Если лист А1 разрезать пополам таким же образом, получатся два листа формата А2 и т.д.<br><br><br>\[<br>\]<br><br>Отношение большей стороны к меньшей стороне листа каждого формата одно и то же, поэтому листы всех форматов подобны. Это нужно, чтобы пропорции текста и его расположение на листе сохранялись при изменении формата листа.<br>В таблице даны размеры (с точностью до мм) четырёх листов, имеющих форматы А3, А4, А5 и А6:<br><br>$<br>\begin{array}{|c|c|c|}<br>\hline<br>\text{Порядковые номера} &amp; \text{Ширина (мм)} &amp; \text{Длина (мм)} \\<br>\hline<br>1 &amp; 148 &amp; 210 \\<br>\hline<br>2 &amp; 297 &amp; 420 \\<br>\hline<br>3 &amp; 105 &amp; 148 \\<br>\hline<br>4 &amp; 210 &amp; 297 \\<br>\hline<br>\end{array}<br>$<br><br>Таблица 1<br><br>\[<br>\]<br><br>--------------------------------<br><br>\[<br>\]<br><br>Сколько листов бумаги формата A5 получится при разрезании одного листа бумаги формата A2?</div>
+         <button class="show-answer-btn"
+                 data-answer="8"
+                 onclick="showAnswer(5, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-5" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 7</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//dorogi_3.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text">На рисунке изображён план сельской местности.<br><br>\[<br>\]<br><br>Таня на летних каникулах приезжает в гости к дедушке в деревню Антоновку (на плане обозначена цифрой 1). В конце каникул дедушка на машине собирается отвезти Таню на автобусную станцию, которая находится в деревне Богданово. Из Антоновки в Богданово можно проехать по просёлочной дороге вдоль реки. Есть другой путь — по шоссе до деревни Ванютино, где нужно повернуть под прямым углом налево на другое шоссе, ведущее в Богданово. Третий маршрут проходит по просёлочной дороге мимо пруда до деревни Горюново, где можно свернуть на шоссе до Богданово. Четвёртый маршрут пролегает по шоссе до деревни Доломино, от Доломино до Горюново по просёлочной дороге мимо конюшни и от Горюново до Богданово по шоссе. Ещё один маршрут проходит по шоссе до деревни Егорки, по просёлочной дороге мимо конюшни от Егорки до Жилино и по шоссе от Жилино до Богданово.<br><br>\[<br>\]<br>Шоссе и просёлочные дороги образуют прямоугольные треугольники.<br><br>\[<br>\]<br>По шоссе Таня с дедушкой едут со скоростью 50 км/ч, а по просёлочным дорогам — со скоростью 30 км/ч. Расстояние от Антоновки до Доломино равно 12 км, от Доломино до Егорки — 4 км, от Егорки до Ванютино — 12 км, от Горюново до Ванютино — 15 км, от Ванютино до Жилино — 9 км, а от Жилино до Богданово — 12 км.<br><br>\[<br>\]<br>За какое наименьшее количество минут Таня с дедушкой могут добраться из Доломино в Горюново?</div>
+         <button class="show-answer-btn"
+                 data-answer="27,6"
+                 onclick="showAnswer(6, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-6" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 8</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//kvartiri_1.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text">На рисунке изображен план двухкомнатной квартиры в многоэтажном жилом доме. В правой части рисунка даны обозначения двери и окна, а также указано, что длина стороны клетки на плане соответствует 0,4 м. Вход в квартиру находится в прихожей. Слева от входа в квартиру располагаются кухня и санузел, причем площадь кухни больше площади санузла. Наименьшую площадь имеет кладовая. Из гостиной есть двери в коридор и на кухню. В квартире есть застекленная лоджия, куда можно попасть, пройдя через спальню.<br><br>\[<br>\]<br>--------------------------------<br>\[<br>\]<br><br>Для помещений, указанных в таблице, определите, какими цифрами они обозначены на плане. Заполните таблицу, в бланк перенесите последовательность пяти цифр.<br><br>\[<br>\begin{array}{|l|l|l|l|l|l|}<br>\hline<br>\text{Помещения} &amp; \text{кухня} &amp; \text{гостиная} &amp; \text{кладовая} &amp; \text{прихожая} &amp; \text{спальня} \\<br>\hline<br>\text{Цифры} &amp; &amp; &amp; &amp; &amp; \\<br>\hline<br>\end{array}<br>\]</div>
+         <button class="show-answer-btn"
+                 data-answer="76324"
+                 onclick="showAnswer(7, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-7" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 9</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//internet_1.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text">На рисунке точками показано количество минут исходящих вызовов и трафик мобильного интернета в гигабайтах, израсходованных абонентом в процессе пользования смартфоном, за каждый месяц 2019 года. Для удобства точки, соответствующие минутам и гигабайтам, соединены сплошными и пунктирными линиями соответственно.<br><br>\[<br>\]<br><br>В течение года абонент пользовался тарифом «Стандартный», абонентская плата по которому составляла 350 рублей в месяц. При условии нахождения абонента на территории РФ в абонентскую плату тарифа «Стандартный» входит:<br>\[<br>\]<br>- пакет минут, включающий 300 минут исходящих вызовов на номера, зарегистрированные на территории РФ;<br>\[<br>\]<br>- пакет интернета, включающий 3 гигабайта мобильного интернета;<br>\[<br>\]<br>- пакет SMS, включающий 120 SMS в месяц;<br>\[<br>\]<br>- безлимитные бесплатные входящие вызовы.<br><br>\[<br>\]<br>Стоимость минут, интернета и SMS сверх пакета тарифа указана в таблице.<br>$<br>\begin{array}{|l|l|}<br>\hline<br>\text{Исходящие вызовы} &amp; \text{3 руб./мин} \\<br>\hline<br>\text{Мобильный интернет (пакет)} &amp; \text{90 руб. за 0{,}5 ГБ} \\<br>\hline<br>\text{SMS} &amp; \text{2 руб./шт.} \\<br>\hline<br>\end{array}<br>$<br><br>Абонент не пользовался услугами связи в роуминге. За весь год абонент отправил 110 SMS.<br><br>\[<br>\]<br>--------------------------------<br><br>\[<br>\]<br><br>Сколько месяцев в 2019 году абонент превысил лимит и по пакету минут, и по пакету мобильного интернета?</div>
+         <button class="show-answer-btn"
+                 data-answer="2"
+                 onclick="showAnswer(8, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-8" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 10</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//dorogi_9.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text">Миша летом отдыхает у дедушки и бабушки в деревне Анино. Миша с дедушкой собираются съездить на велосипедах в село Игнатьево на железнодорожную станцию. Из Анино в Игнатьево можно проехать по шоссе до деревни Сосновка, где нужно свернуть под прямым углом направо на другое шоссе, ведущее в Игнатьево через посёлок Дачный. Из Анино в Игнатьево можно проехать через посёлок Дачный и не заезжая в Сосновку, но тогда первую часть пути надо будет ехать по прямой лесной дорожке. Есть и третий маршрут: доехать по прямой тропинке мимо птицефабрики до деревни Мальцево и там, повернув налево, по шоссе добраться до Игнатьево.<br><br>\[<br>\]<br>По шоссе Миша с дедушкой едут со скоростью 20 км/ч, а по лесной дорожке и тропинке – 15 км/ч. Расстояние по шоссе от Анино до Сосновки равно 15 км, от Игнатъево до Сосновки – 24 км, от Игнатьево до Дачного – 16 км, а от Игнатьево до Мальцево – 8 км.<br><br>\[<br>\]<br><br>Пользуясь описанием, определите, какими цифрами на плане обозначены населённые пункты. В ответ запишите полученную последовательность пяти цифр.<br><br>$<br>\begin{array}{|c|c|c|c|c|c|}<br>\hline<br>\text{Насел. пункты} &amp; \text{д. Мальцево} &amp; \text{с. Игнатьево} &amp; \text{д. Сосновка} &amp; \text{п. Дачный} &amp; \text{д. Анино} \\<br>\hline<br>\text{Цифры} &amp; \text{} &amp; \text{} &amp; \text{} &amp; \text{} &amp; \text{} \\<br>\hline<br>\end{array}<br>$</div>
+         <button class="show-answer-btn"
+                 data-answer="21435"
+                 onclick="showAnswer(9, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-9" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 11</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//uchastki_4.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text">На плане изображён дачный участок по адресу: п. Сосновка, ул. Зелёная, д. 19 (сторона каждой клетки на плане равна 2 м). Участок имеет прямоугольную форму. Выезд и въезд осуществляются через единственные ворота.<br><br>\[<br>\]<br><br>При входе на участок слева от ворот находится гараж. Справа от ворот находится сарай площадью 24 кв. м, а чуть подальше – жилой дом. Напротив жилого дома расположены яблоневые посадки. Также на участке есть баня, к которой ведёт дорожка, выложенная плиткой, и огород с теплицей внутри (огород отмечен на плане цифрой 6).<br><br>\[<br>\]<br>Все дорожки внутри участка имеют ширину 1 м и вымощены тротуарной плиткой размером 1 м ×1 м.   Между гаражом и сараем находится площадка, вымощенная такой же плиткой.<br><br>\[<br>\]<br>К участку подведено электричество. Имеется магистральное газоснабжение.<br><br>\[<br>\]<br>------------------------------------------------------------------------------------------------------------------------------------------------------------<br><br>\[<br>\]<br>Для объектов, указанных в таблице, определите, какими цифрами они обозначены на плане. Заполните таблицу, в бланк ответов перенесите последовательность четырёх цифр без пробелов, запятых и других символов.<br><br>$<br>\begin{array}{|c|c|c|c|c|}<br>\hline<br>\text{Объекты} &amp; \text{яблони} &amp; \text{теплица} &amp; \text{сарай} &amp; \text{жилой дом} \\<br>\hline<br>\text{Цифры} &amp; \text{} &amp; \text{} &amp; \text{} &amp; \text{} \\<br>\hline<br>\end{array}<br>$</div>
+         <button class="show-answer-btn"
+                 data-answer="3517"
+                 onclick="showAnswer(10, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-10" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 12</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//dorogi_10.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text">Гриша летом отдыхает у дедушки в деревне Грушёвка. В пятницу они собираются съездить на велосипедах в село Абрамово на ярмарку. Из деревни Грушёвка в село Абрамово можно проехать по прямой лесной дорожке. Есть более длинный путь: по прямолинейному шоссе через деревню Таловка до деревни Новая, где нужно повернуть под прямым углом направо на другое шоссе, ведущее в село Абрамово. Есть и третий маршрут: в деревне Таловка можно свернуть на прямую тропинку в село Абрамово, которая идёт мимо озера.<br><br>\[<br>\]<br>Лесная дорожка и тропинка образуют с шоссе прямоугольные треугольники.<br><br>\[<br>\]<br><br>По шоссе Гриша с дедушкой едут со скоростью 15 км/ч, а по лесной дорожке и тропинке – со скоростью 12 км/ч. На плане изображено взаимное расположение населённых пунктов, длина стороны каждой клетки равна 2 км.<br><br>\[<br>\]<br>Пользуясь описанием, определите, какими цифрами на плане обозначены населённые пункты. Заполните таблицу, в бланк ответов перенесите последовательность трёх цифр без пробелов, запятых и других дополнительных символов.<br><br>$<br>\begin{array}{|c|c|c|c|}<br>\hline<br>\text{Насел. пункты} &amp; \text{д. Новая} &amp; \text{с. Абрамово} &amp; \text{д. Таловка} \\<br>\hline<br>\text{Цифры} &amp; \text{} &amp; \text{} &amp; \text{} \\<br>\hline<br>\end{array}<br>$</div>
+         <button class="show-answer-btn"
+                 data-answer="142"
+                 onclick="showAnswer(11, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-11" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 13</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//kvartiri_3.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text">На рисунке изображён план двухкомнатной квартиры в многоэтажном жилом доме. В правой части рисунка даны обозначения двери и окна, а также указано, что длина стороны клетки на плане соответствует 0,4 м. Вход в квартиру находится в прихожей. В квартире есть три окна. Самое широкое из них – в гостиной. Также окна есть в спальне и кухне. Самая маленькая площадь в квартире у санузла, который имеет общую стену с кухней. Балкон и лоджия в этой квартире отсутствуют.<br><br>\[<br>\]<br>--------------------------------<br>\[<br>\]<br><br>Сколько процентов составляет площадь кухни от площади всей квартиры?</div>
+         <button class="show-answer-btn"
+                 data-answer="21"
+                 onclick="showAnswer(12, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-12" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 14</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//dorogi_3.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text">На рисунке изображён план сельской местности.<br><br>\[<br>\]<br><br>Таня на летних каникулах приезжает в гости к дедушке в деревню Антоновку (на плане обозначена цифрой 1). В конце каникул дедушка на машине собирается отвезти Таню на автобусную станцию, которая находится в деревне Богданово. Из Антоновки в Богданово можно проехать по просёлочной дороге вдоль реки. Есть другой путь — по шоссе до деревни Ванютино, где нужно повернуть под прямым углом налево на другое шоссе, ведущее в Богданово. Третий маршрут проходит по просёлочной дороге мимо пруда до деревни Горюново, где можно свернуть на шоссе до Богданово. Четвёртый маршрут пролегает по шоссе до деревни Доломино, от Доломино до Горюново по просёлочной дороге мимо конюшни и от Горюново до Богданово по шоссе. Ещё один маршрут проходит по шоссе до деревни Егорки, по просёлочной дороге мимо конюшни от Егорки до Жилино и по шоссе от Жилино до Богданово.<br><br>\[<br>\]<br><br>Шоссе и просёлочные дороги образуют прямоугольные треугольники.<br><br>\[<br>\]<br><br>По шоссе Таня с дедушкой едут со скоростью 50 км/ч, а по просёлочным дорогам — со скоростью 30 км/ч. Расстояние от Антоновки до Доломино равно 12 км, от Доломино до Егорки — 4 км, от Егорки до Ванютино — 12 км, от Горюново до Ванютино — 15 км, от Ванютино до Жилино — 9 км, а от Жилино до Богданово — 12 км.<br><br>\[<br>\]<br><br>Сколько минут затратят на дорогу Таня с дедушкой из Антоновки в Богданово, если поедут через Егорку и Жилино мимо конюшни?</div>
+         <button class="show-answer-btn"
+                 data-answer="54"
+                 onclick="showAnswer(13, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-13" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 15</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//kvartiri_1.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text">На рисунке изображен план двухкомнатной квартиры в многоэтажном жилом доме. В правой части рисунка даны обозначения двери и окна, а также указано, что длина стороны клетки на плане соответствует 0,4 м. Вход в квартиру находится в прихожей. Слева от входа в квартиру располагаются кухня и санузел, причем площадь кухни больше площади санузла. Наименьшую площадь имеет кладовая. Из гостиной есть двери в коридор и на кухню. В квартире есть застекленная лоджия, куда можно попасть, пройдя через спальню.<br><br>\[<br>\]<br>--------------------------------<br><br>\[<br>\]<br>Плитка для пола размером 20 см $\times 10$ см продаётся в упаковках по 10 штук. Сколько упаковок плитки необходимо купить, чтобы выложить пол лоджии?</div>
+         <button class="show-answer-btn"
+                 data-answer="17"
+                 onclick="showAnswer(14, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-14" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 16</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//shini_2.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text">Автомобильное колесо, как правило, представляет из себя металлический диск с установленной на него резиновой шиной. Диаметр диска совпадает с диаметром внутреннего отверстия в шине.<br>Для маркировки автомобильных шин применяется единая система обозначений. Например, 195/65 R15 (рис. 1). Первое число (число 195 в приведённом примере) обозначает ширину шины в миллиметрах (параметр $B$ на рисунке 2). Второе число (число 65 в приведённом примере) - процентное отношение высоты боковины (параметр $H$ на рисунке 2) к ширине шины, то есть $100 \cdot \frac{H}{B}$.<br>Последующая буква обозначает тип конструкции шины. В данном примере буква R означает, что шина радиальная, то есть нити каркаса в боковине шины расположены вдоль радиусов колеса. На всех легковых автомобилях применяются шины радиальной конструкции.<br>За обозначением типа конструкции шины идёт число, указывающее диаметр диска колеса $d$ в дюймах (в одном дюйме 25,4 мм). Таким образом, общий диаметр колеса $D$ легко найти, зная диаметр и высоту боковины.<br>Возможны дополнительные маркировки, обозначающие допустимые нагрузки на шину, сезонность использования, тип дорожного покрытия и другие параметры.<br>Завод производит легковые автомобили определённой модели и устанавливает на них колёса с шинами маркировки $215 / 60 \mathrm{R} 16$.<br><br>\[<br>\]<br><br>--------------------------------<br><br>\[<br>\]<br><br>На сколько миллиметров радиус колеса с маркировкой 205/55 R17 меньше, чем радиус колеса с маркировкой 235/50 R17?</div>
+         <button class="show-answer-btn"
+                 data-answer="4,75"
+                 onclick="showAnswer(15, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-15" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 17</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//bumaga_2.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text">Общепринятые форматы листов бумаги обозначают буквой А и цифрой: А0, А1, А2 и так далее. Лист формата А0 имеет форму прямоугольника площадью 1 кв. м. Если лист формата А0 разрезать пополам параллельно меньшей стороне, получатся два одинаковых листа формата А1. Если лист А1 разрезать пополам таким же образом, получатся два листа формата А2 и т.д.<br><br>\[<br>\]<br><br>Отношение большей стороны к меньшей стороне листа каждого формата одно и то же, поэтому листы всех форматов подобны. Это нужно, чтобы пропорции текста и его расположение на листе сохранялись при изменении формата листа.<br>В таблице даны размеры (с точностью до мм) четырёх листов, имеющих форматы А3, А4, А5 и А6:<br><br>$<br>\begin{array}{|c|c|c|}<br>\hline<br>\text{Порядковые номера} &amp; \text{Ширина (мм)} &amp; \text{Длина (мм)} \\<br>\hline<br>1 &amp; 105 &amp; 148 \\<br>\hline<br>2 &amp; 210 &amp; 297 \\<br>\hline<br>3 &amp; 297 &amp; 420 \\<br>\hline<br>4 &amp; 148 &amp; 210 \\<br>\hline<br>\end{array}<br>$<br><br>Таблица 1<br><br>\[<br>\]<br><br>--------------------------------<br><br>\[<br>\]<br><br>Для листов бумаги форматов А3, А4, А5 и А6 определите, какими порядковыми номерами обозначены их размеры в таблице 1. Заполните таблицу, в бланк ответов перенесите последовательность четырёх цифр, соответствующих номерам листов, без пробелов, запятых и дополнительных символов.<br><br>$<br>\begin{array}{|c|c|c|c|c|}<br>\hline<br>\text{Форматы бумаги} &amp; \text{А3} &amp; \text{А4} &amp; \text{А5} &amp; \text{А6} \\<br>\hline<br>\text{Порядковые номера} &amp; \text{} &amp; \text{} &amp; \text{} &amp; \text{} \\<br>\hline<br>\end{array}<br>$</div>
+         <button class="show-answer-btn"
+                 data-answer="3241"
+                 onclick="showAnswer(16, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-16" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 18</div>
+         
+         <div class="problem-text">Хозяин дачного участка строит баню с парным отделением. Парное отделение имеет размеры: длина 3,5 м, ширина 2,2 м, высота 2 м. Окон в парном отделении нет, для доступа внутрь планируется дверь шириной 60 см, высота дверного проёма 1,8 м. Для прогрева парного отделения можно использовать электрическую или дровяную печь. В таблице представлены характеристики трёх печей.<br>\[<br>\begin{array}{|c|c|c|c|c|}<br>\hline<br>\text{Номер} &amp; \text{Тип} &amp; \text{Объём} &amp; \text{Масса} &amp; \text{Стоимость} \\<br>\text{печи} &amp; &amp; \text{помещения} &amp; \text{(кг)} &amp; \text{(руб.)} \\<br>&amp; &amp; \text{(куб. м)} &amp; &amp; \\<br>\hline<br>1 &amp; \text{дровяная} &amp; 8-12 &amp; 40 &amp; 18000 \\<br>\hline<br>2 &amp; \text{дровяная} &amp; 10-16 &amp; 48 &amp; 19500 \\<br>\hline<br>3 &amp; \text{электрическая} &amp; 9-15.5 &amp; 15 &amp; 15000 \\<br>\hline<br>\end{array}<br>\]<br><br>Для установки дровяной печи дополнительных затрат не потребуется. Установка электрической печи потребует подведения специального кабеля, что обойдётся в 6500 руб.<br>\[<br>\]<br>---------------------------------------------------------------------------------------------------------------------------------------------------------<br>\[<br>\]<br>На сколько рублей покупка дровяной печи, подходящей по объёму парного отделения, обойдётся дороже электрической без учёта установки?</div>
+         <button class="show-answer-btn"
+                 data-answer="4500"
+                 onclick="showAnswer(17, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-17" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 19</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//kvartiri_3.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text">На рисунке изображён план двухкомнатной квартиры в многоэтажном жилом доме. В правой части рисунка даны обозначения двери и окна, а также указано, что длина стороны клетки на плане соответствует 0,4 м. Вход в квартиру находится в прихожей. В квартире есть три окна. Самое широкое из них – в гостиной. Также окна есть в спальне и кухне. Самая маленькая площадь в квартире у санузла, который имеет общую стену с кухней. Балкон и лоджия в этой квартире отсутствуют.<br><br>\[<br>\]<br>--------------------------------<br>\[<br>\]<br><br>Для помещений, указанных в таблице, определите, какими цифрами они обозначены на плане. Заполните таблицу, в бланк перенесите последовательность пяти цифр.<br><br>\[<br>\begin{array}{|l|l|l|l|l|l|}<br>\hline<br>\text{Помещения} &amp; \text{спальня} &amp; \text{санузел} &amp; \text{кухня} &amp; \text{гостиная} &amp; \text{прихожая} \\<br>\hline<br>\text{Цифры} &amp; &amp; &amp; &amp; &amp; \\<br>\hline<br>\end{array}<br>\]</div>
+         <button class="show-answer-btn"
+                 data-answer="53412"
+                 onclick="showAnswer(18, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-18" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 20</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//uchastki_3.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text">На плане изображено домохозяйство по адресу: СНТ «Прибор», 2-я Линия, д. 26 (сторона каждой клетки на плане равна 2 м). Участок имеет прямоугольную форму. Выезд и въезд осуществляются через единственные ворота.<br><br>\[<br>\]<br><br>При входе на участок справа от ворот находится гараж, а слева в углу участка расположен сарай, отмеченный на плане цифрой 1. Площадь, занятая сараем, равна 24 кв. м.<br><br>\[<br>\]<br><br>Жилой дом находится в глубине территории и обозначен на плане цифрой 6. Помимо гаража, жилого дома и сарая, на участке имеется летняя беседка, расположенная напротив входа в дом, и мангал рядом с ней. На участке также растут ели. В центре участка расположен цветник.<br><br>\[<br>\]<br><br>Все дорожки внутри участка имеют ширину 1 м и вымощены тротуарной плиткой размером $50 ~см \times 50 ~см$. Перед гаражом и между домом и беседкой имеются площадки площадью 40 и 16 кв. м соответственно, вымощенные такой же плиткой.<br><br>\[<br>\]<br><br>К домохозяйству подведено электричество. Имеется магистральное газоснабжение.<br><br>\[<br>\]<br><br>--------------------------------<br><br>\[<br>\]<br><br><br><br>Сколько процентов площади всего участка занимает сарай?</div>
+         <button class="show-answer-btn"
+                 data-answer="4"
+                 onclick="showAnswer(19, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-19" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 21</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//dorogi_7.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text">Коля летом отдыхает у дедушки и бабушки в деревне Марьевке. Коля с дедушкой собираются съездить на велосипедах в село Сосновое на железнодорожную станцию. Из Марьевки в Сосновое можно проехать по прямой лесной дорожке. Есть более длинный путь по шоссе – через деревню Николаевку до деревни Запрудье, где нужно повернуть под прямым углом направо на другое шоссе, ведущее в Сосновое. Есть и третий маршрут: в Николаевке можно свернуть на прямую тропинку, которая идёт мимо озера прямо в Сосновое.<br><br>\[<br>\]<br>По шоссе Коля с дедушкой едут со скоростью 20 км/ч, а по лесной дорожке и тропинке – 15 км/ч. Расстояние по шоссе от Марьевки до Николаевки равно 12 км, от Марьевки до Запрудья – 20 км, а от Запрудья до Соснового – 15 км.<br>\[<br>\]<br>Найдите расстояние от д. Николаевка до с. Сосновое по прямой. Ответ дайте в километрах.</div>
+         <button class="show-answer-btn"
+                 data-answer="17"
+                 onclick="showAnswer(20, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-20" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 22</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//internet_1.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text">На рисунке точками показано количество минут исходящих вызовов и трафик мобильного интернета в гигабайтах, израсходованных абонентом в процессе пользования смартфоном, за каждый месяц 2019 года. Для удобства точки, соответствующие минутам и гигабайтам, соединены сплошными и пунктирными линиями соответственно.<br><br>\[<br>\]<br><br>В течение года абонент пользовался тарифом «Стандартный», абонентская плата по которому составляла 350 рублей в месяц. При условии нахождения абонента на территории РФ в абонентскую плату тарифа «Стандартный» входит:<br>\[<br>\]<br>- пакет минут, включающий 300 минут исходящих вызовов на номера, зарегистрированные на территории РФ;<br>\[<br>\]<br>- пакет интернета, включающий 3 гигабайта мобильного интернета;<br>\[<br>\]<br>- пакет SMS, включающий 120 SMS в месяц;<br>\[<br>\]<br>- безлимитные бесплатные входящие вызовы.<br><br>\[<br>\]<br>Стоимость минут, интернета и SMS сверх пакета тарифа указана в таблице.<br>$<br>\begin{array}{|l|l|}<br>\hline<br>\text{Исходящие вызовы} &amp; \text{3 руб./мин} \\<br>\hline<br>\text{Мобильный интернет (пакет)} &amp; \text{90 руб. за 0{,}5 ГБ} \\<br>\hline<br>\text{SMS} &amp; \text{2 руб./шт.} \\<br>\hline<br>\end{array}<br>$<br><br>Абонент не пользовался услугами связи в роуминге. За весь год абонент отправил 110 SMS.<br><br>\[<br>\]<br>--------------------------------<br><br>\[<br>\]<br>Известно, что в 2019 году абонентская плата по тарифу «Стандартный» выросла на 75% по сравнению с 2018 годом. Сколько рублей составляла абонентская плата в 2018 году?</div>
+         <button class="show-answer-btn"
+                 data-answer="200"
+                 onclick="showAnswer(21, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-21" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 23</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//internet_1.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text">На рисунке точками показано количество минут исходящих вызовов и трафик мобильного интернета в гигабайтах, израсходованных абонентом в процессе пользования смартфоном, за каждый месяц 2019 года. Для удобства точки, соответствующие минутам и гигабайтам, соединены сплошными и пунктирными линиями соответственно.<br><br>\[<br>\]<br><br>В течение года абонент пользовался тарифом «Стандартный», абонентская плата по которому составляла 350 рублей в месяц. При условии нахождения абонента на территории РФ в абонентскую плату тарифа «Стандартный» входит:<br>\[<br>\]<br>- пакет минут, включающий 300 минут исходящих вызовов на номера, зарегистрированные на территории РФ;<br>\[<br>\]<br>- пакет интернета, включающий 3 гигабайта мобильного интернета;<br>\[<br>\]<br>- пакет SMS, включающий 120 SMS в месяц;<br>\[<br>\]<br>- безлимитные бесплатные входящие вызовы.<br><br>\[<br>\]<br>Стоимость минут, интернета и SMS сверх пакета тарифа указана в таблице.<br>$<br>\begin{array}{|l|l|}<br>\hline<br>\text{Исходящие вызовы} &amp; \text{3 руб./мин} \\<br>\hline<br>\text{Мобильный интернет (пакет)} &amp; \text{90 руб. за 0{,}5 ГБ} \\<br>\hline<br>\text{SMS} &amp; \text{2 руб./шт.} \\<br>\hline<br>\end{array}<br>$<br><br>Абонент не пользовался услугами связи в роуминге. За весь год абонент отправил 110 SMS.<br><br>\[<br>\]<br>--------------------------------<br><br>\[<br>\]<br><br>В конце 2019 года оператор связи предложил абоненту перейти на новый тариф, условия которого приведены в таблице.<br>$<br>\begin{array}{|l|l|}<br>\hline<br>\text{Стоимость перехода на тариф} &amp; 0\ \text{руб.} \\<br>\hline<br>\text{Абонентская плата в месяц} &amp; 430\ \text{руб.} \\<br>\hline<br>\text{В абонентскую плату включены пакеты:} &amp; \\<br>\hline<br>\text{пакет исходящих вызовов} &amp; 400\ \text{минут} \\<br>\hline<br>\text{пакет мобильного интернета} &amp; 4\ \text{ГБ} \\<br>\hline<br>\text{пакет SMS} &amp; 120\ \text{SMS} \\<br>\hline<br>\text{После расходования пакетов:} &amp; \\<br>\hline<br>\text{входящие вызовы} &amp; 0\ \text{руб./мин} \\<br>\hline<br>\text{исходящие вызовы*} &amp; 4\ \text{руб./мин} \\<br>\hline<br>\text{мобильный интернет (пакет)} &amp; 180\ \text{руб. за 0,5 ГБ} \\<br>\hline<br>\text{SMS} &amp; 2\ \text{руб./шт.} \\<br>\hline<br>\end{array}<br>$<br>*исходящие вызовы на номера, зарегистрированные на территории РФ Абонент решает, перейти ли ему на новый тариф, посчитав, сколько бы он потратил на услуги связи за 2019 г., если бы пользовался им. Если получится меньше, чем он потратил фактически за 2019 г., то абонент примет решение сменить тариф.<br>Перейдёт ли абонент на новый тариф? В ответе запишите ежемесячную абонентскую плату по тарифу, который выберет абонент на 2020 год.</div>
+         <button class="show-answer-btn"
+                 data-answer="430"
+                 onclick="showAnswer(22, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-22" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 24</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//dorogi_2.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text">Серёжа летом отдыхает с папой в деревне Пирожки. В среду они собираются съездить на машине в село Княжеское. Из деревни Пирожки в село Княжеское можно проехать по прямой грунтовой дороге. Есть более длинный путь: по прямолинейному шоссе через деревню Васильево до деревни Рябиновка, где нужно повернуть под прямым углом налево на другое шоссе, ведущее в село Княжеское. Есть и третий маршрут: в деревне Васильево можно свернуть на прямую грунтовую дорогу в село Княжеское, которая идёт мимо пруда.<br><br>\[<br>\]<br>Шоссе и грунтовые дороги образуют прямоугольные треугольники.<br><br>\[<br>\]<br>По шоссе Серёжа с папой едут со скоростью 60 км/ч, а по грунтовой дороге — со скоростью 40 км/ч. На плане изображено взаимное расположение населённых пунктов, длина стороны каждой клетки равна 2 км.<br><br>\[<br>\]<br>Сколько минут затратят на дорогу из деревни Пирожки в село Княжеское Серёжа с папой, если они поедут по прямой грунтовой дороге?</div>
+         <button class="show-answer-btn"
+                 data-answer="51"
+                 onclick="showAnswer(23, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-23" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 25</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//dorogi_7.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text">Коля летом отдыхает у дедушки и бабушки в деревне Марьевке. Коля с дедушкой собираются съездить на велосипедах в село Сосновое на железнодорожную станцию. Из Марьевки в Сосновое можно проехать по прямой лесной дорожке. Есть более длинный путь по шоссе – через деревню Николаевку до деревни Запрудье, где нужно повернуть под прямым углом направо на другое шоссе, ведущее в Сосновое. Есть и третий маршрут: в Николаевке можно свернуть на прямую тропинку, которая идёт мимо озера прямо в Сосновое.<br><br>По шоссе Коля с дедушкой едут со скоростью 20 км/ч, а по лесной дорожке и тропинке – 15 км/ч. Расстояние по шоссе от Марьевки до Николаевки равно 12 км, от Марьевки до Запрудья – 20 км, а от Запрудья до Соснового – 15 км.<br><br><br>Пользуясь описанием, определите, какими цифрами на плане обозначены населённые пункты. В ответ запишите полученную последовательность четырёх цифр.<br>$<br>\begin{array}{|c|c|c|c|c|}<br>\hline<br>\text{Насел. пункты} &amp; \text{д. Запрудье} &amp; \text{д. Марьевка} &amp; \text{д. Николаевка} &amp; \text{с. Сосновое} \\<br>\hline<br>\text{Цифры} &amp; \text{} &amp; \text{} &amp; \text{} &amp; \text{} \\<br>\hline<br>\end{array}<br>$</div>
+         <button class="show-answer-btn"
+                 data-answer="1432"
+                 onclick="showAnswer(24, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-24" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 26</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//kvartiri_5.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text">На рисунке изображён план двухкомнатной квартиры с панорамной лоджией в многоэтажном жилом доме. В правой части рисунка даны обозначения двери и окна (и остекления лоджии), а также указано, что длина стороны клетки на плане соответствует 0,3 м. Вход в квартиру находится в прихожей. Самое большое по площади помещение – гостиная. В спальне, гостиной и кухне есть двери и окна, выходящие на лоджию, но в кухне окно шире, чем в других комнатах. Остекление лоджии со стороны гостиной закруглено. В квартире есть два помещения, в которых нет окон, – это прихожия и санузел.<br>\[<br>\]<br><br>--------------------------------<br>\[<br>\]<br><br><br>В квартире планируется установить стиральную машину. Характеристики стиральных машин, условия подключения и доставки приведены в таблице. Планируется купить стиральную машину с вертикальной загрузкой, не превосходящую 85 см по высоте.<br><br>\[<br>\begin{array}{|l|l|l|l|l|l|l|}<br>\hline<br>\text{Модель} &amp; \text{Вместимость} &amp; \text{Тип} &amp; \text{Стоимость} &amp; \text{Подключение} &amp; \text{Доставка} &amp; \text{Габариты} \\<br>&amp; \text{(кг)} &amp; \text{загрузки} &amp; \text{(руб.)} &amp; \text{(руб.)} &amp; \text{(\%)} &amp; \text{(см)} \\<br>\hline<br>A &amp; 7 &amp; \text{верт.} &amp; 28000 &amp; 1700 &amp; \text{бесплатно} &amp; 85 \times 60 \times 45 \\<br>\hline<br>Б &amp; 5 &amp; \text{фронт.} &amp; 24000 &amp; 4500 &amp; 10 &amp; 85 \times 60 \times 40 \\<br>\hline<br>B &amp; 5 &amp; \text{фронт.} &amp; 25000 &amp; 5000 &amp; 10 &amp; 85 \times 60 \times 40 \\<br>\hline<br>Г &amp; 6.5 &amp; \text{фронт.} &amp; 24000 &amp; 4500 &amp; 10 &amp; 85 \times 60 \times 44 \\<br>\hline<br>Д &amp; 6 &amp; \text{фронт.} &amp; 28000 &amp; 1700 &amp; \text{бесплатно} &amp; 85 \times 60 \times 45 \\<br>\hline<br>Е &amp; 6 &amp; \text{верт.} &amp; 27600 &amp; 2300 &amp; \text{бесплатно} &amp; 89 \times 60 \times 40 \\<br>\hline<br>Ж &amp; 6 &amp; \text{верт.} &amp; 27585 &amp; 1900 &amp; 10 &amp; 89 \times 60 \times 40 \\<br>\hline<br>3 &amp; 6 &amp; \text{фронт.} &amp; 20000 &amp; 6300 &amp; 15 &amp; 85 \times 60 \times 42 \\<br>\hline<br>И &amp; 5 &amp; \text{фронт.} &amp; 27000 &amp; 1800 &amp; \text{бесплатно} &amp; 85 \times 60 \times 40 \\<br>\hline<br>K &amp; 5 &amp; \text{верт.} &amp; 27000 &amp; 1800 &amp; \text{бесплатно} &amp; 85 \times 60 \times 40 \\<br>\hline<br>\end{array}<br>\]<br><br>Сколько рублей будет стоить наиболее дешёвый подходящий вариант вместе с подключением и доставкой?</div>
+         <button class="show-answer-btn"
+                 data-answer="28800"
+                 onclick="showAnswer(25, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-25" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 27</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//internet_1.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text">На рисунке точками показано количество минут исходящих вызовов и трафик мобильного интернета в гигабайтах, израсходованных абонентом в процессе пользования смартфоном, за каждый месяц 2019 года. Для удобства точки, соответствующие минутам и гигабайтам, соединены сплошными и пунктирными линиями соответственно.<br><br>\[<br>\]<br><br>В течение года абонент пользовался тарифом «Стандартный», абонентская плата по которому составляла 350 рублей в месяц. При условии нахождения абонента на территории РФ в абонентскую плату тарифа «Стандартный» входит:<br>\[<br>\]<br>- пакет минут, включающий 300 минут исходящих вызовов на номера, зарегистрированные на территории РФ;<br>\[<br>\]<br>- пакет интернета, включающий 3 гигабайта мобильного интернета;<br>\[<br>\]<br>- пакет SMS, включающий 120 SMS в месяц;<br>\[<br>\]<br>- безлимитные бесплатные входящие вызовы.<br><br>\[<br>\]<br>Стоимость минут, интернета и SMS сверх пакета тарифа указана в таблице.<br>$<br>\begin{array}{|l|l|}<br>\hline<br>\text{Исходящие вызовы} &amp; \text{3 руб./мин} \\<br>\hline<br>\text{Мобильный интернет (пакет)} &amp; \text{90 руб. за 0{,}5 ГБ} \\<br>\hline<br>\text{SMS} &amp; \text{2 руб./шт.} \\<br>\hline<br>\end{array}<br>$<br><br>Абонент не пользовался услугами связи в роуминге. За весь год абонент отправил 110 SMS.<br><br>\[<br>\]<br>--------------------------------<br><br>\[<br>\]<br><br>Определите, какие месяцы соответствуют указанному в таблице количеству исходящих вызов.<br>Заполните таблицу, в бланк ответов перенесите числа, соответствующие номерам месяцев, без пробелов, запятых и других дополнительных символов (например, для месяцев май, январь, ноябрь, август в ответ нужно записать число 51118).<br>\[<br>\begin{array}{|c|c|c|c|c|}<br>\hline \text{Исходящие вызовы} &amp; 375\text{ мин} &amp; 150\text{ мин} &amp; 275\text{ мин} &amp; 300\text{ мин} \\<br>\hline \text{Номер месяца} &amp; &amp; &amp; &amp; \\<br>\hline<br>\end{array}<br>\]</div>
+         <button class="show-answer-btn"
+                 data-answer="7325"
+                 onclick="showAnswer(26, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-26" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 28</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//kvartiri_1.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text">На рисунке изображен план двухкомнатной квартиры в многоэтажном жилом доме. В правой части рисунка даны обозначения двери и окна, а также указано, что длина стороны клетки на плане соответствует 0,4 м. Вход в квартиру находится в прихожей. Слева от входа в квартиру располагаются кухня и санузел, причем площадь кухни больше площади санузла. Наименьшую площадь имеет кладовая. Из гостиной есть двери в коридор и на кухню. В квартире есть застекленная лоджия, куда можно попасть, пройдя через спальню.<br><br>\[<br>\]<br>--------------------------------<br>\[<br>\]<br><br>В квартире планируется заменить электрическую плиту. Характеристики электроплит, условия подключения и доставки приведены в таблице. Планируется купить электрическую плиту шириной 50 см с духовкой объемом не менее 52 л.<br><br>$<br>\begin{array}{|l|l|l|l|l|l|l|}<br>\hline<br>\text{Модель} &amp; \text{Объём духовки (л)} &amp; \text{Макс. темп. } (^{\circ}\mathrm{C}) &amp; \text{Стоимость плиты (руб.)} &amp; \text{Стоимость подключения (руб.)} &amp; \text{Доставка (\% от стоимости)} &amp; \text{Габариты (см)} \\<br>\hline<br>A &amp; 50 &amp; 280 &amp; 8890 &amp; 1700 &amp; \text{бесплатно} &amp; 85 \times 50 \times 54 \\<br>\hline<br>Б &amp; 50 &amp; 300 &amp; 9790 &amp; 750 &amp; 10 &amp; 85 \times 50 \times 54 \\<br>\hline<br>В &amp; 50 &amp; 250 &amp; 11690 &amp; 700 &amp; 10 &amp; 85 \times 60 \times 60 \\<br>\hline<br>Г &amp; 52 &amp; 250 &amp; 17490 &amp; 800 &amp; 10 &amp; 85 \times 60 \times 60 \\<br>\hline<br>Д &amp; 70 &amp; 275 &amp; 17990 &amp; 1400 &amp; \text{бесплатно} &amp; 85 \times 60 \times 45 \\<br>\hline<br>Е &amp; 58 &amp; 250 &amp; 18890 &amp; 1500 &amp; \text{бесплатно} &amp; 85 \times 50 \times 60 \\<br>\hline<br>Ж &amp; 54 &amp; 270 &amp; 18900 &amp; 750 &amp; 15 &amp; 85 \times 50 \times 60 \\<br>\hline<br>З &amp; 46 &amp; 250 &amp; 20990 &amp; 750 &amp; 10 &amp; 87 \times 50 \times 60 \\<br>\hline<br>И &amp; 70 &amp; 275 &amp; 21690 &amp; 1500 &amp; \text{бесплатно} &amp; 85 \times 50 \times 60 \\<br>\hline<br>К &amp; 67 &amp; 250 &amp; 22990 &amp; 1500 &amp; \text{бесплатно} &amp; 85 \times 50 \times 60 \\<br>\hline<br>\end{array}<br>$<br><br>Сколько рублей будет стоить наиболее дешевый подходящий вариант вместе с подключением и доставкой?</div>
+         <button class="show-answer-btn"
+                 data-answer="20390"
+                 onclick="showAnswer(27, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-27" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 29</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//kvartiri_5.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text">На рисунке изображён план двухкомнатной квартиры с панорамной лоджией в многоэтажном жилом доме. В правой части рисунка даны обозначения двери и окна (и остекления лоджии), а также указано, что длина стороны клетки на плане соответствует 0,3 м. Вход в квартиру находится в прихожей. Самое большое по площади помещение – гостиная. В спальне, гостиной и кухне есть двери и окна, выходящие на лоджию, но в кухне окно шире, чем в других комнатах. Остекление лоджии со стороны гостиной закруглено. В квартире есть два помещения, в которых нет окон, – это прихожия и санузел.<br>\[<br>\]<br>--------------------------------<br>\[<br>\]<br><br>Найдите радиус закругления остекления лоджии со стороны гостиной. Ответ дайте в сантиметрах.</div>
+         <button class="show-answer-btn"
+                 data-answer="120"
+                 onclick="showAnswer(28, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-28" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 30</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//internet_1.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text">На рисунке точками показано количество минут исходящих вызовов и трафик мобильного интернета в гигабайтах, израсходованных абонентом в процессе пользования смартфоном, за каждый месяц 2019 года. Для удобства точки, соответствующие минутам и гигабайтам, соединены сплошными и пунктирными линиями соответственно.<br><br>\[<br>\]<br><br>В течение года абонент пользовался тарифом «Стандартный», абонентская плата по которому составляла 350 рублей в месяц. При условии нахождения абонента на территории РФ в абонентскую плату тарифа «Стандартный» входит:<br>\[<br>\]<br>- пакет минут, включающий 300 минут исходящих вызовов на номера, зарегистрированные на территории РФ;<br>\[<br>\]<br>- пакет интернета, включающий 3 гигабайта мобильного интернета;<br>\[<br>\]<br>- пакет SMS, включающий 120 SMS в месяц;<br>\[<br>\]<br>- безлимитные бесплатные входящие вызовы.<br><br>\[<br>\]<br>Стоимость минут, интернета и SMS сверх пакета тарифа указана в таблице.<br>$<br>\begin{array}{|l|l|}<br>\hline<br>\text{Исходящие вызовы} &amp; \text{3 руб./мин} \\<br>\hline<br>\text{Мобильный интернет (пакет)} &amp; \text{90 руб. за 0{,}5 ГБ} \\<br>\hline<br>\text{SMS} &amp; \text{2 руб./шт.} \\<br>\hline<br>\end{array}<br>$<br><br>Абонент не пользовался услугами связи в роуминге. За весь год абонент отправил 110 SMS.<br><br>\[<br>\]<br>--------------------------------<br><br>\[<br>\]<br><br>На сколько процентов увеличился трафик мобильного интернета в феврале по сравнению с январём 2019 года?</div>
+         <button class="show-answer-btn"
+                 data-answer="40"
+                 onclick="showAnswer(29, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-29" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
     </div>
   </div>
 
@@ -1489,10 +938,46 @@ $
   </div>
 
   <script>
+    // Flying Math Background Animation
+    function createFlyingMath() {
+      const mathSymbols = ['π', '∑', '∫', '√', '∞', 'α', 'β', 'γ', 'δ', 'ε', 'θ', 'λ', 'μ', 'σ', 'φ', 'ψ', 'ω', 'Δ', 'Ω', '±', '×', '÷', '=', '≠', '≤', '≥', '∈', '∉', '∪', '∩', '⊂', '⊃'];
+      const container = document.getElementById('flyingMath');
+      
+      function addMathSymbol() {
+        const symbol = document.createElement('div');
+        symbol.className = 'math-symbol';
+        symbol.textContent = mathSymbols[Math.floor(Math.random() * mathSymbols.length)];
+        symbol.style.left = Math.random() * 100 + '%';
+        symbol.style.animationDuration = (Math.random() * 10 + 15) + 's';
+        symbol.style.animationDelay = Math.random() * 5 + 's';
+        container.appendChild(symbol);
+        
+        // Remove symbol after animation
+        setTimeout(() => {
+          if (symbol.parentNode) {
+            symbol.parentNode.removeChild(symbol);
+          }
+        }, 25000);
+      }
+      
+      // Add symbols periodically
+      setInterval(addMathSymbol, 2000);
+      
+      // Add initial symbols
+      for (let i = 0; i < 5; i++) {
+        setTimeout(addMathSymbol, i * 1000);
+      }
+    }
+
     function showAnswer(index, answer) {
       const answerDiv = document.getElementById(`answer-${index}`);
       answerDiv.textContent = `Ответ: ${answer}`;
       answerDiv.classList.add('visible');
+      
+      // Re-render MathJax for the newly shown content
+      if (window.MathJax) {
+        MathJax.typesetPromise([answerDiv]);
+      }
     }
 
     function showSolutionModal() {
@@ -1509,6 +994,26 @@ $
         closeSolutionModal();
       }
     });
+
+    // Initialize flying math animation
+    document.addEventListener('DOMContentLoaded', createFlyingMath);
+    
+    // Initialize MathJax rendering
+    function initializeMathJax() {
+      if (window.MathJax) {
+        MathJax.typesetPromise();
+      }
+    }
+    
+    // Re-render MathJax when content changes
+    function reRenderMathJax(element) {
+      if (window.MathJax && element) {
+        MathJax.typesetPromise([element]);
+      }
+    }
+    
+    // Initialize MathJax on page load
+    document.addEventListener('DOMContentLoaded', initializeMathJax);
   </script>
 </body>
 </html>
