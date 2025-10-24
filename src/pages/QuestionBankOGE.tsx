@@ -33,7 +33,7 @@ export default function QuestionBankOGE() {
             <a
               key={label}
               href={`/questionbankoge/${label}/index.html`}
-              target="_blank"
+
               rel="noopener noreferrer"
             >
               <Card className="p-6 hover:shadow-elegant hover:scale-105 transition-all duration-300 cursor-pointer bg-card/50 backdrop-blur-sm border-primary/20 hover:border-primary/40 group">
