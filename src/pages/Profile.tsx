@@ -13,7 +13,7 @@ import { useStudentSkills } from "@/hooks/useStudentSkills";
 import { useOptimizedProfile } from "@/hooks/useOptimizedProfile";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import FlyingMathBackground from "@/components/FlyingMathBackground";
+import FlyingStarsBackground from "@/components/FlyingStarsBackground";
 
 export interface Message {
   id: number;
@@ -194,7 +194,7 @@ const Profile = () => {
   if (skillsLoading || profileLoading) {
     return (
       <div className="min-h-screen relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)' }}>
-        <FlyingMathBackground />
+        <FlyingStarsBackground />
         <div className="relative z-10 h-screen flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-400 mx-auto mb-4"></div>
@@ -207,7 +207,7 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)' }}>
-      <FlyingMathBackground />
+      <FlyingStarsBackground />
       <div className="relative z-10 pt-4 pb-16 px-4 md:px-8">
         <div className="max-w-7xl mx-auto">
           {/* Page Title */}
