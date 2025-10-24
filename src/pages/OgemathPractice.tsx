@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ClipboardList, Hash, RefreshCw, ArrowLeft } from "lucide-react";
+import { ClipboardList, Hash, RefreshCw, ArrowLeft, Sparkles } from "lucide-react";
 import { useState } from "react";
 import FlyingMathBackground from "@/components/FlyingMathBackground";
 
@@ -48,6 +48,15 @@ const OgemathPractice = () => {
     }
   ];
 
+  const bonusCard = {
+    title: "Bonus!",
+    description: "Новая версия практики по номерам с улучшенной навигацией и ссылками",
+    icon: Sparkles,
+    link: "/ogemath2",
+    gradient: "from-purple-500 via-pink-500 to-red-500",
+    mathSymbol: "★"
+  };
+
   const mockExam = {
     title: "Пробный экзамен ОГЭ",
     description: "Полный экзамен с таймером (3ч 55мин) - 25 вопросов",
@@ -88,6 +97,57 @@ const OgemathPractice = () => {
               Выберите тип практики для изучения математики
             </p>
           </div>
+
+          {/* Bonus Card - Full Width with Special Styling */}
+          <Link 
+            to={bonusCard.link}
+            onMouseEnter={() => setHoveredCard(99)}
+            onMouseLeave={() => setHoveredCard(null)}
+            className="block mb-8"
+          >
+            <Card 
+              className="relative overflow-hidden border-0 transition-all duration-300 group"
+              style={{
+                background: 'rgba(168, 85, 247, 0.1)',
+                backdropFilter: 'blur(10px)',
+                transform: hoveredCard === 99 
+                  ? 'translateY(-8px) scale(1.02)' 
+                  : 'translateY(0) scale(1)',
+                minHeight: '160px'
+              }}
+            >
+              {/* Gradient Border Effect */}
+              <div 
+                className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-r ${bonusCard.gradient} p-[2px] rounded-lg`}
+                style={{ zIndex: -1 }}
+              />
+
+              {/* Large Floating Math Symbol */}
+              <div className="absolute top-1/2 right-8 -translate-y-1/2 text-9xl font-mono text-white/10 group-hover:text-white/20 transition-all duration-300 group-hover:scale-110 group-hover:rotate-12">
+                {bonusCard.mathSymbol}
+              </div>
+
+              {/* Bonus Badge */}
+              <div className="absolute top-4 left-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full text-sm font-bold z-20 animate-pulse">
+                🎁 BONUS
+              </div>
+
+              <div className="relative z-10 p-6 flex items-center gap-6">
+                <div className={`w-20 h-20 rounded-full flex items-center justify-center shadow-2xl bg-gradient-to-r ${bonusCard.gradient} group-hover:scale-110 transition-transform duration-300 flex-shrink-0`}>
+                  <bonusCard.icon className="w-10 h-10 text-white" />
+                </div>
+                
+                <div className="flex-1">
+                  <h3 className="text-3xl font-display font-bold text-white mb-2">
+                    {bonusCard.title}
+                  </h3>
+                  <p className="text-cool-gray font-body text-lg leading-relaxed">
+                    {bonusCard.description}
+                  </p>
+                </div>
+              </div>
+            </Card>
+          </Link>
 
           {/* 2x2 Grid for Regular Practice Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
