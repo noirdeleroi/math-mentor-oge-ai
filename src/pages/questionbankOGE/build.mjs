@@ -37,7 +37,7 @@ const questionTypes = [
 
 async function generatePages() {
   const template = readFileSync(join(__dirname, 'template.html'), 'utf-8');
-  const outputDir = join(__dirname, '../../public/questionbankoge');
+  const outputDir = join(__dirname, '../../../public/questionbankoge');
   
   const sitemapUrls = [];
 
