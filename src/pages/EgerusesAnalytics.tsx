@@ -64,6 +64,7 @@ const EgerusesAnalytics = () => {
   const [authLoading, setAuthLoading] = useState(true);
   const [essays, setEssays] = useState<EssayRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [essayType, setEssayType] = useState<'ege' | 'oge'>('ege');
 
   const pageBg = useMemo(
     () => ({ background: 'linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)' }),
@@ -97,10 +98,33 @@ const EgerusesAnalytics = () => {
     if (!userId) return;
 
     const loadEssays = async () => {
+      // First get essay topic IDs that match the current essay type
+      const { data: topicIds, error: topicError } = await supabase
+        .from('essay_topics')
+        .select('id')
+        .eq('subject', essayType);
+      
+      if (topicError) {
+        console.error('Error loading topic IDs:', topicError);
+        setEssays([]);
+        setLoading(false);
+        return;
+      }
+      
+      const topicIdList = topicIds?.map(t => t.id) || [];
+      
+      if (topicIdList.length === 0) {
+        setEssays([]);
+        setLoading(false);
+        return;
+      }
+      
+      // Then get essays that match these topic IDs
       const { data } = await supabase
         .from('student_essay1')
         .select('*')
         .eq('user_id', userId)
+        .in('essay_topic_id', topicIdList)
         .not('analysis', 'is', null)
         .order('created_at', { ascending: false });
       
@@ -109,7 +133,7 @@ const EgerusesAnalytics = () => {
     };
 
     loadEssays();
-  }, [userId]);
+  }, [userId, essayType]);
 
   // Parse analysis data from JSON string
   const parseAnalysis = (analysisStr: string | null): AnalysisData | null => {
@@ -186,13 +210,37 @@ const EgerusesAnalytics = () => {
       maxScore: essayData.analysis.max_score || 42
     }));
 
-    // Prepare chart data - Criteria Radar
-    const radarData = criteriaInfo.map(c => ({
-      name: c.label,
-      score: (criteriaAverage[c.id.toLowerCase()] || 0),
-      fullMark: c.maxMark,
-      fill: c.color
-    }));
+    // Prepare chart data - Enhanced Criteria Radar with percentage
+    const radarData = criteriaInfo.map(c => {
+      const avgScore = criteriaAverage[c.id.toLowerCase()] || 0;
+      const maxScore = c.maxMark;
+      const percentage = maxScore > 0 ? (avgScore / maxScore) * 100 : 0;
+      
+      return {
+        name: c.label,
+        score: percentage, // Use percentage for radar
+        actualScore: avgScore,
+        maxScore: maxScore,
+        fill: c.color,
+        short: c.short
+      };
+    });
+
+    // Prepare chart data - Enhanced Bar Chart with actual scores
+    const barData = criteriaInfo.map(c => {
+      const avgScore = criteriaAverage[c.id.toLowerCase()] || 0;
+      const maxScore = c.maxMark;
+      const percentage = maxScore > 0 ? (avgScore / maxScore) * 100 : 0;
+      
+      return {
+        name: c.label,
+        score: avgScore,
+        maxScore: maxScore,
+        percentage: percentage,
+        fill: c.color,
+        short: c.short
+      };
+    });
 
     // Prepare chart data - Errors Bar Chart
     const errorData = criteriaInfo
@@ -214,6 +262,7 @@ const EgerusesAnalytics = () => {
       allEssays: parsedEssays,
       progressData,
       radarData,
+      barData,
       errorData
     };
   }, [essays]);
@@ -224,6 +273,53 @@ const EgerusesAnalytics = () => {
         <div className="bg-black/80 border border-white/30 rounded-lg p-2 text-white text-sm">
           <p>{label}</p>
           <p className="text-emerald-400">{payload[0].value} баллов</p>
+        </div>
+      );
+    }
+    return null;
+  };
+
+  // Enhanced tooltip for radar chart
+  const RadarTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      const percentage = data.score;
+      const actualScore = data.actualScore;
+      const maxScore = data.maxScore;
+      
+      let feedback = "";
+      if (percentage >= 80) {
+        feedback = "Отличная работа! Продолжайте в том же духе.";
+      } else if (percentage >= 50) {
+        feedback = "Хорошо, но есть место для улучшения.";
+      } else {
+        feedback = "Требует дополнительной работы.";
+      }
+      
+      return (
+        <div className="bg-black/90 border border-white/30 rounded-lg p-3 text-white text-sm max-w-xs">
+          <p className="font-semibold text-emerald-400">{label}</p>
+          <p className="text-white/80">{actualScore.toFixed(1)} / {maxScore}</p>
+          <p className="text-yellow-400 text-xs mt-1">{feedback}</p>
+        </div>
+      );
+    }
+    return null;
+  };
+
+  // Enhanced tooltip for bar chart
+  const BarTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      const score = data.score;
+      const maxScore = data.maxScore;
+      const percentage = data.percentage;
+      
+      return (
+        <div className="bg-black/90 border border-white/30 rounded-lg p-3 text-white text-sm">
+          <p className="font-semibold text-emerald-400">{label}</p>
+          <p className="text-white/80">{score.toFixed(1)} / {maxScore}</p>
+          <p className="text-yellow-400 text-xs">{percentage.toFixed(0)}% от максимума</p>
         </div>
       );
     }
@@ -268,6 +364,33 @@ const EgerusesAnalytics = () => {
             </Button>
             <h1 className="text-4xl font-bold text-white">Аналитика сочинений</h1>
             <p className="text-white/70 mt-2">Проверено сочинений: {stats.totalEssays}</p>
+          </div>
+          
+          {/* Essay Type Selector */}
+          <div className="flex items-center gap-4">
+            <span className="text-white/70 text-sm">Тип сочинения:</span>
+            <div className="flex bg-white/10 backdrop-blur border border-white/20 rounded-lg p-1">
+              <button
+                onClick={() => setEssayType('ege')}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                  essayType === 'ege'
+                    ? 'bg-gradient-to-r from-yellow-500/30 to-emerald-500/30 text-white'
+                    : 'text-white/70 hover:text-white'
+                }`}
+              >
+                ЕГЭ
+              </button>
+              <button
+                onClick={() => setEssayType('oge')}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                  essayType === 'oge'
+                    ? 'bg-gradient-to-r from-yellow-500/30 to-emerald-500/30 text-white'
+                    : 'text-white/70 hover:text-white'
+                }`}
+              >
+                ОГЭ
+              </button>
+            </div>
           </div>
         </div>
 
@@ -341,59 +464,141 @@ const EgerusesAnalytics = () => {
 
           {/* Criteria Tab */}
           <TabsContent value="criteria" className="space-y-6">
-            {/* Criteria Radar Chart */}
-            <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-6 shadow-xl">
-              <h2 className="text-xl font-bold text-white mb-6">Профиль критериев</h2>
-              
-              <ResponsiveContainer width="100%" height={400}>
-                <RadarChart data={stats.radarData}>
-                  <PolarGrid stroke="#ffffff30" />
-                  <PolarAngleAxis dataKey="name" stroke="#ffffff70" style={{ fontSize: '12px' }} />
-                  <PolarRadiusAxis stroke="#ffffff70" style={{ fontSize: '12px' }} />
-                  <Radar 
-                    name="Средний балл" 
-                    dataKey="score" 
-                    stroke="#10b981" 
-                    fill="#10b981" 
-                    fillOpacity={0.5}
-                  />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: 'rgba(0, 0, 0, 0.8)', 
-                      border: '1px solid rgba(255, 255, 255, 0.3)',
-                      borderRadius: '8px'
-                    }}
-                    labelStyle={{ color: '#fff' }}
-                  />
-                  <Legend />
-                </RadarChart>
-              </ResponsiveContainer>
+            {/* Enhanced Charts Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* 1️⃣ Radar (Spider) Chart — "Skill Map" */}
+              <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-6 shadow-xl">
+                <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                  🕸️ Карта навыков
+                </h2>
+                
+                <ResponsiveContainer width="100%" height={400}>
+                  <RadarChart data={stats.radarData}>
+                    <PolarGrid stroke="#ffffff30" />
+                    <PolarAngleAxis 
+                      dataKey="name" 
+                      stroke="#ffffff70" 
+                      style={{ fontSize: '12px' }} 
+                    />
+                    <PolarRadiusAxis 
+                      stroke="#ffffff70" 
+                      style={{ fontSize: '12px' }}
+                      domain={[0, 100]}
+                      tickCount={6}
+                    />
+                    <Radar 
+                      name="Процент выполнения" 
+                      dataKey="score" 
+                      stroke="#10b981" 
+                      fill="#10b981" 
+                      fillOpacity={0.6}
+                      strokeWidth={2}
+                    />
+                    <Tooltip content={<RadarTooltip />} />
+                  </RadarChart>
+                </ResponsiveContainer>
+                
+                {/* Color Legend */}
+                <div className="flex justify-center gap-4 mt-4 text-xs">
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 bg-green-500 rounded"></div>
+                    <span className="text-white/70">80-100% Сильно</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 bg-yellow-500 rounded"></div>
+                    <span className="text-white/70">50-79% Нужно улучшить</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 bg-red-500 rounded"></div>
+                    <span className="text-white/70">&lt;50% Работать над этим</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* 2️⃣ Bar Chart — "Criterion Scores" */}
+              <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-6 shadow-xl">
+                <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                  📊 Баллы по критериям
+                </h2>
+                
+                <ResponsiveContainer width="100%" height={400}>
+                  <BarChart data={stats.barData} layout="horizontal">
+                    <CartesianGrid strokeDasharray="3 3" stroke="#ffffff20" />
+                    <XAxis 
+                      type="number" 
+                      stroke="#ffffff70" 
+                      style={{ fontSize: '12px' }}
+                      domain={[0, 'dataMax']}
+                    />
+                    <YAxis 
+                      type="category" 
+                      dataKey="name" 
+                      stroke="#ffffff70" 
+                      style={{ fontSize: '12px' }}
+                      width={60}
+                    />
+                    <Tooltip content={<BarTooltip />} />
+                    <Bar dataKey="score" radius={[0, 8, 8, 0]}>
+                      {stats.barData.map((entry, index) => {
+                        let color = entry.fill;
+                        if (entry.percentage >= 80) color = '#22c55e'; // Green
+                        else if (entry.percentage >= 50) color = '#f59e0b'; // Yellow
+                        else color = '#ef4444'; // Red
+                        
+                        return <Cell key={`cell-${index}`} fill={color} />;
+                      })}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+                
+                {/* Score Legend */}
+                <div className="mt-4 text-xs text-white/70">
+                  <p>Показаны средние баллы по всем сочинениям</p>
+                </div>
+              </div>
             </div>
 
-            {/* Criteria Bar Chart - Individual Performance */}
-            <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-6 shadow-xl">
-              <h2 className="text-xl font-bold text-white mb-6">Средний результат по критериям</h2>
-              
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={stats.radarData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff20" />
-                  <XAxis dataKey="name" stroke="#ffffff70" style={{ fontSize: '12px' }} />
-                  <YAxis stroke="#ffffff70" style={{ fontSize: '12px' }} />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: 'rgba(0, 0, 0, 0.8)', 
-                      border: '1px solid rgba(255, 255, 255, 0.3)',
-                      borderRadius: '8px'
-                    }}
-                    labelStyle={{ color: '#fff' }}
-                  />
-                  <Bar dataKey="score" radius={[8, 8, 0, 0]}>
-                    {stats.radarData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.fill} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+            {/* Criteria Performance Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {stats.barData.map((criteria, idx) => {
+                const getPerformanceLevel = (percentage: number) => {
+                  if (percentage >= 80) return { level: "Сильно", color: "text-green-400", bg: "bg-green-500/20" };
+                  if (percentage >= 50) return { level: "Нужно улучшить", color: "text-yellow-400", bg: "bg-yellow-500/20" };
+                  return { level: "Работать над этим", color: "text-red-400", bg: "bg-red-500/20" };
+                };
+                
+                const performance = getPerformanceLevel(criteria.percentage);
+                
+                return (
+                  <div key={idx} className={`bg-white/10 backdrop-blur border border-white/20 rounded-xl p-4 shadow-lg ${performance.bg}`}>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-sm font-medium text-white">{criteria.name}</span>
+                      <span className={`text-xs font-semibold ${performance.color}`}>
+                        {performance.level}
+                      </span>
+                    </div>
+                    
+                    <div className="text-2xl font-bold text-white mb-1">
+                      {criteria.score.toFixed(1)} / {criteria.maxScore}
+                    </div>
+                    
+                    <div className="w-full bg-white/20 rounded-full h-2 mb-2">
+                      <div 
+                        className="h-2 rounded-full transition-all duration-500"
+                        style={{ 
+                          width: `${criteria.percentage}%`,
+                          backgroundColor: criteria.percentage >= 80 ? '#22c55e' : 
+                                         criteria.percentage >= 50 ? '#f59e0b' : '#ef4444'
+                        }}
+                      />
+                    </div>
+                    
+                    <div className="text-xs text-white/60">
+                      {criteria.percentage.toFixed(0)}% от максимума
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </TabsContent>
 
