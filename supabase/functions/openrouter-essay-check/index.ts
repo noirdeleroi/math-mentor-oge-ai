@@ -3,11 +3,14 @@
  * Deno server for essay analysis with Supabase + OpenRouter (JSON output + errors).
  * - Strict CORS incl. OPTIONS preflight
  * - Healthcheck on GET
- * - Prompt enforces deterministic JSON structure with fixed keys
+ * - Subject-aware prompts & JSON schemas:
+ *    * EGE: K1–K10, max 22
+ *    * OGE: CK1–CK4, GK1–GK4, FK1, max 20
  * - Adds nested error structures: `errors[]` and `errors_summary{}`
  * - Parses/validates JSON; safe fallback
- * - Score taken from JSON.total_score (fallback to regex)
+ * - Score taken from JSON.total_score (fallback to regex; subject-aware range)
  * - Student text is taken from latest row of table `student_essay1` (column `text_scan`) by `created_at` for the user_id
+ * - Writes analysis + score back into `student_essay1` for BOTH subjects
  */ import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
 console.log("[INIT] Starting server...");
@@ -48,54 +51,45 @@ function jsonResponse(obj, status = 200, extraHeaders = {}) {
   });
 }
 // ---------- UTILS ----------
-function parseScoreFromText(text) {
+function parseScoreFromText(text, maxAllowed) {
   console.log("[parseScoreFromText] Fallback parse...");
-  // Accept 0–22
-  const m = text.match(/\b(?:[0-9]|1\d|2[0-2])\b/);
+  const m = text.match(/\b(?:[0-9]|1\d|2[0-9])\b/); // wide match, we clamp later
   if (!m) return null;
   const n = parseInt(m[0], 10);
-  if (Number.isNaN(n) || n < 0 || n > 22) return null;
+  if (Number.isNaN(n) || n < 0 || n > maxAllowed) return null;
   return n;
 }
-function parseScoreFromJson(obj) {
+function parseScoreFromJson(obj, maxAllowed) {
   if (obj && typeof obj.total_score === "number") {
     const n = obj.total_score;
-    if (Number.isInteger(n) && n >= 0 && n <= 22) return n;
+    if (Number.isInteger(n) && n >= 0 && n <= maxAllowed) return n;
   }
   return null;
 }
 function computeContextSnippet(text, original) {
   if (!text || !original) return "";
-  // Normalize spaces
   const cleanText = text.replace(/\s+/g, " ").trim();
   const cleanOriginal = original.replace(/\s+/g, " ").trim();
   if (!cleanOriginal) return "";
-  // Try to find the first occurrence (case-insensitive)
   const idx = cleanText.toLowerCase().indexOf(cleanOriginal.toLowerCase());
   if (idx < 0) return cleanOriginal;
-  // Tokenize into words while preserving indices
-  // "word" = sequence of letters/digits/’/- (Unicode aware), everything else is a separator
   const tokens = Array.from(cleanText.matchAll(/\p{L}[\p{L}\p{N}'’-]*|\d+|\S/gu)).map((m, i)=>({
       i,
       t: m[0],
       start: m.index ?? 0,
       end: (m.index ?? 0) + m[0].length
     }));
-  // Find the token where the original starts
   const startTok = tokens.findIndex((tok)=>tok.start <= idx && idx < tok.end);
   if (startTok === -1) return cleanOriginal;
-  // Figure out how many tokens the original spans
   const endPos = idx + cleanOriginal.length;
   let endTok = startTok;
   while(endTok + 1 < tokens.length && tokens[endTok].end < endPos)endTok++;
-  // Pick one token before and one after (if they exist) as "words"
   const beforeTok = startTok > 0 ? tokens[startTok - 1] : null;
   const afterTok = endTok + 1 < tokens.length ? tokens[endTok + 1] : null;
-  // Use only tokens that look like words (filter out pure punctuation)
   const isWord = (s)=>/\p{L}|\d/u.test(s);
   const parts = [];
   if (beforeTok && isWord(beforeTok.t)) parts.push(beforeTok.t);
-  parts.push(cleanText.slice(tokens[startTok].start, tokens[endTok].end)); // original as-is from text
+  parts.push(cleanText.slice(tokens[startTok].start, tokens[endTok].end));
   if (afterTok && isWord(afterTok.t)) parts.push(afterTok.t);
   return parts.join(" ").trim();
 }
@@ -103,7 +97,6 @@ function safeJsonParse(maybeJson) {
   try {
     return JSON.parse(maybeJson);
   } catch  {
-    // Try extracting first {...} block
     const start = maybeJson.indexOf("{");
     const end = maybeJson.lastIndexOf("}");
     if (start >= 0 && end > start) {
@@ -117,9 +110,20 @@ function safeJsonParse(maybeJson) {
     return null;
   }
 }
-// ---------- FIXED JSON KEYS ----------
-const FIXED_KEYS = [
-  // Error reporting containers
+// ---------- SHARED ERROR TYPES ----------
+const ERROR_TYPES = [
+  "орфография",
+  "пунктуация",
+  "грамматика",
+  "факты",
+  "логика",
+  "этика",
+  "стиль",
+  "другое"
+];
+// ---------- FIXED JSON KEYS (by subject) ----------
+// EGE keys (unchanged)
+const FIXED_KEYS_EGE = [
   "errors",
   "errors_summary",
   "overall_quality",
@@ -170,38 +174,59 @@ const FIXED_KEYS = [
   "k10_score",
   "k10_max"
 ];
-const ERROR_SUMMARY_KEYS = [
-  "total",
-  "by_type"
+// OGE keys: sections/criteria from your description
+const FIXED_KEYS_OGE = [
+  "errors",
+  "errors_summary",
+  "overall_quality",
+  "total_score_text",
+  "total_score",
+  "max_score",
+  "section_A_title",
+  "ck1_title",
+  "ck1_comment",
+  "ck1_score",
+  "ck1_max",
+  "ck2_title",
+  "ck2_comment",
+  "ck2_score",
+  "ck2_max",
+  "ck3_title",
+  "ck3_comment",
+  "ck3_score",
+  "ck3_max",
+  "ck4_title",
+  "ck4_comment",
+  "ck4_score",
+  "ck4_max",
+  "section_B_title",
+  "gk1_title",
+  "gk1_comment",
+  "gk1_score",
+  "gk1_max",
+  "gk2_title",
+  "gk2_comment",
+  "gk2_score",
+  "gk2_max",
+  "gk3_title",
+  "gk3_comment",
+  "gk3_score",
+  "gk3_max",
+  "gk4_title",
+  "gk4_comment",
+  "gk4_score",
+  "gk4_max",
+  "fk1_title",
+  "fk1_comment",
+  "fk1_score",
+  "fk1_max"
 ];
-const ERROR_TYPES = [
-  "orthography",
-  "punctuation",
-  "grammar",
-  "factual",
-  "logic",
-  "ethics",
-  "style",
-  "other"
-];
-// ---------- PROMPT BUILDER ----------
-function buildPrompt(subject, topic_essay, student_essay) {
-  const baseTask = subject === "oge" ? `OGE criteria to be provided later
-
-Тема:
-${topic_essay}
-
-Сочинение:
-${student_essay}` : `Ты преподаватель по русскму языку. Твоя задача оценить сочинение
-студента. Формат ответа: суммарный балл, объяснение оценки по
-критериям.
-
-Текст и задание для сочинения:
-${topic_essay}
-
-Сочинение студента:
-${student_essay}
-
+// ---------- PROMPT BUILDERS ----------
+function buildPromptEGE(topic_essay, student_essay) {
+  const baseTask = `Ты преподаватель по русскму языку. Твоя задача оценить сочинение
+студента по критериям ЕГЭ (Задание 27). Формат ответа — СТРОГО один JSON-объект.`;
+  const criteriaBlock = `
+Критерии оценивания выполнения задания с развёрнутым ответом (ЕГЭ: Задание 27).
 Критерии оценки сочинения студента:
 **Критерии оценивания выполнения задания с развёрнутым ответом (Задание 27)**
 ---
@@ -344,42 +369,30 @@ ${student_essay}
 без комментариев, работа оценивается нулём баллов по всем критериям
 (К1–К10).`;
   const structuredDirective = `
-Только СТРОГОЕ СТРУКТУРИРОВАННОЕ ВОЗВРАЩЕНИЕ ДАННЫХ В ВИДЕ ОДНОГО JSON-ОБЪЕКТА.
-НЕ используй Markdown, не добавляй пояснения, не заключай в тройные кавычки.
-Только валидный JSON utf-8.
+СТРОГО ВЕРНИ ОДИН JSON-ОБЪЕКТ UTF-8. Без Markdown/комментариев/троичных кавычек.
 
-Требуемая структура и фиксированные ключи (заполняй все строки; баллы — целые числа):
-
+Требуемая структура (заполни все поля; баллы — целые числа):
 {
-  // Собранная информация об ошибках (JSON внутри JSON)
-  "errors": [
-    {
-      "type": "orthography" | "punctuation" | "grammar" | "factual" | "logic" | "ethics" | "style" | "other",
-      "category": string,                 // уточнение типа, напр. "паронимы", "род.падеж"
-      "original": string,                 // как было в сочинении
-      "correction": string,               // правильный вариант
-      "explanation": string,              // почему так
-      "context_snippet": string,          // одно слово до «original» в сочинении студента, затем «original», и одно слово после (если есть)
-      "criterion": "K4" | "K5" | "K6" | "K7" | "K8" | "K9" | "K10" | "" // к какому критерию относится
-    }
-  ],
+  "errors": [{
+    "type": "orthography" | "punctuation" | "grammar" | "factual" | "logic" | "ethics" | "style" | "other",
+    "category": string,
+    "original": string,
+    "correction": string,
+    "explanation": string,
+    "context_snippet": string,
+    "criterion": "K4" | "K5" | "K6" | "K7" | "K8" | "K9" | "K10" | ""
+  }],
   "errors_summary": {
     "total": number,
     "by_type": {
-    "орфография": number,
-    "пунктуация": number,
-    "грамматика": number,
-    "фактические": number,
-    "логика": number,
-    "этика": number,
-    "стиль": number,
-    "другое": number
+      "орфография": number, "пунктуация": number, "грамматика": number,
+      "фактические": number, "логика": number, "этика": number, "стиль": number, "другое": number
     }
   },
   "overall_quality": string,
-  "total_score_text": string,         // например: "Суммарный балл: 21 из 22"
-  "total_score": number,              // 0–22
-  "max_score": number,                // всегда 22
+  "total_score_text": string,
+  "total_score": number,      // 0–22
+  "max_score": number,        // 22
 
   "section_I_title": string,
   "k1_title": string, "k1_comment": string, "k1_score": number, "k1_max": number,
@@ -395,23 +408,181 @@ ${student_essay}
   "k7_title": string, "k7_comment": string, "k7_score": number, "k7_max": number,
   "k8_title": string, "k8_comment": string, "k8_score": number, "k8_max": number,
   "k9_title": string, "k9_comment": string, "k9_score": number, "k9_max": number,
-  "k10_title": string,"k10_comment": string,"k10_score": number,"k10_max": number
-
+  "k10_title": string, "k10_comment": string, "k10_score": number, "k10_max": number
 }
 
-Ограничения:
-- Заполни ВСЕ ключи. Если раздел не применим, ставь пустую строку и ноль там, где число.
-- "errors" всегда массив (возможно пустой []). "errors_summary.by_type" содержит все перечисленные ключи с нулевыми значениями при отсутствии ошибок.
-- Значения *score* и *max* — только целые числа.
-+ - Поле "context_snippet" формируй так: возьми первое вхождение "original" в сочинении и верни строку
-+   из трёх частей: [слово_до] + [original] + [слово_после]. Если слова до/после отсутствуют — опусти их.
-+   Не добавляй кавычек дополнительных символов, нужно только то что в оригинальном тексте сочинения.
-- Не добавляй НИКАКИХ дополнительных ключей.
-- Верни ТОЛЬКО JSON-объект.
-`;
+Правила:
+- "errors" — массив (может быть пустым). "errors_summary.by_type" содержит все ключи, даже с нулём.
+- "context_snippet": первое вхождение "original" в сочинении + слово до/после (если есть), без лишних символов.
+- Только перечисленные ключи, без дополнительных.
+- Верни ТОЛЬКО JSON.`;
   return `${baseTask}
 
+Текст и задание:
+${topic_essay}
+
+Сочинение студента:
+${student_essay}
+
+${criteriaBlock}
+
 ${structuredDirective}`.trim();
+}
+function buildPromptOGE(topic_essay, student_essay) {
+  const baseTask = `Ты преподаватель по русскому языку. Оцени сочинение по критериям ОГЭ ниже. Верни СТРОГО один JSON-объект.`;
+  const criteriaFromUser = `
+КРИТЕРИИ ОЦЕНКИ СОЧИНЕНИЯ ОГЭ:
+# Критерии оценки сочинения
+
+## Критерий СК1: Наличие ответа на вопрос
+- **Категория**: Сочинение-рассуждение
+- **Макс. балл**: 1
+- **Описание**:
+  - **1**: Экзаменуемый дал ответ на вопрос, сформулированный в теме сочинения.
+  - **0**: Экзаменуемый не ответил на вопрос, сформулированный в теме сочинения, или ответил неправильно.
+
+## Критерий СК2: Наличие примеров
+- **Категория**: Сочинение-рассуждение
+- **Макс. балл**: 3
+- **Описание**:
+  - **3**: Приведены два примера из прочитанного текста, подтверждающих рассуждения экзаменуемого.
+  - **2**: Приведён один пример из прочитанного текста, подтверждающий рассуждения экзаменуемого.
+  - **1**: Приведён пример (или примеры) из жизненного или читательского опыта, подтверждающий(-ие) рассуждения экзаменуемого.
+  - **0**: Ни одного примера, подтверждающего рассуждения экзаменуемого, не приведено.
+
+## Критерий СК3: Логичность речи
+- **Категория**: Сочинение-рассуждение
+- **Макс. балл**: 2
+- **Описание**:
+  - **2**: Логические ошибки отсутствуют.
+  - **1**: Допущены одна–две логические ошибки.
+  - **0**: Допущено три логические ошибки или более.
+
+## Критерий СК4: Композиционная стройность
+- **Категория**: Сочинение-рассуждение
+- **Макс. балл**: 1
+- **Описание**:
+  - **1**: Работа характеризуется трёхчастной композицией, ошибки в построении текста отсутствуют.
+  - **0**: Нарушена трёхчастная композиция или допущена одна ошибка (или более) в построении текста.
+
+## Критерий ГК1: Соблюдение орфографических норм
+- **Категория**: Грамотность и фактическая точность
+- **Макс. балл**: 3
+- **Описание**:
+  - **3**: Орфографических ошибок нет.
+  - **2**: Допущены одна–две ошибки.
+  - **1**: Допущены три–четыре ошибки.
+  - **0**: Допущено пять ошибок или более.
+
+## Критерий ГК2: Соблюдение пунктуационных норм
+- **Категория**: Грамотность и фактическая точность
+- **Макс. балл**: 3
+- **Описание**:
+  - **3**: Пунктуационных ошибок нет.
+  - **2**: Допущены одна–две ошибки.
+  - **1**: Допущены три–четыре ошибки.
+  - **0**: Допущено пять ошибок или более.
+
+## Критерий ГК3: Соблюдение грамматических норм
+- **Категория**: Грамотность и фактическая точность
+- **Макс. балл**: 3
+- **Описание**:
+  - **3**: Грамматических ошибок нет.
+  - **2**: Допущены одна–две ошибки.
+  - **1**: Допущены три–четыре ошибки.
+  - **0**: Допущено пять ошибок или более.
+
+## Критерий ГК4: Соблюдение речевых норм
+- **Категория**: Грамотность и фактическая точность
+- **Макс. балл**: 3
+- **Описание**:
+  - **3**: Речевых ошибок нет.
+  - **2**: Допущены одна–две ошибки.
+  - **1**: Допущены три–четыре ошибки.
+  - **0**: Допущено пять ошибок или более.
+
+## Критерий ФК1: Фактическая точность речи
+- **Категория**: Грамотность и фактическая точность
+- **Макс. балл**: 1
+- **Описание**:
+  - **1**: Фактические ошибки отсутствуют.
+  - **0**: Допущена одна фактическая ошибка или более.
+
+# Категории
+
+## Категория: Сочинение-рассуждение
+- **Метка**: 🧠 Сочинение-рассуждение
+- **Критерии**: СК1, СК2, СК3, СК4
+- **Максимум баллов**: 7
+
+## Категория: Грамотность и фактическая точность
+- **Метка**: ✍️ Грамотность и фактическая точность речи
+- **Критерии**: ГК1, ГК2, ГК3, ГК4, ФК1
+- **Максимум баллов**: 13
+
+# Сноска
+При подсчёте слов учитываются как самостоятельные, так и служебные части речи. Сокращённые слова и служебные выражения не учитываются. Инициалы с фамилией считаются одним словом. Цифры и знаки препинания не считаются словами.
+Суммарный максимум: 20 баллов.`;
+  const structuredDirective = `
+СТРОГО ВЕРНИ ОДИН JSON-ОБЪЕКТ UTF-8. Без Markdown/комментариев/троичных кавычек.
+
+Требуемая структура (заполни все поля; баллы — целые числа):
+{
+  "errors": [{
+    "type": "orthography" | "punctuation" | "grammar" | "factual" | "logic" | "ethics" | "style" | "other",
+    "category": string,
+    "original": string,
+    "correction": string,
+    "explanation": string,
+    "context_snippet": string,
+    "criterion": "ГК1" | "ГК2" | "ГК3" | "ГК4" | "ФК1" | "СК3" | ""   // укажи связанный критерий, если применимо
+  }],
+  "errors_summary": {
+    "total": number,
+    "by_type": {
+      "орфография": number, "пунктуация": number, "грамматика": number,
+      "фактические": number, "логика": number, "этика": number, "стиль": number, "другое": number
+    }
+  },
+  "overall_quality": string,
+  "total_score_text": string,     // например: "Суммарный балл: 18 из 20"
+  "total_score": number,          // 0–20
+  "max_score": number,            // 20
+
+  "section_A_title": string,      // "Сочинение-рассуждение"
+  "ck1_title": string, "ck1_comment": string, "ck1_score": number, "ck1_max": number,
+  "ck2_title": string, "ck2_comment": string, "ck2_score": number, "ck2_max": number,
+  "ck3_title": string, "ck3_comment": string, "ck3_score": number, "ck3_max": number,
+  "ck4_title": string, "ck4_comment": string, "ck4_score": number, "ck4_max": number,
+
+  "section_B_title": string,      // "Грамотность и фактическая точность"
+  "gk1_title": string, "gk1_comment": string, "gk1_score": number, "gk1_max": number,
+  "gk2_title": string, "gk2_comment": string, "gk2_score": number, "gk2_max": number,
+  "gk3_title": string, "gk3_comment": string, "gk3_score": number, "gk3_max": number,
+  "gk4_title": string, "gk4_comment": string, "gk4_score": number, "gk4_max": number,
+  "fk1_title": string, "fk1_comment": string, "fk1_score": number, "fk1_max": number
+}
+
+Правила:
+- "errors" — массив (может быть пустым). "errors_summary.by_type" содержит все ключи, даже если ноль.
+- "context_snippet": первое вхождение "original" в сочинении + слово до/после (если есть), без лишних символов.
+- Для ck1..ck4, gk1..gk4, fk1 выставляй баллы по шкалам из описания (максимумы указаны).
+- Только перечисленные ключи, без дополнительных.
+- Верни ТОЛЬКО JSON.`;
+  return `${baseTask}
+
+Текст и задание:
+${topic_essay}
+
+Сочинение студента:
+${student_essay}
+
+${criteriaFromUser}
+
+${structuredDirective}`.trim();
+}
+function buildPrompt(subject, topic_essay, student_essay) {
+  return subject === "ege" ? buildPromptEGE(topic_essay, student_essay) : buildPromptOGE(topic_essay, student_essay);
 }
 // ---------- SERVER ----------
 Deno.serve(async (req)=>{
@@ -450,8 +621,9 @@ Deno.serve(async (req)=>{
     }
     const userId = body.user_id;
     const subject = body.subject;
-    console.log(`[INFO] Processing user_id=${userId}, subject=${subject}`);
-    // 1) NEW: Fetch latest student text from table `student)essay1` (text_scan), most recent by created_at
+    const MAX_SCORE = subject === "ege" ? 22 : 20;
+    console.log(`[INFO] Processing user_id=${userId}, subject=${subject}, MAX=${MAX_SCORE}`);
+    // 1) Fetch latest student text from table `student_essay1` (text_scan)
     console.log("[STEP 1] Fetching latest text_scan from `student_essay1`...");
     const { data: scanRows, error: scanErr } = await supabase.from("student_essay1").select("id, text_scan, created_at").eq("user_id", userId).order("created_at", {
       ascending: false
@@ -467,7 +639,7 @@ Deno.serve(async (req)=>{
     }
     const latestScan = (scanRows[0]?.text_scan ?? "").toString();
     console.log("[STEP 1] text_scan (first 100 chars):", latestScan.slice(0, 100));
-    // 2) Find most recent student_essay1 for user (for topic id and to update analysis/score)
+    // 2) Find most recent student_essay1 row for user (for topic id and to update analysis/score)
     console.log("[STEP 2] Fetching most recent student_essay1...");
     const { data: essayRows, error: essayErr } = await supabase.from("student_essay1").select("id, essay_topic_id, created_at").eq("user_id", userId).order("created_at", {
       ascending: false
@@ -494,7 +666,7 @@ Deno.serve(async (req)=>{
     const topicEssay = (topicRow?.essay_topic ?? "").toString();
     console.log("[STEP 3] topicEssay (first 100 chars):", topicEssay.slice(0, 100));
     // 4) Build prompt (strict JSON + errors), using latestScan as student_essay
-    console.log("[STEP 4] Building prompt with strict JSON schema + errors...");
+    console.log("[STEP 4] Building prompt (subject-aware)...");
     const prompt = buildPrompt(subject, topicEssay, latestScan);
     console.log("[STEP 4] Prompt built (first 200 chars):", prompt.slice(0, 200));
     // 5) Call OpenRouter
@@ -533,18 +705,10 @@ Deno.serve(async (req)=>{
       console.warn("[STEP 6] Model did not return valid JSON. Raw starts with:", raw.slice(0, 60));
       throw new Error("invalid_json_from_model");
     }
-    // Ensure all fixed top-level keys exist
-    for (const k of FIXED_KEYS){
-      if (!(k in parsed)) {
-        parsed[k] = 0;
-        if (typeof parsed[k] !== "number") parsed[k] = "";
-      }
-    }
-    // Ensure errors is an array
+    // Ensure errors is an array + normalize
     if (!Array.isArray(parsed.errors)) {
       parsed.errors = [];
     } else {
-      // Normalize errors
       parsed.errors = parsed.errors.map((e)=>({
           type: typeof e?.type === "string" ? e.type : "other",
           category: typeof e?.category === "string" ? e.category : "",
@@ -581,20 +745,43 @@ Deno.serve(async (req)=>{
     if (!parsed.errors_summary.total) {
       parsed.errors_summary.total = parsed.errors.length;
     }
-    // 7) Persist analysis (store JSON string) + score into `student_essay1`
-    console.log("[STEP 7] Extract score and update Supabase...");
-    const score = parseScoreFromJson(parsed) ?? parseScoreFromText(raw);
+    // Subject-specific fixed keys injection (fill missing)
+    const FIXED = subject === "ege" ? FIXED_KEYS_EGE : FIXED_KEYS_OGE;
+    for (const k of FIXED){
+      if (!(k in parsed)) {
+        // sensible defaults: scores -> 0; max -> 0; titles/comments -> ""
+        if (k.endsWith("_score") || k.endsWith("_max") || k === "max_score" || k === "total_score") {
+          parsed[k] = 0;
+        } else if (k === "errors") {
+          parsed[k] = [];
+        } else if (k === "errors_summary") {
+          parsed[k] = {
+            total: parsed.errors?.length ?? 0,
+            by_type: {}
+          };
+        } else {
+          parsed[k] = "";
+        }
+      }
+    }
+    // Ensure OGE/EGE max_score is set correctly
+    parsed.max_score = MAX_SCORE;
+    // 7) Extract score (subject-aware)
+    console.log("[STEP 7] Extracting score (subject-aware)...");
+    const score = parseScoreFromJson(parsed, MAX_SCORE) ?? parseScoreFromText(raw, MAX_SCORE);
     const analysisToStore = JSON.stringify(parsed, null, 2);
+    // 8) Update Supabase for BOTH subjects
+    console.log("[STEP 8] Updating Supabase (student_essay1)...");
     const { error: updErr } = await supabase.from("student_essay1").update({
       analysis: analysisToStore,
       score: score ?? null
     }).eq("id", essayRow.id);
-    console.log("[STEP 7] Update result:", {
+    console.log("[STEP 8] Update result:", {
       updErr
     });
     if (updErr) throw updErr;
-    // 8) Return JSON to client
-    console.log("[STEP 8] Returning JSON to client...");
+    // 9) Return JSON to client
+    console.log("[STEP 9] Returning JSON to client...");
     const totalTime = Date.now() - startTime;
     console.log(`[COMPLETE] Execution finished in ${totalTime}ms for user_id=${userId}`);
     return jsonResponse({
