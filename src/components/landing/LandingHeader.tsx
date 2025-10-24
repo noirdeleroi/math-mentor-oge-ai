@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, LogIn } from "lucide-react";
+import { ChevronDown, LogIn, Menu, X } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import AuthModal from "@/components/auth/AuthModal";
+import { Drawer, DrawerContent, DrawerClose } from "@/components/ui/drawer";
 
 interface DropdownItem {
   label: string;
@@ -113,6 +114,7 @@ export default function LandingHeader() {
   const navigate = useNavigate();
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleDropdownToggle = (dropdownName: string) => {
     setOpenDropdown(openDropdown === dropdownName ? null : dropdownName);
@@ -207,7 +209,15 @@ export default function LandingHeader() {
         </div>
 
         {/* Mobile Navigation */}
-        <div className="md:hidden">
+        <div className="md:hidden flex items-center gap-2">
+          <Button
+            onClick={() => setMobileMenuOpen(true)}
+            variant="ghost"
+            size="icon"
+            className="text-white hover:bg-white/10"
+          >
+            <Menu className="w-6 h-6" />
+          </Button>
           <Button
             onClick={handleLoginClick}
             className="bg-yellow-400 hover:bg-yellow-500 text-black font-medium px-4 py-2"
@@ -216,6 +226,99 @@ export default function LandingHeader() {
           </Button>
         </div>
       </nav>
+
+      {/* Mobile Menu Drawer */}
+      <Drawer open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+        <DrawerContent className="h-[85vh]">
+          <div className="flex flex-col h-full">
+            <div className="flex items-center justify-between p-4 border-b">
+              <span className="font-bold text-xl">Меню</span>
+              <DrawerClose asChild>
+                <Button variant="ghost" size="icon">
+                  <X className="w-5 h-5" />
+                </Button>
+              </DrawerClose>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto p-4">
+              <nav className="flex flex-col gap-4">
+                {/* Учебник Section */}
+                <div>
+                  <h3 className="font-semibold text-lg mb-2">Учебник</h3>
+                  <div className="flex flex-col gap-2 ml-4">
+                    {dropdownItems.textbook.map((item, index) => (
+                      item.disabled ? (
+                        <div key={index} className="text-muted-foreground py-2">
+                          {item.label}
+                          <span className="text-xs ml-2">({item.tooltip})</span>
+                        </div>
+                      ) : (
+                        <Link
+                          key={index}
+                          to={item.href!}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="py-2 hover:text-primary transition-colors"
+                        >
+                          {item.label}
+                        </Link>
+                      )
+                    ))}
+                  </div>
+                </div>
+
+                {/* Практика Section */}
+                <div>
+                  <h3 className="font-semibold text-lg mb-2">Практика</h3>
+                  <div className="flex flex-col gap-2 ml-4">
+                    {dropdownItems.practice.map((item, index) => (
+                      item.disabled ? (
+                        <div key={index} className="text-muted-foreground py-2">
+                          {item.label}
+                          <span className="text-xs ml-2">({item.tooltip})</span>
+                        </div>
+                      ) : (
+                        <Link
+                          key={index}
+                          to={item.href!}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="py-2 hover:text-primary transition-colors"
+                        >
+                          {item.label}
+                        </Link>
+                      )
+                    ))}
+                  </div>
+                </div>
+
+                {/* Direct Links */}
+                <div className="flex flex-col gap-2 border-t pt-4">
+                  <Link
+                    to="/about"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="py-2 text-lg hover:text-primary transition-colors"
+                  >
+                    О Платформе
+                  </Link>
+                  <Link
+                    to="/faq"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="py-2 text-lg hover:text-primary transition-colors"
+                  >
+                    FAQ
+                  </Link>
+                  <Link
+                    to="/egeruses2"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="py-2 text-lg hover:text-primary transition-colors"
+                  >
+                    Сочинение
+                  </Link>
+                </div>
+              </nav>
+            </div>
+          </div>
+        </DrawerContent>
+      </Drawer>
 
       <AuthModal 
         isOpen={isAuthModalOpen} 
