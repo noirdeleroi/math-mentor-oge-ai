@@ -11,7 +11,7 @@ import { COURSES, CourseId, courseIdToNumber } from '@/lib/courses.registry';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import FlyingMathBackground from '@/components/FlyingMathBackground';
+import FlyingStarsBackground from '@/components/FlyingStarsBackground';
 
 const MyDb3 = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -339,7 +339,7 @@ const MyDb3 = () => {
   return (
     <div className="min-h-screen relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)' }}>
       {/* Flying Math Symbols Background */}
-      <FlyingMathBackground />
+      <FlyingStarsBackground />
 
       {/* Main Content */}
       <div className="relative z-10 pt-8 pb-16 px-4 md:px-8">
