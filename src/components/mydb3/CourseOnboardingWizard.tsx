@@ -1,143 +1,192 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { TrendingUp, Zap, Star } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
-import { toast } from 'sonner';
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  GraduationCap,
+  Gauge,
+  ClipboardCheck,
+  Target,
+  Star,
+  Check,
+  X,
+} from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 const TOTAL_STEPS = 4;
 
-// Mock data for demo (replace with your registry if desired)
 const COURSES: Record<string, { title: string }> = {
-  'oge-math': { title: 'ОГЭ Математика' },
-  'ege-basic': { title: 'ЕГЭ Базовая математика' },
-  'ege-advanced': { title: 'ЕГЭ Профильная математика' },
+  "oge-math": { title: "ОГЭ Математика" },
+  "ege-basic": { title: "ЕГЭ Базовая математика" },
+  "ege-advanced": { title: "ЕГЭ Профильная математика" },
 };
 
 const courseIdToNumber: Record<string, number> = {
-  'oge-math': 1,
-  'ege-basic': 2,
-  'ege-advanced': 3,
+  "oge-math": 1,
+  "ege-basic": 2,
+  "ege-advanced": 3,
 };
 
 interface CourseOnboardingWizardProps {
   courseId: string;
   onDone: () => void;
   onError?: () => void;
+  /** prevent closing by clicking the backdrop if you want */
+  closeOnBackdrop?: boolean;
 }
 
 interface CourseFormData {
-  schoolGrade?: number;
-  basicLevel?: number;
+  schoolGrade?: number; // 2..5
+  basicLevel?: number; // 1..5
   tookMock?: boolean;
   mockScore?: number;
   goalScore?: number;
 }
 
-export function CourseOnboardingWizard({ courseId, onDone, onError }: CourseOnboardingWizardProps) {
+const gradePills = [2, 3, 4, 5];
+
+const levelLabels = [
+  "Новичок",
+  "Базовый",
+  "Средний",
+  "Сильный",
+  "Профи",
+] as const;
+
+export function CourseOnboardingWizard({
+  courseId,
+  onDone,
+  onError,
+  closeOnBackdrop = true,
+}: CourseOnboardingWizardProps) {
   const { user } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [data, setData] = useState<CourseFormData>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const course = COURSES[courseId] || { title: 'Математика' };
+  const course = COURSES[courseId] || { title: "Математика" };
   const courseNumber = courseIdToNumber[courseId] || 1;
 
-  // Floating particles animation
-  const particles = Array.from({ length: 20 }, (_, i) => i);
+  // --- particles (stable after mount; no re-randomize every render) ---
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const [viewport, setViewport] = useState({ w: 1024, h: 768 });
 
   useEffect(() => {
+    const r = rootRef.current;
+    if (!r) return;
+    const obs = new ResizeObserver(([entry]) => {
+      const cr = entry.contentRect;
+      setViewport({ w: cr.width, h: cr.height });
+    });
+    obs.observe(r);
+    return () => obs.disconnect();
+  }, []);
+
+  const particles = useMemo(
+    () =>
+      Array.from({ length: 22 }, (_, i) => ({
+        id: i,
+        x: Math.random() * viewport.w,
+        y: Math.random() * viewport.h,
+        dur: 12 + Math.random() * 8,
+        opa: 0.25 + Math.random() * 0.5,
+        scl: 0.6 + Math.random() * 0.8,
+      })),
+    // only regenerate when container size meaningfully changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [viewport.w, viewport.h]
+  );
+
+  // Esc to close
+  useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onDone();
+      if (e.key === "Escape") onDone();
     };
-    window.addEventListener('keydown', handleEscape);
-    return () => window.removeEventListener('keydown', handleEscape);
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
   }, [onDone]);
 
+  // load persisted values
   useEffect(() => {
     setCurrentStep(1);
     setData({});
     setError(null);
     setIsSubmitting(false);
-    loadExistingData();
+    void loadExistingData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [courseId, user?.id]);
 
   const loadExistingData = async () => {
     if (!user) return;
-
     try {
       const { data: profile, error } = await supabase
-        .from('profiles')
+        .from("profiles")
         .select(
           `schoolmark${courseNumber}, selfestimation${courseNumber}, testmark${courseNumber}, course_${courseNumber}_goal`
         )
-        .eq('user_id', user.id)
+        .eq("user_id", user.id)
         .single();
 
-      if (error && error.code !== 'PGRST116') {
-        console.error('Error loading existing data:', error);
+      if (error && error.code !== "PGRST116") {
+        console.error("Error loading existing data:", error);
         return;
       }
 
       if (profile) {
         setData({
-          schoolGrade: profile[`schoolmark${courseNumber}`] ?? undefined,
-          basicLevel: profile[`selfestimation${courseNumber}`] ?? undefined,
-          mockScore: profile[`testmark${courseNumber}`] ?? undefined,
+          schoolGrade:
+            (profile as any)[`schoolmark${courseNumber}`] ?? undefined,
+          basicLevel:
+            (profile as any)[`selfestimation${courseNumber}`] ?? undefined,
+          mockScore: (profile as any)[`testmark${courseNumber}`] ?? undefined,
           tookMock:
-            profile[`testmark${courseNumber}`] !== null &&
-            profile[`testmark${courseNumber}`] !== undefined
-              ? true
-              : undefined,
-          goalScore: profile[`course_${courseNumber}_goal`]
-            ? parseInt(profile[`course_${courseNumber}_goal`], 10)
+            (profile as any)[`testmark${courseNumber}`] != null ? true : undefined,
+          goalScore: (profile as any)[`course_${courseNumber}_goal`]
+            ? parseInt((profile as any)[`course_${courseNumber}_goal`], 10)
             : undefined,
         });
       }
     } catch (e) {
-      console.error('Error loading existing data:', e);
+      console.error("Error loading existing data:", e);
     }
   };
 
-  const updateData = (newData: Partial<CourseFormData>) => {
-    setData((prev) => ({ ...prev, ...newData }));
+  const updateData = (patch: Partial<CourseFormData>) => {
+    setData((prev) => ({ ...prev, ...patch }));
     setError(null);
   };
 
-  const getEmojiForLevel = (level: number): string => {
-    const emojis = ['😞', '😐', '🙂', '😊', '😍'];
-    return emojis[level - 1] || '🙂';
-  };
-
   const getSmartComment = (): string => {
-    if (data.goalScore == null) return '';
-
-    const isOGE = courseId === 'oge-math';
+    if (data.goalScore == null) return "";
+    const isOGE = courseId === "oge-math";
 
     if (isOGE) {
-      const score = data.goalScore;
-      if (score >= 22) return 'Отлично! Целишься на 5! 🚀';
-      if (score >= 15) return 'Хороша цель! На 4 вполне реально 💪';
-      if (score >= 8) return 'Неплохо! Тройка будет в кармане 😊';
-      return 'Давай поставим цель чуть повыше? 😉';
+      const s = data.goalScore;
+      if (s >= 22) return "Отлично! Целишься на «5». Поехали 🚀";
+      if (s >= 15) return "Хорошая цель на «4» — реально 💪";
+      if (s >= 8) return "Стабильная «3» — подтянем темы и усилим результат.";
+      return "Давай поставим планку чуть выше — я помогу 🙂";
     }
 
-    const baselineFromSelfAssessment = (data.basicLevel || 1) * 15;
-    const mockScore = data.tookMock ? data.mockScore : null;
-    const ambitionGap = data.goalScore - (mockScore ?? baselineFromSelfAssessment);
+    const baseline = (data.basicLevel || 3) * 15; // heuristic
+    const mock = data.tookMock ? data.mockScore ?? baseline : baseline;
+    const gap = (data.goalScore ?? 0) - mock;
 
-    if (data.goalScore >= 90) return 'Вау! Очень амбициозно! 🚀';
-    if (ambitionGap >= 25) return 'Отлично! Любим вызовы. Настроим умный план 💪';
-    if (data.goalScore < 50) return 'Ну а если поставить цель повыше? Думаю, ты можешь лучше 😉';
-    if (data.tookMock && mockScore && mockScore <= 40 && data.goalScore >= 70)
-      return 'План жёсткий, но реальный. Поехали шаг за шагом!';
-    return 'Хороший ориентир. Давай начнём!';
+    if (data.goalScore >= 90) return "Супер-цель! Будем работать как профи 🔥";
+    if (gap >= 25) return "Амбициозно — построим умный маршрут к цели 💪";
+    if (data.goalScore < 50) return "Можно смелее — ты явно можешь больше 😉";
+    return "Звучит реалистично. Начинаем!";
   };
+
+  // per-course scoring
+  const isOGE = courseId === "oge-math";
+  const isEgeBasic = courseId === "ege-basic";
+  const isEgeProf = courseId === "ege-advanced";
+  const maxScore = isOGE ? 31 : isEgeBasic ? 21 : isEgeProf ? 100 : 100;
 
   const canProceed = (): boolean => {
     switch (currentStep) {
@@ -148,16 +197,17 @@ export function CourseOnboardingWizard({ courseId, onDone, onError }: CourseOnbo
       case 3:
         return (
           data.tookMock !== undefined &&
-          (!data.tookMock || (data.mockScore !== undefined && data.mockScore >= 0 && data.mockScore <= 100))
+          (!data.tookMock ||
+            (data.mockScore !== undefined &&
+              data.mockScore >= 0 &&
+              data.mockScore <= 100))
         );
-      case 4: {
-        const isOGE = courseId === 'oge-math';
-        const isEgeBasic = courseId === 'ege-basic';
-        const isEgeProf = courseId === 'ege-advanced';
-
-        const maxScore = isOGE ? 31 : isEgeBasic ? 21 : isEgeProf ? 100 : 100;
-        return data.goalScore !== undefined && data.goalScore >= 0 && data.goalScore <= maxScore;
-      }
+      case 4:
+        return (
+          data.goalScore !== undefined &&
+          data.goalScore >= 0 &&
+          data.goalScore <= maxScore
+        );
       default:
         return false;
     }
@@ -166,7 +216,6 @@ export function CourseOnboardingWizard({ courseId, onDone, onError }: CourseOnbo
   const handleNext = () => {
     if (currentStep < TOTAL_STEPS && canProceed()) setCurrentStep((p) => p + 1);
   };
-
   const handleBack = () => {
     if (currentStep > 1) setCurrentStep((p) => p - 1);
   };
@@ -175,215 +224,223 @@ export function CourseOnboardingWizard({ courseId, onDone, onError }: CourseOnbo
     try {
       setIsSubmitting(true);
       setError(null);
-
-      if (!user) throw new Error('User not authenticated');
+      if (!user) throw new Error("User not authenticated");
 
       const updateObject: Record<string, number | string | null> = {
         [`schoolmark${courseNumber}`]: data.schoolGrade ?? null,
         [`selfestimation${courseNumber}`]: data.basicLevel ?? null,
         [`testmark${courseNumber}`]: data.tookMock ? data.mockScore ?? null : null,
-        [`course_${courseNumber}_goal`]: data.goalScore != null ? String(data.goalScore) : null,
+        [`course_${courseNumber}_goal`]:
+          data.goalScore != null ? String(data.goalScore) : null,
       };
 
-      const { error } = await supabase.from('profiles').update(updateObject).eq('user_id', user.id);
+      const { error } = await supabase
+        .from("profiles")
+        .update(updateObject)
+        .eq("user_id", user.id);
 
       if (error) throw error;
 
-      toast.success('Данные сохранены', {
-        description: `Настройки для курса "${course.title}" обновлены`,
+      toast.success("Данные сохранены", {
+        description: `Настройки для курса «${course.title}» обновлены`,
       });
 
       onDone();
     } catch (e) {
-      console.error('Error saving course data:', e);
-      setError('Не удалось сохранить данные. Попробуйте ещё раз.');
+      console.error("Error saving course data:", e);
+      setError("Не удалось сохранить данные. Попробуйте ещё раз.");
       onError?.();
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  // ---------- Steps ----------
+  const StepHeader = ({
+    icon,
+    title,
+    subtitle,
+  }: {
+    icon: React.ReactNode;
+    title: string;
+    subtitle: string;
+  }) => (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="text-center"
+    >
+      <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#a8e063]/15 to-[#56ab2f]/15 ring-1 ring-white/10">
+        {icon}
+      </div>
+      <h2 className="text-2xl font-bold text-white mb-1">{title}</h2>
+      <p className="text-[#9ca3af] text-sm">{subtitle}</p>
+    </motion.div>
+  );
+
   const Step1 = () => (
     <div className="space-y-8">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center">
-        <motion.div
-          animate={{ rotate: [0, 10, -10, 0] }}
-          transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-          className="text-6xl mb-4"
-        >
-          📚
-        </motion.div>
-        <h2 className="text-2xl font-bold text-white mb-2">Твоя оценка</h2>
-        <p className="text-[#9ca3af]">Средняя по математике в школе</p>
-      </motion.div>
-
+      <StepHeader
+        icon={<GraduationCap className="h-7 w-7 text-[#a8e063]" />}
+        title="Твоя школьная оценка"
+        subtitle="Средняя по математике"
+      />
       <div className="grid grid-cols-4 gap-3">
-        {[2, 3, 4, 5].map((grade, index) => (
-          <motion.button
-            key={grade}
-            initial={{ opacity: 0, scale: 0.8, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-            whileHover={{ scale: 1.1, y: -5 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => updateData({ schoolGrade: grade })}
-            className={`relative h-20 text-2xl font-bold rounded-2xl transition-all overflow-hidden group ${
-              data.schoolGrade === grade
-                ? 'bg-gradient-to-br from-[#a8e063] to-[#56ab2f] text-white shadow-lg shadow-green-500/50'
-                : 'bg-[#2a3447] text-[#9ca3af] hover:bg-[#344155] border border-[#374151]'
-            }`}
-          >
-            {data.schoolGrade === grade && (
-              <motion.div
-                layoutId="selected-grade"
-                className="absolute inset-0 bg-gradient-to-br from-[#a8e063] to-[#56ab2f]"
-                transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
-              />
-            )}
-            <span className="relative z-10">{grade}</span>
-            {data.schoolGrade === grade && (
-              <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute top-2 right-2 z-10">
-                <Star className="w-4 h-4 fill-white text-white" />
-              </motion.div>
-            )}
-          </motion.button>
-        ))}
+        {gradePills.map((grade, i) => {
+          const selected = data.schoolGrade === grade;
+          return (
+            <motion.button
+              key={grade}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.05 }}
+              onClick={() => updateData({ schoolGrade: grade })}
+              className={[
+                "relative h-14 rounded-xl font-semibold transition-all border",
+                selected
+                  ? "bg-gradient-to-br from-[#a8e063] to-[#56ab2f] text-white border-transparent shadow-lg shadow-green-500/30"
+                  : "bg-[#1f2937] text-[#d1d5db] hover:bg-[#253044] border-white/10",
+              ].join(" ")}
+              aria-pressed={selected}
+            >
+              <span className="text-xl">{grade}</span>
+              {selected && (
+                <motion.span
+                  layoutId="grade-check"
+                  className="absolute -right-2 -top-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/20"
+                >
+                  <Check className="w-4 h-4 text-white" />
+                </motion.span>
+              )}
+            </motion.button>
+          );
+        })}
       </div>
     </div>
   );
 
   const Step2 = () => (
     <div className="space-y-8">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center">
-        <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 2, repeat: Infinity }} className="text-7xl mb-4">
-          {data.basicLevel ? getEmojiForLevel(data.basicLevel) : '🙂'}
-        </motion.div>
-        <h2 className="text-2xl font-bold text-white mb-2">Твой уровень</h2>
-        <p className="text-[#9ca3af]">Как оцениваешь свои навыки?</p>
-      </motion.div>
-
-      <div className="space-y-6">
-        <div className="relative">
-          <motion.div
-            className="absolute inset-0 bg-gradient-to-r from-[#a8e063]/20 to-[#56ab2f]/20 blur-xl rounded-full"
-            animate={{ opacity: [0.5, 1, 0.5] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            style={{ width: `${((data.basicLevel || 3) - 1) * 25}%` }}
-          />
-
-          <div className="relative py-6">
-            <input
-              type="range"
-              min="1"
-              max="5"
-              step="1"
-              value={data.basicLevel || 3}
-              onChange={(e) => updateData({ basicLevel: parseInt(e.target.value, 10) })}
-              className="w-full h-3 bg-[#2a3447] rounded-full appearance-none cursor-pointer slider-modern-dark"
-              style={{
-                background: `linear-gradient(to right, 
-                  #a8e063 0%, 
-                  #56ab2f ${((data.basicLevel || 3) - 1) * 25}%, 
-                  #2a3447 ${((data.basicLevel || 3) - 1) * 25}%, 
-                  #2a3447 100%)`,
-              }}
-            />
-          </div>
-        </div>
-
-        <div className="flex justify-between items-center text-sm">
-          <span className="text-[#9ca3af]">Слабо</span>
-          <motion.div
-            key={data.basicLevel}
-            initial={{ scale: 1.5, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="font-bold text-2xl bg-gradient-to-r from-[#a8e063] to-[#56ab2f] bg-clip-text text-transparent"
-          >
-            {data.basicLevel || 3} из 5
-          </motion.div>
-          <span className="text-[#9ca3af]">Отлично</span>
-        </div>
+      <StepHeader
+        icon={<Gauge className="h-7 w-7 text-[#a8e063]" />}
+        title="Самооценка уровня"
+        subtitle="Выбери уровень, как ты себя ощущаешь"
+      />
+      <div className="grid grid-cols-5 gap-3">
+        {([1, 2, 3, 4, 5] as const).map((lvl, i) => {
+          const selected = data.basicLevel === lvl;
+          return (
+            <motion.button
+              key={lvl}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.05 }}
+              onClick={() => updateData({ basicLevel: lvl })}
+              className={[
+                "group relative flex h-20 flex-col items-center justify-center gap-1 rounded-xl border text-center",
+                selected
+                  ? "bg-gradient-to-br from-[#a8e063] to-[#56ab2f] text-white border-transparent shadow-lg shadow-green-500/30"
+                  : "bg-[#1f2937] text-[#e5e7eb] hover:bg-[#253044] border-white/10",
+              ].join(" ")}
+              aria-pressed={selected}
+            >
+              <div className="flex items-center gap-0.5">
+                {Array.from({ length: 5 }).map((_, s) => (
+                  <Star
+                    key={s}
+                    className={
+                      s < lvl
+                        ? "w-4 h-4 text-current"
+                        : "w-4 h-4 text-white/30"
+                    }
+                    fill={s < lvl ? "currentColor" : "none"}
+                  />
+                ))}
+              </div>
+              <div className="text-xs opacity-90">{levelLabels[lvl - 1]}</div>
+              {selected && (
+                <motion.span
+                  layoutId="level-check"
+                  className="absolute -right-2 -top-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/20"
+                >
+                  <Check className="w-4 h-4 text-white" />
+                </motion.span>
+              )}
+            </motion.button>
+          );
+        })}
       </div>
     </div>
   );
 
   const Step3 = () => (
     <div className="space-y-8">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center">
-        <motion.div animate={{ rotate: [0, 5, -5, 0] }} transition={{ duration: 3, repeat: Infinity }} className="text-6xl mb-4">
-          📝
-        </motion.div>
-        <h2 className="text-2xl font-bold text-white mb-2">Пробный тест</h2>
-        <p className="text-[#9ca3af]">Уже проходил(а)?</p>
-      </motion.div>
-
-      <div className="grid grid-cols-2 gap-4">
-        {[
-          { label: 'Нет', value: false, icon: '❌' },
-          { label: 'Да', value: true, icon: '✅' },
-        ].map(({ label, value, icon }, index) => (
-          <motion.button
-            key={label}
-            initial={{ opacity: 0, x: index === 0 ? -20 : 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: index * 0.1 }}
-            whileHover={{ scale: 1.05, y: -5 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => updateData({ tookMock: value, mockScore: undefined })}
-            className={`relative h-24 rounded-2xl font-semibold transition-all text-base overflow-hidden ${
-              data.tookMock === value
-                ? 'bg-gradient-to-br from-[#a8e063] to-[#56ab2f] text-white shadow-lg shadow-green-500/50'
-                : 'bg-[#2a3447] text-[#9ca3af] hover:bg-[#344155] border border-[#374151]'
-            }`}
-          >
-            {data.tookMock === value && (
-              <motion.div
-                layoutId="selected-mock"
-                className="absolute inset-0 bg-gradient-to-br from-[#a8e063] to-[#56ab2f]"
-                transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
-              />
-            )}
-            <span className="relative z-10 flex flex-col items-center justify-center gap-2">
-              <span className="text-3xl">{icon}</span>
-              <span>{label}</span>
-            </span>
-          </motion.button>
-        ))}
+      <StepHeader
+        icon={<ClipboardCheck className="h-7 w-7 text-[#a8e063]" />}
+        title="Пробный тест"
+        subtitle="Проходил(а) ли ты недавно пробник?"
+      />
+      <div className="grid grid-cols-2 gap-3">
+        {[{ label: "Нет", v: false }, { label: "Да", v: true }].map(
+          ({ label, v }, i) => {
+            const selected = data.tookMock === v;
+            return (
+              <motion.button
+                key={label}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.05 }}
+                onClick={() => updateData({ tookMock: v, mockScore: undefined })}
+                className={[
+                  "relative h-12 rounded-xl font-medium border",
+                  selected
+                    ? "bg-gradient-to-br from-[#a8e063] to-[#56ab2f] text-white border-transparent shadow-lg shadow-green-500/30"
+                    : "bg-[#1f2937] text-[#e5e7eb] hover:bg-[#253044] border-white/10",
+                ].join(" ")}
+              >
+                <span className="inline-flex items-center gap-2">
+                  {v ? <Check className="w-4 h-4" /> : <X className="w-4 h-4" />}
+                  {label}
+                </span>
+              </motion.button>
+            );
+          }
+        )}
       </div>
 
       <AnimatePresence>
         {data.tookMock && (
           <motion.div
-            initial={{ opacity: 0, height: 0, y: -20 }}
-            animate={{ opacity: 1, height: 'auto', y: 0 }}
-            exit={{ opacity: 0, height: 0, y: -20 }}
+            initial={{ opacity: 0, height: 0, y: -10 }}
+            animate={{ opacity: 1, height: "auto", y: 0 }}
+            exit={{ opacity: 0, height: 0, y: -10 }}
             className="space-y-3"
           >
-            <Label className="text-sm font-medium text-white flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-[#a8e063]" />
-              Сколько баллов?
+            <Label className="text-sm font-medium text-white">
+              Баллы по пробнику (0–100)
             </Label>
-            <div className="relative">
-              <Input
-                type="number"
-                min="0"
-                max="100"
-                value={data.mockScore ?? ''}
-                onChange={(e) => updateData({ mockScore: e.target.value === '' ? undefined : parseInt(e.target.value, 10) || 0 })}
-                placeholder="0–100"
-                className="h-14 text-center text-2xl font-bold bg-[#2a3447] border-[#374151] rounded-2xl text-white placeholder:text-[#6b7280] focus:border-[#a8e063] focus:ring-[#a8e063]"
-              />
-              {data.mockScore !== undefined && data.mockScore >= 0 && data.mockScore <= 100 && (
-                <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute right-4 top-1/2 -translate-y-1/2">
-                  <Zap className="w-6 h-6 text-[#a8e063] fill-[#a8e063]" />
-                </motion.div>
+            <Input
+              type="number"
+              min={0}
+              max={100}
+              value={data.mockScore ?? ""}
+              onChange={(e) =>
+                updateData({
+                  mockScore:
+                    e.target.value === ""
+                      ? undefined
+                      : Math.max(0, Math.min(100, parseInt(e.target.value, 10) || 0)),
+                })
+              }
+              placeholder="Например, 62"
+              className="h-12 text-center text-lg font-semibold bg-[#1f2937] border-white/10 text-white placeholder:text-white/40 focus-visible:ring-[#a8e063]"
+            />
+            {data.mockScore !== undefined &&
+              (data.mockScore < 0 || data.mockScore > 100) && (
+                <p className="text-xs text-red-400">
+                  Введи число от 0 до 100.
+                </p>
               )}
-            </div>
-            {data.tookMock && (data.mockScore === undefined || data.mockScore < 0 || data.mockScore > 100) && (
-              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs text-red-400 font-medium">
-                Введи число от 0 до 100
-              </motion.p>
-            )}
           </motion.div>
         )}
       </AnimatePresence>
@@ -391,148 +448,118 @@ export function CourseOnboardingWizard({ courseId, onDone, onError }: CourseOnbo
   );
 
   const Step4 = () => {
-    const isOGE = courseId === 'oge-math';
-    const isEgeBasic = courseId === 'ege-basic';
-    const isEgeProf = courseId === 'ege-advanced';
-
-    const maxScore = isOGE ? 31 : isEgeBasic ? 21 : isEgeProf ? 100 : 100;
-    const defaultScore = isOGE ? 15 : isEgeBasic ? 12 : isEgeProf ? 50 : 50;
-    const showPercentage = false;
-
+    const defaultScore = isOGE ? 15 : isEgeBasic ? 12 : 50;
     const currentGoal = data.goalScore ?? defaultScore;
 
     return (
       <div className="space-y-8">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center">
-          <motion.div animate={{ rotate: 360 }} transition={{ duration: 20, repeat: Infinity, ease: 'linear' }} className="text-6xl mb-4">
-            🎯
-          </motion.div>
-          <h2 className="text-2xl font-bold text-white mb-2">Твоя цель</h2>
-          <p className="text-[#9ca3af]">На сколько баллов целишься?</p>
+        <StepHeader
+          icon={<Target className="h-7 w-7 text-[#a8e063]" />}
+          title="Цель по баллам"
+          subtitle={`Выбери цель (макс: ${maxScore})`}
+        />
+
+        <motion.div
+          key={currentGoal}
+          initial={{ scale: 1.05, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="text-center"
+        >
+          <div className="text-6xl font-black bg-gradient-to-r from-[#a8e063] to-[#56ab2f] bg-clip-text text-transparent">
+            {currentGoal}
+          </div>
         </motion.div>
 
-        <div className="space-y-6">
-          <motion.div key={currentGoal} initial={{ scale: 1.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-center relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-[#a8e063]/20 to-[#56ab2f]/20 blur-3xl" />
-            <div className="relative text-7xl font-black bg-gradient-to-r from-[#a8e063] to-[#56ab2f] bg-clip-text text-transparent">
-              {currentGoal}
-              {showPercentage ? '%' : ''}
-            </div>
-          </motion.div>
-
-          <div className="relative py-8">
-            <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-[#a8e063]/30 to-[#56ab2f]/30 blur-2xl rounded-full"
-              animate={{ opacity: [0.3, 0.6, 0.3] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              style={{ width: `${(currentGoal / maxScore) * 100}%` }}
-            />
-            <input
-              type="range"
-              min="0"
-              max={maxScore}
-              step="1"
-              value={currentGoal}
-              onChange={(e) => updateData({ goalScore: parseInt(e.target.value, 10) })}
-              className="w-full h-4 bg-[#2a3447] rounded-full appearance-none cursor-pointer slider-modern-dark relative z-10"
-              style={{
-                background: `linear-gradient(to right, 
-                  #a8e063 0%, 
-                  #56ab2f ${(currentGoal / maxScore) * 100}%, 
-                  #2a3447 ${(currentGoal / maxScore) * 100}%, 
-                  #2a3447 100%)`,
-              }}
-            />
-          </div>
-
-          <div className="flex justify-between text-sm text-[#9ca3af]">
+        <div className="relative py-2">
+          <input
+            type="range"
+            min={0}
+            max={maxScore}
+            step={1}
+            value={currentGoal}
+            onChange={(e) => updateData({ goalScore: parseInt(e.target.value, 10) })}
+            className="w-full h-3 bg-[#1f2937] rounded-full appearance-none cursor-pointer"
+            style={{
+              background: `linear-gradient(to right,#a8e063 0%,#56ab2f ${
+                (currentGoal / maxScore) * 100
+              }%,#1f2937 ${(currentGoal / maxScore) * 100}%,#1f2937 100%)`,
+            }}
+            aria-valuemin={0}
+            aria-valuemax={maxScore}
+            aria-valuenow={currentGoal}
+          />
+          <div className="flex justify-between text-xs text-white/60 mt-2">
             <span>0</span>
             <span>{maxScore}</span>
           </div>
-
-          {isOGE && (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-4 gap-2">
-              {[
-                { grade: '2', range: '0–7', from: 'from-red-500/20', to: 'to-red-600/20', text: 'text-red-400' },
-                { grade: '3', range: '8–14', from: 'from-orange-500/20', to: 'to-orange-600/20', text: 'text-orange-400' },
-                { grade: '4', range: '15–21', from: 'from-blue-500/20', to: 'to-blue-600/20', text: 'text-blue-400' },
-                { grade: '5', range: '22–31', from: 'from-[#a8e063]/20', to: 'to-[#56ab2f]/20', text: 'text-green-400' },
-              ].map(({ grade, range, from, to, text }) => (
-                <div key={grade} className={`bg-gradient-to-br ${from} ${to} backdrop-blur-sm rounded-xl p-2 text-center border border-white/5`}>
-                  <div className={`font-bold text-base ${text}`}>{grade}</div>
-                  <div className="text-xs text-[#9ca3af]">{range}</div>
-                </div>
-              ))}
-            </motion.div>
-          )}
-
-          {isEgeBasic && (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-3 gap-2">
-              {[
-                { grade: '3', range: '7–11', from: 'from-orange-500/20', to: 'to-orange-600/20', text: 'text-orange-400' },
-                { grade: '4', range: '12–16', from: 'from-blue-500/20', to: 'to-blue-600/20', text: 'text-blue-400' },
-                { grade: '5', range: '17–21', from: 'from-[#a8e063]/20', to: 'to-[#56ab2f]/20', text: 'text-green-400' },
-              ].map(({ grade, range, from, to, text }) => (
-                <div key={grade} className={`bg-gradient-to-br ${from} ${to} backdrop-blur-sm rounded-xl p-2 text-center border border-white/5`}>
-                  <div className={`font-bold text-base ${text}`}>{grade}</div>
-                  <div className="text-xs text-[#9ca3af]">{range}</div>
-                </div>
-              ))}
-            </motion.div>
-          )}
-
-          <AnimatePresence mode="wait">
-            {data.goalScore != null && (
-              <motion.div
-                key={getSmartComment()}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="text-center text-base text-white bg-gradient-to-r from-[#a8e063]/10 to-[#56ab2f]/10 backdrop-blur-sm py-4 px-6 rounded-2xl border border-[#a8e063]/20"
-              >
-                {getSmartComment()}
-              </motion.div>
-            )}
-          </AnimatePresence>
         </div>
 
-        {error && (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-red-500/10 border border-red-500/30 rounded-2xl p-4 space-y-3">
-            <p className="text-sm text-red-400">{error}</p>
-            <button
-              onClick={handleSubmit}
-              disabled={isSubmitting}
-              className="w-full bg-red-500 hover:bg-red-600 text-white text-sm h-10 rounded-xl font-medium transition-all"
+        {/* quick legend */}
+        {isOGE && (
+          <div className="grid grid-cols-4 gap-2">
+            {[
+              { grade: "2", range: "0–7", cls: "text-red-400" },
+              { grade: "3", range: "8–14", cls: "text-orange-400" },
+              { grade: "4", range: "15–21", cls: "text-blue-400" },
+              { grade: "5", range: "22–31", cls: "text-green-400" },
+            ].map(({ grade, range, cls }) => (
+              <div
+                key={grade}
+                className="rounded-lg border border-white/10 bg-white/5 p-2 text-center"
+              >
+                <div className={`font-semibold ${cls}`}>{grade}</div>
+                <div className="text-[11px] text-white/60">{range}</div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {isEgeBasic && (
+          <div className="grid grid-cols-3 gap-2">
+            {[
+              { grade: "3", range: "7–11", cls: "text-orange-400" },
+              { grade: "4", range: "12–16", cls: "text-blue-400" },
+              { grade: "5", range: "17–21", cls: "text-green-400" },
+            ].map(({ grade, range, cls }) => (
+              <div
+                key={grade}
+                className="rounded-lg border border-white/10 bg-white/5 p-2 text-center"
+              >
+                <div className={`font-semibold ${cls}`}>{grade}</div>
+                <div className="text-[11px] text-white/60">{range}</div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <AnimatePresence mode="wait">
+          {data.goalScore != null && (
+            <motion.div
+              key={getSmartComment()}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              className="text-center text-sm text-white/90 bg-white/[0.06] border border-white/10 py-3 px-4 rounded-xl"
             >
-              Повторить
-            </button>
-          </motion.div>
+              {getSmartComment()}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {error && (
+          <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-300">
+            {error}
+          </div>
         )}
 
         <motion.button
-          whileHover={{ scale: 1.02, boxShadow: '0 0 30px rgba(168, 224, 99, 0.4)' }}
+          whileHover={{ scale: 1.01 }}
           whileTap={{ scale: 0.98 }}
           onClick={handleSubmit}
           disabled={isSubmitting}
-          className="w-full h-14 bg-gradient-to-r from-[#a8e063] to-[#56ab2f] hover:from-[#98d653] hover:to-[#4c9b2b] text-white text-base font-bold rounded-2xl transition-all shadow-lg shadow-green-500/30 disabled:opacity-50 flex items-center justify-center gap-2"
+          className="w-full h-12 bg-gradient-to-r from-[#a8e063] to-[#56ab2f] text-white font-semibold rounded-xl shadow-lg shadow-green-500/20 disabled:opacity-50"
         >
-          {isSubmitting ? (
-            <>
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
-              />
-              Сохраняем...
-            </>
-          ) : (
-            <>
-              Готово
-              <motion.span animate={{ x: [0, 5, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
-                🚀
-              </motion.span>
-            </>
-          )}
+          {isSubmitting ? "Сохраняем…" : "Готово"}
         </motion.button>
       </div>
     );
@@ -553,68 +580,93 @@ export function CourseOnboardingWizard({ courseId, onDone, onError }: CourseOnbo
     }
   };
 
+  // stepper UI
+  const Stepper = () => (
+    <div className="mb-6">
+      <div className="flex items-center gap-2">
+        {Array.from({ length: TOTAL_STEPS }, (_, i) => {
+          const idx = i + 1;
+          const active = idx === currentStep;
+          const done = idx < currentStep;
+          return (
+            <React.Fragment key={idx}>
+              <div
+                className={[
+                  "h-2 w-2 rounded-full",
+                  active
+                    ? "bg-gradient-to-r from-[#a8e063] to-[#56ab2f]"
+                    : done
+                    ? "bg-white/70"
+                    : "bg-white/25",
+                ].join(" ")}
+              />
+              {idx < TOTAL_STEPS && (
+                <div className="h-[2px] w-8 bg-white/10" />
+              )}
+            </React.Fragment>
+          );
+        })}
+      </div>
+      <div className="mt-2 text-xs text-[#9ca3af] text-right">
+        Шаг {currentStep} из {TOTAL_STEPS}
+      </div>
+    </div>
+  );
+
   return (
     <div
-      className="fixed inset-0 bg-[#1a202e]/95 backdrop-blur-2xl flex items-center justify-center p-4 z-50"
-      onClick={onDone}
+      ref={rootRef}
+      className="fixed inset-0 bg-[#0b1220]/90 backdrop-blur-xl flex items-center justify-center p-4 z-50"
+      onClick={() => {
+        if (closeOnBackdrop) onDone();
+      }}
+      role="dialog"
+      aria-modal="true"
     >
-      {/* Animated Background Particles */}
-      {particles.map((i) => (
+      {/* particles */}
+      {particles.map((p) => (
         <motion.div
-          key={i}
-          className="absolute w-1 h-1 bg-[#a8e063] rounded-full"
-          initial={{
-            x: Math.random() * window.innerWidth,
-            y: Math.random() * window.innerHeight,
-            scale: Math.random() * 0.5 + 0.5,
-            opacity: Math.random() * 0.5 + 0.2,
-          }}
+          key={p.id}
+          className="pointer-events-none absolute h-1 w-1 rounded-full bg-[#a8e063]"
+          initial={{ x: p.x, y: p.y, opacity: p.opa, scale: p.scl }}
           animate={{
-            y: [0, Math.random() * window.innerHeight * 0.8, 0],
-            x: [0, Math.random() * window.innerWidth * 0.8, 0],
+            y: [p.y, p.y - viewport.h * 0.25, p.y],
+            x: [p.x, p.x + (Math.random() * viewport.w) / 10, p.x],
           }}
-          transition={{ duration: 12 + Math.random() * 8, repeat: Infinity, ease: 'easeInOut' }}
+          transition={{ duration: p.dur, repeat: Infinity, ease: "easeInOut" }}
         />
       ))}
 
-      {/* Modal Card */}
+      {/* card */}
       <div
-        className="relative w-full max-w-2xl bg-[#111827]/70 border border-white/10 rounded-3xl shadow-2xl p-6 md:p-8"
+        className="relative w-full max-w-2xl bg-[#0f172a]/70 border border-white/10 rounded-3xl shadow-2xl p-6 md:p-8"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
-        <div className="mb-6 flex items-center justify-between">
+        {/* header */}
+        <div className="mb-4 flex items-center justify-between">
           <div>
-            <h1 className="text-xl md:text-2xl font-bold text-white">{course.title}</h1>
-            <p className="text-sm text-[#9ca3af]">Пару вопросов — и мы настроим курс под тебя</p>
+            <h1 className="text-xl md:text-2xl font-bold text-white">
+              {course.title}
+            </h1>
+            <p className="text-sm text-[#9ca3af]">
+              Несколько ответов — и мы настроим курс под тебя
+            </p>
           </div>
           <button
             onClick={onDone}
+            aria-label="Закрыть"
             className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors"
           >
             ✕
           </button>
         </div>
 
-        {/* Progress */}
-        <div className="mb-6">
-          <div className="h-2 w-full bg-white/10 rounded-full overflow-hidden">
-            <motion.div
-              className="h-full bg-gradient-to-r from-[#a8e063] to-[#56ab2f]"
-              initial={{ width: 0 }}
-              animate={{ width: `${(currentStep / TOTAL_STEPS) * 100}%` }}
-              transition={{ type: 'spring', stiffness: 120, damping: 20 }}
-            />
-          </div>
-          <div className="mt-2 text-xs text-[#9ca3af] text-right">
-            Шаг {currentStep} из {TOTAL_STEPS}
-          </div>
-        </div>
+        <Stepper />
 
-        {/* Body */}
+        {/* body */}
         <div className="space-y-8">{renderStep()}</div>
 
-        {/* Footer Navigation (hidden on step 4 because we show “Готово”) */}
+        {/* footer nav (not on step 4) */}
         {currentStep < 4 && (
           <div className="mt-8 flex items-center justify-between gap-3">
             <Button
