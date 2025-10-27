@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import MathRenderer from "@/components/MathRenderer";
+import MathRenderer from "@/components/MathRenderer"; 
 
 interface ErrorType {
   id?: string;
