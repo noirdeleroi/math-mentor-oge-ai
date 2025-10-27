@@ -73,7 +73,7 @@ export const COURSES: Record<CourseId, Course> = {
     title: 'Проверка сочинений по ЕГЭ и ОГЭ',
     tag: 'Essays',
     homeRoute: '/egeruses2',
-    staticRoutes: ['/egeruses2'],
+    staticRoutes: ['/egeruses2', '/egeruses-analytics'],
     topicsUrl: ''
   }
 };

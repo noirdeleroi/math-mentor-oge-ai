@@ -1,10 +1,13 @@
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
-import { ArrowRight, Home } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { ArrowRight, Home, Info } from "lucide-react";
+import FlyingStarsBackground from '@/components/FlyingStarsBackground';
 
 const About = () => {
+  const navigate = useNavigate();
+
   const markdownContent = `### Встречай своего личного наставника для подготовки к ЕГЭ и ОГЭ. Твой цифровой друг, который знает о тебе всё.
 
 Привет! Готовишься к экзаменам? Наверное, ты уже пересмотрел:а кучу видео на YouTube, думаешь о репетиторе или о дорогих курсах. Но у нас есть для тебя предложение получше. Знакомься — это не просто платформа с задачками. Это твой **персональный наставник**, который будет с тобой непрерывно и поможет прийти к максимальному баллу.
@@ -97,71 +100,78 @@ const About = () => {
 **Попробуй бесплатно прямо сейчас и почувствуй, каково это — учиться с личным AI-наставником!**`;
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-primary/5 via-background to-secondary/5 py-20">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="mb-6">
-              <Button asChild variant="outline" size="sm">
-                <Link to="/">
-                  <Home className="w-4 h-4 mr-2" />
-                  Главная
-                </Link>
-              </Button>
+    <div className="min-h-screen relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)' }}>
+      {/* Flying Stars Background */}
+      <FlyingStarsBackground />
+
+      {/* Main Content */}
+      <div className="relative z-10 pt-8 pb-16 px-4 md:px-8">
+        <div className="max-w-4xl mx-auto">
+          {/* Top Navigation Bar */}
+          <div className="mb-8">
+            <Button
+              onClick={() => navigate('/')}
+              variant="ghost"
+              className="bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white border border-white/20 transition-all"
+            >
+              <Home className="w-4 h-4 mr-2" />
+              Главная
+            </Button>
+          </div>
+
+          {/* Page Title */}
+          <div className="text-center mb-12">
+            <div className="flex items-center justify-center mb-4">
+              <Info className="w-16 h-16 text-yellow-500" />
             </div>
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            <h1 className="text-5xl md:text-6xl font-display font-bold mb-4 bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent">
               О Платформе EGEChat
             </h1>
-            <p className="text-xl text-muted-foreground mb-8">
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
               Твой персональный AI-наставник для подготовки к ЕГЭ и ОГЭ
             </p>
           </div>
-        </div>
-      </section>
 
-      {/* Content Section */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <div className="prose prose-lg max-w-none dark:prose-invert prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-li:text-muted-foreground prose-table:text-foreground">
+          {/* Content Section */}
+          <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 mb-8">
+            <div className="prose prose-lg max-w-none prose-invert prose-headings:text-white prose-p:text-gray-300 prose-strong:text-white prose-li:text-gray-300 prose-table:text-gray-300 prose-code:text-white">
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 components={{
                   table: ({ children }) => (
                     <div className="overflow-x-auto my-8">
-                      <table className="w-full border-collapse border border-border rounded-lg overflow-hidden">
+                      <table className="w-full border-collapse border border-white/30 rounded-lg overflow-hidden">
                         {children}
                       </table>
                     </div>
                   ),
                   thead: ({ children }) => (
-                    <thead className="bg-muted/50">
+                    <thead className="bg-white/10">
                       {children}
                     </thead>
                   ),
                   th: ({ children }) => (
-                    <th className="border border-border px-4 py-3 text-left font-semibold text-foreground">
+                    <th className="border border-white/30 px-4 py-3 text-left font-semibold text-white">
                       {children}
                     </th>
                   ),
                   td: ({ children }) => (
-                    <td className="border border-border px-4 py-3 text-muted-foreground">
+                    <td className="border border-white/30 px-4 py-3 text-gray-300">
                       {children}
                     </td>
                   ),
                   h3: ({ children }) => (
-                    <h3 className="text-2xl md:text-3xl font-bold mt-12 mb-6 text-foreground">
+                    <h3 className="text-2xl md:text-3xl font-bold mt-12 mb-6 text-white">
                       {children}
                     </h3>
                   ),
                   h4: ({ children }) => (
-                    <h4 className="text-xl md:text-2xl font-semibold mt-8 mb-4 text-foreground">
+                    <h4 className="text-xl md:text-2xl font-semibold mt-8 mb-4 text-white">
                       {children}
                     </h4>
                   ),
                   p: ({ children }) => (
-                    <p className="mb-6 text-muted-foreground leading-relaxed">
+                    <p className="mb-6 text-gray-300 leading-relaxed">
                       {children}
                     </p>
                   ),
@@ -171,12 +181,12 @@ const About = () => {
                     </ul>
                   ),
                   li: ({ children }) => (
-                    <li className="text-muted-foreground">
+                    <li className="text-gray-300">
                       {children}
                     </li>
                   ),
                   code: ({ children }) => (
-                    <code className="bg-muted px-2 py-1 rounded text-sm font-mono text-foreground">
+                    <code className="bg-white/20 px-2 py-1 rounded text-sm font-mono text-white">
                       {children}
                     </code>
                   ),
@@ -186,35 +196,36 @@ const About = () => {
               </ReactMarkdown>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* CTA Section */}
-      <section className="bg-gradient-to-r from-primary/10 to-secondary/10 py-16">
-        <div className="container mx-auto px-4">
-          <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-6 text-foreground">
+          {/* CTA Section */}
+          <div className="bg-gradient-to-r from-yellow-500/10 to-emerald-500/10 backdrop-blur-sm border border-yellow-500/30 rounded-2xl p-8 text-center">
+            <h2 className="text-3xl font-bold mb-6 text-white">
               Готов начать?
             </h2>
-            <p className="text-muted-foreground mb-8">
+            <p className="text-gray-300 mb-8">
               Присоединяйся к тысячам учеников, которые уже готовятся с EGEChat
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" className="bg-primary hover:bg-primary/90">
-                <Link to="/mydb3">
-                  Начать бесплатно
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Link>
+              <Button 
+                onClick={() => navigate('/mydb3')}
+                size="lg" 
+                className="bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36] font-bold shadow-lg transform hover:scale-105 transition-all duration-200"
+              >
+                Начать бесплатно
+                <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
-              <Button asChild variant="outline" size="lg">
-                <Link to="/faq">
-                  Узнать больше
-                </Link>
+              <Button 
+                onClick={() => navigate('/faq')}
+                variant="ghost"
+                size="lg"
+                className="bg-white/10 hover:bg-white/20 text-white border border-white/20"
+              >
+                Узнать больше
               </Button>
             </div>
           </div>
         </div>
-      </section>
+      </div>
     </div>
   );
 };

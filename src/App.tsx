@@ -74,6 +74,7 @@ const App = () => (
               <Route path="/pricing" element={<Pricing />} />
               <Route path="/faq" element={<FAQ />} />
               <Route path="/about" element={<About />} />
+              <Route path="/questionbankoge" element={<QuestionBankOGE />} />
           
               {/* pages WITH the layout (shared gradient + flying symbols) */}
               <Route element={<LearningLayout />}>
@@ -86,7 +87,6 @@ const App = () => (
                 <Route path="/book-test" element={<BookTest />} />
             <Route path="/ogemath" element={<OgeMath />} />
             <Route path="/ogemath-practice" element={<OgemathPractice />} />
-            <Route path="/questionbankoge" element={<QuestionBankOGE />} />
                 <Route path="/ogemath-mock" element={<OgemathMock />} />
                 <Route path="/ogemath-revision" element={<OgemathRevision />} />
                 <Route path="/ogemath-progress2" element={<OgemathProgress2 />} />

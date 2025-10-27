@@ -33,7 +33,8 @@ const LearningLayout: React.FC = () => {
   const courseMap = [
     { course_id: 1, name: "Математика ОГЭ", route: "/ogemath" },
     { course_id: 2, name: "Математика ЕГЭ (Базовый уровень)", route: "/egemathbasic" },
-    { course_id: 3, name: "Математика ЕГЭ (Профильный уровень)", route: "/egemathprof" }
+    { course_id: 3, name: "Математика ЕГЭ (Профильный уровень)", route: "/egemathprof" },
+    { course_id: 4, name: "Проверка сочинений по ЕГЭ и ОГЭ", route: "/egeruses2" }
   ];
   
   // Get user's enrolled courses
@@ -69,11 +70,13 @@ const LearningLayout: React.FC = () => {
       <nav className="fixed top-0 w-full z-30 backdrop-blur-lg bg-[#1a1f36]/80 border-b border-yellow-500/20">
         <div className="w-full pr-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 sm:gap-3 pl-4">
-            <img 
-              src="https://kbaazksvkvnafrwtmkcw.supabase.co/storage/v1/object/public/avatars/logo100.png" 
-              alt="Logo"
-              className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-lg"
-            />
+            <Link to="/mydb3" className="hover:opacity-80 transition-opacity">
+              <img 
+                src="https://kbaazksvkvnafrwtmkcw.supabase.co/storage/v1/object/public/avatars/logo100.png" 
+                alt="Logo"
+                className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-lg cursor-pointer"
+              />
+            </Link>
             {currentCourse ? (
               <Link 
                 to={currentCourse.homeRoute} 

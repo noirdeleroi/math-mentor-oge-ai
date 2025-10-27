@@ -21,6 +21,11 @@ const COURSES = [
     name: "Математика ЕГЭ (Профиль)",
     course_id: 3,
     route: "/egemathprof"
+  },
+  {
+    name: "Проверка сочинений по ЕГЭ и ОГЭ",
+    course_id: 4,
+    route: "/egeruses2"
   }
 ];
 
