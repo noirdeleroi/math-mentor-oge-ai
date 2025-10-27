@@ -167,6 +167,8 @@ const PracticeByNumberOgemath = () => {
   const [showImagePreview, setShowImagePreview] = useState(false);
   const [selectedPreviewImage, setSelectedPreviewImage] = useState<string | null>(null);
   const [ocrProgress, setOcrProgress] = useState<string>("");
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
+  const [analysisProgress, setAnalysisProgress] = useState<number>(0);
 
   // Formula booklet state
   const [showFormulaBooklet, setShowFormulaBooklet] = useState(false);
@@ -1079,10 +1081,23 @@ const PracticeByNumberOgemath = () => {
     if (uploadedImages.length === 0) return;
 
     setIsProcessingPhoto(true);
+    setUploadProgress(0);
+    setAnalysisProgress(0);
     setOcrProgress(`Обработка фото 1 из ${uploadedImages.length}...`);
 
     try {
       // Step 1: Process photos via new edge function
+      // Animate upload progress from 0 to 100
+      const uploadInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= 95) {
+            clearInterval(uploadInterval);
+            return 95;
+          }
+          return prev + 2;
+        });
+      }, 50);
+
       const { data: processData, error: processError } = await supabase.functions.invoke('process-device-photos', {
         body: {
           user_id: user.id,
@@ -1091,11 +1106,16 @@ const PracticeByNumberOgemath = () => {
         }
       });
 
+      clearInterval(uploadInterval);
+      setUploadProgress(100);
+
       if (processError || !processData?.success) {
         console.error('Error processing device photos:', processError);
         toast.error(processData?.error || 'Произошла ошибка при обработке. Пожалуйста, попробуйте снова.');
         setIsProcessingPhoto(false);
         setOcrProgress("");
+        setUploadProgress(0);
+        setAnalysisProgress(0);
         return;
       }
 
@@ -1117,6 +1137,17 @@ const PracticeByNumberOgemath = () => {
       }
 
       // Step 3: Call existing analyze-photo-solution function
+      // Animate analysis progress from 0 to 100
+      const analysisInterval = setInterval(() => {
+        setAnalysisProgress(prev => {
+          if (prev >= 95) {
+            clearInterval(analysisInterval);
+            return 95;
+          }
+          return prev + 2;
+        });
+      }, 50);
+
       const { data: apiResponse, error: apiError } = await supabase.functions.invoke('analyze-photo-solution', {
         body: {
           student_solution: profile.telegram_input,
@@ -1128,6 +1159,9 @@ const PracticeByNumberOgemath = () => {
         }
       });
 
+      clearInterval(analysisInterval);
+      setAnalysisProgress(100);
+
       if (apiError) {
         console.error('Error calling analyze-photo-solution:', apiError);
         if (apiResponse?.retry_message) {
@@ -1137,6 +1171,8 @@ const PracticeByNumberOgemath = () => {
         }
         setIsProcessingPhoto(false);
         setOcrProgress("");
+        setUploadProgress(0);
+        setAnalysisProgress(0);
         return;
       }
 
@@ -1185,9 +1221,15 @@ const PracticeByNumberOgemath = () => {
     } catch (error) {
       console.error('Error in handleDevicePhotoCheck:', error);
       toast.error('Произошла ошибка при обработке решения');
+      setIsProcessingPhoto(false);
+      setOcrProgress("");
+      setUploadProgress(0);
+      setAnalysisProgress(0);
     } finally {
       setIsProcessingPhoto(false);
       setOcrProgress("");
+      setUploadProgress(0);
+      setAnalysisProgress(0);
     }
   };
 
@@ -2071,6 +2113,44 @@ const PracticeByNumberOgemath = () => {
               alt="Uploaded solution full size"
               className="max-w-full max-h-[70vh] rounded-lg"
             />
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Progress Dialog with Two Loading Bars */}
+      <Dialog open={isProcessingPhoto && uploadedImages.length > 0} onOpenChange={() => {}}>
+        <DialogContent className="sm:max-w-md [&>button]:hidden">
+          <DialogHeader>
+            <DialogTitle className="text-center">Обработка решения</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-6 py-4">
+            {/* Upload Progress Bar */}
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-700">1. Загрузка фото</span>
+                <span className="text-gray-500">{Math.round(uploadProgress)}%</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                <div
+                  className="bg-gradient-to-r from-yellow-500 to-emerald-500 h-3 rounded-full transition-all duration-300 ease-out"
+                  style={{ width: `${uploadProgress}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Analysis Progress Bar */}
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-700">2. Анализ решения</span>
+                <span className="text-gray-500">{Math.round(analysisProgress)}%</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                <div
+                  className="bg-gradient-to-r from-yellow-500 to-emerald-500 h-3 rounded-full transition-all duration-300 ease-out"
+                  style={{ width: `${analysisProgress}%` }}
+                />
+              </div>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
