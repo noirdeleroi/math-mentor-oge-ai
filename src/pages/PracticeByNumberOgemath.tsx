@@ -3,7 +3,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -85,6 +86,23 @@ interface PhotoAnalysisFeedback {
   };
 }
 
+// Simplified interface for new analysis format
+interface AnalysisError {
+  type: string;
+  message: string;
+  student_latex: string;
+  expected_latex: string;
+  context_snippet: string;
+}
+
+interface AnalysisData {
+  scores: number;
+  review: {
+    errors: AnalysisError[];
+    summary?: string;
+  };
+}
+
 const PracticeByNumberOgemath = () => {
   // Helper function to check if answer is non-numeric
   const isNonNumericAnswer = (answer: string): boolean => {
@@ -142,6 +160,7 @@ const PracticeByNumberOgemath = () => {
   const [photoScores, setPhotoScores] = useState<number | null>(null);
   const [structuredPhotoFeedback, setStructuredPhotoFeedback] = useState<PhotoAnalysisFeedback | null>(null);
   const [studentSolution, setStudentSolution] = useState<string>("");
+  const [analysisData, setAnalysisData] = useState<AnalysisData | null>(null);
   
   // Device upload states
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
@@ -995,12 +1014,16 @@ const PracticeByNumberOgemath = () => {
     setStudentSolution("");
   };
 
-  const fetchStudentSolution = async (problemSubmissionId: string) => {
+  const fetchStudentSolution = async () => {
+    if (!user) return null;
+    
     try {
+      // Fetch the most recent extracted_text for the current user
       const { data, error } = await supabase
         .from('telegram_uploads')
+        // @ts-ignore - Type instantiation is excessively deep
         .select('extracted_text')
-        .eq('problem_submission_id', problemSubmissionId)
+        .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(1)
         .single();
@@ -1013,6 +1036,40 @@ const PracticeByNumberOgemath = () => {
       return data?.extracted_text || '';
     } catch (error) {
       console.error('Error in fetchStudentSolution:', error);
+      return null;
+    }
+  };
+
+  const fetchAnalysisData = async () => {
+    if (!user) return null;
+    
+    try {
+      // @ts-ignore - Type instantiation is excessively deep
+      const { data, error } = await supabase
+        .from('photo_analysis_outputs')
+        .select('raw_output')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (error) {
+        console.error('Error fetching analysis data:', error);
+        return null;
+      }
+
+      if (data?.raw_output) {
+        try {
+          return JSON.parse(data.raw_output);
+        } catch (parseError) {
+          console.error('Error parsing analysis data:', parseError);
+          return null;
+        }
+      }
+
+      return null;
+    } catch (error) {
+      console.error('Error in fetchAnalysisData:', error);
       return null;
     }
   };
@@ -1040,14 +1097,6 @@ const PracticeByNumberOgemath = () => {
         setIsProcessingPhoto(false);
         setOcrProgress("");
         return;
-      }
-
-      // Fetch student solution if problem_submission_id is available
-      if (processData?.problem_submission_id) {
-        const solution = await fetchStudentSolution(processData.problem_submission_id);
-        if (solution) {
-          setStudentSolution(solution);
-        }
       }
 
       // Step 2: Get the LaTeX from profiles.telegram_input
@@ -1106,6 +1155,18 @@ const PracticeByNumberOgemath = () => {
             
             setIsCorrect(isCorrect);
             setIsAnswered(true);
+            
+            // Always fetch and show student solution and analysis after marking
+            const solution = await fetchStudentSolution();
+            if (solution) {
+              setStudentSolution(solution);
+            }
+            
+            // Fetch analysis data
+            const analysis = await fetchAnalysisData();
+            if (analysis) {
+              setAnalysisData(analysis);
+            }
             
             // Clear uploaded images for next question
             setUploadedImages([]);
@@ -1587,26 +1648,96 @@ const PracticeByNumberOgemath = () => {
 
                   {/* Answer Result */}
                   {isAnswered && (
-                    <Alert className={isCorrect ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50"}>
-                      <div className="flex items-center gap-2">
-                        {isCorrect ? (
-                          <CheckCircle className="w-5 h-5 text-green-600" />
-                        ) : (
-                          <XCircle className="w-5 h-5 text-red-600" />
-                        )}
-                        <AlertDescription>
+                    <div className="space-y-4">
+                      <Alert className={isCorrect ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50"}>
+                        <div className="flex items-center gap-2">
                           {isCorrect ? (
-                            <span className="text-green-800">
-                              Правильно! {!solutionViewedBeforeAnswer && "Получены очки прогресса."}
-                            </span>
+                            <CheckCircle className="w-5 h-5 text-green-600" />
                           ) : (
-                            <span className="text-red-800">
-                              Неправильно. Правильный ответ: <strong>{currentQuestion.answer}</strong>
-                            </span>
+                            <XCircle className="w-5 h-5 text-red-600" />
                           )}
-                        </AlertDescription>
-                      </div>
-                    </Alert>
+                          <AlertDescription>
+                            {isCorrect ? (
+                              <span className="text-green-800">
+                                Правильно! {!solutionViewedBeforeAnswer && "Получены очки прогресса."}
+                              </span>
+                            ) : (
+                              <span className="text-red-800">
+                                Неправильно. Правильный ответ: <strong>{currentQuestion.answer}</strong>
+                              </span>
+                            )}
+                          </AlertDescription>
+                        </div>
+                      </Alert>
+
+                      {/* Show Student Solution and Analysis for photo uploads - always show after marking */}
+                      {studentSolution && currentQuestion.problem_number_type && currentQuestion.problem_number_type >= 20 && (
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                          {/* Student Solution */}
+                          <Card className="bg-blue-50 border-blue-200">
+                            <CardHeader>
+                              <CardTitle className="text-blue-800">Ваше решение</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <div className="bg-white border border-blue-200 rounded-lg p-4 max-h-96 overflow-y-auto">
+                                <MathRenderer text={studentSolution} compiler="mathjax" />
+                              </div>
+                            </CardContent>
+                          </Card>
+
+                          {/* Analysis */}
+                          {analysisData && (
+                            <Card className="bg-purple-50 border-purple-200">
+                              <CardHeader>
+                                <CardTitle className="text-purple-800">Анализ решения</CardTitle>
+                                <CardDescription>
+                                  Оценка: {analysisData.scores}/2
+                                </CardDescription>
+                              </CardHeader>
+                              <CardContent>
+                                <div className="space-y-4 max-h-96 overflow-y-auto">
+                                  {analysisData.review.errors && analysisData.review.errors.length > 0 ? (
+                                    analysisData.review.errors.map((error, index) => (
+                                      <Card key={index} className="bg-white border border-purple-200">
+                                        <CardContent className="pt-4">
+                                          <div className="space-y-2">
+                                            <Badge variant="destructive">{error.type}</Badge>
+                                            <p className="text-sm text-gray-700">{error.message}</p>
+                                            <div className="space-y-1">
+                                              <div>
+                                                <span className="text-xs font-semibold text-red-600">Что написано:</span>
+                                                <MathRenderer text={error.student_latex} compiler="mathjax" />
+                                              </div>
+                                              <div>
+                                                <span className="text-xs font-semibold text-green-600">Должно быть:</span>
+                                                <MathRenderer text={error.expected_latex} compiler="mathjax" />
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </CardContent>
+                                      </Card>
+                                    ))
+                                  ) : (
+                                    <div className="text-center py-8 text-gray-500">
+                                      Ошибок не найдено. Отличная работа! 🎉
+                                    </div>
+                                  )}
+                                  
+                                  {analysisData.review.summary && (
+                                    <Card className="bg-green-50 border-green-200 mt-4">
+                                      <CardContent className="pt-4">
+                                        <p className="text-sm font-semibold text-green-800">Общая оценка:</p>
+                                        <MathRenderer text={analysisData.review.summary} compiler="mathjax" />
+                                      </CardContent>
+                                    </Card>
+                                  )}
+                                </div>
+                              </CardContent>
+                            </Card>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   )}
                 </div>
 
