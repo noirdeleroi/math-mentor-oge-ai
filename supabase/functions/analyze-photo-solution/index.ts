@@ -48,11 +48,41 @@ serve(async (req)=>{
 
 **Вывод**: JSON-объект с ключами:
 - "scores": n (где n = 0,1,2),
-- "review": Анализ решения в **using MathJax-compatible LaTeX in HTML format, enclosed in proper delimiters**, с обоснованием балла.
+- "review": {
+  "errors": [
+    {
+      "type": "Арифметические ошибки" | "Алгебраические ошибки" | "Логические ошибки" | "Нотационные ошибки" | "Ошибки копирования" | "Неполные решения" | "Другие",
+      "message": "детальное описание ошибки (plain text с MathJax LaTeX в формате \$...\$ для математики)",
+      "student_latex": "что написал ученик",
+      "expected_latex": "как должно было быть правильно",
+      "context_snippet": "фрагмент из решения ученика где ошибка (точная копия)"
+    }
+  ]
+}
 
-**ВАЖНО**: Если внутри \\text{} содержится более 10 слов, которые отрендерятся в одну длинную строку, разбейте текст на более короткие строки, используя несколько блоков \\text{} или соответствующие разрывы строк.
+**ВАЖНО**: 
+- Массив "errors" должен содержать ВСЕ найденные ошибки
+- Для каждой ошибки указывай РЕАЛЬНЫЕ фрагменты из решения ученика
+- context_snippet должен быть ТОЧНОЙ копией того что написал ученик
+- message должен быть понятным объяснением на русском языке
+- Можно использовать MathJax LaTeX в формате \$...\$ внутри message, student_latex, expected_latex
+- Если ошибок нет, верни пустой массив errors: []
 
-Пример: {"scores": 1, "review": "Плюс: Логично выведено. Ошибка: $a + b = 5$"}`;
+Пример:
+{
+  "scores": 0,
+  "review": {
+    "errors": [
+      {
+        "type": "Алгебраические ошибки",
+        "message": "Ошибка при раскрытии скобок. Правая часть $(x-2)^2$ раскрывается как $x^2 - 4x + 4$, но ученик неправильно перенёс члены в левую часть.",
+        "student_latex": "x^4 - x^2 + 4x - 4 = 0",
+        "expected_latex": "x^4 - (x-2)^2 = 0",
+        "context_snippet": "$$x^4 - x^2 + 4x - 4 = 0$$"
+      }
+    ]
+  }
+}`;
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -148,12 +178,28 @@ serve(async (req)=>{
       throw new Error('No feedback received from OpenRouter API');
     }
     // Second API call to polish LaTeX
-    const polishPrompt = `You are given a JSON output: ${feedback}, where scores is in {0,1,2} and review is MathJax-compatible LaTeX in HTML format, enclosed in proper delimiters.
+    const polishPrompt = `You are given a JSON output: ${feedback}. 
 
-Your task: Return the SAME JSON, but ensure review is perfectly compilable MathJax-compatible LaTeX in HTML format, enclosed in proper delimiters:
+The structure is:
+{
+  "scores": 0|1|2,
+  "review": {
+    "errors": [
+      {
+        "type": "...",
+        "message": "...",
+        "student_latex": "...",
+        "expected_latex": "...",
+        "context_snippet": "..."
+      }
+    ]
+  }
+}
 
+Your task: Return the SAME JSON structure, but ensure:
 1. **IMPORTANT**: Preserve original meaning and structure. Only fix syntax if needed.
-2. **IMPORTANT**: If there are more than 10 words inside \\text{} that would render as one long line, break the text into shorter lines using multiple \\text{} blocks or appropriate line breaks.
+2. **IMPORTANT**: Validate that all LaTeX in message, student_latex, expected_latex, and context_snippet is properly formatted
+3. **IMPORTANT**: If context_snippet contains $$...$$, preserve it. If it contains $...$, preserve it.
 
 **IMPORTANT**: Return ONLY the corrected JSON. No explanations.`;
     const polishResponse = await fetch('https://openrouter.ai/api/v1/chat/completions', {

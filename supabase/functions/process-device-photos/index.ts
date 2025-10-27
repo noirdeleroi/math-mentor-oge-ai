@@ -57,7 +57,8 @@ serve(async (req) => {
           telegram_user_id: 0,
           telegram_upload_content: imageBase64,
           problem_submission_id: problem_submission_id,
-          extracted_text: null
+          extracted_text: null,
+          user_id: user_id
         });
 
       if (insertError) {
