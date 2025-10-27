@@ -33,56 +33,58 @@ serve(async (req)=>{
         }
       });
     }
-    const prompt = `Ты строгий, но справедливый учитель математики. Оцени решение ученика (из OCR-текста, с возможными опечатками) по условию задачи. Входные данные:
+    const prompt = `Ты строгий, но справедливый учитель математики. Проанализируй решение ученика по условию задачи, СРАВНИВАЯ его с "Правильным решением". Используй OCR-текст (возможны опечатки), но постарайся сохранить математический смысл.
 
-Решение ученика: ${student_solution}
+Входные данные:
+- Условие задачи:
+${problem_text}
 
-Правильное решение: ${solution_text}
+- Правильное решение (эталонное):
+${solution_text}
 
-Условие задачи: ${problem_text}
+- Решение ученика (OCR):
+${student_solution}
 
-**Критерии баллов (макс. 2)**:
-- 2: Обоснованно получен верный ответ.
-- 1: Решение доведено до конца, но арифметическая ошибка; дальнейшие шаги верны с учётом ошибки.
-- 0: Не соответствует вышеуказанному.
+Твоя задача:
+1. Сравни шаги "Правильного решения" с текстом OCR-решения ученика.
+2. Определи ошибки ученика: арифметические, алгебраические, логические, неверные данные, пропуски шагов, ошибки в оформлении, и т. п.
+3. Для каждой ошибки верни объект с такими полями:
+   - **type** — тип ошибки: "Арифметические ошибки", "Алгебраические ошибки", "Логические ошибки", "Нотационные ошибки", "Ошибки копирования", "Неполные решения", "Другие";
+   - **message** — краткое понятное объяснение ошибки;
+   - **student_latex** — математическое выражение ученика (The LaTeX should be in MathJax-compatible HTML. Use <p> and <span> tags where needed. Inline math should be wrapped in \( ... \) and block math in $$ ... $$.);
+   - **expected_latex** — правильное выражение (The LaTeX should be in MathJax-compatible HTML. Use <p> and <span> tags where needed. Inline math should be wrapped in \( ... \) and block math in $$ ... $$.);
+   - **context_snippet** — короткий участок текста ИЗ OCR-РЕШЕНИЯ, содержащий ошибку, ДОСЛОВНО взятый из входного текста, без малейших изменений символов, пробелов или форматирования.  
+     Этот фрагмент должен быть точным подстрочным совпадением в исходном тексте "Решение ученика".  
+     Не переформатируй, не добавляй и не убирай символы. Просто скопируй тот участок, где обнаружена ошибка.
+     При возможности — включай несколько символов ДО и ПОСЛЕ ошибки, чтобы контекст был уникальным, но всё равно из того же OCR-текста.
+4. Определи итоговый числовой балл по правилам:
+   - **2** — решение корректное, без критичных ошибок;
+   - **1** — решение доведено до конца, но есть локальная ошибка (например, арифметическая);
+   - **0** — ответ неверен, решение не завершено, или ошибка фундаментальна.
 
-**Вывод**: JSON-объект с ключами:
-- "scores": n (где n = 0,1,2),
-- "review": {
-  "errors": [
-    {
-      "type": "Арифметические ошибки" | "Алгебраические ошибки" | "Логические ошибки" | "Нотационные ошибки" | "Ошибки копирования" | "Неполные решения" | "Другие",
-      "message": "детальное описание ошибки (plain text с MathJax LaTeX в формате \$...\$ для математики)",
-      "student_latex": "что написал ученик",
-      "expected_latex": "как должно было быть правильно",
-      "context_snippet": "фрагмент из решения ученика где ошибка (точная копия)"
-    }
-  ]
-}
-
-**ВАЖНО**: 
-- Массив "errors" должен содержать ВСЕ найденные ошибки
-- Для каждой ошибки указывай РЕАЛЬНЫЕ фрагменты из решения ученика
-- context_snippet должен быть ТОЧНОЙ копией того что написал ученик
-- message должен быть понятным объяснением на русском языке
-- Можно использовать MathJax LaTeX в формате \$...\$ внутри message, student_latex, expected_latex
-- Если ошибок нет, верни пустой массив errors: []
-
-Пример:
+Формат вывода:
+Верни **ТОЛЬКО один валидный JSON-объект UTF-8** такого вида:
 {
-  "scores": 0,
+  "scores": <0|1|2>,
   "review": {
     "errors": [
       {
-        "type": "Алгебраические ошибки",
-        "message": "Ошибка при раскрытии скобок. Правая часть $(x-2)^2$ раскрывается как $x^2 - 4x + 4$, но ученик неправильно перенёс члены в левую часть.",
-        "student_latex": "x^4 - x^2 + 4x - 4 = 0",
-        "expected_latex": "x^4 - (x-2)^2 = 0",
-        "context_snippet": "$$x^4 - x^2 + 4x - 4 = 0$$"
+        "type": string,
+        "message": string,
+        "student_latex": string,
+        "expected_latex": string,
+        "context_snippet": string
       }
-    ]
+    ],
+    "summary": very concise text of verdict including scores, example: Оценка: X (explanation)
   }
-}`;
+}
+
+Требования:
+- Не добавляй Markdown, комментарии или текст вне JSON.
+- Не заключай JSON в тройные кавычки.
+- Если ошибок нет — верни "errors": [].
+- Все "context_snippet" должны быть **точно такими, как в исходном OCR-тексте**, без малейших изменений.`;
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -90,14 +92,14 @@ serve(async (req)=>{
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'x-ai/grok-3-mini',
+        model: 'anthropic/claude-haiku-4.5',
         messages: [
           {
             role: 'user',
             content: prompt
           }
         ],
-        temperature: 0.5
+        temperature: 0.2
       })
     });
     if (!response.ok) {
@@ -177,31 +179,36 @@ serve(async (req)=>{
     if (!feedback) {
       throw new Error('No feedback received from OpenRouter API');
     }
-    // Second API call to polish LaTeX
-    const polishPrompt = `You are given a JSON output: ${feedback}. 
+    // Second API call to polish & validate LaTeX WITHOUT changing structure or meaning
+    const polishPrompt = `You are given a JSON string called feedback:
 
-The structure is:
-{
-  "scores": 0|1|2,
-  "review": {
-    "errors": [
-      {
-        "type": "...",
-        "message": "...",
-        "student_latex": "...",
-        "expected_latex": "...",
-        "context_snippet": "..."
-      }
-    ]
-  }
-}
+    FEEDBACK_START
+    ${feedback}
+    FEEDBACK_END
 
-Your task: Return the SAME JSON structure, but ensure:
-1. **IMPORTANT**: Preserve original meaning and structure. Only fix syntax if needed.
-2. **IMPORTANT**: Validate that all LaTeX in message, student_latex, expected_latex, and context_snippet is properly formatted
-3. **IMPORTANT**: If context_snippet contains $$...$$, preserve it. If it contains $...$, preserve it.
+    Your task: return the EXACT SAME JSON structure and meaning, but with the following fixes applied **ONLY** inside content of keys "student_latex", "expected_latex", "message". DO NOT add or remove keys. DO NOT reorder arrays. DO NOT change numbers or booleans. DO NOT add comments or Markdown. Return ONLY the corrected JSON.
 
-**IMPORTANT**: Return ONLY the corrected JSON. No explanations.`;
+    ### Invariants (MUST NOT break)
+    - Keep the top-level shape: {"scores": <0|1|2>, "review": { ... }}.
+    - Preserve all keys, nesting, and array lengths exactly as in the input.
+    - Preserve all numeric and boolean values exactly (including "scores").
+    - Do not invent or delete errors, steps, marks, or fields.
+    - Do not wrap the entire JSON in backticks or code fences. Output must be valid JSON UTF-8.
+
+    For content of keys "student_latex", "expected_latex", "message":
+      - Ensure the value content LaTeX should be in MathJax-compatible HTML. Use <p> and <span> tags where needed. Inline math should be wrapped in \( ... \) and block math in $$ ... $$.. I should be able to render values of keys "student_latex", "expected_latex", "message" straight away.
+      - Do NOT change the mathematical meaning.
+      
+    **JSON validity**
+      - Ensure output is valid JSON.
+      - Keep all existing keys even if empty strings/arrays.
+
+    ### IMPORTANT
+    - **Do not wrap the entire JSON in backticks or code fences.**
+    - **CHANGE NOTHING EXCEPT CONTENT of keys "student_latex", "expected_latex", "message".**
+    - DO NOT change any numbers, booleans, indices, IDs, or array orders.
+    - DO NOT add or remove keys.
+    - DO NOT add explanations. Return ONLY the corrected JSON.`;
     const polishResponse = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -209,7 +216,7 @@ Your task: Return the SAME JSON structure, but ensure:
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'qwen/qwen3-coder-flash',
+        model: 'x-ai/grok-code-fast-1',
         messages: [
           {
             role: 'user',
