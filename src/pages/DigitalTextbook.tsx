@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -147,6 +147,7 @@ const DigitalTextbook = () => {
   const [customQuestion, setCustomQuestion] = useState('');
   const [isSelecting, setIsSelecting] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const selectionPopupRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
   const { messages, isTyping, isDatabaseMode, addMessage, setIsTyping } = useChatContext();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -276,8 +277,13 @@ const DigitalTextbook = () => {
     setIsSelecting(!isSelecting);
   };
 
-  const handleTextSelection = () => {
+  const handleTextSelection = (event?: Event) => {
     setTimeout(() => {
+      // Check if click was inside the selection popup
+      if (event?.target && selectionPopupRef.current?.contains(event.target as Node)) {
+        return; // Don't process selection if clicking inside popup
+      }
+      
       const selected = getSelectedTextWithMath();
       if (!selected) {
         setSelectedText('');
@@ -324,7 +330,8 @@ const DigitalTextbook = () => {
 
     try {
       // Send message to AI and get response
-      const aiResponse = await sendChatMessage(newUserMessage, messages, isDatabaseMode, user.id);
+      // Skip task ID check on textbook page - it's not needed here
+      const aiResponse = await sendChatMessage(newUserMessage, messages, isDatabaseMode, user.id, undefined, true);
       addMessage(aiResponse);
       
       // Save chat interaction to database
@@ -527,17 +534,17 @@ const DigitalTextbook = () => {
 
   useEffect(() => {
     if (isSelecting) {
-      document.addEventListener('mouseup', handleTextSelection);
-      document.addEventListener('touchend', handleTextSelection);
-    } else {
-      document.removeEventListener('mouseup', handleTextSelection);
-      document.removeEventListener('touchend', handleTextSelection);
+      const handleMouseUp = (e: MouseEvent) => handleTextSelection(e);
+      const handleTouchEnd = (e: TouchEvent) => handleTextSelection(e);
+      
+      document.addEventListener('mouseup', handleMouseUp);
+      document.addEventListener('touchend', handleTouchEnd);
+      
+      return () => {
+        document.removeEventListener('mouseup', handleMouseUp);
+        document.removeEventListener('touchend', handleTouchEnd);
+      };
     }
-
-    return () => {
-      document.removeEventListener('mouseup', handleTextSelection);
-      document.removeEventListener('touchend', handleTextSelection);
-    };
   }, [isSelecting]);
 
   return (
@@ -762,7 +769,7 @@ const DigitalTextbook = () => {
 
       {/* Text Selection Popup */}
       {selectedText && (
-        <div className="fixed top-20 md:top-24 right-2 md:right-4 left-2 md:left-auto z-50 animate-fade-in">
+        <div ref={selectionPopupRef} className="fixed top-20 md:top-24 right-2 md:right-4 left-2 md:left-auto z-50 animate-fade-in">
           <div className="bg-white/95 backdrop-blur-md border border-yellow-500/20 rounded-2xl shadow-2xl p-4 md:p-5 max-w-md mx-auto md:mx-0 transform transition-all duration-300 hover:scale-105">
             <div className="flex items-start gap-3 mb-4">
               <div className="w-8 h-8 bg-gradient-to-r from-yellow-500 to-emerald-500 rounded-full flex items-center justify-center flex-shrink-0">

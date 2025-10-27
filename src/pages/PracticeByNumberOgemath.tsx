@@ -1019,9 +1019,9 @@ const PracticeByNumberOgemath = () => {
     
     try {
       // Fetch the most recent extracted_text for the current user
+      // @ts-ignore - Supabase type instantiation issue
       const { data, error } = await supabase
         .from('telegram_uploads')
-        // @ts-ignore - Type instantiation is excessively deep
         .select('extracted_text')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })

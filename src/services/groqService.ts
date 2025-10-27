@@ -66,7 +66,7 @@ function extractLastQuestionId(messages: Message[]): string | null {
   return null;
 }
 
-export async function getChatCompletion(messages: Message[], userId: string, homeworkContext?: any): Promise<string> {
+export async function getChatCompletion(messages: Message[], userId: string, homeworkContext?: any, skipTaskIdCheck: boolean = false): Promise<string> {
   try {
     const lastMessageRaw = messages[messages.length - 1]?.content || "";
     const lastMessage = norm(lastMessageRaw);
@@ -80,21 +80,27 @@ export async function getChatCompletion(messages: Message[], userId: string, hom
       lastMessage.includes('не понял') || lastMessage.includes('объясни') || lastMessage.includes('подробнее');
 
     if (asksAnswer || asksSolution || asksExplain) {
-      const questionId = extractLastQuestionId(messages);
-      if (!questionId) return "Я не могу найти последнюю задачу. Пожалуйста, запроси новую.";
+      // Skip task ID check on textbook page
+      if (skipTaskIdCheck) {
+        // Let the AI handle the request without requiring a task ID
+        // Continue to the general AI conversation below
+      } else {
+        const questionId = extractLastQuestionId(messages);
+        if (!questionId) return "Я не могу найти последнюю задачу. Пожалуйста, запроси новую.";
 
-      const problem = await getMathProblemById(questionId);
-      if (!problem) return "Не удалось найти задачу по ID.";
+        const problem = await getMathProblemById(questionId);
+        if (!problem) return "Не удалось найти задачу по ID.";
 
-      if (asksAnswer) {
-        return `📌 Ответ: **${problem.answer}**`;
-      }
-      if (asksSolution) {
-        return problem.solution_text || "Решение пока недоступно.";
-      }
-      if (asksExplain) {
-        // убедитесь, что ключ совпадает с БД
-        return (problem as any).solutiontextexpanded || problem.solution_text || "Подробного объяснения нет.";
+        if (asksAnswer) {
+          return `📌 Ответ: **${problem.answer}**`;
+        }
+        if (asksSolution) {
+          return problem.solution_text || "Решение пока недоступно.";
+        }
+        if (asksExplain) {
+          // убедитесь, что ключ совпадает с БД
+          return (problem as any).solutiontextexpanded || problem.solution_text || "Подробного объяснения нет.";
+        }
       }
     }
 

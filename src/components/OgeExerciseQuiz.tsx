@@ -126,7 +126,7 @@ const OgeExerciseQuiz: React.FC<OgeExerciseQuizProps> = ({
     if (isCorrect) {
       trackActivity('problem', 2);
       if ((window as any).triggerEnergyPointsAnimation) {
-        (window as any).triggerEnergyPointsAnimation(10);
+        (window as any).triggerEnergyPointsAnimation(1);
       }
     }
 
