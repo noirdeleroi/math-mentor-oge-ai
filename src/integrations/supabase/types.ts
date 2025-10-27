@@ -426,6 +426,7 @@ export type Database = {
         Row: {
           computed_summary: Json
           course_id: string | null
+          expected_score: number | null
           id: number
           raw_data: Json
           run_timestamp: string
@@ -435,6 +436,7 @@ export type Database = {
         Insert: {
           computed_summary: Json
           course_id?: string | null
+          expected_score?: number | null
           id?: number
           raw_data: Json
           run_timestamp?: string
@@ -444,6 +446,7 @@ export type Database = {
         Update: {
           computed_summary?: Json
           course_id?: string | null
+          expected_score?: number | null
           id?: number
           raw_data?: Json
           run_timestamp?: string
