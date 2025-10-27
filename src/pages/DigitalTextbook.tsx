@@ -277,7 +277,7 @@ const DigitalTextbook = () => {
     setIsSelecting(!isSelecting);
   };
 
-  const handleTextSelection = (event?: Event) => {
+  const handleTextSelection = (event?: React.MouseEvent<HTMLDivElement>) => {
     setTimeout(() => {
       // Check if click was inside the selection popup
       if (event?.target && selectionPopupRef.current?.contains(event.target as Node)) {
