@@ -47,8 +47,8 @@ const ERROR_TYPE_COLORS: Record<string, string> = {
 };
 
 interface PhotoAnalysisFeedbackProps {
-  ocrText: string;
-  analysisData: PhotoAnalysisData;
+  ocrText?: string;
+  analysisData?: PhotoAnalysisData;
   scores?: number;
 }
 
@@ -145,7 +145,7 @@ export default function PhotoAnalysisFeedback({
     if (card) card.scrollIntoView({ behavior: "smooth", block: "center" });
   };
 
-  const snippets = analysisData.review.errors.map((error) => error.context_snippet || error.location?.snippet || "");
+  const snippets = analysisData?.review?.errors?.map((error) => error.context_snippet || error.location?.snippet || "") || [];
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -180,15 +180,17 @@ export default function PhotoAnalysisFeedback({
           )}
 
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 max-h-96 overflow-y-auto">
-            {snippets.length > 0 && snippets.some(s => s) ? (
+            {snippets.length > 0 && snippets.some(s => s) && ocrText ? (
               <div className="font-mono text-sm">{highlightText(ocrText, snippets)}</div>
-            ) : (
+            ) : ocrText ? (
               // Dynamic key ensures re-typeset when OCR text arrives/changes
               <MathRenderer
                 key={`ocr-${ocrText.length}`}
                 text={wrapLatex(ocrText)}
                 compiler="mathjax"
               />
+            ) : (
+              <p className="text-gray-500 text-sm">Загрузка...</p>
             )}
           </div>
         </CardContent>
@@ -196,7 +198,7 @@ export default function PhotoAnalysisFeedback({
 
       {/* Right: Error Boxes */}
       <div className="space-y-4 max-h-[500px] overflow-y-auto">
-        {(analysisData.review.errors && analysisData.review.errors.length === 0) && (
+        {(!analysisData || !analysisData.review || !analysisData.review.errors || analysisData.review.errors.length === 0) && (
           <Card className="bg-green-50 border-green-200">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium text-green-800">Ошибок не найдено</CardTitle>
@@ -207,7 +209,7 @@ export default function PhotoAnalysisFeedback({
           </Card>
         )}
 
-        {analysisData.review.errors.map((error, index) => (
+        {analysisData?.review?.errors?.map((error, index) => (
           <Card
             key={index}
             ref={(el) => (errorCardRefs.current[index] = el)}
@@ -281,7 +283,7 @@ export default function PhotoAnalysisFeedback({
       </div>
 
       {/* Summary Section */}
-      {analysisData.review.summary && (
+      {analysisData?.review?.summary && (
         <Card className="bg-blue-50 border-blue-200 mt-6">
           <CardHeader>
             <CardTitle className="text-blue-800 text-lg">Итоговая оценка</CardTitle>
