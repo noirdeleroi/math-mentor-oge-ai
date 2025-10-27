@@ -57,6 +57,8 @@ export type Database = {
         Row: {
           course_id: string
           created_at: string
+          embedded_response: string | null
+          embedded_user: string | null
           id: string
           response: string
           time_of_response: string
@@ -67,6 +69,8 @@ export type Database = {
         Insert: {
           course_id: string
           created_at?: string
+          embedded_response?: string | null
+          embedded_user?: string | null
           id?: string
           response: string
           time_of_response?: string
@@ -77,6 +81,8 @@ export type Database = {
         Update: {
           course_id?: string
           created_at?: string
+          embedded_response?: string | null
+          embedded_user?: string | null
           id?: string
           response?: string
           time_of_response?: string
@@ -928,44 +934,6 @@ export type Database = {
         }
         Relationships: []
       }
-      student_essay: {
-        Row: {
-          analysis: string | null
-          created_at: string
-          essay_topic_id: string
-          id: string
-          score: number | null
-          text_scan: string | null
-          user_id: string
-        }
-        Insert: {
-          analysis?: string | null
-          created_at?: string
-          essay_topic_id: string
-          id?: string
-          score?: number | null
-          text_scan?: string | null
-          user_id: string
-        }
-        Update: {
-          analysis?: string | null
-          created_at?: string
-          essay_topic_id?: string
-          id?: string
-          score?: number | null
-          text_scan?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "student_essay_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       student_essay1: {
         Row: {
           analysis: string | null
@@ -1082,24 +1050,30 @@ export type Database = {
           extracted_text: string | null
           id: number
           problem_submission_id: string
+          question_id: string | null
           telegram_upload_content: string
           telegram_user_id: number
+          user_id: string | null
         }
         Insert: {
           created_at?: string | null
           extracted_text?: string | null
           id?: number
           problem_submission_id: string
+          question_id?: string | null
           telegram_upload_content: string
           telegram_user_id: number
+          user_id?: string | null
         }
         Update: {
           created_at?: string | null
           extracted_text?: string | null
           id?: number
           problem_submission_id?: string
+          question_id?: string | null
           telegram_upload_content?: string
           telegram_user_id?: number
+          user_id?: string | null
         }
         Relationships: []
       }

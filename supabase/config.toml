@@ -39,6 +39,12 @@ verify_jwt = true
 [functions.weekly-energy-points-reset]
 verify_jwt = false
 
+[functions.embed-chat-message]
+verify_jwt = false
+
+[functions.groq-chat]
+verify_jwt = false
+
 [db]
 major_version = 15
 
