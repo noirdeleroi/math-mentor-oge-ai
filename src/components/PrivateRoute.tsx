@@ -7,7 +7,7 @@ const PrivateRoute = () => {
   
   // If still loading authentication state, show nothing
   if (isLoading) {
-    return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
+    return <div className="flex justify-center items-center min-h-screen">Загрузка...</div>;
   }
   
   // If not authenticated, redirect to home page

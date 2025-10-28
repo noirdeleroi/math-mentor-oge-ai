@@ -66,7 +66,7 @@ const App = () => (
             <TooltipProvider>
               <Toaster />
               <Sonner />
-              <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+              <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Загрузка...</div>}>
             <Routes>
               {/* pages WITHOUT the layout (plain) */}
               <Route path="/" element={<Index />} />

@@ -15,7 +15,7 @@ const Index = () => {
 
   // Show loading while authentication state is being determined
   if (isLoading) {
-    return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
+    return <div className="flex justify-center items-center min-h-screen">Загрузка...</div>;
   }
 
   return (
