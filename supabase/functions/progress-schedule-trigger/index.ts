@@ -196,12 +196,219 @@ async function storeProgressSnapshot(supabase, user_id, course_id, progressData)
         "Дней подряд": streak
       };
     }
+    // 🧮 Expected exam score calculation (based on Bayesian probabilities)
+    let expected_score = null;
+    try {
+      // Extract FIPI problems from raw_data
+      const fipiProblems = raw_data.filter((item)=>item["задача ФИПИ"]);
+      const probs = fipiProblems.map((item)=>item.prob || 0);
+      if (probs.length > 0) {
+        let weights = [];
+        // Select scoring rules based on course_id
+        if (course_id === '1') {
+          // Problem 1 → 5 pts, problems 6–19 → 1 pt, problems 20–25 → 2 pts
+          weights = probs.map((_, i)=>{
+            const n = i + 1;
+            if (n === 1) return 5;
+            if (n >= 6 && n <= 19) return 1;
+            if (n >= 20 && n <= 25) return 2;
+            return 0;
+          });
+        } else if (course_id === '2') {
+          // Problems 1–21 → 1 pt each
+          weights = probs.map((_, i)=>i + 1 <= 21 ? 1 : 0);
+        } else if (course_id === '3') {
+          // Problems 1–12 → 1, 13→2, 14→3, 15→2, 16→2, 17→3, 18→4, 19→4
+          const pointMap = {
+            13: 2,
+            14: 3,
+            15: 2,
+            16: 2,
+            17: 3,
+            18: 4,
+            19: 4
+          };
+          weights = probs.map((_, i)=>{
+            const n = i + 1;
+            if (n <= 12) return 1;
+            return pointMap[n] || 0;
+          });
+        }
+        // Step 1: compute naive and calibrated expected scores
+        function logistic(x) {
+          return 1 / (1 + Math.exp(-x));
+        }
+        const a = 5, b = 0.6, g = 0.25;
+        const naive = probs.reduce((sum, p, i)=>sum + p * weights[i], 0);
+        const calibrated = probs.reduce((sum, p, i)=>{
+          const z = a * (p - b);
+          const q = g + (1 - g) * logistic(z);
+          return sum + q * weights[i];
+        }, 0);
+        let raw_expected = 0.3 * naive + 0.7 * calibrated;
+        // Step 2: convert to 0–100 scale for course_id === '3'
+        if (course_id === '3') {
+          const scaleTable = [
+            [
+              1,
+              6
+            ],
+            [
+              2,
+              11
+            ],
+            [
+              3,
+              17
+            ],
+            [
+              4,
+              22
+            ],
+            [
+              5,
+              27
+            ],
+            [
+              6,
+              34
+            ],
+            [
+              7,
+              40
+            ],
+            [
+              8,
+              46
+            ],
+            [
+              9,
+              52
+            ],
+            [
+              10,
+              58
+            ],
+            [
+              11,
+              64
+            ],
+            [
+              12,
+              70
+            ],
+            [
+              13,
+              72
+            ],
+            [
+              14,
+              74
+            ],
+            [
+              15,
+              76
+            ],
+            [
+              16,
+              78
+            ],
+            [
+              17,
+              80
+            ],
+            [
+              18,
+              82
+            ],
+            [
+              19,
+              84
+            ],
+            [
+              20,
+              86
+            ],
+            [
+              21,
+              88
+            ],
+            [
+              22,
+              90
+            ],
+            [
+              23,
+              92
+            ],
+            [
+              24,
+              94
+            ],
+            [
+              25,
+              95
+            ],
+            [
+              26,
+              96
+            ],
+            [
+              27,
+              97
+            ],
+            [
+              28,
+              98
+            ],
+            [
+              29,
+              99
+            ],
+            [
+              30,
+              100
+            ],
+            [
+              31,
+              100
+            ],
+            [
+              32,
+              100
+            ]
+          ];
+          // interpolate between nearest table points
+          const floorRow = scaleTable.findLast(([p])=>p <= raw_expected);
+          const ceilRow = scaleTable.find(([p])=>p >= raw_expected);
+          if (!floorRow) {
+            expected_score = scaleTable[0][1]; // below min
+          } else if (!ceilRow) {
+            expected_score = scaleTable.at(-1)[1]; // above max
+          } else if (floorRow[0] === ceilRow[0]) {
+            expected_score = floorRow[1];
+          } else {
+            // linear interpolation between points
+            const [x1, y1] = floorRow;
+            const [x2, y2] = ceilRow;
+            const t = (raw_expected - x1) / (x2 - x1);
+            expected_score = +(y1 + t * (y2 - y1)).toFixed(2);
+          }
+        } else {
+          expected_score = +raw_expected.toFixed(2);
+        }
+      }
+    } catch (error) {
+      console.error("Error calculating expected score:", error);
+      expected_score = null;
+    }
     const { error } = await supabase.from('mastery_snapshots').insert({
       user_id,
       course_id,
       raw_data,
       computed_summary,
       stats,
+      expected_score,
       run_timestamp: new Date().toISOString()
     });
     if (error) {
