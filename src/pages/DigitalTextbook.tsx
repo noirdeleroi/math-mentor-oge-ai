@@ -128,6 +128,24 @@ const getFilteredSkills = (skills: Skill[], searchTerm: string): Skill[] => {
   );
 };
 
+const findTopicForSkill = (skillId: number): { moduleName: string; topicKey: string; topicName: string } | null => {
+  const syllabusData = newSyllabusData as SyllabusStructure;
+  
+  for (const [moduleName, module] of Object.entries(syllabusData)) {
+    for (const [topicKey, topicData] of Object.entries(module)) {
+      if (topicData.skills.some(skill => skill.number === skillId)) {
+        return {
+          moduleName,
+          topicKey,
+          topicName: topicData.name
+        };
+      }
+    }
+  }
+  
+  return null;
+};
+
 const DigitalTextbook = () => {
   // Initialize MathJax selection highlighting
   useMathJaxSelection();
@@ -556,7 +574,7 @@ const DigitalTextbook = () => {
       {/* Mobile Menu Button */}
       <button
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-        className="fixed top-4 left-4 z-50 md:hidden bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-400 hover:to-emerald-400 text-[#1a1f36] p-2 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-110 transition-all duration-300"
+        className="md:hidden fixed top-20 left-4 z-50 bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20 shadow-lg rounded-lg p-2"
       >
         <BookOpen className="h-5 w-5" />
       </button>
@@ -579,15 +597,15 @@ const DigitalTextbook = () => {
       )}
 
       {/* Left Sidebar - Responsive */}
-      <div className={`${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 fixed md:relative z-40 md:z-auto w-64 h-screen bg-[#1a1f36]/95 md:bg-[#1a1f36]/80 backdrop-blur-lg border-r border-yellow-500/20 flex-shrink-0 flex flex-col overflow-auto pt-20 md:pt-20 transition-transform duration-300 ease-in-out`}>
+      <div className={`${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 fixed md:relative z-40 md:z-auto w-64 h-screen bg-white/10 backdrop-blur-sm border-r border-white/20 flex-shrink-0 flex flex-col overflow-auto pt-20 md:pt-20 transition-transform duration-300 ease-in-out`}>
         
         {/* Navigation buttons */}
-        <div className="p-4 space-y-2 border-b border-yellow-500/20">
-          {/* Back to Syllabus - First */}
+        <div className="p-4 space-y-2">
+          {/* Back to Syllabus */}
           <Button
             onClick={handleBackToSyllabus}
             variant="ghost"
-            className="w-full justify-start text-white hover:bg-yellow-500/10 hover:text-yellow-400"
+            className="w-full justify-start text-white hover:bg-white/10 hover:text-yellow-400"
           >
             <BookOpen className="mr-2 h-4 w-4" />
             К программе
@@ -597,7 +615,7 @@ const DigitalTextbook = () => {
           <Link to="/cellard-lp2">
             <Button
               variant="ghost"
-              className="w-full justify-start text-white hover:bg-yellow-500/10 hover:text-yellow-400"
+              className="w-full justify-start text-white hover:bg-white/10 hover:text-yellow-400"
             >
               <Target className="mr-2 h-4 w-4" />
               Платформа
@@ -610,7 +628,7 @@ const DigitalTextbook = () => {
             className={`w-full justify-start relative transition-all duration-300 ${
               isSelecting 
                 ? "bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-400 hover:to-emerald-400 text-[#1a1f36] shadow-xl ring-2 ring-yellow-300/50" 
-                : "text-white hover:bg-yellow-500/10 hover:text-yellow-400"
+                : "text-white hover:bg-white/10 hover:text-yellow-400"
             }`}
           >
             <Highlighter className="mr-2 h-4 w-4" />
@@ -627,7 +645,7 @@ const DigitalTextbook = () => {
             >
               <Button
                 variant="ghost"
-                className="w-full justify-start text-white hover:bg-yellow-500/10 hover:text-yellow-400 font-medium"
+                className="w-full justify-start text-white hover:bg-white/10 hover:text-yellow-400 font-medium"
               >
                 <Target className="mr-2 h-4 w-4" />
                 К уроку
@@ -653,23 +671,34 @@ const DigitalTextbook = () => {
                 >
                   Программа
                 </button>
-                {selectedModule && (
-                  <>
-                    <ChevronRight className="h-4 w-4" />
-                    <span>{selectedModule}</span>
-                  </>
-                )}
-                {selectedTopic && (
+                
+                {/* Show topic if we have it, or find it from skill */}
+                {(selectedTopic || (selectedSkill && !selectedTopic)) && (
                   <>
                     <ChevronRight className="h-4 w-4" />
                     <button 
-                      onClick={handleBackToTopic}
+                      onClick={() => {
+                        if (selectedTopic) {
+                          handleBackToTopic();
+                        } else if (selectedSkill) {
+                          const topicInfo = findTopicForSkill(selectedSkill);
+                          if (topicInfo) {
+                            setSelectedTopic(topicInfo.topicKey);
+                            setSelectedSkill(null);
+                            setCurrentArticle(null);
+                            setCurrentMCQs([]);
+                            setShowPractice(false);
+                            setSearchParams({ topic: topicInfo.topicKey });
+                          }
+                        }
+                      }}
                       className="hover:text-yellow-400 transition-colors"
                     >
-                      {selectedTopic}
+                      {selectedTopic || (selectedSkill ? findTopicForSkill(selectedSkill)?.topicKey : '')}
                     </button>
                   </>
                 )}
+                
                 {selectedSkill && (
                   <>
                     <ChevronRight className="h-4 w-4" />
