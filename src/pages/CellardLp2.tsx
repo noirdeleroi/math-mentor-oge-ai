@@ -309,16 +309,16 @@ const CellardLp2: React.FC = () => {
       {/* Nav */}
       <nav className="fixed top-0 w-full z-30 backdrop-blur-lg bg-[#1a1f36]/80 border-b border-yellow-500/20">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-yellow-500 to-emerald-500 rounded-lg flex items-center justify-center">
-              <span className="text-[#1a1f36] font-bold text-xl">M</span>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-yellow-500 to-emerald-500 rounded-lg flex items-center justify-center">
+              <span className="text-[#1a1f36] font-bold text-lg sm:text-xl">M</span>
             </div>
-            <span className="font-display text-xl font-semibold">Математика ОГЭ</span>
+            <span className="font-display text-sm sm:text-xl font-semibold">Математика ОГЭ</span>
           </div>
-          <div className="flex items-center gap-6">
-            <a href="#modules" className="hover:text-yellow-500">Модули</a>
-            <a href="#progress" className="hover:text-yellow-500">Прогресс</a>
-            <button onClick={startMock} className="bg-yellow-500 text-[#1a1f36] px-4 py-2 rounded-lg hover:bg-yellow-400 font-medium">
+          <div className="flex items-center gap-2 sm:gap-6">
+            <a href="#modules" className="text-xs sm:text-base hover:text-yellow-500 hidden sm:block">Модули</a>
+            <a href="#progress" className="text-xs sm:text-base hover:text-yellow-500 hidden sm:block">Прогресс</a>
+            <button onClick={startMock} className="bg-yellow-500 text-[#1a1f36] px-2 py-1.5 sm:px-4 sm:py-2 rounded-lg hover:bg-yellow-400 font-medium text-xs sm:text-base">
               Экзамен
             </button>
           </div>
@@ -328,27 +328,28 @@ const CellardLp2: React.FC = () => {
       {/* Modules */}
       <section id="modules" className="pt-24 pb-20 relative">
         <div className="relative z-20 max-w-7xl mx-auto px-4">
-          <div className="text-center mb-16 relative">
+          <div className="text-center mb-8 sm:mb-16 relative px-2">
             {/* Back button - positioned to the left */}
             <Button
               variant="ghost"
               size="sm"
               onClick={() => navigate("/ogemath")}
-              className="absolute left-0 top-0 hover:bg-white/20 text-white"
+              className="absolute left-0 top-0 hover:bg-white/20 text-white text-xs sm:text-sm"
             >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Назад к странице чата
+              <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Назад к странице чата</span>
+              <span className="sm:hidden">Назад</span>
             </Button>
             
-            <h2 className="font-display text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-yellow-500 to-emerald-500 text-transparent bg-clip-text">
+            <h2 className="font-display text-2xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-yellow-500 to-emerald-500 text-transparent bg-clip-text">
               Путь к успеху
             </h2>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+            <p className="text-base sm:text-xl text-gray-300 max-w-3xl mx-auto px-2">
               Пройди все 9 модулей и стань мастером математики. Каждый модуль содержит теорию, практику и интерактивные задания.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
             {modules.map((m, i) => {
               const offsetClass = ["mt-24", "mt-12", "mt-36", "mt-20", "mt-28", "mt-16", "mt-24", "mt-20", "mt-28"][i] || "mt-16";
               const strokeColor = m.progress === 100 ? "#10b981" : m.progress > 0 ? "#f59e0b" : "#64748b";
@@ -359,15 +360,32 @@ const CellardLp2: React.FC = () => {
               return (
                 <div
                   key={m.n}
-                  className={`module-card rounded-xl p-6 cursor-pointer bg-white/95 text-[#1a1f36] border border-white/20 ${offsetClass}`}
+                  className={`module-card rounded-xl p-4 sm:p-6 cursor-pointer bg-white/95 text-[#1a1f36] border border-white/20 ${offsetClass} sm:${offsetClass}`}
                   onClick={() => (m.locked ? null : goToModule(m.n))}
                   style={{ backdropFilter: "blur(10px)" }}
                 >
-                  <div className="flex items-center justify-between mb-4">
-                    <img src={m.img} alt={m.title} className="w-16 h-16" />
-                    <div className="relative w-16 h-16">
-                      <svg className="w-16 h-16" style={{ transform: "rotate(-90deg)" }}>
-                        <circle cx="32" cy="32" r="28" stroke="#e5e7eb" strokeWidth="4" fill="none" />
+                  <div className="flex items-center justify-between mb-3 sm:mb-4">
+                    <img src={m.img} alt={m.title} className="w-12 h-12 sm:w-16 sm:h-16" />
+                    <div className="relative w-12 h-12 sm:w-16 sm:h-16">
+                      <svg className="w-12 h-12 sm:w-16 sm:h-16" style={{ transform: "rotate(-90deg)" }}>
+                        <circle cx="24" cy="24" r="20" stroke="#e5e7eb" strokeWidth="3" fill="none" className="sm:hidden" />
+                        <circle cx="32" cy="32" r="28" stroke="#e5e7eb" strokeWidth="4" fill="none" className="hidden sm:block" />
+                        <circle
+                          cx="24"
+                          cy="24"
+                          r="20"
+                          fill="none"
+                          stroke={strokeColor}
+                          strokeWidth="3"
+                          strokeLinecap="round"
+                          className="progress-ring-circle sm:hidden"
+                          data-progress={m.progress}
+                          style={{ 
+                            strokeDasharray: 2 * Math.PI * 20, 
+                            strokeDashoffset: 2 * Math.PI * 20 - (m.progress / 100) * 2 * Math.PI * 20,
+                            transition: 'stroke-dashoffset 0.3s ease'
+                          }}
+                        />
                         <circle
                           cx="32"
                           cy="32"
@@ -376,7 +394,7 @@ const CellardLp2: React.FC = () => {
                           stroke={strokeColor}
                           strokeWidth="4"
                           strokeLinecap="round"
-                          className="progress-ring-circle"
+                          className="progress-ring-circle hidden sm:block"
                           data-progress={m.progress}
                           style={{ 
                             strokeDasharray: circumference, 
@@ -386,15 +404,15 @@ const CellardLp2: React.FC = () => {
                         />
                       </svg>
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="text-sm font-bold text-[#1a1f36]">{m.progress}%</span>
+                        <span className="text-xs sm:text-sm font-bold text-[#1a1f36]">{m.progress}%</span>
                       </div>
                     </div>
                   </div>
-                  <h3 className="font-display text-xl font-semibold mb-2">{m.title}</h3>
-                  <p className="text-gray-600 text-sm mb-4">{m.subtitle}</p>
+                  <h3 className="font-display text-base sm:text-xl font-semibold mb-2">{m.title}</h3>
+                  <p className="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4">{m.subtitle}</p>
                   <div className="flex items-center justify-between">
                     <span className={`text-xs font-medium ${m.locked ? "text-gray-500" : "text-emerald-600"}`}>{statusText}</span>
-                    <span className={`${m.locked ? "text-gray-400 cursor-not-allowed" : "text-yellow-600 hover:text-yellow-700"} font-medium text-sm`}>
+                    <span className={`${m.locked ? "text-gray-400 cursor-not-allowed" : "text-yellow-600 hover:text-yellow-700"} font-medium text-xs sm:text-sm`}>
                       {m.locked ? "Скоро →" : m.progress === 100 ? "Повторить →" : "Продолжить →"}
                     </span>
                   </div>
@@ -404,15 +422,15 @@ const CellardLp2: React.FC = () => {
           </div>
 
           {/* Mock exam */}
-          <div className="text-center mt-20">
+          <div className="text-center mt-12 sm:mt-20">
             <div
-              className="rounded-xl p-8 max-w-md mx-auto cursor-pointer bg-white/95 text-[#1a1f36] border border-white/20"
+              className="rounded-xl p-6 sm:p-8 max-w-md mx-auto cursor-pointer bg-white/95 text-[#1a1f36] border border-white/20"
               onClick={() => window.location.href = "/ogemath-mock"}
             >
-              <img src={moduleImgs.mock} alt="Пробный экзамен" className="w-20 h-20 mx-auto mb-6" />
-              <h3 className="font-display text-2xl font-semibold mb-4">Пробный экзамен</h3>
-              <p className="text-gray-600 mb-6">Проверь свои знания перед настоящим ОГЭ</p>
-              <button className="bg-gradient-to-r from-yellow-500 to-emerald-500 text-white px-8 py-3 rounded-lg font-semibold hover:shadow-lg transition-all">
+              <img src={moduleImgs.mock} alt="Пробный экзамен" className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 sm:mb-6" />
+              <h3 className="font-display text-xl sm:text-2xl font-semibold mb-3 sm:mb-4">Пробный экзамен</h3>
+              <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">Проверь свои знания перед настоящим ОГЭ</p>
+              <button className="bg-gradient-to-r from-yellow-500 to-emerald-500 text-white px-6 py-2.5 sm:px-8 sm:py-3 rounded-lg font-semibold hover:shadow-lg transition-all text-sm sm:text-base">
                 Начать экзамен
               </button>
             </div>
@@ -421,21 +439,34 @@ const CellardLp2: React.FC = () => {
       </section>
 
       {/* Progress */}
-      <section id="progress" className="py-20 bg-[#1a1f36]/50">
+      <section id="progress" className="py-12 sm:py-20 bg-[#1a1f36]/50">
         <div className="relative z-20 max-w-7xl mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="font-display text-4xl font-bold mb-6 bg-gradient-to-r from-yellow-500 to-emerald-500 text-transparent bg-clip-text">
+          <div className="text-center mb-8 sm:mb-16">
+            <h2 className="font-display text-2xl sm:text-4xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-yellow-500 to-emerald-500 text-transparent bg-clip-text">
               Твой прогресс
             </h2>
-            <p className="text-xl text-gray-300">Отслеживай свое развитие и достижения</p>
+            <p className="text-base sm:text-xl text-gray-300">Отслеживай свое развитие и достижения</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
             {/* Overall Progress */}
-            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 text-center">
-              <div className="w-24 h-24 mx-auto mb-4 relative">
-                <svg className="w-24 h-24" style={{ transform: "rotate(-90deg)" }}>
-                  <circle cx="48" cy="48" r="40" stroke="#e5e7eb" strokeWidth="6" fill="none" />
+            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 sm:p-6 text-center">
+              <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-3 sm:mb-4 relative">
+                <svg className="w-20 h-20 sm:w-24 sm:h-24" style={{ transform: "rotate(-90deg)" }}>
+                  <circle cx="40" cy="40" r="32" stroke="#e5e7eb" strokeWidth="5" fill="none" className="sm:hidden" />
+                  <circle cx="48" cy="48" r="40" stroke="#e5e7eb" strokeWidth="6" fill="none" className="hidden sm:block" />
+                  <circle 
+                    cx="40" 
+                    cy="40" 
+                    r="32" 
+                    stroke="#f59e0b" 
+                    strokeWidth="5" 
+                    fill="none"
+                    className="sm:hidden"
+                    strokeDasharray={`${2 * Math.PI * 32}`}
+                    strokeDashoffset={`${2 * Math.PI * 32 * (1 - overallProgress / 100)}`}
+                    style={{ transition: 'stroke-dashoffset 1s ease' }}
+                  />
                   <circle 
                     cx="48" 
                     cy="48" 
@@ -443,50 +474,51 @@ const CellardLp2: React.FC = () => {
                     stroke="#f59e0b" 
                     strokeWidth="6" 
                     fill="none"
+                    className="hidden sm:block"
                     strokeDasharray={`${2 * Math.PI * 40}`}
                     strokeDashoffset={`${2 * Math.PI * 40 * (1 - overallProgress / 100)}`}
                     style={{ transition: 'stroke-dashoffset 1s ease' }}
                   />
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-2xl font-bold">{overallProgress}%</span>
+                  <span className="text-xl sm:text-2xl font-bold">{overallProgress}%</span>
                 </div>
               </div>
-              <h3 className="font-display text-xl font-semibold mb-2">Общий прогресс</h3>
-              <p className="text-gray-300">{completedCount} из 9 модулей завершено</p>
+              <h3 className="font-display text-lg sm:text-xl font-semibold mb-2">Общий прогресс</h3>
+              <p className="text-sm sm:text-base text-gray-300">{completedCount} из 9 модулей завершено</p>
             </div>
 
             {/* Badges */}
-            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6">
-              <h3 className="font-display text-xl font-semibold mb-4 text-center">Достижения</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-gradient-to-br from-yellow-500 to-emerald-500 rounded-lg p-3 text-center animate-pulse">
-                  <div className="text-2xl mb-1">🏆</div>
+            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 sm:p-6">
+              <h3 className="font-display text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-center">Достижения</h3>
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                <div className="bg-gradient-to-br from-yellow-500 to-emerald-500 rounded-lg p-2 sm:p-3 text-center animate-pulse">
+                  <div className="text-xl sm:text-2xl mb-1">🏆</div>
                   <div className="text-xs">Первый модуль</div>
                 </div>
-                <div className="bg-gradient-to-br from-yellow-500 to-emerald-500 rounded-lg p-3 text-center animate-pulse">
-                  <div className="text-2xl mb-1">⭐</div>
+                <div className="bg-gradient-to-br from-yellow-500 to-emerald-500 rounded-lg p-2 sm:p-3 text-center animate-pulse">
+                  <div className="text-xl sm:text-2xl mb-1">⭐</div>
                   <div className="text-xs">Отличник</div>
                 </div>
-                <div className="bg-gray-600 rounded-lg p-3 text-center opacity-50">
-                  <div className="text-2xl mb-1">🎯</div>
+                <div className="bg-gray-600 rounded-lg p-2 sm:p-3 text-center opacity-50">
+                  <div className="text-xl sm:text-2xl mb-1">🎯</div>
                   <div className="text-xs">Все модули</div>
                 </div>
-                <div className="bg-gray-600 rounded-lg p-3 text-center opacity-50">
-                  <div className="text-2xl mb-1">🚀</div>
+                <div className="bg-gray-600 rounded-lg p-2 sm:p-3 text-center opacity-50">
+                  <div className="text-xl sm:text-2xl mb-1">🚀</div>
                   <div className="text-xs">Экзамен</div>
                 </div>
               </div>
             </div>
 
             {/* Stats */}
-            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6">
-              <h3 className="font-display text-xl font-semibold mb-4 text-center">Статистика</h3>
-              <div className="space-y-4">
-                <div className="flex justify-between"><span className="text-gray-300">Дней подряд</span><span className="font-bold text-yellow-500">{stats.streak}</span></div>
-                <div className="flex justify-between"><span className="text-gray-300">Решено задач</span><span className="font-bold text-emerald-500">{stats.solvedProblems}</span></div>
-                <div className="flex justify-between"><span className="text-gray-300">Правильных ответов</span><span className="font-bold text-yellow-500">{stats.correctAnswers}%</span></div>
-                <div className="flex justify-between"><span className="text-gray-300">Время обучения</span><span className="font-bold text-emerald-500">{Math.floor(stats.studyTime)}ч {Math.round((stats.studyTime % 1) * 60)}м</span></div>
+            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-4 sm:p-6">
+              <h3 className="font-display text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-center">Статистика</h3>
+              <div className="space-y-3 sm:space-y-4">
+                <div className="flex justify-between text-sm sm:text-base"><span className="text-gray-300">Дней подряд</span><span className="font-bold text-yellow-500">{stats.streak}</span></div>
+                <div className="flex justify-between text-sm sm:text-base"><span className="text-gray-300">Решено задач</span><span className="font-bold text-emerald-500">{stats.solvedProblems}</span></div>
+                <div className="flex justify-between text-sm sm:text-base"><span className="text-gray-300">Правильных ответов</span><span className="font-bold text-yellow-500">{stats.correctAnswers}%</span></div>
+                <div className="flex justify-between text-sm sm:text-base"><span className="text-gray-300">Время обучения</span><span className="font-bold text-emerald-500">{Math.floor(stats.studyTime)}ч {Math.round((stats.studyTime % 1) * 60)}м</span></div>
               </div>
             </div>
           </div>

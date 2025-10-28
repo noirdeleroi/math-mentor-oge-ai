@@ -80,9 +80,12 @@ const LearningLayout: React.FC = () => {
             {currentCourse ? (
               <Link 
                 to={currentCourse.homeRoute} 
-                className="font-display text-base sm:text-lg md:text-xl font-semibold text-white hover:text-yellow-500 transition-colors truncate max-w-[120px] sm:max-w-none"
+                className="font-display text-sm sm:text-lg md:text-xl font-semibold text-white hover:text-yellow-500 transition-colors max-w-[140px] sm:max-w-none leading-tight"
+                title={currentCourse.title}
               >
-                {currentCourse.title}
+                <div className="line-clamp-2 sm:line-clamp-none">
+                  {currentCourse.title}
+                </div>
               </Link>
             ) : (
               <span className="font-display text-base sm:text-lg md:text-xl font-semibold text-white">
