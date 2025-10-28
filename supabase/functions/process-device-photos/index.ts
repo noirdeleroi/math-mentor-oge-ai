@@ -127,14 +127,120 @@ serve(async (req)=>{
           tokens_out: tokensOut.toString(),
           price: cost
         });
+        // --- SECOND CALL: Convert LaTeX to MathJax-compatible HTML ---
+        let mathjaxHTML = "";
+        try {
+          const htmlResponse = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              model: 'google/gemini-2.5-flash',
+              temperature: 0,
+              messages: [
+                {
+                  role: 'user',
+                  content: [
+                    {
+                      type: 'text',
+                      text: `Convert the following LaTeX text into MathJax-compatible HTML. 
+                      Use <p> and <span> tags where needed. 
+                      Inline math should be wrapped in \\( ... \\), and block math in $$ ... $$. 
+                      Output only valid HTML (no markdown, no backticks, no LaTeX preamble). 
+                      \n\n${extractedLatex}`
+                    }
+                  ]
+                }
+              ]
+            })
+          });
+          if (!htmlResponse.ok) {
+            const errorText = await htmlResponse.text();
+            console.error(`Error converting LaTeX to HTML for image ${imageIndex}:`, htmlResponse.status, errorText);
+          } else {
+            const htmlData = await htmlResponse.json();
+            mathjaxHTML = htmlData.choices[0].message.content;
+            // === Extract token usage and calculate cost (for 2nd API call) ===
+            const { prompt_tokens: html_prompt_tokens, completion_tokens: html_completion_tokens } = htmlData.usage || {};
+            const html_model = htmlData.model || 'google/gemini-2.5-flash';
+            const pricingTable = {
+              "google/gemini-2.5-flash-lite-preview-09-2025": [
+                0.30,
+                2.50
+              ],
+              "google/gemini-2.5-flash-lite-preview-06-17": [
+                0.10,
+                0.40
+              ],
+              "google/gemini-2.5-flash-lite": [
+                0.10,
+                0.40
+              ],
+              "google/gemini-2.5-flash": [
+                0.30,
+                2.50
+              ],
+              "google/gemini-2.5-flash-preview-09-2025": [
+                0.30,
+                2.50
+              ],
+              "x-ai/grok-3-mini": [
+                0.30,
+                0.50
+              ],
+              "x-ai/grok-4-fast": [
+                0.20,
+                0.50
+              ],
+              "x-ai/grok-code-fast-1": [
+                0.20,
+                1.50
+              ],
+              "qwen/qwen3-coder-flash": [
+                0.30,
+                1.50
+              ],
+              "openai/o4-mini": [
+                1.10,
+                4.40
+              ],
+              "anthropic/claude-haiku-4.5": [
+                1.00,
+                5.00
+              ]
+            };
+            // Get prices per million tokens
+            const [priceIn, priceOut] = pricingTable[html_model] || [
+              0,
+              0
+            ];
+            const html_price = html_prompt_tokens / 1_000_000 * priceIn + html_completion_tokens / 1_000_000 * priceOut;
+            // === Insert into Supabase user_credits table ===
+            const { error: htmlCreditError } = await supabaseClient.from('user_credits').insert({
+              user_id: user_id,
+              tokens_in: html_prompt_tokens,
+              tokens_out: html_completion_tokens,
+              price: html_price
+            });
+            if (htmlCreditError) {
+              console.error('❌ Failed to insert user credits (2nd call):', htmlCreditError.message);
+            } else {
+              console.log(`✅ Stored usage for 2nd call (${html_model}): ${html_prompt_tokens} in, ${html_completion_tokens} out, $${html_price.toFixed(6)} total`);
+            }
+          }
+        } catch (htmlError) {
+          console.error(`Error during MathJax conversion for image ${imageIndex}:`, htmlError);
+        }
         // Update telegram_uploads with extracted text
         const { error: updateError } = await supabaseClient.from('telegram_uploads').update({
-          extracted_text: extractedLatex
+          extracted_text: mathjaxHTML
         }).eq('problem_submission_id', problem_submission_id);
         if (updateError) {
           console.error('Error updating extracted_text:', updateError);
         }
-        extractedLatexArray.push(extractedLatex);
+        extractedLatexArray.push(mathjaxHTML);
         console.log(`Successfully processed image ${imageIndex}`);
       } catch (apiError) {
         console.error(`Error calling OpenRouter API for image ${imageIndex}:`, apiError);
