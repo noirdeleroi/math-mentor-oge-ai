@@ -693,6 +693,77 @@ Deno.serve(async (req)=>{
     console.log("[STEP 5] OpenRouter response status:", orRes.status);
     const orJson = await orRes.json().catch(()=>null);
     console.log("[STEP 5] OpenRouter JSON snippet:", JSON.stringify(orJson)?.slice(0, 300));
+    // === [STEP 5.1] Extract token usage and calculate cost ===
+    try {
+      const { prompt_tokens, completion_tokens } = orJson?.usage || {};
+      const model = orJson?.model || MODEL;
+      const pricingTable = {
+        "google/gemini-2.5-flash-lite-preview-09-2025": [
+          0.30,
+          2.50
+        ],
+        "google/gemini-2.5-flash-lite-preview-06-17": [
+          0.10,
+          0.40
+        ],
+        "google/gemini-2.5-flash-lite": [
+          0.10,
+          0.40
+        ],
+        "google/gemini-2.5-flash": [
+          0.30,
+          2.50
+        ],
+        "google/gemini-2.5-flash-preview-09-2025": [
+          0.30,
+          2.50
+        ],
+        "x-ai/grok-3-mini": [
+          0.30,
+          0.50
+        ],
+        "x-ai/grok-4-fast": [
+          0.20,
+          0.50
+        ],
+        "x-ai/grok-code-fast-1": [
+          0.20,
+          1.50
+        ],
+        "qwen/qwen3-coder-flash": [
+          0.30,
+          1.50
+        ],
+        "openai/o4-mini": [
+          1.10,
+          4.40
+        ],
+        "anthropic/claude-haiku-4.5": [
+          1.00,
+          5.00
+        ]
+      };
+      const [priceIn, priceOut] = pricingTable[model] || [
+        0,
+        0
+      ];
+      const price = (prompt_tokens || 0) / 1_000_000 * priceIn + (completion_tokens || 0) / 1_000_000 * priceOut;
+      const { error: insertError } = await supabase.from("user_credits").insert({
+        user_id: userId,
+        tokens_in: prompt_tokens || 0,
+        tokens_out: completion_tokens || 0,
+        price: price,
+        model,
+        created_at: new Date().toISOString()
+      });
+      if (insertError) {
+        console.error("❌ Failed to insert user credits:", insertError.message);
+      } else {
+        console.log(`✅ Stored usage for ${model}: ${prompt_tokens} in, ${completion_tokens} out, $${price.toFixed(6)} total`);
+      }
+    } catch (usageErr) {
+      console.error("⚠️ Failed to record usage:", usageErr);
+    }
     const raw = orJson?.choices?.[0]?.message?.content ?? null;
     if (!raw) {
       console.warn("[STEP 5] No text returned from OpenRouter.");
