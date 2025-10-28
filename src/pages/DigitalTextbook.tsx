@@ -24,6 +24,7 @@ import { useMathJaxSelection } from '../hooks/useMathJaxSelection';
 import { StreakDisplay } from '@/components/streak/StreakDisplay';
 import { Link } from 'react-router-dom';
 import { findTopicRoute } from '@/lib/topic-routing';
+import FlyingStarsBackground from '@/components/FlyingStarsBackground';
 
 interface Skill {
   number: number;
@@ -568,8 +569,9 @@ const DigitalTextbook = () => {
   return (
     <div
       className="fixed inset-0 flex w-full text-white overflow-hidden overscroll-contain"
-      style={{ background: "linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)" }}
+      style={{ background: 'linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)' }}
     >
+      <FlyingStarsBackground />
 
       {/* Mobile Menu Button */}
       <button

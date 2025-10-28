@@ -224,7 +224,7 @@ items-center justify-center mx-auto mb-2">
           <div className="bg-white/10 rounded-2xl p-4 mb-6">
             <p className="text-white text-sm leading-relaxed">
               Проверьте сочинение ЕГЭ или ОГЭ с помощью искусственного
-интеллекта за 50 секунд. Находим грамматические, речевые и логические
+интеллекта. Находим грамматические, речевые и логические
 ошибки по всем критериям 2026 года.
             </p>
           </div>
@@ -232,8 +232,7 @@ items-center justify-center mx-auto mb-2">
           {/* Progress Section */}
           <div className="mb-6">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-white/80 text-sm">Готовность к
-проверке</span>
+              <span className="text-white/80 text-sm">Эффективность</span>
               <span className="text-white font-bold">{progress}%</span>
             </div>
             <div className="w-full bg-white/20 rounded-full h-3">
@@ -256,24 +255,7 @@ hover:scale-105"
             Начать проверку
           </button>
 
-          {/* Additional Info */}
-          <div className="mt-4 text-center">
-            <div className="flex justify-center space-x-4
-text-white/70 text-xs">
-              <span className="flex items-center">
-                <Shield className="w-3 h-3 mr-1" />
-                Безопасно
-              </span>
-              <span className="flex items-center">
-                <Clock className="w-3 h-3 mr-1" />
-                24/7
-              </span>
-              <span className="flex items-center">
-                <Award className="w-3 h-3 mr-1" />
-                Сертифицировано
-              </span>
-            </div>
-          </div>
+          
         </div>
       </div>
     </div>
