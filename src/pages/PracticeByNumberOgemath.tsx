@@ -170,6 +170,10 @@ const PracticeByNumberOgemath = () => {
   const [ocrProgress, setOcrProgress] = useState<string>("");
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [analysisProgress, setAnalysisProgress] = useState<number>(0);
+  
+  // Telegram polling states
+  const [isPollingForAnalysis, setIsPollingForAnalysis] = useState(false);
+  const [pollingStartTime, setPollingStartTime] = useState<Date | null>(null);
 
   // Formula booklet state
   const [showFormulaBooklet, setShowFormulaBooklet] = useState(false);
@@ -300,6 +304,8 @@ const PracticeByNumberOgemath = () => {
     setPhotoScores(null);
     setStructuredPhotoFeedback(null);
     setOcrProgress("");
+    setIsPollingForAnalysis(false);
+    setPollingStartTime(null);
   };
 
   const toggleQuestionGroup = (groupType: string) => {
@@ -863,6 +869,17 @@ const PracticeByNumberOgemath = () => {
   const handlePhotoCheck = async () => {
     if (!user || !currentQuestion) return;
 
+    // For questions 20-25, start polling instead of immediate check
+    const problemNumberType = currentQuestion.problem_number_type;
+    if (problemNumberType && problemNumberType >= 20 && problemNumberType <= 25) {
+      setIsProcessingPhoto(true);
+      setPollingStartTime(new Date());
+      setIsPollingForAnalysis(true);
+      toast.info('Проверяем наличие анализа фото...');
+      return;
+    }
+
+    // For other questions, use the old immediate check logic
     setIsProcessingPhoto(true);
     
     try {
@@ -1031,18 +1048,30 @@ const PracticeByNumberOgemath = () => {
     setStructuredPhotoFeedback(null);
   };
 
-  const fetchAnalysisData = async () => {
+  const fetchAnalysisData = async (questionId?: string) => {
     if (!user) return null;
     
     try {
-      // @ts-ignore - Type instantiation is excessively deep
-      const { data, error } = await supabase
+      // Build query
+      let query = supabase
         .from('photo_analysis_outputs')
-        .select('raw_output')
-        .eq('user_id', user.id)
+        .select('raw_output, question_id, created_at')
+        .eq('user_id', user.id);
+      
+      // If questionId provided, filter by it
+      if (questionId) {
+        query = query.eq('question_id', questionId);
+      }
+      
+      // If polling started, only get records created after polling start
+      if (pollingStartTime) {
+        query = query.gte('created_at', pollingStartTime.toISOString());
+      }
+      
+      const { data, error } = await query
         .order('created_at', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error('Error fetching analysis data:', error);
@@ -1062,13 +1091,25 @@ const PracticeByNumberOgemath = () => {
             ) {
               // Treat any positive score as correct
               const isCorrectFromScores = parsed.scores > 0;
-              // Fire and forget; do not block UI
-              updateStudentActivity(isCorrectFromScores, parsed.scores).catch((e) => {
-                console.warn('Failed to update student_activity with FRQ scores:', e);
-              });
+              // Update student_activity with scores
+              await updateStudentActivity(isCorrectFromScores, parsed.scores);
+              
               // Mark as answered so the UI shows "Следующий вопрос" instead of "Пропустить"
               setIsCorrect(isCorrectFromScores);
               setIsAnswered(true);
+              
+              // Stop polling if it's running
+              setIsPollingForAnalysis(false);
+              
+              // Store the feedback data
+              setPhotoScores(parsed.scores);
+              if (typeof parsed.review === 'string') {
+                setAnalysisData({ scores: parsed.scores, review: parsed.review });
+              } else {
+                setAnalysisData(parsed);
+              }
+              
+              toast.success(`Анализ готов! Баллы: ${parsed.scores}/2`);
             }
           } catch (e) {
             console.warn('Non-fatal error while trying to update FRQ scores:', e);
@@ -1086,6 +1127,44 @@ const PracticeByNumberOgemath = () => {
       return null;
     }
   };
+  
+  // Polling effect for Telegram photo analysis
+  useEffect(() => {
+    if (!isPollingForAnalysis || !user || !currentQuestion) return;
+    
+    const POLL_INTERVAL = 3000; // 3 seconds
+    const POLL_TIMEOUT = 60000; // 60 seconds
+    
+    let pollCount = 0;
+    const maxPolls = POLL_TIMEOUT / POLL_INTERVAL;
+    
+    const pollInterval = setInterval(async () => {
+      pollCount++;
+      
+      console.log(`Polling for analysis... (attempt ${pollCount}/${maxPolls})`);
+      
+      const analysis = await fetchAnalysisData(currentQuestion.question_id);
+      
+      if (analysis && typeof analysis.scores === 'number') {
+        // Analysis found! fetchAnalysisData already handled the update
+        clearInterval(pollInterval);
+        setIsPollingForAnalysis(false);
+        setShowUploadPrompt(false);
+        setIsProcessingPhoto(false);
+      } else if (pollCount >= maxPolls) {
+        // Timeout
+        clearInterval(pollInterval);
+        setIsPollingForAnalysis(false);
+        setIsProcessingPhoto(false);
+        toast.error('Время ожидания анализа истекло. Попробуйте загрузить фото снова.');
+      }
+    }, POLL_INTERVAL);
+    
+    return () => {
+      clearInterval(pollInterval);
+    };
+  }, [isPollingForAnalysis, user, currentQuestion]);
+
 
   const handleDevicePhotoCheck = async () => {
     if (!user || !currentQuestion) return;
