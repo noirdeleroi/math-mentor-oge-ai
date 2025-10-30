@@ -54,7 +54,8 @@ const EgemathbasicPractice = () => {
     icon: ClipboardList,
     link: "/egemathbasic-mock",
     gradient: "from-red-500 to-orange-500",
-    mathSymbol: "Σ"
+    mathSymbol: "Σ",
+    comingSoon: false
   };
   
   return (
@@ -91,7 +92,7 @@ const EgemathbasicPractice = () => {
 
           {/* 2x2 Grid for Practice + Mock (symmetrical) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            {[...questionTypes.filter(t => !t.comingSoon), mockExam].map((type, index) => {
+            {[...questionTypes, mockExam].map((type, index) => {
               const content = (
                   <Card 
                     className="h-full relative overflow-hidden border-0 transition-all duration-300 group"

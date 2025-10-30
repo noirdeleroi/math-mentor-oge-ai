@@ -80,6 +80,7 @@ const PracticeByNumberEgeBasicMath = () => {
   const [photoScores, setPhotoScores] = useState<number | null>(null);
   const [photoFeedback, setPhotoFeedback] = useState<string>("");
   const [parsedAnalysis, setParsedAnalysis] = useState<ParsedAnalysis | null>(null);
+  const [isProcessingPhoto, setIsProcessingPhoto] = useState(false);
 
   interface ParsedError {
     type: string;

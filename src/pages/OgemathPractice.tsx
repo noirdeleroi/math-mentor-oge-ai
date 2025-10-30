@@ -54,7 +54,8 @@ const OgemathPractice = () => {
     icon: ClipboardList,
     link: "/ogemath-mock",
     gradient: "from-red-500 to-orange-500",
-    mathSymbol: "Σ"
+    mathSymbol: "Σ",
+    comingSoon: false
   };
 
   return (
