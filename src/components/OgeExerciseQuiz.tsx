@@ -54,6 +54,27 @@ const OgeExerciseQuiz: React.FC<OgeExerciseQuizProps> = ({
 
   const options = ['А', 'Б', 'В', 'Г'];
 
+  // Normalize stored answer to a Russian letter 'А' | 'Б' | 'В' | 'Г'
+  const getCorrectAnswerLetter = (question?: OgeQuestion | null): string | null => {
+    if (!question?.answer) return null;
+    const raw = String(question.answer).trim();
+    const optMatch = raw.toLowerCase().match(/^option([1-4])$/);
+    if (optMatch) {
+      const idx = parseInt(optMatch[1], 10) - 1;
+      return options[idx] || null;
+    }
+    const letter = raw.toUpperCase();
+    const latinToRus: Record<string, string> = { 'A': 'А', 'B': 'Б', 'V': 'В', 'G': 'Г' };
+    if (latinToRus[letter]) return latinToRus[letter];
+    if (options.includes(letter)) return letter;
+    return null;
+  };
+
+  const isAnswerCorrect = (question: OgeQuestion | undefined, selectedLetter: string): boolean => {
+    const correctLetter = getCorrectAnswerLetter(question);
+    return !!correctLetter && selectedLetter === correctLetter;
+  };
+
   useEffect(() => {
     loadQuestions();
   }, [skills]);
@@ -92,7 +113,7 @@ const OgeExerciseQuiz: React.FC<OgeExerciseQuizProps> = ({
     if (!selectedAnswer || showResult) return;
 
     const currentQuestion = questions[currentQuestionIndex];
-    const isCorrect = viewedSolutionBeforeAnswer ? false : selectedAnswer === currentQuestion.answer?.toUpperCase();
+    const isCorrect = viewedSolutionBeforeAnswer ? false : isAnswerCorrect(currentQuestion, selectedAnswer);
     
     setAnswers(prev => [...prev, isCorrect]);
     setShowResult(true);
@@ -323,7 +344,7 @@ const OgeExerciseQuiz: React.FC<OgeExerciseQuizProps> = ({
     
     const answerLetter = options[optionIndex];
     const isSelected = selectedAnswer === answerLetter;
-    const isCorrectAnswer = answerLetter === currentQuestion?.answer?.toUpperCase();
+    const isCorrectAnswer = answerLetter === getCorrectAnswerLetter(currentQuestion);
     
     if (isCorrectAnswer) {
       return 'border-2 border-sage bg-gradient-to-r from-sage/20 to-emerald-500/20 shadow-lg';
@@ -444,6 +465,17 @@ const OgeExerciseQuiz: React.FC<OgeExerciseQuizProps> = ({
           <div className="grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-4">
             <div className="space-y-3">
               <div className="p-4 bg-gradient-to-br from-navy/5 to-sage/5 rounded-xl border border-navy/10">
+                {/* Problem image (optional) */}
+                {questions[currentQuestionIndex]?.problem_image && (
+                  <div className="w-full mb-3">
+                    <img
+                      src={questions[currentQuestionIndex].problem_image as unknown as string}
+                      alt="Иллюстрация к вопросу"
+                      className="mx-auto max-h-56 md:max-h-64 w-full object-contain rounded-lg shadow-sm border border-navy/10 bg-white"
+                      loading="lazy"
+                    />
+                  </div>
+                )}
                 <MathRenderer 
                   text={questions[currentQuestionIndex]?.problem_text || ''} 
                   className="text-sm text-navy font-medium leading-relaxed"
@@ -453,7 +485,7 @@ const OgeExerciseQuiz: React.FC<OgeExerciseQuizProps> = ({
 
               {showResult && (
                 <div className="py-1">
-                  {selectedAnswer === questions[currentQuestionIndex]?.answer?.toUpperCase() ? (
+                  {isAnswerCorrect(questions[currentQuestionIndex], selectedAnswer) ? (
                     <div className="flex items-center space-x-2 bg-gradient-to-r from-sage/20 to-emerald-500/20 rounded-xl p-3 border border-sage">
                       <div className="w-6 h-6 bg-gradient-to-br from-sage to-emerald-600 rounded-full flex items-center justify-center">
                         <Check className="w-4 h-4 text-white" strokeWidth={3} />
@@ -531,9 +563,9 @@ const OgeExerciseQuiz: React.FC<OgeExerciseQuizProps> = ({
                       w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0 transition-all
                       ${!showResult && selectedAnswer === letter 
                         ? 'bg-gradient-to-br from-gold to-sage text-white shadow-md scale-105' 
-                        : showResult && letter === questions[currentQuestionIndex]?.answer?.toUpperCase()
+                        : showResult && letter === getCorrectAnswerLetter(questions[currentQuestionIndex])
                         ? 'bg-gradient-to-br from-sage to-emerald-600 text-white shadow-md'
-                        : showResult && selectedAnswer === letter && letter !== questions[currentQuestionIndex]?.answer?.toUpperCase()
+                        : showResult && selectedAnswer === letter && letter !== getCorrectAnswerLetter(questions[currentQuestionIndex])
                         ? 'bg-gradient-to-br from-red-500 to-red-600 text-white shadow-md'
                         : 'bg-gradient-to-br from-navy/10 to-sage/10 text-navy'
                       }
