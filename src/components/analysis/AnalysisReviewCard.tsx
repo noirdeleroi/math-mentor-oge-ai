@@ -80,23 +80,59 @@ const AnalysisReviewCard = ({
   fallbackSummaryLatex,
   fallbackScore,
 }: Props) => {
-  const reviewIsString = typeof analysisData?.review === 'string';
+  // Normalize the data - try to parse JSON strings and extract review field
+  const normalizedData = useMemo(() => {
+    // If analysisData exists and is already an object with review, use it
+    if (analysisData && typeof analysisData === 'object' && 'review' in analysisData) {
+      return analysisData;
+    }
+
+    // If analysisData is a string, try to parse it
+    if (typeof analysisData === 'string') {
+      try {
+        const parsed = JSON.parse(analysisData);
+        if (parsed && 'review' in parsed) {
+          return parsed;
+        }
+      } catch {
+        // Not valid JSON, treat as review string directly
+        return { scores: fallbackScore, review: analysisData };
+      }
+    }
+
+    // If fallbackSummaryLatex exists, try to parse it as JSON
+    if (fallbackSummaryLatex) {
+      try {
+        const parsed = JSON.parse(fallbackSummaryLatex);
+        if (parsed && 'review' in parsed) {
+          return { scores: parsed.scores || fallbackScore, review: parsed.review };
+        }
+      } catch {
+        // Not JSON, treat as review string
+        return { scores: fallbackScore, review: fallbackSummaryLatex };
+      }
+    }
+
+    return analysisData;
+  }, [analysisData, fallbackSummaryLatex, fallbackScore]);
+
+  const reviewIsString = typeof normalizedData?.review === 'string';
   const scoreToShow =
-    typeof analysisData?.scores === "number"
-      ? analysisData.scores
+    typeof normalizedData?.scores === "number"
+      ? normalizedData.scores
       : (typeof fallbackScore === "number" ? fallbackScore : null);
 
   const hasStructured = Boolean(
-    analysisData && !reviewIsString && Array.isArray((analysisData.review as any)?.errors)
+    normalizedData && !reviewIsString && Array.isArray((normalizedData.review as any)?.errors)
   );
 
   // Parse HTML review if it's a string
   const parsedHtmlReview = useMemo(() => {
-    if (reviewIsString && analysisData?.review) {
-      return parseHtmlReview(analysisData.review as string);
+    if (reviewIsString && normalizedData?.review) {
+      return parseHtmlReview(normalizedData.review as string);
     }
     return null;
-  }, [reviewIsString, analysisData?.review]);
+  }, [reviewIsString, normalizedData?.review]);
 
   return (
     <Card className="bg-purple-50 border-purple-200">
@@ -114,8 +150,8 @@ const AnalysisReviewCard = ({
       <CardContent>
         <div className="space-y-4 max-h-96 overflow-y-auto">
           {hasStructured ? (
-            (analysisData!.review as any).errors && (analysisData!.review as any).errors.length > 0 ? (
-              (analysisData!.review as any).errors.map((error: AnalysisError, i: number) => (
+            (normalizedData!.review as any).errors && (normalizedData!.review as any).errors.length > 0 ? (
+              (normalizedData!.review as any).errors.map((error: AnalysisError, i: number) => (
                 <Card key={i} className="bg-white border border-purple-200">
                   <CardContent className="pt-4">
                     <div className="space-y-3">
@@ -186,27 +222,24 @@ const AnalysisReviewCard = ({
           ) : (
             <Card className="bg-white border border-purple-200">
               <CardContent className="pt-4">
-                <div className="space-y-3">
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                    <p className="text-sm text-blue-800 font-medium">Общая оценка:</p>
-                    {reviewIsString ? (
-                      <MathRenderer text={(analysisData?.review as string) || ''} compiler="mathjax" />
-                    ) : (
-                      <MathRenderer text={fallbackSummaryLatex || 'Идёт подготовка подробного разбора…'} compiler="mathjax" />
-                    )}
-                  </div>
-                </div>
+                {reviewIsString ? (
+                  <MathRenderer text={(normalizedData?.review as string) || ''} compiler="mathjax" />
+                ) : normalizedData?.review ? (
+                  <MathRenderer text={String(normalizedData.review)} compiler="mathjax" />
+                ) : (
+                  <MathRenderer text={fallbackSummaryLatex || 'Идёт подготовка подробного разбора…'} compiler="mathjax" />
+                )}
               </CardContent>
             </Card>
           )}
 
-          {hasStructured && (analysisData!.review as any).summary && (
+          {hasStructured && (normalizedData!.review as any).summary && (
             <Card className="bg-green-50 border-green-200 mt-4">
               <CardContent className="pt-4">
                 <div className="flex items-center gap-2 mb-2">
                   <p className="text-sm font-semibold text-green-800">Итоговый разбор:</p>
                 </div>
-                <MathRenderer text={(analysisData!.review as any).summary} compiler="mathjax" />
+                <MathRenderer text={(normalizedData!.review as any).summary} compiler="mathjax" />
               </CardContent>
             </Card>
           )}

@@ -1051,7 +1051,29 @@ const PracticeByNumberOgemath = () => {
 
       if (data?.raw_output) {
         try {
-          return JSON.parse(data.raw_output);
+          const parsed = JSON.parse(data.raw_output);
+          // If this is FRQ (20-25) and parsed contains scores, update student_activity immediately
+          try {
+            const pnt = currentQuestion ? Number((currentQuestion as any).problem_number_type) : NaN;
+            if (
+              parsed && typeof parsed.scores === 'number' &&
+              currentQuestion &&
+              !Number.isNaN(pnt) && pnt >= 20 && pnt <= 25
+            ) {
+              // Treat any positive score as correct
+              const isCorrectFromScores = parsed.scores > 0;
+              // Fire and forget; do not block UI
+              updateStudentActivity(isCorrectFromScores, parsed.scores).catch((e) => {
+                console.warn('Failed to update student_activity with FRQ scores:', e);
+              });
+              // Mark as answered so the UI shows "Следующий вопрос" instead of "Пропустить"
+              setIsCorrect(isCorrectFromScores);
+              setIsAnswered(true);
+            }
+          } catch (e) {
+            console.warn('Non-fatal error while trying to update FRQ scores:', e);
+          }
+          return parsed;
         } catch (parseError) {
           console.error('Error parsing analysis data:', parseError);
           return null;
