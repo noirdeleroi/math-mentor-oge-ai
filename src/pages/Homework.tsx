@@ -1529,7 +1529,7 @@ const Homework = () => {
                         {isFinalOverall ? (
                           <>
                             <Trophy className="mr-2 h-5 w-5" />
-                            Завершить домашнее задание
+                            Завершить дз
                           </>
                         ) : (
                           <>

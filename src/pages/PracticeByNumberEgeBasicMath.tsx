@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CheckCircle, XCircle, BookOpen, ArrowRight, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -67,6 +68,113 @@ const PracticeByNumberEgeBasicMath = () => {
   const [showFormulaBooklet, setShowFormulaBooklet] = useState(false);
 
   const currentQuestion = questions[currentQuestionIndex];
+
+  // Device upload & analysis states for part 2 (13–19)
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+  const [showImagePreview, setShowImagePreview] = useState(false);
+  const [selectedPreviewImage, setSelectedPreviewImage] = useState<string | null>(null);
+  const [ocrProgress, setOcrProgress] = useState<string>("");
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
+  const [analysisProgress, setAnalysisProgress] = useState<number>(0);
+  const [studentSolution, setStudentSolution] = useState<string>("");
+  const [photoScores, setPhotoScores] = useState<number | null>(null);
+  const [photoFeedback, setPhotoFeedback] = useState<string>("");
+  const [parsedAnalysis, setParsedAnalysis] = useState<ParsedAnalysis | null>(null);
+
+  interface ParsedError {
+    type: string;
+    description: string;
+    studentSolution: string;
+    correctSolution: string;
+    context: string;
+  }
+  interface ParsedAnalysis {
+    errors: ParsedError[];
+    summary: { score: number; comment: string };
+  }
+  const parseHtmlAnalysis = (htmlContent: string): ParsedAnalysis | null => {
+    try {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(htmlContent, 'text/html');
+      const errors: ParsedError[] = [];
+      const errorDivs = doc.querySelectorAll('div.error');
+      errorDivs.forEach((div) => {
+        const typeMatch = div.innerHTML.match(/<b>Тип ошибки:<\/b>\s*(.+?)<br>/);
+        const descriptionMatch = div.innerHTML.match(/<b>Описание:<\/b>\s*(.+?)<br>/);
+        const studentMatch = div.innerHTML.match(/<b>Решение ученика:<\/b>\s*(.+?)<br>/);
+        const correctMatch = div.innerHTML.match(/<b>Правильное решение:<\/b>\s*(.+?)<br>/);
+        const contextMatch = div.innerHTML.match(/<b>Контекст:<\/b>\s*<pre>(.+?)<\/pre>/);
+        if (typeMatch && descriptionMatch && studentMatch && correctMatch) {
+          errors.push({
+            type: typeMatch[1].trim(),
+            description: descriptionMatch[1].trim(),
+            studentSolution: studentMatch[1].trim(),
+            correctSolution: correctMatch[1].trim(),
+            context: contextMatch ? contextMatch[1].trim() : ''
+          });
+        }
+      });
+      const summaryDiv = doc.querySelector('div.summary');
+      let summary = { score: 0, comment: '' };
+      if (summaryDiv) {
+        const scoreMatch = summaryDiv.innerHTML.match(/<b>Оценка:<\/b>\s*(\d+)/);
+        const commentMatch = summaryDiv.innerHTML.match(/<b>Комментарий:<\/b>\s*(.+?)(?:$|<br>)/);
+        summary = {
+          score: scoreMatch ? parseInt(scoreMatch[1]) : 0,
+          comment: commentMatch ? commentMatch[1].trim() : ''
+        };
+      }
+      return { errors, summary };
+    } catch (e) {
+      console.error('Error parsing HTML analysis:', e);
+      return null;
+    }
+  };
+
+  const fetchStudentSolution = async () => {
+    if (!user) return null;
+    try {
+      // @ts-ignore
+      const { data, error } = await supabase
+        .from('telegram_uploads')
+        .select('extracted_text')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+      if (error) { console.error('fetchStudentSolution error', error); return null; }
+      return data?.extracted_text || '';
+    } catch (e) {
+      console.error('fetchStudentSolution exception', e);
+      return null;
+    }
+  };
+
+  const fetchAnalysisData = async () => {
+    if (!user) return null;
+    try {
+      // @ts-ignore
+      const { data, error } = await supabase
+        .from('photo_analysis_outputs')
+        .select('raw_output')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+      if (error) { console.error('fetchAnalysisData error', error); return null; }
+      if (data?.raw_output) {
+        const json = JSON.parse(data.raw_output);
+        if (json.review && typeof json.review === 'string') {
+          const parsed = parseHtmlAnalysis(json.review);
+          if (parsed) setParsedAnalysis(parsed);
+        }
+      }
+      return null;
+    } catch (e) {
+      console.error('fetchAnalysisData exception', e);
+      return null;
+    }
+  };
 
   const fetchQuestions = async (questionNumbers: string[]) => {
     setLoading(true);
@@ -843,18 +951,173 @@ const PracticeByNumberEgeBasicMath = () => {
                       className="w-full max-w-md bg-white border-gray-300 text-[#1a1f36] placeholder:text-gray-500"
                     />
                     <Button
-                      onClick={checkAnswer}
-                      disabled={isAnswered || solutionViewedBeforeAnswer || !userAnswer.trim()}
+                      onClick={async () => {
+                        if (uploadedImages.length > 0 && currentQuestion.problem_number_type && currentQuestion.problem_number_type >= 13 && currentQuestion.problem_number_type <= 19) {
+                          if (!user) { setShowAuthRequiredMessage(true); setTimeout(() => setShowAuthRequiredMessage(false), 5000); return; }
+                          setIsProcessingPhoto(true);
+                          setUploadProgress(0);
+                          setAnalysisProgress(0);
+                          setOcrProgress(`Обработка фото 1 из ${uploadedImages.length}...`);
+                          try {
+                            const uploadInterval = setInterval(() => {
+                              setUploadProgress(prev => { if (prev >= 95) { clearInterval(uploadInterval); return 95; } return prev + 2; });
+                            }, 50);
+                            const { data: processData, error: processError } = await supabase.functions.invoke('process-device-photos', {
+                              body: { user_id: user.id, images: uploadedImages, question_id: currentQuestion.question_id }
+                            });
+                            clearInterval(uploadInterval);
+                            setUploadProgress(100);
+                            if (processError || !processData?.success) {
+                              console.error('Error processing device photos:', processError);
+                              toast.error(processData?.error || 'Произошла ошибка при обработке. Пожалуйста, попробуйте снова.');
+                              setIsProcessingPhoto(false); setOcrProgress(''); setUploadProgress(0); setAnalysisProgress(0); return;
+                            }
+                            setOcrProgress('Анализ решения...');
+                            const analysisInterval = setInterval(() => {
+                              setAnalysisProgress(prev => { if (prev >= 95) { clearInterval(analysisInterval); return 95; } return prev + 2; });
+                            }, 50);
+                            const { data: prof, error: profErr } = await supabase.from('profiles').select('telegram_input').eq('user_id', user.id).single();
+                            if (profErr || !prof?.telegram_input) { clearInterval(analysisInterval); setAnalysisProgress(0); throw new Error('Не удалось получить распознанный текст'); }
+                            const { data: apiResponse, error: apiError } = await supabase.functions.invoke('analyze-photo-solution', {
+                              body: { student_solution: prof.telegram_input,
+                                      problem_text: currentQuestion.problem_text,
+                                      solution_text: currentQuestion.solution_text,
+                                      user_id: user.id,
+                                      question_id: currentQuestion.question_id,
+                                      problem_number: currentQuestion.problem_number_type }
+                            });
+                            clearInterval(analysisInterval);
+                            setAnalysisProgress(100);
+                            if (apiError) {
+                              console.error('Error calling analyze-photo-solution:', apiError);
+                              toast.error(apiResponse?.retry_message || 'Ошибка API. Попробуйте снова.');
+                              setIsProcessingPhoto(false); setOcrProgress(''); setUploadProgress(0); setAnalysisProgress(0); return;
+                            }
+                            if (apiResponse?.feedback) {
+                              try {
+                                const feedbackData = JSON.parse(apiResponse.feedback);
+                                if (feedbackData.review && typeof feedbackData.scores === 'number') {
+                                  const isCorrectNow = feedbackData.scores > 0;
+                                  await updateStudentActivity(isCorrectNow, feedbackData.scores);
+                                  setIsCorrect(isCorrectNow);
+                                  setIsAnswered(true);
+                                  setPhotoFeedback(feedbackData.review?.overview_latex || '');
+                                  setPhotoScores(feedbackData.scores);
+                                  // Fetch and render student solution + parsed analysis
+                                  const solution = await fetchStudentSolution();
+                                  if (solution) setStudentSolution(solution);
+                                  await fetchAnalysisData();
+                                  setUploadedImages([]);
+                                } else {
+                                  toast.error('Неверный формат ответа API');
+                                }
+                              } catch (e) {
+                                console.error('Parse error:', e);
+                                setPhotoFeedback(apiResponse.feedback);
+                                setPhotoScores(null);
+                              }
+                            } else {
+                              toast.error('Не удалось получить обратную связь');
+                            }
+                          } catch (err) {
+                            console.error('Error in device photo flow:', err);
+                            toast.error('Произошла ошибка при обработке решения');
+                            setUploadProgress(0); setAnalysisProgress(0);
+                          } finally {
+                            setIsProcessingPhoto(false);
+                            setOcrProgress('');
+                          }
+                        } else {
+                          await checkAnswer();
+                        }
+                      }}
+                      disabled={isAnswered || solutionViewedBeforeAnswer || (!userAnswer.trim() && !(currentQuestion.problem_number_type && currentQuestion.problem_number_type >= 13 && currentQuestion.problem_number_type <= 19 && uploadedImages.length > 0))}
                       className="min-w-32 bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36] shadow-md font-medium disabled:opacity-50 transition-all"
                     >
                       <CheckCircle className="w-4 h-4 mr-2" />
-                      Проверить
+                      {uploadedImages.length > 0 ? (isProcessingPhoto ? 'Обработка...' : 'Проверить фото') : 'Проверить'}
                     </Button>
                     <FeedbackButton
                       contentType="frq_question"
                       contentRef={currentQuestion.question_id}
                     />
                   </div>
+
+                  {/* Device upload controls for 13–19 */}
+                  {currentQuestion.problem_number_type && currentQuestion.problem_number_type >= 13 && currentQuestion.problem_number_type <= 19 && (
+                    <div className="space-y-3">
+                      <div className="flex gap-3 justify-center flex-wrap">
+                        <Button
+                          variant="outline"
+                          onClick={() => document.getElementById('egebasic-device-upload-input')?.click()}
+                          className="border-[#1a1f36]/30 text-[#1a1f36] hover:bg-gray-100"
+                        >
+                          Загрузить с устройства
+                        </Button>
+                        <input
+                          id="egebasic-device-upload-input"
+                          type="file"
+                          accept="image/*"
+                          multiple
+                          className="hidden"
+                          onChange={(e) => {
+                            const files = e.target.files;
+                            if (!files || files.length === 0) return;
+                            const remaining = 3 - uploadedImages.length;
+                            if (remaining === 0) { toast.error('Максимум 3 файла'); e.currentTarget.value = ''; return; }
+                            const filesToProcess = Array.from(files).slice(0, remaining);
+                            const newImages: string[] = [];
+                            let processed = 0;
+                            filesToProcess.forEach((file) => {
+                              if (!file.type.startsWith('image/')) { toast.error('Пожалуйста, загрузите только изображения'); processed++; return; }
+                              if (file.size > 20 * 1024 * 1024) { toast.error(`Файл ${file.name} слишком большой. Макс: 20MB`); processed++; return; }
+                              const reader = new FileReader();
+                              reader.onload = (ev) => {
+                                const result = ev.target?.result as string;
+                                newImages.push(result);
+                                processed++;
+                                if (processed === filesToProcess.length) {
+                                  setUploadedImages(prev => [...prev, ...newImages]);
+                                  toast.success(`Загружено ${newImages.length} фото`);
+                                }
+                              };
+                              reader.onerror = () => { toast.error('Ошибка при загрузке файла'); processed++; };
+                              reader.readAsDataURL(file);
+                            });
+                            e.currentTarget.value = '';
+                          }}
+                        />
+                      </div>
+                      {uploadedImages.length > 0 && (
+                        <div className="flex justify-center gap-3 flex-wrap">
+                          {uploadedImages.map((image, index) => (
+                            <div key={index} className="relative inline-block">
+                              <img
+                                src={image}
+                                alt={`Uploaded solution ${index + 1}`}
+                                className="max-w-xs max-h-48 rounded-lg border-2 border-primary/20 cursor-pointer hover:opacity-90 transition-opacity"
+                                onClick={() => { setSelectedPreviewImage(image); setShowImagePreview(true); }}
+                              />
+                              <Button
+                                variant="destructive"
+                                size="icon"
+                                className="absolute -top-2 -right-2 h-6 w-6 rounded-full"
+                                onClick={() => setUploadedImages(prev => prev.filter((_, i) => i !== index))}
+                              >
+                                ✕
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      {uploadedImages.length > 0 && uploadedImages.length < 3 && (
+                        <div className="text-xs text-center text-gray-500">Загружено {uploadedImages.length} из 3 фото</div>
+                      )}
+                      {ocrProgress && (
+                        <div className="text-center text-sm text-gray-600">{ocrProgress}</div>
+                      )}
+                    </div>
+                  )}
 
                   {/* Note for non-numeric answers */}
                   {currentQuestion.answer && isNonNumericAnswer(currentQuestion.answer) && (
@@ -885,7 +1148,8 @@ const PracticeByNumberEgeBasicMath = () => {
                     </Alert>
                   )}
 
-                  {/* Answer Result */}
+                  {/* Answer Result */
+                  }
                   {isAnswered && (
                     <Alert className={isCorrect ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50"}>
                       <div className="flex items-center gap-2">
@@ -907,6 +1171,84 @@ const PracticeByNumberEgeBasicMath = () => {
                         </AlertDescription>
                       </div>
                     </Alert>
+                  )}
+                  {/* Render Student Solution + Analysis for 13–19 when photos were checked */}
+                  {studentSolution && currentQuestion.problem_number_type && currentQuestion.problem_number_type >= 13 && currentQuestion.problem_number_type <= 19 && (
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
+                      <Card className="bg-blue-50 border-blue-200">
+                        <CardHeader>
+                          <CardTitle className="text-blue-800">Ваше решение</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="bg-white border border-blue-200 rounded-lg p-4 max-h-96 overflow-y-auto">
+                            <MathRenderer text={studentSolution} compiler="mathjax" />
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      {parsedAnalysis && (
+                        <Card className="bg-purple-50 border-purple-200">
+                          <CardHeader>
+                            <CardTitle className="text-purple-800">Анализ решения</CardTitle>
+                            <div className="text-sm text-purple-700">Оценка: {parsedAnalysis.summary.score}/2</div>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="space-y-4 max-h-96 overflow-y-auto">
+                              {parsedAnalysis.errors.length > 0 ? (
+                                parsedAnalysis.errors.map((error, index) => (
+                                  <Card key={index} className="bg-white border border-purple-200">
+                                    <CardContent className="pt-4">
+                                      <div className="space-y-3">
+                                        <Badge variant="destructive" className="text-xs">{error.type}</Badge>
+                                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                                          <p className="text-sm text-blue-800 font-medium">Описание:</p>
+                                          <p className="text-sm text-gray-700 mt-1">{error.description}</p>
+                                        </div>
+                                        <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                                          <div className="flex items-center gap-2 mb-2">
+                                            <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                                            <p className="text-sm text-red-800 font-medium">Решение ученика:</p>
+                                          </div>
+                                          <MathRenderer text={error.studentSolution} compiler="mathjax" />
+                                        </div>
+                                        <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                                          <div className="flex items-center gap-2 mb-2">
+                                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                            <p className="text-sm text-green-800 font-medium">Правильное решение:</p>
+                                          </div>
+                                          <MathRenderer text={error.correctSolution} compiler="mathjax" />
+                                        </div>
+                                        {error.context && (
+                                          <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                                            <p className="text-sm text-gray-800 font-medium">Контекст:</p>
+                                            <MathRenderer text={error.context} compiler="mathjax" />
+                                          </div>
+                                        )}
+                                      </div>
+                                    </CardContent>
+                                  </Card>
+                                ))
+                              ) : (
+                                <div className="text-center py-8 text-gray-500">
+                                  Ошибок не найдено. Отличная работа! 🎉
+                                </div>
+                              )}
+                              {parsedAnalysis.summary.comment && (
+                                <Card className="bg-green-50 border-green-200 mt-4">
+                                  <CardContent className="pt-4">
+                                    <div className="flex items-center gap-2 mb-2">
+                                      <Badge className="bg-green-600 text-white">{parsedAnalysis.summary.score}/2</Badge>
+                                      <p className="text-sm font-semibold text-green-800">Общая оценка:</p>
+                                    </div>
+                                    <MathRenderer text={parsedAnalysis.summary.comment} compiler="mathjax" />
+                                  </CardContent>
+                                </Card>
+                              )}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )}
+                    </div>
                   )}
                 </div>
 
@@ -981,6 +1323,46 @@ const PracticeByNumberEgeBasicMath = () => {
         open={showFormulaBooklet}
         onOpenChange={setShowFormulaBooklet}
       />
+
+      {/* Image Preview Dialog */}
+      <div>
+        {showImagePreview && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60" onClick={() => setShowImagePreview(false)}>
+            <div className="bg-white rounded-lg p-4 max-w-4xl w-[90vw]" onClick={(e) => e.stopPropagation()}>
+              <div className="text-lg font-semibold mb-3 text-[#1a1f36]">Загруженное решение</div>
+              <div className="flex justify-center">
+                <img src={selectedPreviewImage || ''} alt="Uploaded solution full size" className="max-w-full max-h-[70vh] rounded" />
+              </div>
+              <div className="mt-4 flex justify-end">
+                <Button onClick={() => setShowImagePreview(false)}>Закрыть</Button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Progress Bars Overlay for device processing */}
+      {uploadProgress > 0 && (uploadedImages.length > 0) && (
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-lg p-6 w-[90vw] max-w-md text-[#1a1f36]">
+            <div className="text-center text-lg font-semibold mb-4">Обработка решения</div>
+            <div className="space-y-4">
+              <div>
+                <div className="flex justify-between text-sm mb-1"><span>1. Загрузка фото</span><span>{Math.round(uploadProgress)}%</span></div>
+                <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                  <div className="bg-gradient-to-r from-yellow-500 to-emerald-500 h-3 rounded-full transition-all duration-300 ease-out" style={{ width: `${uploadProgress}%` }} />
+                </div>
+              </div>
+              <div>
+                <div className="flex justify-between text-sm mb-1"><span>2. Анализ решения</span><span>{Math.round(analysisProgress)}%</span></div>
+                <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                  <div className="bg-gradient-to-r from-yellow-500 to-emerald-500 h-3 rounded-full transition-all duration-300 ease-out" style={{ width: `${analysisProgress}%` }} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
