@@ -47,16 +47,8 @@ ${student_solution}
 
 Твоя задача:
 1. Сравни шаги "Правильного решения" с текстом OCR-решения ученика.
-2. Определи ошибки ученика: арифметические, алгебраические, логические, неверные данные, пропуски шагов, ошибки в оформлении, и т. п.
-3. Для каждой ошибки верни объект с такими полями:
-   - **type** — тип ошибки: "Арифметические ошибки", "Алгебраические ошибки", "Логические ошибки", "Нотационные ошибки", "Ошибки копирования", "Неполные решения", "Другие";
-   - **message** — краткое понятное объяснение ошибки;
-   - **student_latex** — математическое выражение ученика (The LaTeX should be in MathJax-compatible HTML. Use <p> and <span> tags where needed. Inline math should be wrapped in \( ... \) and block math in $$ ... $$.);
-   - **expected_latex** — правильное выражение (The LaTeX should be in MathJax-compatible HTML. Use <p> and <span> tags where needed. Inline math should be wrapped in \( ... \) and block math in $$ ... $$.);
-   - **context_snippet** — короткий участок текста ИЗ OCR-РЕШЕНИЯ, содержащий ошибку, ДОСЛОВНО взятый из входного текста, без малейших изменений символов, пробелов или форматирования.  
-     Этот фрагмент должен быть точным подстрочным совпадением в исходном тексте "Решение ученика".  
-     Не переформатируй, не добавляй и не убирай символы. Просто скопируй тот участок, где обнаружена ошибка.
-     При возможности — включай несколько символов ДО и ПОСЛЕ ошибки, чтобы контекст был уникальным, но всё равно из того же OCR-текста.
+2. Определи ошибки ученика: арифметические, алгебраические, логические, неверные данные, пропуски шагов, ошибки в оформлении и т. п.
+3. Сформируй понятные объяснения для каждой найденной ошибки (кратко и по делу). Используй MathJax-совместимую разметку для формул: \\( ... \\) для встроенной математики и \\[ ... \\] для блочной.
 4. Определи итоговый числовой балл по правилам:
    - **2** — решение корректное, без критичных ошибок;
    - **1** — решение доведено до конца, но есть локальная ошибка (например, арифметическая);
@@ -66,25 +58,22 @@ ${student_solution}
 Верни **ТОЛЬКО один валидный JSON-объект UTF-8** такого вида:
 {
   "scores": <0|1|2>,
-  "review": {
-    "errors": [
-      {
-        "type": string,
-        "message": string,
-        "student_latex": string,
-        "expected_latex": string,
-        "context_snippet": string
-      }
-    ],
-    "summary": very concise text of verdict including scores, example: Оценка: X (explanation)
-  }
+  "review": "<p><b>Ошибка 1:</b> краткое объяснение первой ошибки; при необходимости включай фрагменты OCR в теге <code>...</code>; формулы оформляй через \\( ... \\) или \\[ ... \\].</p>
+             <p><b>Ошибка 2:</b> краткое объяснение второй ошибки ...</p>
+             ...
+             <p><b>Оценка:</b> лаконичное резюме с мотивацией выставленного балла (например: Оценка: X — причина).</p>"
 }
 
-Требования:
+Требования к полю "review":
+- Это **одна строка HTML**, совместимая с MathJax (используй только обычные HTML-теги: <p>, <b>, <i>, <span>, <code>, <br/>).
+- Каждая ошибка — отдельный абзац вида: <p><b>Ошибка N:</b> ...</p>, нумерация с 1.
+- Итоговая сводка — отдельный абзац, начинающийся с <b>Оценка:</b>.
+- Если ошибок нет, не добавляй абзацы «Ошибка N», укажи только абзац «<b>Оценка:</b> Решение верно ...».
+
+Обязательные ограничения:
 - Не добавляй Markdown, комментарии или текст вне JSON.
 - Не заключай JSON в тройные кавычки.
-- Если ошибок нет — верни "errors": [].
-- Все "context_snippet" должны быть **точно такими, как в исходном OCR-тексте**, без малейших изменений.`;
+- Пиши «review» на русском языке, кратко и ясно.`;
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -182,33 +171,41 @@ ${student_solution}
     // Second API call to polish & validate LaTeX WITHOUT changing structure or meaning
     const polishPrompt = `You are given a JSON string called feedback:
 
-    FEEDBACK_START
-    ${feedback}
-    FEEDBACK_END
+FEEDBACK_START
+${feedback}
+FEEDBACK_END
 
-    Your task: return the EXACT SAME JSON structure and meaning, but with the following fixes applied **ONLY** inside content of keys "student_latex", "expected_latex", "message". DO NOT add or remove keys. DO NOT reorder arrays. DO NOT change numbers or booleans. DO NOT add comments or Markdown. Return ONLY the corrected JSON.
+Your task: return the EXACT SAME JSON structure and meaning, but with fixes applied **ONLY** inside the string value of the key "review". DO NOT add or remove keys. DO NOT reorder arrays. DO NOT change numbers or booleans. DO NOT add comments or Markdown. Return ONLY the corrected JSON.
 
-    ### Invariants (MUST NOT break)
-    - Keep the top-level shape: {"scores": <0|1|2>, "review": { ... }}.
-    - Preserve all keys, nesting, and array lengths exactly as in the input.
-    - Preserve all numeric and boolean values exactly (including "scores").
-    - Do not invent or delete errors, steps, marks, or fields.
-    - Do not wrap the entire JSON in backticks or code fences. Output must be valid JSON UTF-8.
+### Invariants (MUST NOT break)
+- Keep the top-level shape: {"scores": <0|1|2>, "review": "<HTML>"}.
+- Preserve all keys, nesting, and array lengths exactly as in the input.
+- Preserve all numeric and boolean values exactly (including "scores").
+- Do not invent or delete fields, steps, or errors.
+- Do not wrap the entire JSON in backticks or code fences. Output must be valid JSON UTF-8.
 
-    For content of keys "student_latex", "expected_latex", "message":
-      - Ensure the value content LaTeX should be in MathJax-compatible HTML. Use <p> and <span> tags where needed. Inline math should be wrapped in \( ... \) and block math in $$ ... $$.. I should be able to render values of keys "student_latex", "expected_latex", "message" straight away.
-      - Do NOT change the mathematical meaning.
-      
-    **JSON validity**
-      - Ensure output is valid JSON.
-      - Keep all existing keys even if empty strings/arrays.
+### What to change (inside "review" ONLY)
+- Make the HTML **MathJax-compatible**:
+  - Use only simple HTML tags: <p>, <b>, <i>, <span>, <code>, <br/>.
+  - Inline math must be wrapped as \\( ... \\); block math as \\[ ... \\]. **Do not use** $$ ... $$.
+  - Do not use Markdown.
+- Ensure the review is structured as paragraphs in Russian:
+  - Each error in its own paragraph: \`<p><b>Ошибка N:</b> ...</p>\` with consecutive numbering starting at 1.
+  - Final summary paragraph: \`<p><b>Оценка:</b> ...</p>\`.
+  - If there are no errors, omit all "Ошибка N" paragraphs and include only the "Оценка" paragraph.
+- Improve clarity, spelling, and punctuation in Russian **without changing the mathematical meaning**.
+- Normalize whitespace, close all tags, and HTML-escape special characters that are not part of MathJax math.
+- Keep the original intent and conclusions; do not alter facts, results, or the assigned score.
 
-    ### IMPORTANT
-    - **Do not wrap the entire JSON in backticks or code fences.**
-    - **CHANGE NOTHING EXCEPT CONTENT of keys "student_latex", "expected_latex", "message".**
-    - DO NOT change any numbers, booleans, indices, IDs, or array orders.
-    - DO NOT add or remove keys.
-    - DO NOT add explanations. Return ONLY the corrected JSON.`;
+### JSON validity
+- Ensure the output is valid JSON.
+- Keep all existing keys even if empty strings/arrays.
+
+### IMPORTANT
+- **Do not wrap the entire JSON in backticks or code fences.**
+- **CHANGE NOTHING EXCEPT the string content of "review".**
+- DO NOT change any numbers, booleans, indices, IDs, or array orders.
+- DO NOT add explanations. Return ONLY the corrected JSON.`;
     const polishResponse = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {

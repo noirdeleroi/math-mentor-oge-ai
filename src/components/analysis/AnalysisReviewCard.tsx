@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import MathRenderer from "@/components/MathRenderer";
+import { useMemo } from "react";
 
 interface AnalysisError {
   type: string;
@@ -20,12 +21,58 @@ interface AnalysisDataShape {
       };
 }
 
+interface ParsedError {
+  number: number;
+  title: string;
+  content: string;
+}
+
+interface ParsedReview {
+  errors: ParsedError[];
+  evaluation: string | null;
+}
+
 interface Props {
   title?: string;
   analysisData?: AnalysisDataShape | null;
   fallbackSummaryLatex?: string;
   fallbackScore?: number | null;
 }
+
+// Helper function to parse HTML review with errors and evaluation
+const parseHtmlReview = (html: string): ParsedReview => {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+  const errors: ParsedError[] = [];
+  let evaluation: string | null = null;
+
+  // Extract all paragraphs
+  const paragraphs = doc.querySelectorAll('p');
+  
+  paragraphs.forEach((p) => {
+    const htmlContent = p.innerHTML;
+    
+    // Check if it's an error (starts with <b>Ошибка X:</b>)
+    const errorMatch = htmlContent.match(/<b>Ошибка\s+(\d+):<\/b>(.+)/i);
+    if (errorMatch) {
+      const errorNumber = parseInt(errorMatch[1], 10);
+      const errorContent = errorMatch[2].trim();
+      errors.push({
+        number: errorNumber,
+        title: `Ошибка ${errorNumber}`,
+        content: errorContent,
+      });
+    }
+    
+    // Check if it's evaluation (contains <b>Оценка:</b>)
+    const evaluationMatch = htmlContent.match(/<b>Оценка:<\/b>(.+)/i);
+    if (evaluationMatch) {
+      evaluation = evaluationMatch[1].trim();
+    }
+  });
+
+  return { errors, evaluation };
+};
 
 const AnalysisReviewCard = ({
   title = "Анализ решения",
@@ -42,6 +89,14 @@ const AnalysisReviewCard = ({
   const hasStructured = Boolean(
     analysisData && !reviewIsString && Array.isArray((analysisData.review as any)?.errors)
   );
+
+  // Parse HTML review if it's a string
+  const parsedHtmlReview = useMemo(() => {
+    if (reviewIsString && analysisData?.review) {
+      return parseHtmlReview(analysisData.review as string);
+    }
+    return null;
+  }, [reviewIsString, analysisData?.review]);
 
   return (
     <Card className="bg-purple-50 border-purple-200">
@@ -100,6 +155,34 @@ const AnalysisReviewCard = ({
             ) : (
               <div className="text-center py-8 text-gray-500">Ошибок не найдено. Отличная работа! 🎉</div>
             )
+          ) : parsedHtmlReview && parsedHtmlReview.errors.length > 0 ? (
+            <>
+              {/* Display parsed errors */}
+              {parsedHtmlReview.errors.map((error, i) => (
+                <Card key={i} className="bg-white border border-red-200">
+                  <CardContent className="pt-4">
+                    <div className="space-y-3">
+                      <Badge variant="destructive" className="text-xs">{error.title}</Badge>
+                      <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                        <MathRenderer text={error.content} compiler="mathjax" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+              
+              {/* Display evaluation separately */}
+              {parsedHtmlReview.evaluation && (
+                <Card className="bg-green-50 border-green-200 mt-4">
+                  <CardContent className="pt-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <p className="text-sm font-semibold text-green-800">Оценка:</p>
+                    </div>
+                    <MathRenderer text={parsedHtmlReview.evaluation} compiler="mathjax" />
+                  </CardContent>
+                </Card>
+              )}
+            </>
           ) : (
             <Card className="bg-white border border-purple-200">
               <CardContent className="pt-4">

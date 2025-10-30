@@ -17,6 +17,8 @@ import { awardStreakPoints, calculateStreakReward, getCurrentStreakData } from "
 import { toast } from "sonner";
 import TestStatisticsWindow from "@/components/TestStatisticsWindow";
 import FormulaBookletDialog from "@/components/FormulaBookletDialog";
+import StudentSolutionCard from "@/components/analysis/StudentSolutionCard";
+import AnalysisReviewCard from "@/components/analysis/AnalysisReviewCard";
 
 interface Question {
   question_id: string;
@@ -159,7 +161,6 @@ const PracticeByNumberOgemath = () => {
   const [photoFeedback, setPhotoFeedback] = useState<string>("");
   const [photoScores, setPhotoScores] = useState<number | null>(null);
   const [structuredPhotoFeedback, setStructuredPhotoFeedback] = useState<PhotoAnalysisFeedback | null>(null);
-  const [studentSolution, setStudentSolution] = useState<string>("");
   const [analysisData, setAnalysisData] = useState<AnalysisData | null>(null);
   
   // Device upload states
@@ -298,7 +299,6 @@ const PracticeByNumberOgemath = () => {
     setPhotoFeedback("");
     setPhotoScores(null);
     setStructuredPhotoFeedback(null);
-    setStudentSolution("");
     setOcrProgress("");
   };
 
@@ -913,10 +913,25 @@ const PracticeByNumberOgemath = () => {
           // Parse JSON response
           const feedbackData = JSON.parse(apiResponse.feedback);
           if (feedbackData.review && typeof feedbackData.scores === 'number') {
-            // Set structured feedback
-            setStructuredPhotoFeedback(feedbackData);
-            setPhotoFeedback(feedbackData.review.overview_latex || '');
             setPhotoScores(feedbackData.scores);
+            
+            // Check if it's the new simple format (review is string) or old structured format
+            if (typeof feedbackData.review === 'string') {
+              // New format: {scores, review: "<p>...</p>"}
+              setAnalysisData({ scores: feedbackData.scores, review: feedbackData.review });
+              setPhotoFeedback('');
+              setStructuredPhotoFeedback(null);
+            } else if (feedbackData.review.overview_latex) {
+              // Old structured format
+              setStructuredPhotoFeedback(feedbackData);
+              setPhotoFeedback(feedbackData.review.overview_latex);
+              setAnalysisData(null);
+            } else {
+              // Fallback: store as-is
+              setPhotoFeedback(apiResponse.feedback);
+              setStructuredPhotoFeedback(null);
+              setAnalysisData(null);
+            }
             
             // Handle photo submission using direct update
             const isCorrect = feedbackData.scores > 0;
@@ -936,6 +951,7 @@ const PracticeByNumberOgemath = () => {
           setPhotoFeedback(apiResponse.feedback);
           setPhotoScores(null);
           setStructuredPhotoFeedback(null);
+          setAnalysisData(null);
           setShowUploadPrompt(false);
         }
       } else {
@@ -1013,33 +1029,6 @@ const PracticeByNumberOgemath = () => {
     setPhotoFeedback("");
     setPhotoScores(null);
     setStructuredPhotoFeedback(null);
-    setStudentSolution("");
-  };
-
-  const fetchStudentSolution = async () => {
-    if (!user) return null;
-    
-    try {
-      // Fetch the most recent extracted_text for the current user
-      // @ts-ignore - Supabase type instantiation issue
-      const { data, error } = await supabase
-        .from('telegram_uploads')
-        .select('extracted_text')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .single();
-
-      if (error) {
-        console.error('Error fetching student solution:', error);
-        return null;
-      }
-
-      return data?.extracted_text || '';
-    } catch (error) {
-      console.error('Error in fetchStudentSolution:', error);
-      return null;
-    }
   };
 
   const fetchAnalysisData = async () => {
@@ -1181,10 +1170,25 @@ const PracticeByNumberOgemath = () => {
         try {
           const feedbackData = JSON.parse(apiResponse.feedback);
           if (feedbackData.review && typeof feedbackData.scores === 'number') {
-            // Set structured feedback
-            setStructuredPhotoFeedback(feedbackData);
-            setPhotoFeedback(feedbackData.review.overview_latex || '');
             setPhotoScores(feedbackData.scores);
+            
+            // Check if it's the new simple format (review is string) or old structured format
+            if (typeof feedbackData.review === 'string') {
+              // New format: {scores, review: "<p>...</p>"}
+              setAnalysisData({ scores: feedbackData.scores, review: feedbackData.review });
+              setPhotoFeedback('');
+              setStructuredPhotoFeedback(null);
+            } else if (feedbackData.review.overview_latex) {
+              // Old structured format
+              setStructuredPhotoFeedback(feedbackData);
+              setPhotoFeedback(feedbackData.review.overview_latex);
+              setAnalysisData(null);
+            } else {
+              // Fallback: store as-is
+              setPhotoFeedback(apiResponse.feedback);
+              setStructuredPhotoFeedback(null);
+              setAnalysisData(null);
+            }
             
             const isCorrect = feedbackData.scores > 0;
             await updateStudentActivity(isCorrect, feedbackData.scores);
@@ -1192,13 +1196,7 @@ const PracticeByNumberOgemath = () => {
             setIsCorrect(isCorrect);
             setIsAnswered(true);
             
-            // Always fetch and show student solution and analysis after marking
-            const solution = await fetchStudentSolution();
-            if (solution) {
-              setStudentSolution(solution);
-            }
-            
-            // Fetch analysis data
+            // Fetch analysis data (in case it's stored separately in DB)
             const analysis = await fetchAnalysisData();
             if (analysis) {
               setAnalysisData(analysis);
@@ -1713,69 +1711,11 @@ const PracticeByNumberOgemath = () => {
                       </Alert>
 
                       {/* Show Student Solution and Analysis for photo uploads - always show after marking */}
-                      {studentSolution && currentQuestion.problem_number_type && currentQuestion.problem_number_type >= 20 && (
+                      {currentQuestion.problem_number_type && currentQuestion.problem_number_type >= 20 && (
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                          {/* Student Solution */}
-                          <Card className="bg-blue-50 border-blue-200">
-                            <CardHeader>
-                              <CardTitle className="text-blue-800">Ваше решение</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                              <div className="bg-white border border-blue-200 rounded-lg p-4 max-h-96 overflow-y-auto">
-                                <MathRenderer text={studentSolution} compiler="mathjax" />
-                              </div>
-                            </CardContent>
-                          </Card>
-
-                          {/* Analysis */}
+                          <StudentSolutionCard />
                           {analysisData && (
-                            <Card className="bg-purple-50 border-purple-200">
-                              <CardHeader>
-                                <CardTitle className="text-purple-800">Анализ решения</CardTitle>
-                                <CardDescription>
-                                  Оценка: {analysisData.scores}/2
-                                </CardDescription>
-                              </CardHeader>
-                              <CardContent>
-                                <div className="space-y-4 max-h-96 overflow-y-auto">
-                                  {analysisData.review.errors && analysisData.review.errors.length > 0 ? (
-                                    analysisData.review.errors.map((error, index) => (
-                                      <Card key={index} className="bg-white border border-purple-200">
-                                        <CardContent className="pt-4">
-                                          <div className="space-y-2">
-                                            <Badge variant="destructive">{error.type}</Badge>
-                                            <p className="text-sm text-gray-700">{error.message}</p>
-                                            <div className="space-y-1">
-                                              <div>
-                                                <span className="text-xs font-semibold text-red-600">Что написано:</span>
-                                                <MathRenderer text={error.student_latex} compiler="mathjax" />
-                                              </div>
-                                              <div>
-                                                <span className="text-xs font-semibold text-green-600">Должно быть:</span>
-                                                <MathRenderer text={error.expected_latex} compiler="mathjax" />
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </CardContent>
-                                      </Card>
-                                    ))
-                                  ) : (
-                                    <div className="text-center py-8 text-gray-500">
-                                      Ошибок не найдено. Отличная работа! 🎉
-                                    </div>
-                                  )}
-                                  
-                                  {analysisData.review.summary && (
-                                    <Card className="bg-green-50 border-green-200 mt-4">
-                                      <CardContent className="pt-4">
-                                        <p className="text-sm font-semibold text-green-800">Общая оценка:</p>
-                                        <MathRenderer text={analysisData.review.summary} compiler="mathjax" />
-                                      </CardContent>
-                                    </Card>
-                                  )}
-                                </div>
-                              </CardContent>
-                            </Card>
+                            <AnalysisReviewCard analysisData={analysisData as any} />
                           )}
                         </div>
                       )}
@@ -1828,7 +1768,7 @@ const PracticeByNumberOgemath = () => {
                 )}
 
                 {/* Photo Feedback */}
-                {photoFeedback && (
+                {(photoFeedback || analysisData) && (
                   <Card className="bg-green-50 border-green-200">
                     <CardHeader>
                       <CardTitle className="text-green-800 flex items-center justify-between">
@@ -1839,51 +1779,34 @@ const PracticeByNumberOgemath = () => {
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <div className="prose max-w-none">
-                        {/* Student Solution */}
-                        {studentSolution && (
-                          <div className="mb-6">
-                            <h3 className="text-lg font-semibold text-blue-800 mb-3">Ваше решение</h3>
-                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                              <MathRenderer text={studentSolution} compiler="mathjax" />
-                            </div>
-                          </div>
-                        )}
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <StudentSolutionCard />
+                        <AnalysisReviewCard
+                          analysisData={(() => {
+                            // If we already have structured analysisData, use it
+                            if (analysisData) return analysisData as any;
+                            // Try to parse photoFeedback if it's a JSON string
+                            try {
+                              const parsed = JSON.parse(photoFeedback);
+                              if (parsed && typeof parsed.scores === 'number') return parsed;
+                            } catch {}
+                            return null;
+                          })()}
+                          fallbackSummaryLatex={(() => {
+                            // If photoFeedback is a JSON string, extract review field
+                            try {
+                              const parsed = JSON.parse(photoFeedback);
+                              if (typeof parsed?.review === 'string') return parsed.review;
+                            } catch {}
+                            return photoFeedback;
+                          })()}
+                          fallbackScore={photoScores}
+                        />
+                      </div>
 
-                        {/* Overview */}
-                        <div className="mb-6">
-                          <h3 className="text-lg font-semibold text-green-800 mb-3">Общая оценка</h3>
-                          <MathRenderer text={photoFeedback} compiler="mathjax" />
-                        </div>
-
-                        {/* Score Display */}
-                        {photoScores !== null && (
-                          <div className="mb-6 p-4 bg-green-100 rounded-lg border">
-                            <div className="flex items-center justify-between">
-                              <span className="text-lg font-semibold text-green-800">
-                                Баллы: {photoScores} из 2
-                              </span>
-                              <div className="flex space-x-2">
-                                {[1, 2].map((score) => (
-                                  <div
-                                    key={score}
-                                    className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
-                                      score <= photoScores
-                                        ? 'bg-green-500 text-white'
-                                        : 'bg-gray-300 text-gray-600'
-                                    }`}
-                                  >
-                                    {score}
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Structured Feedback */}
-                        {structuredPhotoFeedback && (
-                          <div className="space-y-6">
+                      {/* Structured Feedback (legacy format) */}
+                      {structuredPhotoFeedback && (
+                        <div className="space-y-6 mt-4">
                             {/* Final Answer Comparison */}
                             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                               <h4 className="font-semibold text-blue-800 mb-3">Сравнение ответов</h4>
@@ -2017,7 +1940,6 @@ const PracticeByNumberOgemath = () => {
                             )}
                           </div>
                         )}
-                      </div>
                     </CardContent>
                   </Card>
                 )}
