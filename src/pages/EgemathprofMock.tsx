@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import FormulaBookletDialog from "@/components/FormulaBookletDialog";
 import { LoadingOverlay } from "@/components/LoadingOverlay";
 import Loading from "@/components/ui/Loading";
+import FeedbackButton from "@/components/FeedbackButton";
 
 const COURSE_ID = '3'; // ЕГЭ Профиль
 const makeExamId = () => {
@@ -1666,7 +1667,10 @@ const completeAttempt = async (isCorrect: boolean, scores: number) => {
                     </div>
                   )}
 
-                  <div className="flex justify-between pt-4 border-t">
+                  <div className="flex justify-between items-center pt-4 border-t">
+                    {currentQuestion?.question_id && (
+                      <FeedbackButton contentType="frq_question" contentRef={currentQuestion.question_id} />
+                    )}
                     <div className="flex gap-3">
                       {currentQuestionIndex > 0 && (
                         <Button

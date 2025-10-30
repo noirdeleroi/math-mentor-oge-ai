@@ -8,6 +8,7 @@ import { CheckCircle, XCircle, ArrowLeft, ArrowRight, Clock, BookOpen } from "lu
 import { Link } from "react-router-dom";
 import MathRenderer from "@/components/MathRenderer";
 import { toast } from "sonner";
+import FeedbackButton from "@/components/FeedbackButton";
 import FormulaBookletDialog from "@/components/FormulaBookletDialog";
 import Loading from "@/components/ui/Loading";
 
@@ -607,7 +608,11 @@ const EgemathbasicMock = () => {
                     />
                   </div>
                 )}
-                <div className="flex gap-2">
+                <div className="flex gap-2 items-center justify-between">
+                  {currentQuestion?.question_id && (
+                    <FeedbackButton contentType="frq_question" contentRef={currentQuestion.question_id} />
+                  )}
+                  <div className="flex gap-2">
                   <Input
                     value={userAnswer}
                     onChange={(e) => setUserAnswer(e.target.value)}
@@ -630,6 +635,7 @@ const EgemathbasicMock = () => {
                   >
                     Пропустить
                   </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>

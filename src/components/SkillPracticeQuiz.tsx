@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useStreakTracking } from '@/hooks/useStreakTracking';
 import MathRenderer from '@/components/MathRenderer';
+import FeedbackButton from '@/components/FeedbackButton';
 import { toast } from '@/hooks/use-toast';
 import { logTextbookActivity } from '@/utils/logTextbookActivity';
 
@@ -371,8 +372,10 @@ const SkillPracticeQuiz: React.FC<SkillPracticeQuizProps> = ({ skill, onBackToAr
                 </div>
               )}
 
-              {/* Action Buttons */}
-              <div className="flex justify-center space-x-4">
+              {/* Feedback + Action Buttons */}
+              <div className="flex items-center justify-between gap-4">
+                <FeedbackButton contentType="mcq" contentRef={questions[currentQuestionIndex]?.question_id} />
+                <div className="flex justify-center space-x-4">
                 {!showResult ? (
                   <Button
                     onClick={handleSubmitAnswer}
@@ -389,6 +392,7 @@ const SkillPracticeQuiz: React.FC<SkillPracticeQuizProps> = ({ skill, onBackToAr
                     {currentQuestionIndex < questions.length - 1 ? '➡️ Следующий вопрос' : '🏁 Завершить тест'}
                   </Button>
                 )}
+                </div>
               </div>
             </CardContent>
           </div>

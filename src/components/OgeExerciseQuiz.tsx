@@ -7,6 +7,7 @@ import { Check, X, ArrowLeft, Trophy, Target, RotateCcw, BookOpen, Eye, Sparkles
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { useStreakTracking } from '@/hooks/useStreakTracking';
 import MathRenderer from '@/components/MathRenderer';
+import FeedbackButton from '@/components/FeedbackButton';
 import { toast } from '@/hooks/use-toast';
 import { getQuestionsBySkills, OgeQuestion } from '@/services/ogeQuestionsService';
 import { logTextbookActivity } from '@/utils/logTextbookActivity';
@@ -504,6 +505,14 @@ const OgeExerciseQuiz: React.FC<OgeExerciseQuizProps> = ({
               )}
 
               <div className="space-y-2">
+                <div className="flex justify-end">
+                  {questions[currentQuestionIndex]?.question_id && (
+                    <FeedbackButton
+                      contentType="mcq"
+                      contentRef={String(questions[currentQuestionIndex].question_id)}
+                    />
+                  )}
+                </div>
                 {!showResult ? (
                   <Button
                     size="sm"

@@ -18,6 +18,7 @@ import { useToast } from '@/hooks/use-toast';
 import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import MathRenderer from '@/components/MathRenderer';
+import FeedbackButton from '@/components/FeedbackButton';
 import Loading from '@/components/ui/Loading';
 import { useMathJaxSelection } from '@/hooks/useMathJaxSelection';
 import { getSelectedTextWithMath } from '@/utils/getSelectedTextWithMath';
@@ -1488,7 +1489,15 @@ const Homework = () => {
                   </motion.div>
                 )}
 
-                <div className="flex gap-2">
+                <div className="flex gap-2 items-center justify-between">
+                  {/* Feedback for current question */}
+                  {currentQuestion?.id && (
+                    <FeedbackButton
+                      contentType={questionType === 'mcq' ? 'mcq' : 'frq_question'}
+                      contentRef={currentQuestion.id}
+                    />
+                  )}
+                  <div className="flex gap-2">
                   {!showAnswer ? (
                     <>
                       <Button
@@ -1546,6 +1555,7 @@ const Homework = () => {
                       </Button>
                     </>
                   )}
+                  </div>
                 </div>
               </CardContent>
             </Card>

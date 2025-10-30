@@ -25,6 +25,7 @@ import { StreakDisplay } from '@/components/streak/StreakDisplay';
 import { Link } from 'react-router-dom';
 import { findTopicRoute } from '@/lib/topic-routing';
 import FlyingStarsBackground from '@/components/FlyingStarsBackground';
+import FeedbackButton from '@/components/FeedbackButton';
 
 interface Skill {
   number: number;
@@ -741,7 +742,7 @@ const DigitalTextbook = () => {
                             }}
                           />
                           
-                          {/* Practice Button */}
+                          {/* Feedback + Practice Buttons */}
                           <div className="mt-6 md:mt-8 pt-4 md:pt-6 border-t border-gray-200">
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                               <div className="flex-1">
@@ -750,6 +751,9 @@ const DigitalTextbook = () => {
                                   Закрепите знания с помощью интерактивных заданий
                                 </p>
                               </div>
+                              {selectedSkill && (
+                                <FeedbackButton contentType="article" contentRef={String(selectedSkill)} />
+                              )}
                               <Button 
                                 onClick={handleStartPractice}
                                 className="flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-400 hover:to-emerald-400 text-[#1a1f36] w-full md:w-auto"
