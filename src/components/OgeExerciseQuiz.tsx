@@ -12,6 +12,7 @@ import { getQuestionsBySkills, OgeQuestion } from '@/services/ogeQuestionsServic
 import { logTextbookActivity } from '@/utils/logTextbookActivity';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { FeedbackButton } from '@/components/FeedbackButton';
 
 interface OgeExerciseQuizProps {
   title: string;

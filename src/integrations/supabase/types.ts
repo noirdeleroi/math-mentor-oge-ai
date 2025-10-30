@@ -92,6 +92,69 @@ export type Database = {
         }
         Relationships: []
       }
+      content_feedback: {
+        Row: {
+          app_version: string | null
+          content_ref: string
+          content_type: string
+          created_at: string
+          device_info: string | null
+          handled_at: string | null
+          handled_by: string | null
+          id: string
+          screenshot_url: string | null
+          severity: string | null
+          status: string
+          user_comment: string
+          user_id: string | null
+        }
+        Insert: {
+          app_version?: string | null
+          content_ref: string
+          content_type: string
+          created_at?: string
+          device_info?: string | null
+          handled_at?: string | null
+          handled_by?: string | null
+          id?: string
+          screenshot_url?: string | null
+          severity?: string | null
+          status?: string
+          user_comment: string
+          user_id?: string | null
+        }
+        Update: {
+          app_version?: string | null
+          content_ref?: string
+          content_type?: string
+          created_at?: string
+          device_info?: string | null
+          handled_at?: string | null
+          handled_by?: string | null
+          id?: string
+          screenshot_url?: string | null
+          severity?: string | null
+          status?: string
+          user_comment?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_feedback_handled_by_fkey"
+            columns: ["handled_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "content_feedback_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       daily_activities: {
         Row: {
           activity_date: string
@@ -502,11 +565,13 @@ export type Database = {
           problem_link: string | null
           problem_number_type: number | null
           problem_text: string | null
+          problem_text_html: string | null
           question_id: string
           rec_time: string | null
           skills: string | null
           solution_image: string | null
           solution_text: string | null
+          solution_text_html: string | null
           solutiontextexpanded: string | null
           source: string | null
           steps_number: string | null
@@ -527,11 +592,13 @@ export type Database = {
           problem_link?: string | null
           problem_number_type?: number | null
           problem_text?: string | null
+          problem_text_html?: string | null
           question_id: string
           rec_time?: string | null
           skills?: string | null
           solution_image?: string | null
           solution_text?: string | null
+          solution_text_html?: string | null
           solutiontextexpanded?: string | null
           source?: string | null
           steps_number?: string | null
@@ -552,11 +619,13 @@ export type Database = {
           problem_link?: string | null
           problem_number_type?: number | null
           problem_text?: string | null
+          problem_text_html?: string | null
           question_id?: string
           rec_time?: string | null
           skills?: string | null
           solution_image?: string | null
           solution_text?: string | null
+          solution_text_html?: string | null
           solutiontextexpanded?: string | null
           source?: string | null
           steps_number?: string | null
@@ -566,6 +635,90 @@ export type Database = {
         Relationships: []
       }
       oge_math_skills_questions: {
+        Row: {
+          answer: string | null
+          calculation_required: string | null
+          calculator_allowed: string | null
+          checked: string | null
+          code: string | null
+          comments: string | null
+          corrected: string | null
+          difficulty: number | null
+          option1: string | null
+          option2: string | null
+          option3: string | null
+          option4: string | null
+          problem_image: string | null
+          problem_link: string | null
+          problem_number_type: string | null
+          problem_text: string | null
+          question_id: string
+          rec_time: string | null
+          skills: number | null
+          solution_image: string | null
+          solution_text: string | null
+          solutiontextexpanded: string | null
+          source: string | null
+          steps_number: string | null
+          type: string | null
+        }
+        Insert: {
+          answer?: string | null
+          calculation_required?: string | null
+          calculator_allowed?: string | null
+          checked?: string | null
+          code?: string | null
+          comments?: string | null
+          corrected?: string | null
+          difficulty?: number | null
+          option1?: string | null
+          option2?: string | null
+          option3?: string | null
+          option4?: string | null
+          problem_image?: string | null
+          problem_link?: string | null
+          problem_number_type?: string | null
+          problem_text?: string | null
+          question_id: string
+          rec_time?: string | null
+          skills?: number | null
+          solution_image?: string | null
+          solution_text?: string | null
+          solutiontextexpanded?: string | null
+          source?: string | null
+          steps_number?: string | null
+          type?: string | null
+        }
+        Update: {
+          answer?: string | null
+          calculation_required?: string | null
+          calculator_allowed?: string | null
+          checked?: string | null
+          code?: string | null
+          comments?: string | null
+          corrected?: string | null
+          difficulty?: number | null
+          option1?: string | null
+          option2?: string | null
+          option3?: string | null
+          option4?: string | null
+          problem_image?: string | null
+          problem_link?: string | null
+          problem_number_type?: string | null
+          problem_text?: string | null
+          question_id?: string
+          rec_time?: string | null
+          skills?: number | null
+          solution_image?: string | null
+          solution_text?: string | null
+          solutiontextexpanded?: string | null
+          source?: string | null
+          steps_number?: string | null
+          type?: string | null
+        }
+        Relationships: []
+      }
+      oge_math_skills_questions_old: {
         Row: {
           answer: string | null
           calculation_required: string | null
@@ -1250,9 +1403,71 @@ export type Database = {
         }
         Relationships: []
       }
+      user_subscriptions: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          duration_days: number | null
+          end_date: string
+          id: string
+          notes: string | null
+          payment_method: string
+          plan_name: string
+          start_date: string
+          status: string
+          transaction_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string
+          duration_days?: number | null
+          end_date: string
+          id?: string
+          notes?: string | null
+          payment_method?: string
+          plan_name: string
+          start_date: string
+          status?: string
+          transaction_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          duration_days?: number | null
+          end_date?: string
+          id?: string
+          notes?: string | null
+          payment_method?: string
+          plan_name?: string
+          start_date?: string
+          status?: string
+          transaction_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
-      [_ in never]: never
+      active_subscriptions: {
+        Row: {
+          user_id: string | null
+        }
+        Insert: {
+          user_id?: string | null
+        }
+        Update: {
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       delete_course_data: {
