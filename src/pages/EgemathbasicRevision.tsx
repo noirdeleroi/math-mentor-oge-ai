@@ -18,6 +18,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useStreakTracking } from '@/hooks/useStreakTracking';
 import MathRenderer from '@/components/MathRenderer';
 import { awardEnergyPoints } from '@/services/energyPoints';
+import FeedbackButton from '@/components/FeedbackButton';
 
 interface Question {
   question_id: string;
@@ -501,6 +502,9 @@ const EgemathbasicRevision: React.FC = () => {
                           <ArrowRight className="w-4 h-4 mr-2" />
                           Дальше
                         </Button>
+                        {currentQuestion && (
+                          <FeedbackButton contentType="mcq" contentRef={currentQuestion.question_id} />
+                        )}
                       </div>
                     </div>
                   ) : (

@@ -22,6 +22,7 @@ import { useStreakTracking } from '@/hooks/useStreakTracking';
 import MathRenderer from '@/components/MathRenderer';
 import { toast } from '@/hooks/use-toast';
 import { awardEnergyPoints } from '@/services/energyPoints';
+import FeedbackButton from '@/components/FeedbackButton';
 
 interface Question {
   question_id: string;
@@ -712,6 +713,11 @@ text-transparent">
                             <BookOpen className="w-4 h-4 mr-1" />
                             статья
                           </Button>
+                        )}
+                      </div>
+                      <div className="flex justify-end">
+                        {currentQuestion && (
+                          <FeedbackButton contentType="mcq" contentRef={currentQuestion.question_id} />
                         )}
                       </div>
 

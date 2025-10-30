@@ -89,9 +89,9 @@ const EgemathbasicPractice = () => {
             </p>
           </div>
 
-          {/* 2x2 Grid for Regular Practice Cards */}
+          {/* 2x2 Grid for Practice + Mock (symmetrical) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            {questionTypes.map((type, index) => {
+            {[...questionTypes.filter(t => !t.comingSoon), mockExam].map((type, index) => {
               const content = (
                   <Card 
                     className="h-full relative overflow-hidden border-0 transition-all duration-300 group"
@@ -99,7 +99,7 @@ const EgemathbasicPractice = () => {
                       background: type.comingSoon ? 'rgba(100, 100, 100, 0.2)' : 'rgba(248, 250, 252, 0.05)',
                       backdropFilter: 'blur(10px)',
                       transform: hoveredCard === index && !type.comingSoon
-                        ? 'translateY(-8px) rotateX(5deg) rotateY(5deg)' 
+                        ? 'translateY(-8px) rotateX(5deg) rotateY(5deg)'
                         : 'translateY(0) rotateX(0) rotateY(0)',
                       transformStyle: 'preserve-3d',
                       perspective: '1000px',
@@ -161,16 +161,7 @@ const EgemathbasicPractice = () => {
                   </Card>
               );
 
-              return type.comingSoon ? (
-                <div 
-                  key={type.title}
-                  onMouseEnter={() => setHoveredCard(index)}
-                  onMouseLeave={() => setHoveredCard(null)}
-                  className="cursor-not-allowed"
-                >
-                  {content}
-                </div>
-              ) : (
+              return (
                 <Link 
                   key={type.title}
                   to={type.link}
@@ -182,51 +173,6 @@ const EgemathbasicPractice = () => {
               );
             })}
           </div>
-
-          {/* Mock Exam - Full Width, Clickable */}
-          <Link 
-            to={mockExam.link}
-            onMouseEnter={() => setHoveredCard(4)}
-            onMouseLeave={() => setHoveredCard(null)}
-          >
-            <Card 
-              className="relative overflow-hidden border-0 transition-all duration-300 group"
-              style={{
-                background: 'rgba(248, 250, 252, 0.05)',
-                backdropFilter: 'blur(10px)',
-                transform: hoveredCard === 4 
-                  ? 'translateY(-8px) scale(1.02)' 
-                  : 'translateY(0) scale(1)',
-                minHeight: '200px'
-              }}
-            >
-              {/* Gradient Border Effect */}
-              <div 
-                className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-r ${mockExam.gradient} p-[2px] rounded-lg`}
-                style={{ zIndex: -1 }}
-              />
-
-              {/* Large Floating Math Symbol */}
-              <div className="absolute top-1/2 right-8 -translate-y-1/2 text-9xl font-mono text-white/10 group-hover:text-white/20 transition-all duration-300 group-hover:scale-110">
-                {mockExam.mathSymbol}
-              </div>
-
-              <div className="relative z-10 p-8 flex items-center gap-8">
-                <div className={`w-24 h-24 rounded-full flex items-center justify-center shadow-2xl bg-gradient-to-r ${mockExam.gradient} group-hover:scale-110 transition-transform duration-300 flex-shrink-0`}>
-                  <mockExam.icon className="w-12 h-12 text-white" />
-                </div>
-                
-                <div className="flex-1">
-                  <h3 className="text-3xl font-display font-bold text-white mb-2">
-                    {mockExam.title}
-                  </h3>
-                  <p className="text-cool-gray font-body text-lg leading-relaxed">
-                    {mockExam.description}
-                  </p>
-                </div>
-              </div>
-            </Card>
-          </Link>
         </div>
       </div>
     </div>

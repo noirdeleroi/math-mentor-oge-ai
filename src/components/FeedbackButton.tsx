@@ -21,9 +21,7 @@ const SEVERITY_OPTIONS: { value: Severity; label: string }[] = [
   { value: 'other', label: 'Другое' },
 ];
 
-const RATE_LIMIT_KEY_PREFIX = 'feedback_timestamps_';
-const MAX_PER_HOUR = 5;
-const ONE_HOUR_MS = 60 * 60 * 1000;
+// Rate limiting removed per requirement
 
 export default function FeedbackButton({ contentType, contentRef }: FeedbackButtonProps) {
   const { user } = useAuth();
@@ -33,7 +31,7 @@ export default function FeedbackButton({ contentType, contentRef }: FeedbackButt
   const [message, setMessage] = useState('');
   
 
-  const rateKey = useMemo(() => `${RATE_LIMIT_KEY_PREFIX}${user?.id || 'anon'}`, [user?.id]);
+  // No rate limit key needed
 
   const deviceInfo = useMemo(() => {
     if (typeof navigator === 'undefined') return 'unknown';
@@ -41,20 +39,7 @@ export default function FeedbackButton({ contentType, contentRef }: FeedbackButt
     return `${isMobile ? 'mobile' : 'desktop'} | ${navigator.userAgent}`;
   }, []);
 
-  const checkRateLimit = (): boolean => {
-    try {
-      const raw = localStorage.getItem(rateKey);
-      const now = Date.now();
-      const recent = (raw ? JSON.parse(raw) as number[] : []).filter((t) => now - t < ONE_HOUR_MS);
-      if (recent.length >= MAX_PER_HOUR) return false;
-      recent.push(now);
-      localStorage.setItem(rateKey, JSON.stringify(recent));
-      return true;
-    } catch {
-      // if localStorage not available, allow submit
-      return true;
-    }
-  };
+  // No rate limit check
 
   const submitFeedback = async () => {
     if (!user) {
@@ -62,25 +47,18 @@ export default function FeedbackButton({ contentType, contentRef }: FeedbackButt
       return;
     }
 
-    if (!checkRateLimit()) {
-      toast.error('Слишком много сообщений. Попробуйте через час.');
-      return;
-    }
-
     setSubmitting(true);
     try {
-      const insertPayload: Record<string, any> = {
-        user_id: user.id,
-        content_type: contentType,
-        content_ref: contentRef,
-        user_comment: message?.trim() || '',
-      };
-      if (severity) insertPayload.severity = severity;
-      if (deviceInfo) insertPayload.device_info = deviceInfo;
-
       const { data, error } = await supabase
         .from('content_feedback')
-        .insert(insertPayload)
+        .insert({
+          user_id: user.id,
+          content_type: contentType,
+          content_ref: contentRef,
+          user_comment: message?.trim() || '',
+          severity: severity,
+          device_info: deviceInfo,
+        })
         .select('id, created_at')
         .single();
 

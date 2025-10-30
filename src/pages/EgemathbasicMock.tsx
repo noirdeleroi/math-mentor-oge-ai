@@ -847,7 +847,7 @@ const EgemathbasicMock = () => {
         </div>
       </div>
 
-      <FormulaBookletDialog open={showFormulaBooklet} onOpenChange={setShowFormulaBooklet} />
+      <FormulaBookletDialog open={showFormulaBooklet} onOpenChange={setShowFormulaBooklet} mode="ege-basic" />
     </div>
   );
 };

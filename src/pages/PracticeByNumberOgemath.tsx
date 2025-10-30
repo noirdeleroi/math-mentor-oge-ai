@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import FeedbackButton from "@/components/FeedbackButton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { CheckCircle, XCircle, BookOpen, ArrowRight, Home, ArrowLeft, Camera, X } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -1649,6 +1650,12 @@ const PracticeByNumberOgemath = () => {
                       <CheckCircle className="w-4 h-4 mr-2" />
                       {isProcessingPhoto ? 'Обработка...' : 'Проверить'}
                     </Button>
+                    <div className="flex sm:items-center sm:ml-2">
+                      <FeedbackButton
+                        contentType="frq_question"
+                        contentRef={String(currentQuestion.question_id)}
+                      />
+                    </div>
                   </div>
                   
                   {/* OCR Progress Display */}

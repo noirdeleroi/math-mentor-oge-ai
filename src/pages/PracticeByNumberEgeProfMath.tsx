@@ -16,6 +16,7 @@ import { awardEnergyPoints } from "@/services/energyPoints";
 import { toast } from "sonner";
 import TestStatisticsWindow from "@/components/TestStatisticsWindow";
 import FormulaBookletDialog from "@/components/FormulaBookletDialog";
+import FeedbackButton from "@/components/FeedbackButton";
 
 interface Question {
   question_id: string;
@@ -1084,6 +1085,10 @@ const PracticeByNumberEgeProfMath = () => {
                         <CheckCircle className="w-4 h-4 mr-2" />
                         Проверить
                       </Button>
+                      <FeedbackButton
+                        contentType="frq_question"
+                        contentRef={currentQuestion.question_id}
+                      />
                     </div>
 
                     {/* Photo Attachment Button for questions 13-19 */}

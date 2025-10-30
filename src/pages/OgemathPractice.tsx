@@ -89,9 +89,9 @@ const OgemathPractice = () => {
             </p>
           </div>
 
-          {/* 2x2 Grid for Regular Practice Cards */}
+          {/* 2x2 Grid for Practice + Mock (symmetrical) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            {questionTypes.map((type, index) => {
+            {[...questionTypes.filter(t => !t.comingSoon), mockExam].map((type, index) => {
               const content = (
                   <Card 
                     className="h-full relative overflow-hidden border-0 transition-all duration-300 group"
@@ -161,16 +161,7 @@ const OgemathPractice = () => {
                   </Card>
               );
 
-              return type.comingSoon ? (
-                <div 
-                  key={type.title}
-                  onMouseEnter={() => setHoveredCard(index)}
-                  onMouseLeave={() => setHoveredCard(null)}
-                  className="cursor-not-allowed"
-                >
-                  {content}
-                </div>
-              ) : (
+              return (
                 <Link 
                   key={type.title}
                   to={type.link}
@@ -182,92 +173,6 @@ const OgemathPractice = () => {
               );
             })}
           </div>
-
-          {/* Mock Exam - Full Width, Different Design */}
-          <Link 
-            to={mockExam.link}
-            onMouseEnter={() => setHoveredCard(4)}
-            onMouseLeave={() => setHoveredCard(null)}
-          >
-            <Card 
-              className="relative overflow-hidden border-0 transition-all duration-300 group"
-              style={{
-                background: 'rgba(248, 250, 252, 0.05)',
-                backdropFilter: 'blur(10px)',
-                transform: hoveredCard === 4 
-                  ? 'translateY(-8px) scale(1.02)' 
-                  : 'translateY(0) scale(1)',
-                minHeight: '200px'
-              }}
-            >
-              {/* Gradient Border Effect */}
-              <div 
-                className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-r ${mockExam.gradient} p-[2px] rounded-lg`}
-                style={{ zIndex: -1 }}
-              />
-
-              {/* Large Floating Math Symbol */}
-              <div className="absolute top-1/2 right-8 -translate-y-1/2 text-9xl font-mono text-white/10 group-hover:text-white/20 transition-all duration-300 group-hover:scale-110">
-                {mockExam.mathSymbol}
-              </div>
-
-              <div className="relative z-10 p-8 flex items-center gap-8">
-                <div className={`w-24 h-24 rounded-full flex items-center justify-center shadow-2xl bg-gradient-to-r ${mockExam.gradient} group-hover:scale-110 transition-transform duration-300 flex-shrink-0`}>
-                  <mockExam.icon className="w-12 h-12 text-white" />
-                </div>
-                
-                <div className="flex-1">
-                  <h3 className="text-3xl font-display font-bold text-white mb-2">
-                    {mockExam.title}
-                  </h3>
-                  <p className="text-cool-gray font-body text-lg leading-relaxed">
-                    {mockExam.description}
-                  </p>
-                </div>
-
-                {/* Animated Dashed Path */}
-                <svg className="absolute bottom-0 left-0 right-0 h-1 opacity-50" preserveAspectRatio="none" viewBox="0 0 100 1">
-                  <line 
-                    x1="0" 
-                    y1="0.5" 
-                    x2="100" 
-                    y2="0.5" 
-                    stroke="url(#gradientLine)" 
-                    strokeWidth="2"
-                    strokeDasharray="4 4"
-                    className="group-hover:stroke-dashoffset-8 transition-all duration-1000"
-                  />
-                  <defs>
-                    <linearGradient id="gradientLine" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="#ef4444" />
-                      <stop offset="100%" stopColor="#f97316" />
-                    </linearGradient>
-                  </defs>
-                </svg>
-
-                {/* Progress Ring SVG */}
-                <svg className="absolute top-4 right-4 opacity-30 group-hover:opacity-60 transition-opacity" width="80" height="80">
-                  <circle 
-                    cx="40" 
-                    cy="40" 
-                    r="35" 
-                    fill="none" 
-                    stroke="url(#gradientMock)" 
-                    strokeWidth="4"
-                    strokeDasharray="220"
-                    strokeDashoffset="55"
-                    className="transition-all duration-700 group-hover:stroke-dashoffset-0"
-                  />
-                  <defs>
-                    <linearGradient id="gradientMock" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#ef4444" />
-                      <stop offset="100%" stopColor="#f97316" />
-                    </linearGradient>
-                  </defs>
-                </svg>
-              </div>
-            </Card>
-          </Link>
         </div>
       </div>
     </div>

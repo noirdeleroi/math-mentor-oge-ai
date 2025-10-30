@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import FeedbackButton from "@/components/FeedbackButton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { CheckCircle, XCircle, ArrowRight, ArrowLeft, Camera, Clock, BookOpen, Menu, Hash } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -1144,7 +1145,7 @@ const completeAttempt = async (isCorrect: boolean, scores: number) => {
               </Link>
             </div>
 
-            {/* Header */}
+            {/* Header (no formula booklet button on initial screen) */}
             <div className="flex items-center justify-between mb-6">
               <h1 className="text-3xl md:text-4xl font-display font-bold bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent">
                 Пробный экзамен ОГЭ
@@ -1152,9 +1153,6 @@ const completeAttempt = async (isCorrect: boolean, scores: number) => {
               <div className="flex items-center gap-3 text-white/80">
                 <Clock className="w-5 h-5" />
                 <span className="font-mono">00:00:00 / 03:55:00</span>
-                <Button onClick={() => setShowFormulaBooklet(true)} variant="outline" className="border-white/30 text-white hover:bg-white/10">
-                  <BookOpen className="w-4 h-4 mr-2" />Справочник формул
-                </Button>
               </div>
             </div>
 
@@ -1339,7 +1337,7 @@ const completeAttempt = async (isCorrect: boolean, scores: number) => {
           <div className="max-w-5xl mx-auto">
             {/* Back */}
             <div className="mb-6">
-              <Button onClick={handleBackToSummary} variant="ghost" size="sm" className="hover:bg-white/20 text-white">
+              <Button onClick={handleBackToSummary} variant="outline" size="sm" className="bg-transparent border-white/20 hover:border-white/40 text-white/70 hover:text-white hover:bg-white/10 transition-colors">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 К результатам
               </Button>
@@ -1464,6 +1462,7 @@ const completeAttempt = async (isCorrect: boolean, scores: number) => {
                   Предыдущий
                 </Button>
               )}
+              <FeedbackButton contentType={reviewQuestion?.problem_number_type && reviewQuestion.problem_number_type >= 20 ? 'frq_question' : 'mcq'} contentRef={reviewQuestion?.question_id || ''} />
               {reviewQuestionIndex < examResults.length - 1 && (
                 <Button
                   onClick={() => handleGoToQuestion(reviewQuestionIndex + 1)}
@@ -1497,11 +1496,21 @@ const completeAttempt = async (isCorrect: boolean, scores: number) => {
                 <Clock className="w-5 h-5 inline mr-2" />
                 {formatTime(elapsedTime)}
               </div>
-              <Button onClick={() => setShowFormulaBooklet(true)} variant="outline" className="border-white/30 text-white hover:bg-white/10" disabled={isTransitioning}>
+              <Button
+                onClick={() => setShowFormulaBooklet(true)}
+                variant="outline"
+                className="bg-transparent border-white/20 hover:border-white/40 text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+                disabled={isTransitioning}
+              >
                 <BookOpen className="w-4 h-4 mr-2" />
                 Справочник формул
               </Button>
-              <Button onClick={() => setShowQuestionMenu(true)} variant="outline" className="border-white/30 text-white hover:bg-white/10" disabled={isTransitioning}>
+              <Button
+                onClick={() => setShowQuestionMenu(true)}
+                variant="outline"
+                className="bg-transparent border-white/20 hover:border-white/40 text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+                disabled={isTransitioning}
+              >
                 <Menu className="w-4 h-4 mr-2" />
                 Вопросы
               </Button>
@@ -1578,14 +1587,17 @@ const completeAttempt = async (isCorrect: boolean, scores: number) => {
                       )}
                     </div>
 
-                    <Button 
-                      onClick={handleNextQuestion} 
-                      className="flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36]" 
-                      disabled={isTransitioning || loading}
-                    >
-                      {currentQuestionIndex === questions.length - 1 ? 'Завершить экзамен' : 'Следующий вопрос'}
-                      {currentQuestionIndex < questions.length - 1 && <ArrowRight className="w-4 h-4" />}
-                    </Button>
+                    <div className="flex items-center gap-3">
+                      <FeedbackButton contentType={isPhotoQuestion ? 'frq_question' : 'mcq'} contentRef={currentQuestion?.question_id || ''} />
+                      <Button 
+                        onClick={handleNextQuestion} 
+                        className="flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36]" 
+                        disabled={isTransitioning || loading}
+                      >
+                        {currentQuestionIndex === questions.length - 1 ? 'Завершить экзамен' : 'Следующий вопрос'}
+                        {currentQuestionIndex < questions.length - 1 && <ArrowRight className="w-4 h-4" />}
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </CardContent>
