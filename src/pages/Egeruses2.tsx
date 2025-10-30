@@ -43,11 +43,43 @@
     const [essayHistory, setEssayHistory] = useState<EssayRow[]>([]);
     const [highlightedText, setHighlightedText] = useState<string>('');
     const [smoothProgress, setSmoothProgress] = useState<number>(0);
+    const [keyboardInset, setKeyboardInset] = useState<number>(0);
 
     const pageBg = useMemo(
       () => ({ background: 'linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)' }),
       []
     );
+
+    // Disable body/html scroll and confine scrolling to the in-page container (mobile bounce fix)
+    useEffect(() => {
+      const html = document.documentElement;
+      const body = document.body;
+      const prevHtmlOverflow = html.style.overflow;
+      const prevBodyOverflow = body.style.overflow;
+      html.style.overflow = 'hidden';
+      body.style.overflow = 'hidden';
+      return () => {
+        html.style.overflow = prevHtmlOverflow;
+        body.style.overflow = prevBodyOverflow;
+      };
+    }, []);
+
+    // Keyboard-safe positioning for the mobile fixed button
+    useEffect(() => {
+      const vv = (window as any).visualViewport as VisualViewport | undefined;
+      if (!vv) return;
+      const handler = () => {
+        const inset = Math.max(0, window.innerHeight - vv.height);
+        setKeyboardInset(inset);
+      };
+      handler();
+      vv.addEventListener('resize', handler);
+      vv.addEventListener('scroll', handler);
+      return () => {
+        vv.removeEventListener('resize', handler);
+        vv.removeEventListener('scroll', handler);
+      };
+    }, []);
 
     useEffect(() => {
       let cancelled = false;
@@ -750,9 +782,12 @@
     return (
       <div className="fixed left-0 right-0 bottom-0 top-16 overflow-hidden" style={pageBg}>
         <FlyingCyrillicBackground />
-        <div className="relative z-10 h-full overflow-hidden">
-          <div className="container mx-auto px-4 h-full">
-            <div className="max-w-7xl mx-auto h-full flex flex-col">
+        <div
+          className="relative z-10 h-[100vh] overflow-y-auto overscroll-contain"
+          style={{ WebkitOverflowScrolling: 'touch' as any }}
+        >
+          <div className="container mx-auto px-4 pb-20">
+            <div className="max-w-7xl mx-auto flex flex-col">
               {/* Title and Navigation */}
               <div className="flex flex-col md:flex-row items-center justify-between mb-4 gap-4 flex-shrink-0">
                 <Button
@@ -868,7 +903,10 @@
                     {/* Two column layout: Task left, Essay right */}
                     <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 overflow-hidden min-h-0">
                       {/* Task column */}
-                      <div className="bg-white/10 backdrop-blur border border-white/20 rounded-xl p-4 overflow-auto min-h-0 h-full max-h-full">
+                      <div
+                        className="bg-white/10 backdrop-blur border border-white/20 rounded-xl p-4 min-h-0 md:h-full md:max-h-full md:overflow-auto h-[25vh] overflow-y-auto"
+                        style={{ WebkitOverflowScrolling: 'touch' as any }}
+                      >
                         <div className="text-white font-semibold mb-3">Задание</div>
                         <div className="text-white/90 whitespace-pre-wrap">
                           {currentTopic?.essay_topic || ''}
@@ -876,7 +914,10 @@
                       </div>
 
                       {/* Essay column */}
-                      <div className="bg-white/10 backdrop-blur border border-white/20 rounded-xl p-4 flex flex-col min-h-0 h-full max-h-full overflow-hidden">
+                      <div
+                        className="bg-white/10 backdrop-blur border border-white/20 rounded-xl p-4 flex flex-col min-h-0 md:h-full md:max-h-full overflow-hidden h-[45vh]"
+                        style={{ WebkitOverflowScrolling: 'touch' as any }}
+                      >
                         <div className="text-white font-semibold mb-3 flex-shrink-0">Сочинение</div>
 
                         <textarea
@@ -890,7 +931,7 @@
                         <button
                           onClick={handleCheck}
                           disabled={!essayText.trim() || checking || !currentTopic}
-                          className="mt-4 w-full px-4 py-3 bg-gradient-to-r from-yellow-500 to-emerald-500 text-[#1a1f36] font-bold rounded-lg hover:from-yellow-600 hover:to-emerald-600 transition disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
+                          className="mt-4 w-full px-4 py-3 bg-gradient-to-r from-yellow-500 to-emerald-500 text-[#1a1f36] font-bold rounded-lg hover:from-yellow-600 hover:to-emerald-600 transition disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0 hidden md:block"
                         >
                           Проверить
                         </button>
@@ -1119,6 +1160,22 @@
                   )}
                 </div>
             </div>
+          </div>
+          {/* Mobile fixed action button */}
+          <div
+            className="md:hidden fixed left-0 right-0 z-50 pointer-events-none"
+            style={{ bottom: 16 + keyboardInset }}
+          >
+            <button
+              onClick={handleCheck}
+              disabled={!essayText.trim() || checking || !currentTopic}
+              className="pointer-events-auto mx-auto w-[90%] px-4 py-3 bg-white/20 text-white font-bold rounded-xl backdrop-blur-md border border-white/30 shadow-[0_4px_10px_rgba(0,0,0,0.25)] transition-all duration-300 ease-out disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                backdropFilter: 'blur(8px)',
+              }}
+            >
+              Проверить
+            </button>
           </div>
         </div>
 
