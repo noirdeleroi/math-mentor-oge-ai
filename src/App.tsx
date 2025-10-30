@@ -55,6 +55,8 @@ const CellardLp2 = lazy(() => import("./pages/CellardLp2"));
 
 const Egeruses2 = lazy(() => import("./pages/Egeruses2"));
 const EgerusesAnalytics = lazy(() => import("./pages/EgerusesAnalytics"));
+const Register = lazy(() => import("./pages/Register"));
+const Login = lazy(() => import("./pages/Login"));
 
 const queryClient = new QueryClient();
 
@@ -76,6 +78,8 @@ const App = () => (
               <Route path="/faq" element={<FAQ />} />
               <Route path="/about" element={<About />} />
               <Route path="/questionbankoge" element={<QuestionBankOGE />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/login" element={<Login />} />
           
               {/* pages WITH the layout (shared gradient + flying symbols) */}
               <Route element={<LearningLayout />}>
