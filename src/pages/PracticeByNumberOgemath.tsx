@@ -17,9 +17,6 @@ import { awardStreakPoints, calculateStreakReward, getCurrentStreakData } from "
 import { toast } from "sonner";
 import TestStatisticsWindow from "@/components/TestStatisticsWindow";
 import FormulaBookletDialog from "@/components/FormulaBookletDialog";
-import FeedbackButton from "@/components/FeedbackButton";
-import StudentSolutionCard from "@/components/analysis/StudentSolutionCard";
-import AnalysisReviewCard from "@/components/analysis/AnalysisReviewCard";
 
 interface Question {
   question_id: string;
@@ -916,16 +913,10 @@ const PracticeByNumberOgemath = () => {
           // Parse JSON response
           const feedbackData = JSON.parse(apiResponse.feedback);
           if (feedbackData.review && typeof feedbackData.scores === 'number') {
-            // Support both new simple format and old structured one
+            // Set structured feedback
+            setStructuredPhotoFeedback(feedbackData);
+            setPhotoFeedback(feedbackData.review.overview_latex || '');
             setPhotoScores(feedbackData.scores);
-            if (typeof feedbackData.review === 'string') {
-              setAnalysisData({ scores: feedbackData.scores, review: feedbackData.review });
-              setPhotoFeedback('');
-            } else {
-              // Old structured format
-              setStructuredPhotoFeedback(feedbackData);
-              setPhotoFeedback(feedbackData.review.overview_latex || '');
-            }
             
             // Handle photo submission using direct update
             const isCorrect = feedbackData.scores > 0;
@@ -1190,14 +1181,10 @@ const PracticeByNumberOgemath = () => {
         try {
           const feedbackData = JSON.parse(apiResponse.feedback);
           if (feedbackData.review && typeof feedbackData.scores === 'number') {
+            // Set structured feedback
+            setStructuredPhotoFeedback(feedbackData);
+            setPhotoFeedback(feedbackData.review.overview_latex || '');
             setPhotoScores(feedbackData.scores);
-            if (typeof feedbackData.review === 'string') {
-              setAnalysisData({ scores: feedbackData.scores, review: feedbackData.review });
-              setPhotoFeedback('');
-            } else {
-              setStructuredPhotoFeedback(feedbackData);
-              setPhotoFeedback(feedbackData.review.overview_latex || '');
-            }
             
             const isCorrect = feedbackData.scores > 0;
             await updateStudentActivity(isCorrect, feedbackData.scores);
@@ -1806,10 +1793,6 @@ const PracticeByNumberOgemath = () => {
                     <BookOpen className="w-4 h-4 mr-2" />
                     Показать решение
                   </Button>
-                  <FeedbackButton
-                    contentType="frq_question"
-                    contentRef={currentQuestion.question_id}
-                  />
                   
                   {!isAnswered && (
                     <Button
@@ -1845,7 +1828,7 @@ const PracticeByNumberOgemath = () => {
                 )}
 
                 {/* Photo Feedback */}
-                {(photoFeedback || analysisData) && (
+                {photoFeedback && (
                   <Card className="bg-green-50 border-green-200">
                     <CardHeader>
                       <CardTitle className="text-green-800 flex items-center justify-between">
@@ -1857,38 +1840,48 @@ const PracticeByNumberOgemath = () => {
                     </CardHeader>
                     <CardContent>
                       <div className="prose max-w-none">
+                        {/* Student Solution */}
                         {studentSolution && (
                           <div className="mb-6">
-                            <StudentSolutionCard studentSolution={studentSolution} />
+                            <h3 className="text-lg font-semibold text-blue-800 mb-3">Ваше решение</h3>
+                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                              <MathRenderer text={studentSolution} compiler="mathjax" />
+                            </div>
                           </div>
                         )}
 
-                        {/* Unified Analysis Renderer */}
+                        {/* Overview */}
                         <div className="mb-6">
-                          <AnalysisReviewCard
-                            analysisData={(() => {
-                              // If we already have structured analysisData, use it
-                              if (analysisData) return analysisData as any;
-                              // Try to parse photoFeedback if it's a JSON string
-                              try {
-                                const parsed = JSON.parse(photoFeedback);
-                                if (parsed && typeof parsed.scores === 'number') return parsed;
-                              } catch {}
-                              return null;
-                            })()}
-                            fallbackSummaryLatex={(() => {
-                              // If photoFeedback is a JSON string, extract review field
-                              try {
-                                const parsed = JSON.parse(photoFeedback);
-                                if (typeof parsed?.review === 'string') return parsed.review;
-                              } catch {}
-                              return photoFeedback;
-                            })()}
-                            fallbackScore={photoScores}
-                          />
+                          <h3 className="text-lg font-semibold text-green-800 mb-3">Общая оценка</h3>
+                          <MathRenderer text={photoFeedback} compiler="mathjax" />
                         </div>
 
-                        {/* Structured Feedback (legacy rich structure) */}
+                        {/* Score Display */}
+                        {photoScores !== null && (
+                          <div className="mb-6 p-4 bg-green-100 rounded-lg border">
+                            <div className="flex items-center justify-between">
+                              <span className="text-lg font-semibold text-green-800">
+                                Баллы: {photoScores} из 2
+                              </span>
+                              <div className="flex space-x-2">
+                                {[1, 2].map((score) => (
+                                  <div
+                                    key={score}
+                                    className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                                      score <= photoScores
+                                        ? 'bg-green-500 text-white'
+                                        : 'bg-gray-300 text-gray-600'
+                                    }`}
+                                  >
+                                    {score}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Structured Feedback */}
                         {structuredPhotoFeedback && (
                           <div className="space-y-6">
                             {/* Final Answer Comparison */}
