@@ -925,7 +925,7 @@
                           onChange={(e) => setEssayText(e.target.value)}
                           placeholder="Начните писать ваше сочинение..."
                           disabled={checking}
-                          className="flex-1 min-h-0 w-full p-3 bg-white/5 border border-white/10 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500 text-white placeholder-white/50 disabled:opacity-50 overflow-auto"
+                          className="flex-1 min-h-0 w-full p-3 bg-white/5 border border-white/10 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500 text-white placeholder-white/50 disabled:opacity-50 overflow-auto md:pb-0 pb-24"
                         />
 
                         <button
@@ -935,6 +935,9 @@
                         >
                           Проверить
                         </button>
+
+                        {/* Mobile spacer to keep text area above the fixed button */}
+                        <div className="h-24 md:hidden" />
                       </div>
 
                     </div>
