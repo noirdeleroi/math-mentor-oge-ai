@@ -103,6 +103,23 @@ interface AnalysisData {
   };
 }
 
+// HTML parsing interfaces for new format
+interface ParsedError {
+  type: string;
+  description: string;
+  studentSolution: string;
+  correctSolution: string;
+  context: string;
+}
+
+interface ParsedAnalysis {
+  errors: ParsedError[];
+  summary: {
+    score: number;
+    comment: string;
+  };
+}
+
 const PracticeByNumberOgemath = () => {
   // Helper function to check if answer is non-numeric
   const isNonNumericAnswer = (answer: string): boolean => {
@@ -161,6 +178,7 @@ const PracticeByNumberOgemath = () => {
   const [structuredPhotoFeedback, setStructuredPhotoFeedback] = useState<PhotoAnalysisFeedback | null>(null);
   const [studentSolution, setStudentSolution] = useState<string>("");
   const [analysisData, setAnalysisData] = useState<AnalysisData | null>(null);
+  const [parsedAnalysis, setParsedAnalysis] = useState<ParsedAnalysis | null>(null);
   
   // Device upload states
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
@@ -1042,6 +1060,53 @@ const PracticeByNumberOgemath = () => {
     }
   };
 
+  // Function to parse HTML analysis format
+  const parseHtmlAnalysis = (htmlContent: string): ParsedAnalysis | null => {
+    try {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(htmlContent, 'text/html');
+      
+      const errors: ParsedError[] = [];
+      const errorDivs = doc.querySelectorAll('div.error');
+      
+      errorDivs.forEach((div) => {
+        const typeMatch = div.innerHTML.match(/<b>Тип ошибки:<\/b>\s*(.+?)<br>/);
+        const descriptionMatch = div.innerHTML.match(/<b>Описание:<\/b>\s*(.+?)<br>/);
+        const studentMatch = div.innerHTML.match(/<b>Решение ученика:<\/b>\s*(.+?)<br>/);
+        const correctMatch = div.innerHTML.match(/<b>Правильное решение:<\/b>\s*(.+?)<br>/);
+        const contextMatch = div.innerHTML.match(/<b>Контекст:<\/b>\s*<pre>(.+?)<\/pre>/);
+        
+        if (typeMatch && descriptionMatch && studentMatch && correctMatch) {
+          errors.push({
+            type: typeMatch[1].trim(),
+            description: descriptionMatch[1].trim(),
+            studentSolution: studentMatch[1].trim(),
+            correctSolution: correctMatch[1].trim(),
+            context: contextMatch ? contextMatch[1].trim() : ''
+          });
+        }
+      });
+      
+      const summaryDiv = doc.querySelector('div.summary');
+      let summary = { score: 0, comment: '' };
+      
+      if (summaryDiv) {
+        const scoreMatch = summaryDiv.innerHTML.match(/<b>Оценка:<\/b>\s*(\d+)/);
+        const commentMatch = summaryDiv.innerHTML.match(/<b>Комментарий:<\/b>\s*(.+?)(?:$|<br>)/);
+        
+        summary = {
+          score: scoreMatch ? parseInt(scoreMatch[1]) : 0,
+          comment: commentMatch ? commentMatch[1].trim() : ''
+        };
+      }
+      
+      return { errors, summary };
+    } catch (error) {
+      console.error('Error parsing HTML analysis:', error);
+      return null;
+    }
+  };
+
   const fetchAnalysisData = async () => {
     if (!user) return null;
     
@@ -1062,7 +1127,20 @@ const PracticeByNumberOgemath = () => {
 
       if (data?.raw_output) {
         try {
-          return JSON.parse(data.raw_output);
+          const jsonData = JSON.parse(data.raw_output);
+          
+          // Parse the HTML content from review key
+          if (jsonData.review && typeof jsonData.review === 'string') {
+            const parsedHtml = parseHtmlAnalysis(jsonData.review);
+            if (parsedHtml) {
+              setParsedAnalysis(parsedHtml);
+              // Also set the scores from the main JSON
+              setAnalysisData({ scores: jsonData.scores || 0, review: { errors: [], summary: '' } });
+              return { ...jsonData, parsedHtml };
+            }
+          }
+          
+          return null;
         } catch (parseError) {
           console.error('Error parsing analysis data:', parseError);
           return null;
@@ -1691,26 +1769,26 @@ const PracticeByNumberOgemath = () => {
                   {/* Answer Result */}
                   {isAnswered && (
                     <div className="space-y-4">
-                      <Alert className={isCorrect ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50"}>
-                        <div className="flex items-center gap-2">
+                    <Alert className={isCorrect ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50"}>
+                      <div className="flex items-center gap-2">
+                        {isCorrect ? (
+                          <CheckCircle className="w-5 h-5 text-green-600" />
+                        ) : (
+                          <XCircle className="w-5 h-5 text-red-600" />
+                        )}
+                        <AlertDescription>
                           {isCorrect ? (
-                            <CheckCircle className="w-5 h-5 text-green-600" />
+                            <span className="text-green-800">
+                              Правильно! {!solutionViewedBeforeAnswer && "Получены очки прогресса."}
+                            </span>
                           ) : (
-                            <XCircle className="w-5 h-5 text-red-600" />
+                            <span className="text-red-800">
+                              Неправильно. Правильный ответ: <strong>{currentQuestion.answer}</strong>
+                            </span>
                           )}
-                          <AlertDescription>
-                            {isCorrect ? (
-                              <span className="text-green-800">
-                                Правильно! {!solutionViewedBeforeAnswer && "Получены очки прогресса."}
-                              </span>
-                            ) : (
-                              <span className="text-red-800">
-                                Неправильно. Правильный ответ: <strong>{currentQuestion.answer}</strong>
-                              </span>
-                            )}
-                          </AlertDescription>
-                        </div>
-                      </Alert>
+                        </AlertDescription>
+                      </div>
+                    </Alert>
 
                       {/* Show Student Solution and Analysis for photo uploads - always show after marking */}
                       {studentSolution && currentQuestion.problem_number_type && currentQuestion.problem_number_type >= 20 && (
@@ -1728,33 +1806,46 @@ const PracticeByNumberOgemath = () => {
                           </Card>
 
                           {/* Analysis */}
-                          {analysisData && (
+                          {parsedAnalysis && (
                             <Card className="bg-purple-50 border-purple-200">
                               <CardHeader>
                                 <CardTitle className="text-purple-800">Анализ решения</CardTitle>
                                 <CardDescription>
-                                  Оценка: {analysisData.scores}/2
+                                  Оценка: {parsedAnalysis.summary.score}/2
                                 </CardDescription>
                               </CardHeader>
                               <CardContent>
                                 <div className="space-y-4 max-h-96 overflow-y-auto">
-                                  {analysisData.review.errors && analysisData.review.errors.length > 0 ? (
-                                    analysisData.review.errors.map((error, index) => (
+                                  {parsedAnalysis.errors.length > 0 ? (
+                                    parsedAnalysis.errors.map((error, index) => (
                                       <Card key={index} className="bg-white border border-purple-200">
                                         <CardContent className="pt-4">
-                                          <div className="space-y-2">
-                                            <Badge variant="destructive">{error.type}</Badge>
-                                            <p className="text-sm text-gray-700">{error.message}</p>
-                                            <div className="space-y-1">
-                                              <div>
-                                                <span className="text-xs font-semibold text-red-600">Что написано:</span>
-                                                <MathRenderer text={error.student_latex} compiler="mathjax" />
-                                              </div>
-                                              <div>
-                                                <span className="text-xs font-semibold text-green-600">Должно быть:</span>
-                                                <MathRenderer text={error.expected_latex} compiler="mathjax" />
-                                              </div>
+                                          <div className="space-y-3">
+                                            <Badge variant="destructive" className="text-xs">{error.type}</Badge>
+                                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                                              <p className="text-sm text-blue-800 font-medium">Описание:</p>
+                                              <p className="text-sm text-gray-700 mt-1">{error.description}</p>
                                             </div>
+                                            <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                                              <div className="flex items-center gap-2 mb-2">
+                                                <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                                                <p className="text-sm text-red-800 font-medium">Решение ученика:</p>
+                                              </div>
+                                              <MathRenderer text={error.studentSolution} compiler="mathjax" />
+                                            </div>
+                                            <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                                              <div className="flex items-center gap-2 mb-2">
+                                                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                                <p className="text-sm text-green-800 font-medium">Правильное решение:</p>
+                                              </div>
+                                              <MathRenderer text={error.correctSolution} compiler="mathjax" />
+                                            </div>
+                                            {error.context && (
+                                              <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                                                <p className="text-sm text-gray-800 font-medium">Контекст:</p>
+                                                <MathRenderer text={error.context} compiler="mathjax" />
+                                              </div>
+                                            )}
                                           </div>
                                         </CardContent>
                                       </Card>
@@ -1765,11 +1856,15 @@ const PracticeByNumberOgemath = () => {
                                     </div>
                                   )}
                                   
-                                  {analysisData.review.summary && (
+                                  {/* Summary */}
+                                  {parsedAnalysis.summary.comment && (
                                     <Card className="bg-green-50 border-green-200 mt-4">
                                       <CardContent className="pt-4">
-                                        <p className="text-sm font-semibold text-green-800">Общая оценка:</p>
-                                        <MathRenderer text={analysisData.review.summary} compiler="mathjax" />
+                                        <div className="flex items-center gap-2 mb-2">
+                                          <Badge className="bg-green-600 text-white">{parsedAnalysis.summary.score}/2</Badge>
+                                          <p className="text-sm font-semibold text-green-800">Общая оценка:</p>
+                                        </div>
+                                        <MathRenderer text={parsedAnalysis.summary.comment} compiler="mathjax" />
                                       </CardContent>
                                     </Card>
                                   )}

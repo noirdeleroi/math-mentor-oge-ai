@@ -215,8 +215,8 @@ const PracticeTest = () => {
       errorDivs.forEach((div) => {
         const typeMatch = div.innerHTML.match(/<b>Тип ошибки:<\/b>\s*(.+?)<br>/);
         const descriptionMatch = div.innerHTML.match(/<b>Описание:<\/b>\s*(.+?)<br>/);
-        const studentMatch = div.innerHTML.match(/<b>Решение ученика:<\/b>\s*<span class="math">(.+?)<\/span>/);
-        const correctMatch = div.innerHTML.match(/<b>Правильное решение:<\/b>\s*<span class="math">(.+?)<\/span>/);
+        const studentMatch = div.innerHTML.match(/<b>Решение ученика:<\/b>\s*(.+?)<br>/);
+        const correctMatch = div.innerHTML.match(/<b>Правильное решение:<\/b>\s*(.+?)<br>/);
         const contextMatch = div.innerHTML.match(/<b>Контекст:<\/b>\s*<pre>(.+?)<\/pre>/);
         
         if (typeMatch && descriptionMatch && studentMatch && correctMatch) {
