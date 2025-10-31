@@ -1516,12 +1516,50 @@ const PracticeByNumberOgemath = () => {
       }
 
       // Step 4: Process feedback from database
+      let feedbackData: any = null;
+      let parseError = false;
+      
       try {
-        // Trim whitespace from raw output before parsing
-        const feedbackData = JSON.parse(rawOutput.trim());
-        console.log('Parsed feedbackData:', feedbackData);
+        // Try to parse the raw output
+        feedbackData = JSON.parse(rawOutput.trim());
+        console.log('✅ Successfully parsed feedbackData:', feedbackData);
+      } catch (parseErr) {
+        console.error('❌ JSON parse error:', parseErr);
+        console.error('Raw output:', rawOutput);
+        parseError = true;
+        
+        // Try to fix common JSON issues (unescaped newlines in strings)
+        try {
+          // Replace literal newlines in string values with escaped newlines
+          const fixedJson = rawOutput.trim().replace(/("review"\s*:\s*")([\s\S]*?)(")/g, (match, prefix, content, suffix) => {
+            const escaped = content.replace(/\n/g, '\\n').replace(/\r/g, '\\r');
+            return prefix + escaped + suffix;
+          });
+          feedbackData = JSON.parse(fixedJson);
+          console.log('✅ Successfully parsed after fixing newlines:', feedbackData);
+          parseError = false;
+        } catch (fixErr) {
+          console.error('❌ Failed to parse even after fixing:', fixErr);
+          // Show raw output to user as fallback
+          setAnalysisData({ scores: 0, review: `<p>Ошибка парсинга. Сырой вывод:</p><pre>${rawOutput}</pre>` });
+          setPhotoFeedback('');
+          setPhotoScores(0);
+          setStructuredPhotoFeedback(null);
+          setIsAnswered(true);
+          setIsCorrect(false);
+          setIsProcessingPhoto(false);
+          setOcrProgress("");
+          setUploadProgress(0);
+          setAnalysisProgress(0);
+          toast.error('Формат ответа API не распознан. Показан сырой вывод.');
+          return;
+        }
+      }
 
-          // Robust scores coercion (Step 6)
+      // If we successfully parsed, process the feedback
+      if (feedbackData && !parseError) {
+        try {
+          // Robust scores coercion
           const scoreRaw = toNumberOrNull(feedbackData?.scores);
           if (scoreRaw === null) {
             throw new Error('Неверный формат баллов');
@@ -1579,25 +1617,16 @@ const PracticeByNumberOgemath = () => {
             return;
           }
 
-          console.log('Attempt finalized:', finalizeData);
-          const attemptIdForSubmission = finalizeData?.attempt_id;
+          console.log('Finalize response:', finalizeData);
 
-          // Step 9: Fire-and-forget mastery update
-          if (attemptIdForSubmission) {
+          // Step 9: handle-submission (skills update, non-blocking)
+          if (finalizeData?.attempt_id) {
             (async () => {
               try {
                 await supabase.functions.invoke('handle-submission', {
                   body: {
-                    course_id: '1',
-                    submission_data: {
-                      user_id: user.id,
-                      question_id: currentQuestion.question_id,
-                      attempt_id: attemptIdForSubmission,
-                      finished_or_not: true,
-                      is_correct: isCorrect,
-                      duration: finalizeData?.duration_seconds || 0,
-                      scores_fipi: scores
-                    }
+                    attempt_id: finalizeData.attempt_id,
+                    course_id: '1'
                   }
                 });
               } catch (e) {
@@ -1638,20 +1667,8 @@ const PracticeByNumberOgemath = () => {
           setUploadedImages([]);
           toast.success(`Анализ готов! Баллы: ${scores}/2`);
 
-      } catch (error) {
-        // Handle both JSON parse errors and score validation errors
-        if (error instanceof SyntaxError) {
-          console.error('Error parsing database output:', error);
-          console.error('Raw output that failed to parse:', rawOutput);
-          setPhotoFeedback('');
-          setPhotoScores(null);
-          setStructuredPhotoFeedback(null);
-          setAnalysisData(null); // Clear analysisData to prevent showing raw JSON
-          
-          // Still allow proceeding to next question
-          setIsAnswered(true);
-          toast.error('Формат ответа API не распознан. Перейдите к следующему вопросу.');
-        } else {
+        } catch (error) {
+          // Handle score validation errors
           console.error('Score validation error:', error);
           toast.error('Ошибка при обработке баллов. Пожалуйста, попробуйте снова.');
           setIsProcessingPhoto(false);
