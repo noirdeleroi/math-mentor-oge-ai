@@ -117,6 +117,19 @@ const PracticeByNumberOgemath = () => {
     if (/[а-яё]/i.test(answer)) return true;
     return false;
   };
+
+  // Helper function to convert numbers or numeric strings to finite numbers, else returns null
+  const toNumberOrNull = (value: unknown): number | null => {
+    if (typeof value === 'number') {
+      return Number.isFinite(value) ? value : null;
+    }
+    if (typeof value === 'string') {
+      const cleaned = value.trim().replace(',', '.');
+      const num = Number(cleaned);
+      return Number.isFinite(num) ? num : null;
+    }
+    return null;
+  };
   const { user } = useAuth();
   const { trackActivity } = useStreakTracking();
   const [selectedNumbers, setSelectedNumbers] = useState<string[]>([]);
@@ -474,9 +487,12 @@ const PracticeByNumberOgemath = () => {
   // NEW: ensure we have an attempt_id and update student_activity in one safe call
   const finalizeAttemptWithScore = async (
     isCorrect: boolean,
-    scores: number
+    scoresInput: unknown
   ) => {
     if (!user || !currentQuestion) return;
+
+    // Coerce scores input to number
+    const scores = toNumberOrNull(scoresInput) ?? 0;
 
     try {
       // 1. If we don't have attempt info yet, create it now
@@ -711,8 +727,11 @@ const PracticeByNumberOgemath = () => {
   };
 
   // Update student_activity directly with answer results
-  const updateStudentActivity = async (isCorrect: boolean, scores: number, isSkipped: boolean = false) => {
+  const updateStudentActivity = async (isCorrect: boolean, scoresInput: unknown, isSkipped: boolean = false) => {
     if (!user || !currentAttemptId) return;
+
+    // Coerce scores input to number
+    const scores = toNumberOrNull(scoresInput) ?? 0;
 
     try {
       // Calculate duration from attempt start time
@@ -1008,13 +1027,14 @@ const PracticeByNumberOgemath = () => {
         try {
           // Parse JSON response
           const feedbackData = JSON.parse(apiResponse.feedback);
-          if (feedbackData.review && typeof feedbackData.scores === 'number') {
-            setPhotoScores(feedbackData.scores);
+          const score = toNumberOrNull(feedbackData.scores);
+          if (feedbackData.review && score !== null) {
+            setPhotoScores(score);
             
             // Check if it's the new simple format (review is string) or old structured format
             if (typeof feedbackData.review === 'string') {
               // New format: {scores, review: "<p>...</p>"}
-              setAnalysisData({ scores: feedbackData.scores, review: feedbackData.review });
+              setAnalysisData({ scores: score, review: feedbackData.review });
               setPhotoFeedback('');
               setStructuredPhotoFeedback(null);
             } else if (feedbackData.review.overview_latex) {
@@ -1030,10 +1050,10 @@ const PracticeByNumberOgemath = () => {
             }
             
             // Handle photo submission using direct update
-            const isCorrect = feedbackData.scores > 0;
+            const isCorrect = (score ?? 0) > 0;
 
             // Save result (score, correct/incorrect, finished_or_not) to student_activity
-            await finalizeAttemptWithScore(isCorrect, feedbackData.scores);
+            await finalizeAttemptWithScore(isCorrect, score);
 
             // Update UI state so the big button becomes "Следующий вопрос"
             setIsCorrect(isCorrect);
@@ -1166,16 +1186,17 @@ const PracticeByNumberOgemath = () => {
           // If this is FRQ (20-25) and parsed contains scores, update student_activity immediately
           try {
             const pnt = currentQuestion ? Number((currentQuestion as any).problem_number_type) : NaN;
+            const score = toNumberOrNull(parsed?.scores);
             if (
-              parsed && typeof parsed.scores === 'number' &&
+              parsed && score !== null &&
               currentQuestion &&
               !Number.isNaN(pnt) && pnt >= 20 && pnt <= 25
             ) {
               // Treat any positive score as correct
-              const isCorrectFromScores = parsed.scores > 0;
+              const isCorrectFromScores = (score ?? 0) > 0;
 
               // Write to DB in a safe way (guarantee attempt exists)
-              await finalizeAttemptWithScore(isCorrectFromScores, parsed.scores);
+              await finalizeAttemptWithScore(isCorrectFromScores, score);
 
               // Flip UI into answered mode so button becomes "Следующий вопрос"
               setIsCorrect(isCorrectFromScores);
@@ -1184,16 +1205,16 @@ const PracticeByNumberOgemath = () => {
               // Stop polling etc.
               setIsPollingForAnalysis(false);
 
-              setPhotoScores(parsed.scores);
+              setPhotoScores(score);
 
               // keep rest as you already have
               setAnalysisData(
                 typeof parsed.review === 'string'
-                  ? { scores: parsed.scores, review: parsed.review }
+                  ? { scores: score, review: parsed.review }
                   : parsed
               );
 
-              toast.success(`Анализ готов! Баллы: ${parsed.scores}/2`);
+              toast.success(`Анализ готов! Баллы: ${score}/2`);
 
             }
           } catch (e) {
@@ -1230,7 +1251,8 @@ const PracticeByNumberOgemath = () => {
       
       const analysis = await fetchAnalysisData(currentQuestion.question_id);
       
-      if (analysis && typeof analysis.scores === 'number') {
+      const score = analysis ? toNumberOrNull(analysis.scores) : null;
+      if (analysis && score !== null) {
         // Analysis found! fetchAnalysisData already handled the update
         clearInterval(pollInterval);
         setIsPollingForAnalysis(false);
@@ -1389,28 +1411,17 @@ const PracticeByNumberOgemath = () => {
           const feedbackData = JSON.parse(apiResponse.feedback);
 
           // Robust scores coercion (Step 6)
-          const raw = feedbackData?.scores;
-          let scoresNum: number;
+          const scoreRaw = toNumberOrNull(feedbackData?.scores);
+          if (scoreRaw === null) {
+            throw new Error('Неверный формат баллов');
+          }
 
-          try {
-            if (typeof raw === 'number') {
-              scoresNum = raw;
-            } else if (typeof raw === 'string') {
-              scoresNum = Number(raw.trim().replace(',', '.'));
-            } else {
-              scoresNum = NaN;
-            }
+          // Clamp to [0, 2] range
+          const scores = Math.max(0, Math.min(2, scoreRaw));
 
-            if (!Number.isFinite(scoresNum)) {
-              throw new Error('Неверный формат баллов');
-            }
-
-            // Clamp to [0, 2] range
-            const scores = Math.max(0, Math.min(2, scoresNum));
-
-            // Continue processing with validated scores
-            if (feedbackData.review) {
-              setPhotoScores(scores);
+          // Continue processing with validated scores
+          if (feedbackData.review) {
+            setPhotoScores(scores);
 
             // Check if it's the new simple format (review is string) or old structured format
             if (typeof feedbackData.review === 'string') {
@@ -1497,20 +1508,22 @@ const PracticeByNumberOgemath = () => {
           } else {
             toast.error('Неверный формат ответа API');
           }
-        } catch (scoreError) {
-          console.error('Score validation error:', scoreError);
-          toast.error('Ошибка при обработке баллов. Пожалуйста, попробуйте снова.');
-          setIsProcessingPhoto(false);
-          setOcrProgress("");
-          setUploadProgress(0);
-          setAnalysisProgress(0);
-          return;
-        }
-        } catch (parseError) {
-          console.error('Error parsing API response:', parseError);
-          setPhotoFeedback(apiResponse.feedback);
-          setPhotoScores(null);
-          setStructuredPhotoFeedback(null);
+        } catch (error) {
+          // Handle both JSON parse errors and score validation errors
+          if (error instanceof SyntaxError) {
+            console.error('Error parsing API response:', error);
+            setPhotoFeedback(apiResponse.feedback);
+            setPhotoScores(null);
+            setStructuredPhotoFeedback(null);
+          } else {
+            console.error('Score validation error:', error);
+            toast.error('Ошибка при обработке баллов. Пожалуйста, попробуйте снова.');
+            setIsProcessingPhoto(false);
+            setOcrProgress("");
+            setUploadProgress(0);
+            setAnalysisProgress(0);
+            return;
+          }
         }
       } else {
         toast.error('Не удалось получить обратную связь');
@@ -2087,7 +2100,8 @@ const PracticeByNumberOgemath = () => {
                             // Try to parse photoFeedback if it's a JSON string
                             try {
                               const parsed = JSON.parse(photoFeedback);
-                              if (parsed && typeof parsed.scores === 'number') return parsed;
+                              const score = toNumberOrNull(parsed?.scores);
+                              if (parsed && score !== null) return parsed;
                             } catch {}
                             return null;
                           })()}
