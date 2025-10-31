@@ -2152,15 +2152,6 @@ const PracticeByNumberOgemath = () => {
                         </div>
                       </Alert>
 
-                      {/* Show Student Solution and Analysis for photo uploads - always show after marking */}
-                      {currentQuestion.problem_number_type && currentQuestion.problem_number_type >= 20 && (
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                          <StudentSolutionCard />
-                          {analysisData && (
-                            <AnalysisReviewCard analysisData={analysisData as any} />
-                          )}
-                        </div>
-                      )}
                     </div>
                   )}
                 </div>
