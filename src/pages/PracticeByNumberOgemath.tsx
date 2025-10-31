@@ -31,6 +31,18 @@ interface Question {
   status?: 'correct' | 'wrong' | 'unseen' | 'unfinished';
 }
 
+// Helper function for defensive parsing of API responses
+const asObject = (v: unknown): any => {
+  if (typeof v === 'string') {
+    try {
+      return JSON.parse(v);
+    } catch {
+      return v;
+    }
+  }
+  return v;
+};
+
 // Photo analysis feedback types
 interface PhotoAnalysisFeedback {
   scores: number;
@@ -1485,7 +1497,8 @@ const PracticeByNumberOgemath = () => {
       if (apiResponse?.feedback) {
         console.log('Raw apiResponse.feedback:', apiResponse.feedback);
         try {
-          const feedbackData = JSON.parse(apiResponse.feedback);
+          // Defensive parsing: handle both string and object responses
+          const feedbackData = asObject(apiResponse.feedback);
           console.log('Parsed feedbackData:', feedbackData);
 
           // Robust scores coercion (Step 6)
@@ -1505,7 +1518,7 @@ const PracticeByNumberOgemath = () => {
             if (typeof feedbackData.review === 'string') {
               // New format: {scores, review: "<p>...</p>"}
               setAnalysisData({ scores: scores, review: feedbackData.review });
-              setPhotoFeedback('');
+              setPhotoFeedback(typeof apiResponse.feedback === 'string' ? apiResponse.feedback : JSON.stringify(feedbackData));
               setStructuredPhotoFeedback(null);
             } else if (feedbackData.review.overview_latex) {
               // Old structured format
@@ -1606,25 +1619,14 @@ const PracticeByNumberOgemath = () => {
           toast.success(`Анализ готов! Баллы: ${scores}/2`);
 
         } catch (error) {
-          // Handle both JSON parse errors and score validation errors
-          if (error instanceof SyntaxError) {
-            console.error('Error parsing API response:', error);
-            setPhotoFeedback(apiResponse.feedback);
-            setPhotoScores(null);
-            setStructuredPhotoFeedback(null);
-            
-            // Still allow proceeding to next question
-            setIsAnswered(true);
-            toast.error('Формат ответа API не распознан. Перейдите к следующему вопросу.');
-          } else {
-            console.error('Score validation error:', error);
-            toast.error('Ошибка при обработке баллов. Пожалуйста, попробуйте снова.');
-            setIsProcessingPhoto(false);
-            setOcrProgress("");
-            setUploadProgress(0);
-            setAnalysisProgress(0);
-            return;
-          }
+          // Handle score validation errors (JSON parsing is now safe)
+          console.error('Score validation error:', error);
+          toast.error('Ошибка при обработке баллов. Пожалуйста, попробуйте снова.');
+          setIsProcessingPhoto(false);
+          setOcrProgress("");
+          setUploadProgress(0);
+          setAnalysisProgress(0);
+          return;
         }
       } else {
         console.error('No feedback in apiResponse:', apiResponse);
@@ -2202,21 +2204,17 @@ const PracticeByNumberOgemath = () => {
                           analysisData={(() => {
                             // If we already have structured analysisData, use it
                             if (analysisData) return analysisData as any;
-                            // Try to parse photoFeedback if it's a JSON string
-                            try {
-                              const parsed = JSON.parse(photoFeedback);
-                              const score = toNumberOrNull(parsed?.scores);
-                              if (parsed && score !== null) return parsed;
-                            } catch {}
+                            // Try to parse photoFeedback if it's a JSON string (defensive)
+                            const parsed = asObject(photoFeedback);
+                            const score = toNumberOrNull(parsed?.scores);
+                            if (parsed && typeof parsed === 'object' && score !== null) return parsed;
                             return null;
                           })()}
                           fallbackSummaryLatex={(() => {
-                            // If photoFeedback is a JSON string, extract review field
-                            try {
-                              const parsed = JSON.parse(photoFeedback);
-                              if (typeof parsed?.review === 'string') return parsed.review;
-                            } catch {}
-                            return photoFeedback;
+                            // If photoFeedback is a JSON string, extract review field (defensive)
+                            const parsed = asObject(photoFeedback);
+                            if (typeof parsed?.review === 'string') return parsed.review;
+                            return typeof photoFeedback === 'string' ? photoFeedback : JSON.stringify(photoFeedback);
                           })()}
                           fallbackScore={photoScores}
                         />
