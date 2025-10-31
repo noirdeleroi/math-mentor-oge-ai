@@ -710,75 +710,6 @@ const OgeExerciseQuiz: React.FC<OgeExerciseQuizProps> = ({
                 </AlertDialogAction>
               )}
               
-              {/* AI Assistant Button */}
-              <AlertDialogAction 
-                onClick={async () => {
-                  if (!user) {
-                    toast({
-                      title: 'Ошибка',
-                      description: 'Необходимо войти в систему',
-                      variant: 'destructive'
-                    });
-                    return;
-                  }
-
-                  try {
-                    const activityType = questionCount === 10 || isModuleTest ? "exam" : questionCount === 6 ? "test" : "exercise";
-                    const activityTypeRu = activityType === 'exam' ? 'Экзамен' : activityType === 'test' ? 'Тест' : 'Упражнение';
-
-                    const feedbackMessage = `**${activityTypeRu.toUpperCase()}: ${title}**\n\n` +
-                      `✅ Правильных ответов: ${correctAnswers} из ${questions.length}\n` +
-                      `📊 Точность: ${score}%\n` +
-                      `🎯 Навыки: #${skills.join(', #')}\n\n` +
-                      (score >= 75 ? '🎉 Отличная работа! Ты хорошо освоил этот материал.' :
-                       score >= 50 ? '👍 Неплохой результат! Продолжай практиковаться.' :
-                       '💪 Не останавливайся! Изучи теорию и попробуй еще раз.');
-
-                    const { data: pendingRecord, error: insertError } = await supabase
-                      .from('pending_homework_feedback')
-                      .insert({
-                        user_id: user.id,
-                        course_id: courseId,
-                        feedback_type: 'textbook_exercise',
-                        homework_name: title,
-                        context_data: {
-                          activityType,
-                          totalQuestions: questions.length,
-                          questionsCorrect: correctAnswers,
-                          accuracy: score,
-                          skills: skills,
-                          itemId: itemId || `exercise-${skills.join("-")}`,
-                          completedAt: new Date().toISOString(),
-                          timestamp: Date.now()
-                        },
-                        processed: true,
-                        processed_at: new Date().toISOString(),
-                        feedback_message: feedbackMessage
-                      })
-                      .select('id')
-                      .single();
-
-                    if (insertError) {
-                      console.error('Failed to create feedback record:', insertError);
-                      navigate('/ogemath');
-                      return;
-                    }
-
-                    navigate(`/ogemath?pending_feedback=${pendingRecord.id}`);
-                  } catch (error) {
-                    console.error('Error creating exercise feedback:', error);
-                    navigate('/ogemath');
-                  }
-                }}
-                className="w-full group relative overflow-hidden bg-gradient-to-r from-navy to-navy/90 hover:from-navy/90 hover:to-navy/80 text-white rounded-2xl px-6 py-4 text-base font-bold shadow-lg hover:shadow-xl transition-all duration-300 border-none"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-                <div className="relative flex items-center justify-center gap-2">
-                  <span className="text-xl">💬</span>
-                  <span>к ИИ ассистенту</span>
-                </div>
-              </AlertDialogAction>
-              
               {/* Back Button */}
               <AlertDialogAction 
                 onClick={onBack}
@@ -787,7 +718,7 @@ const OgeExerciseQuiz: React.FC<OgeExerciseQuizProps> = ({
                 <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
                 <div className="relative flex items-center justify-center gap-2">
                   <span>←</span>
-                  <span>назад к модулю</span>
+                  <span>назад</span>
                 </div>
               </AlertDialogAction>
             </AlertDialogFooter>

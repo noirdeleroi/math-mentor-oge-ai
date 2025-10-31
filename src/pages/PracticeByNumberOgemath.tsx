@@ -1297,12 +1297,11 @@ const PracticeByNumberOgemath = () => {
             setIsCorrect(isCorrect);
             setIsAnswered(true);
             
-            console.log('Device photo check completed:', { 
-              isCorrect, 
-              scores: feedbackData.scores, 
-              isAnswered: true,
-              questionId: currentQuestion.question_id
-            });
+            // Fetch analysis data (in case it's stored separately in DB)
+            const analysis = await fetchAnalysisData();
+            if (analysis) {
+              setAnalysisData(analysis);
+            }
             
             // Clear uploaded images for next question
             setUploadedImages([]);
