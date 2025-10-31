@@ -1486,8 +1486,10 @@ const PracticeByNumberOgemath = () => {
 
       // Step 4: Process feedback
       if (apiResponse?.feedback) {
+        console.log('Raw apiResponse.feedback:', apiResponse.feedback);
         try {
           const feedbackData = JSON.parse(apiResponse.feedback);
+          console.log('Parsed feedbackData:', feedbackData);
 
           // Robust scores coercion (Step 6)
           const scoreRaw = toNumberOrNull(feedbackData?.scores);
@@ -1498,7 +1500,7 @@ const PracticeByNumberOgemath = () => {
           // Clamp to [0, 2] range
           const scores = Math.max(0, Math.min(2, scoreRaw));
 
-          // Continue processing with validated scores
+          // Process review data if available
           if (feedbackData.review) {
             setPhotoScores(scores);
 
@@ -1519,74 +1521,82 @@ const PracticeByNumberOgemath = () => {
               setStructuredPhotoFeedback(null);
               setAnalysisData(null);
             }
+          } else {
+            // No detailed review, but we still have scores
+            console.warn('Missing review field in feedback, but scores present');
+            setPhotoScores(scores);
+            setAnalysisData(null);
+          }
 
-            const isCorrect = scores > 0;
-            await finalizeAttemptWithScore(isCorrect, scores);
+          // ALWAYS finalize and update UI state (moved outside conditional)
+          const isCorrect = scores > 0;
 
-            // Step 9: Fire-and-forget mastery update
-            const attemptIdForSubmission = attemptId;
+          // Step 8: Finalize attempt with score
+          await finalizeAttemptWithScore(isCorrect, scores);
 
-            if (attemptIdForSubmission) {
-              const durationForSubmission = currentAttemptId && attemptStartTime
-                ? (Date.now() - attemptStartTime.getTime()) / 1000
-                : 0;
+          // Step 9: Fire-and-forget mastery update
+          const attemptIdForSubmission = attemptId;
 
-              // Fire-and-forget: don't await, just start the async task
-              (async () => {
-                try {
-                  await supabase.functions.invoke('handle-submission', {
-                    body: {
-                      course_id: '1',
-                      submission_data: {
-                        user_id: user.id,
-                        question_id: currentQuestion.question_id,
-                        attempt_id: attemptIdForSubmission,
-                        finished_or_not: true,
-                        is_correct: isCorrect,
-                        duration: durationForSubmission,
-                        scores_fipi: scores
-                      }
-                    }
-                  });
-                } catch (e) {
-                  console.error('handle-submission failed (non-blocking):', e);
-                }
-              })();
-            }
+          if (attemptIdForSubmission) {
+            const durationForSubmission = currentAttemptId && attemptStartTime
+              ? (Date.now() - attemptStartTime.getTime()) / 1000
+              : 0;
 
-            // Step 10: Award energy points (non-blocking)
+            // Fire-and-forget: don't await, just start the async task
             (async () => {
               try {
-                const { data: streakData } = await supabase
-                  .from('user_streaks')
-                  .select('current_streak')
-                  .eq('user_id', user.id)
-                  .single();
-
-                const currentStreak = streakData?.current_streak || 0;
-                const { awardEnergyPoints } = await import('@/services/energyPoints');
-                await awardEnergyPoints(user.id, 'problem', undefined,
-                                      'oge_math_fipi_bank', currentStreak);
+                await supabase.functions.invoke('handle-submission', {
+                  body: {
+                    course_id: '1',
+                    submission_data: {
+                      user_id: user.id,
+                      question_id: currentQuestion.question_id,
+                      attempt_id: attemptIdForSubmission,
+                      finished_or_not: true,
+                      is_correct: isCorrect,
+                      duration: durationForSubmission,
+                      scores_fipi: scores
+                    }
+                  }
+                });
               } catch (e) {
-                console.error('Energy points award failed (non-blocking):', e);
+                console.error('handle-submission failed (non-blocking):', e);
               }
             })();
-
-            setIsCorrect(isCorrect);
-            setIsAnswered(true);
-
-            console.log('Device photo check completed:', { 
-              isCorrect, 
-              scores, 
-              isAnswered: true 
-            });
-
-            // Clear uploaded images for next question
-            setUploadedImages([]);
-            toast.success(`Анализ готов! Баллы: ${scores}/2`);
-          } else {
-            toast.error('Неверный формат ответа API');
           }
+
+          // Step 10: Award energy points (non-blocking)
+          (async () => {
+            try {
+              const { data: streakData } = await supabase
+                .from('user_streaks')
+                .select('current_streak')
+                .eq('user_id', user.id)
+                .single();
+
+              const currentStreak = streakData?.current_streak || 0;
+              const { awardEnergyPoints } = await import('@/services/energyPoints');
+              await awardEnergyPoints(user.id, 'problem', undefined,
+                                    'oge_math_fipi_bank', currentStreak);
+            } catch (e) {
+              console.error('Energy points award failed (non-blocking):', e);
+            }
+          })();
+
+          // Step 11: Update UI state UNCONDITIONALLY
+          setIsCorrect(isCorrect);
+          setIsAnswered(true);
+
+          console.log('Device photo check completed:', { 
+            isCorrect, 
+            scores, 
+            isAnswered: true 
+          });
+
+          // Clear uploaded images and show success
+          setUploadedImages([]);
+          toast.success(`Анализ готов! Баллы: ${scores}/2`);
+
         } catch (error) {
           // Handle both JSON parse errors and score validation errors
           if (error instanceof SyntaxError) {
@@ -1594,6 +1604,10 @@ const PracticeByNumberOgemath = () => {
             setPhotoFeedback(apiResponse.feedback);
             setPhotoScores(null);
             setStructuredPhotoFeedback(null);
+            
+            // Still allow proceeding to next question
+            setIsAnswered(true);
+            toast.error('Формат ответа API не распознан. Перейдите к следующему вопросу.');
           } else {
             console.error('Score validation error:', error);
             toast.error('Ошибка при обработке баллов. Пожалуйста, попробуйте снова.');
@@ -1605,7 +1619,11 @@ const PracticeByNumberOgemath = () => {
           }
         }
       } else {
+        console.error('No feedback in apiResponse:', apiResponse);
         toast.error('Не удалось получить обратную связь');
+        
+        // Still allow proceeding to next question
+        setIsAnswered(true);
       }
     } catch (error) {
       console.error('Error in handleDevicePhotoCheck:', error);
