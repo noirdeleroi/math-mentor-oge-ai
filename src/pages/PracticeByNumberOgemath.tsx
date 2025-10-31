@@ -1517,7 +1517,8 @@ const PracticeByNumberOgemath = () => {
 
       // Step 4: Process feedback from database
       try {
-        const feedbackData = JSON.parse(rawOutput);
+        // Trim whitespace from raw output before parsing
+        const feedbackData = JSON.parse(rawOutput.trim());
         console.log('Parsed feedbackData:', feedbackData);
 
           // Robust scores coercion (Step 6)
@@ -1641,9 +1642,11 @@ const PracticeByNumberOgemath = () => {
         // Handle both JSON parse errors and score validation errors
         if (error instanceof SyntaxError) {
           console.error('Error parsing database output:', error);
-          setPhotoFeedback(rawOutput || '');
+          console.error('Raw output that failed to parse:', rawOutput);
+          setPhotoFeedback('');
           setPhotoScores(null);
           setStructuredPhotoFeedback(null);
+          setAnalysisData(null); // Clear analysisData to prevent showing raw JSON
           
           // Still allow proceeding to next question
           setIsAnswered(true);
