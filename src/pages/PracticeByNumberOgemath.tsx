@@ -17,8 +17,6 @@ import { awardStreakPoints, calculateStreakReward, getCurrentStreakData } from "
 import { toast } from "sonner";
 import TestStatisticsWindow from "@/components/TestStatisticsWindow";
 import FormulaBookletDialog from "@/components/FormulaBookletDialog";
-//import StudentSolutionCard from "@/components/analysis/StudentSolutionCard";
-//import AnalysisReviewCard from "@/components/analysis/AnalysisReviewCard";
 
 interface Question {
   question_id: string;
