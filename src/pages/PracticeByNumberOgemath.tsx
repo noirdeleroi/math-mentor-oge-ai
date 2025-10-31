@@ -99,10 +99,7 @@ interface AnalysisError {
 
 interface AnalysisData {
   scores: number;
-  review: {
-    errors: AnalysisError[];
-    summary?: string;
-  };
+  review: string | {errors: AnalysisError[]; summary?: string};
 }
 
 const PracticeByNumberOgemath = () => {
