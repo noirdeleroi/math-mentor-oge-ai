@@ -1485,10 +1485,10 @@ const PracticeByNumberOgemath = () => {
       }
 
       // Step 4: Process feedback
-      if (apiResponse?.raw_output) {
-        console.log('Raw apiResponse.raw_output:', apiResponse.raw_output);
+      if (apiResponse?.feedback) {
+        console.log('Raw apiResponse.feedback:', apiResponse.feedback);
         try {
-          const feedbackData = JSON.parse(apiResponse.raw_output);
+          const feedbackData = JSON.parse(apiResponse.feedback);
           console.log('Parsed feedbackData:', feedbackData);
 
           // Robust scores coercion (Step 6)
@@ -1601,7 +1601,7 @@ const PracticeByNumberOgemath = () => {
           // Handle both JSON parse errors and score validation errors
           if (error instanceof SyntaxError) {
             console.error('Error parsing API response:', error);
-            setPhotoFeedback(apiResponse.raw_output);
+            setPhotoFeedback(apiResponse.feedback);
             setPhotoScores(null);
             setStructuredPhotoFeedback(null);
             
@@ -1619,7 +1619,7 @@ const PracticeByNumberOgemath = () => {
           }
         }
       } else {
-        console.error('No raw_output in apiResponse:', apiResponse);
+        console.error('No feedback in apiResponse:', apiResponse);
         toast.error('Не удалось получить обратную связь');
         
         // Still allow proceeding to next question
