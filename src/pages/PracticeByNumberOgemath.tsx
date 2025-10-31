@@ -313,9 +313,13 @@ const PracticeByNumberOgemath = () => {
     setPhotoFeedback("");
     setPhotoScores(null);
     setStructuredPhotoFeedback(null);
+    setAnalysisData(null);
     setOcrProgress("");
     setIsPollingForAnalysis(false);
     setPollingStartTime(null);
+    setIsProcessingPhoto(false);
+    setUploadProgress(0);
+    setAnalysisProgress(0);
   };
 
   const toggleQuestionGroup = (groupType: string) => {
