@@ -113,11 +113,16 @@ const getMCQForSkill = async (skillId: number): Promise<MCQQuestion[]> => {
 
 const getAllSkillsFromStructure = (): Skill[] => {
   const allSkills: Skill[] = [];
-  const syllabusData = egeBasicSyllabusData as SyllabusStructure;
+  const syllabusData = egeBasicSyllabusData as any;
   
-  Object.values(syllabusData).forEach(module => {
-    Object.values(module).forEach(topic => {
-      allSkills.push(...topic.skills);
+  Object.values(syllabusData).forEach((module: any) => {
+    Object.values(module).forEach((topic: any) => {
+      const skills = topic.навыки || topic.skills || [];
+      allSkills.push(...skills.map((s: any) => ({
+        number: s.number,
+        name: s.Навык || s.name || '',
+        importance: s.importance
+      })));
     });
   });
   
@@ -133,15 +138,16 @@ const getFilteredSkills = (skills: Skill[], searchTerm: string): Skill[] => {
 };
 
 const findTopicForSkill = (skillId: number): { moduleName: string; topicKey: string; topicName: string } | null => {
-  const syllabusData = egeBasicSyllabusData as SyllabusStructure;
+  const syllabusData = egeBasicSyllabusData as any;
   
   for (const [moduleName, module] of Object.entries(syllabusData)) {
-    for (const [topicKey, topicData] of Object.entries(module)) {
-      if (topicData.skills.some(skill => skill.number === skillId)) {
+    for (const [topicKey, topicData] of Object.entries(module as any)) {
+      const skills = (topicData as any).навыки || (topicData as any).skills || [];
+      if (skills.some((skill: any) => skill.number === skillId)) {
         return {
           moduleName,
           topicKey,
-          topicName: topicData.name
+          topicName: (topicData as any).Тема || (topicData as any).name
         };
       }
     }
@@ -392,7 +398,7 @@ const TextbookBase = () => {
   };
 
   const renderFullSyllabus = () => {
-    const syllabusData = egeBasicSyllabusData as SyllabusStructure;
+    const syllabusData = egeBasicSyllabusData as any;
     
     return (
       <div className="max-w-4xl mx-auto">
@@ -410,17 +416,26 @@ const TextbookBase = () => {
               </h2>
               
               <div className="space-y-4 ml-4">
-                {Object.entries(module).map(([topicKey, topic]) => (
+                {Object.entries(module as any).map(([topicKey, topic]: [string, any]) => {
+                  const topicName = topic.Тема || topic.name;
+                  const skills = topic.навыки || topic.skills || [];
+                  const skillsArray = skills.map((s: any) => ({
+                    number: s.number,
+                    name: s.Навык || s.name || '',
+                    importance: s.importance
+                  }));
+                  
+                  return (
                   <div key={topicKey}>
                     <button
                       onClick={() => handleTopicSelect(topicKey)}
                       className="text-left hover:text-yellow-600 transition-colors font-medium mb-2 block"
                     >
-                      {topicKey} {topic.name}
+                      {topicKey} {topicName}
                     </button>
                     
                     <div className="ml-6 space-y-1">
-                      {getFilteredSkills(topic.skills, searchTerm).map((skill) => (
+                      {getFilteredSkills(skillsArray, searchTerm).map((skill) => (
                         <button
                           key={skill.number}
                           onClick={() => {
@@ -436,7 +451,8 @@ const TextbookBase = () => {
                       ))}
                     </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           ))}
@@ -448,13 +464,13 @@ const TextbookBase = () => {
   const renderTopicView = () => {
     if (!selectedTopic) return null;
 
-    const syllabusData = egeBasicSyllabusData as SyllabusStructure;
+    const syllabusData = egeBasicSyllabusData as any;
     let currentTopic = null;
-    let currentTopicData = null;
+    let currentTopicData: any = null;
 
     // Find the selected topic in the data structure
     for (const [moduleName, module] of Object.entries(syllabusData)) {
-      for (const [topicKey, topicData] of Object.entries(module)) {
+      for (const [topicKey, topicData] of Object.entries(module as any)) {
         if (topicKey === selectedTopic) {
           currentTopic = topicKey;
           currentTopicData = topicData;
@@ -465,12 +481,20 @@ const TextbookBase = () => {
     }
 
     if (!currentTopicData) return null;
+    
+    const topicName = currentTopicData.Тема || currentTopicData.name;
+    const skills = currentTopicData.навыки || currentTopicData.skills || [];
+    const skillsArray = skills.map((s: any) => ({
+      number: s.number,
+      name: s.Навык || s.name || '',
+      importance: s.importance
+    }));
 
     return (
       <div className="space-y-6">
         <div className="text-center mb-6 md:mb-8">
           <h2 className="font-display text-2xl md:text-4xl font-bold mb-3 md:mb-4 bg-gradient-to-r from-yellow-500 to-emerald-500 text-transparent bg-clip-text">
-            {currentTopic} {currentTopicData.name}
+            {currentTopic} {topicName}
           </h2>
           <p className="text-lg md:text-xl text-gray-300">
             Все навыки по теме - выберите для изучения
@@ -478,7 +502,7 @@ const TextbookBase = () => {
         </div>
 
         <div className="grid gap-4">
-          {getFilteredSkills(currentTopicData.skills, searchTerm).map((skill) => (
+          {getFilteredSkills(skillsArray, searchTerm).map((skill) => (
             <Card 
               key={skill.number}
               className={`transition-all duration-200 hover:shadow-lg cursor-pointer backdrop-blur-lg ${
