@@ -28,21 +28,18 @@ const StudentSolutionCard = ({
       
       setIsLoading(true);
       try {
-        // Fetch the most recent extracted_text for the current user
-        // @ts-ignore - Supabase type instantiation issue
+        // Fetch telegram_input for the current user
         const { data, error } = await supabase
-          .from('telegram_uploads')
-          .select('extracted_text')
+          .from('profiles')
+          .select('telegram_input')
           .eq('user_id', user.id)
-          .order('created_at', { ascending: false })
-          .limit(1)
           .single();
 
         if (error) {
           console.error('Error fetching student solution:', error);
           setFetchedSolution("");
         } else {
-          setFetchedSolution(data?.extracted_text || "");
+          setFetchedSolution(data?.telegram_input || "");
         }
       } catch (error) {
         console.error('Error in fetchStudentSolution:', error);
@@ -69,7 +66,7 @@ const StudentSolutionCard = ({
           ) : displaySolution ? (
             <MathRenderer text={displaySolution} compiler="mathjax" />
           ) : (
-            <div className="text-sm text-gray-500">Решение из фото ещё обрабатывается…</div>
+            <div className="text-sm text-gray-500">Решение не обнаружено</div>
           )}
         </div>
       </CardContent>

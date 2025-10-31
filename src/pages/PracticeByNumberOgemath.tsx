@@ -734,6 +734,7 @@ const PracticeByNumberOgemath = () => {
 
       if (updateError) {
         console.error('Error updating student_activity:', updateError);
+        toast.error('Ошибка сохранения результата.');
         return;
       }
 
@@ -1254,6 +1255,38 @@ const PracticeByNumberOgemath = () => {
     if (!user || !currentQuestion) return;
     if (uploadedImages.length === 0) return;
 
+    // Ensure we have attempt, or find it
+    let attemptId = currentAttemptId;
+
+    if (!attemptId) {
+      // Step 1.2: Fallback - find latest unfinished attempt
+      try {
+        const { data: latestAttempt, error: latestErr } = await supabase
+          .from('student_activity')
+          .select('attempt_id')
+          .eq('user_id', user.id)
+          .eq('question_id', currentQuestion.question_id)
+          .eq('finished_or_not', false)
+          .order('updated_at', { ascending: false })
+          .limit(1)
+          .single();
+
+        if (latestErr || !latestAttempt) {
+          // Step 1.3: No attempt exists
+          toast.error('Не удалось зафиксировать попытку. Повторите ещё раз.');
+          return;
+        }
+
+        attemptId = latestAttempt.attempt_id;
+      } catch (e) {
+        console.error('Error finding attempt:', e);
+        toast.error('Не удалось зафиксировать попытку. Повторите ещё раз.');
+        return;
+      }
+    }
+
+    // Now we're guaranteed to have attemptId
+
     setIsProcessingPhoto(true);
     setUploadProgress(0);
     setAnalysisProgress(0);
@@ -1354,13 +1387,35 @@ const PracticeByNumberOgemath = () => {
       if (apiResponse?.feedback) {
         try {
           const feedbackData = JSON.parse(apiResponse.feedback);
-          if (feedbackData.review && typeof feedbackData.scores === 'number') {
-            setPhotoScores(feedbackData.scores);
-            
+
+          // Robust scores coercion (Step 6)
+          const raw = feedbackData?.scores;
+          let scoresNum: number;
+
+          try {
+            if (typeof raw === 'number') {
+              scoresNum = raw;
+            } else if (typeof raw === 'string') {
+              scoresNum = Number(raw.trim().replace(',', '.'));
+            } else {
+              scoresNum = NaN;
+            }
+
+            if (!Number.isFinite(scoresNum)) {
+              throw new Error('Неверный формат баллов');
+            }
+
+            // Clamp to [0, 2] range
+            const scores = Math.max(0, Math.min(2, scoresNum));
+
+            // Continue processing with validated scores
+            if (feedbackData.review) {
+              setPhotoScores(scores);
+
             // Check if it's the new simple format (review is string) or old structured format
             if (typeof feedbackData.review === 'string') {
               // New format: {scores, review: "<p>...</p>"}
-              setAnalysisData({ scores: feedbackData.scores, review: feedbackData.review });
+              setAnalysisData({ scores: scores, review: feedbackData.review });
               setPhotoFeedback('');
               setStructuredPhotoFeedback(null);
             } else if (feedbackData.review.overview_latex) {
@@ -1374,24 +1429,83 @@ const PracticeByNumberOgemath = () => {
               setStructuredPhotoFeedback(null);
               setAnalysisData(null);
             }
-            
-            const isCorrect = feedbackData.scores > 0;
-            await updateStudentActivity(isCorrect, feedbackData.scores);
-            
+
+            const isCorrect = scores > 0;
+            await updateStudentActivity(isCorrect, scores);
+
+            // Step 9: Fire-and-forget mastery update
+            const attemptIdForSubmission = attemptId;
+
+            if (attemptIdForSubmission) {
+              const durationForSubmission = currentAttemptId && attemptStartTime
+                ? (Date.now() - attemptStartTime.getTime()) / 1000
+                : 0;
+
+              // Fire-and-forget: don't await, just start the async task
+              (async () => {
+                try {
+                  await supabase.functions.invoke('handle-submission', {
+                    body: {
+                      course_id: '1',
+                      submission_data: {
+                        user_id: user.id,
+                        question_id: currentQuestion.question_id,
+                        attempt_id: attemptIdForSubmission,
+                        finished_or_not: true,
+                        is_correct: isCorrect,
+                        duration: durationForSubmission,
+                        scores_fipi: scores
+                      }
+                    }
+                  });
+                } catch (e) {
+                  console.error('handle-submission failed (non-blocking):', e);
+                }
+              })();
+            }
+
+            // Step 10: Award energy points (non-blocking)
+            (async () => {
+              try {
+                const { data: streakData } = await supabase
+                  .from('user_streaks')
+                  .select('current_streak')
+                  .eq('user_id', user.id)
+                  .single();
+
+                const currentStreak = streakData?.current_streak || 0;
+                const { awardEnergyPoints } = await import('@/services/energyPoints');
+                await awardEnergyPoints(user.id, 'problem', undefined,
+                                      'oge_math_fipi_bank', currentStreak);
+              } catch (e) {
+                console.error('Energy points award failed (non-blocking):', e);
+              }
+            })();
+
             setIsCorrect(isCorrect);
             setIsAnswered(true);
-            
+
             // Fetch analysis data (in case it's stored separately in DB)
             const analysis = await fetchAnalysisData();
             if (analysis) {
               setAnalysisData(analysis);
             }
-            
+
             // Clear uploaded images for next question
             setUploadedImages([]);
+            toast.success(`Анализ готов! Баллы: ${scores}/2`);
           } else {
             toast.error('Неверный формат ответа API');
           }
+        } catch (scoreError) {
+          console.error('Score validation error:', scoreError);
+          toast.error('Ошибка при обработке баллов. Пожалуйста, попробуйте снова.');
+          setIsProcessingPhoto(false);
+          setOcrProgress("");
+          setUploadProgress(0);
+          setAnalysisProgress(0);
+          return;
+        }
         } catch (parseError) {
           console.error('Error parsing API response:', parseError);
           setPhotoFeedback(apiResponse.feedback);
