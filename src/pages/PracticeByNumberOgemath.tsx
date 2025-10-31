@@ -1625,8 +1625,15 @@ const PracticeByNumberOgemath = () => {
               try {
                 await supabase.functions.invoke('handle-submission', {
                   body: {
-                    attempt_id: finalizeData.attempt_id,
-                    course_id: '1'
+                    course_id: '1',
+                    submission_data: {
+                      user_id: user.id,
+                      question_id: currentQuestion.question_id,
+                      finished_or_not: true,
+                      is_correct: isCorrect,
+                      duration: finalizeData?.duration_seconds || 0,
+                      scores_fipi: scores
+                    }
                   }
                 });
               } catch (e) {
