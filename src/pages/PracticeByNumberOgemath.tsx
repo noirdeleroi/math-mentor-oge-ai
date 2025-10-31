@@ -1198,9 +1198,88 @@ const PracticeByNumberOgemath = () => {
               // Write to DB in a safe way (guarantee attempt exists)
               await finalizeAttemptWithScore(isCorrectFromScores, score);
 
-              // Flip UI into answered mode so button becomes "Следующий вопрос"
+// Flip UI into answered mode so button becomes "Следующий вопрос"
               setIsCorrect(isCorrectFromScores);
               setIsAnswered(true);
+
+              // Stop polling etc.
+              setIsPollingForAnalysis(false);
+
+              setPhotoScores(score);
+
+              // Set analysis data - ensure it has the correct structure
+              const analysisDataToSet = typeof parsed.review === 'string'
+                ? { scores: score, review: parsed.review }
+                : parsed;
+              
+              console.log('Setting analysis data from polling:', analysisDataToSet);
+              setAnalysisData(analysisDataToSet);
+
+              toast.success(`Анализ готов! Баллы: ${score}/2`);
+
+              // Update session results
+              setSessionResults(prev => {
+                const newResults = [...prev];
+                const existingIndex = newResults.findIndex(r => r.questionIndex === currentQuestionIndex);
+                const result = {
+                  questionIndex: currentQuestionIndex,
+                  questionId: currentQuestion.question_id,
+                  isCorrect: isCorrectFromScores,
+                  userAnswer: `Фото решение (${score}/2 баллов)`,
+                  correctAnswer: currentQuestion.answer,
+                  problemText: currentQuestion.problem_text,
+                  solutionText: currentQuestion.solution_text,
+                  isAnswered: true
+                };
+                
+                if (existingIndex >= 0) {
+                  newResults[existingIndex] = result;
+                } else {
+                  newResults.push(result);
+                }
+                return newResults;
+              });
+
+              // Trigger energy animation if correct
+              if (isCorrectFromScores && (window as any).triggerEnergyPointsAnimation) {
+                supabase
+                  .from('user_streaks')
+                  .select('current_streak')
+                  .eq('user_id', user.id)
+                  .single()
+                  .then(({ data: streakData }) => {
+                    const currentStreak = streakData?.current_streak || 0;
+                    const basePoints = 2;
+                    const pointsToShow = currentStreak >= 3 ? basePoints * 10 : basePoints;
+                    (window as any).triggerEnergyPointsAnimation(pointsToShow);
+                  });
+              }
+
+              // Fire-and-forget background operations
+              Promise.all([
+                // Award energy points
+                (async () => {
+                  if (isCorrectFromScores) {
+                    const { data: streakData } = await supabase
+                      .from('user_streaks')
+                      .select('current_streak')
+                      .eq('user_id', user.id)
+                      .single();
+                    
+                    const currentStreak = streakData?.current_streak || 0;
+                    const { awardEnergyPoints } = await import('@/services/energyPoints');
+                    await awardEnergyPoints(user.id, 'problem', undefined, 'oge_math_fipi_bank', currentStreak);
+                  }
+                })(),
+                
+                // Submit to handle-submission for mastery update
+                submitToHandleSubmission(isCorrectFromScores),
+                
+                // Award streak points
+                awardStreakPoints(user.id, calculateStreakReward(currentQuestion.difficulty))
+              ]).catch(error => {
+                console.error('Error in background operations after polling:', error);
+              });              
 
               // Stop polling etc.
               setIsPollingForAnalysis(false);
@@ -1442,7 +1521,7 @@ const PracticeByNumberOgemath = () => {
             }
 
             const isCorrect = scores > 0;
-            await updateStudentActivity(isCorrect, scores);
+            await finalizeAttemptWithScore(isCorrect, scores);
 
             // Step 9: Fire-and-forget mastery update
             const attemptIdForSubmission = attemptId;

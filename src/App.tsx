@@ -19,6 +19,8 @@ const Profile = lazy(() => import("./pages/Profile"));
 const DiagnosticTest = lazy(() => import("./pages/DiagnosticTest"));
 const PracticeExercise = lazy(() => import("./pages/PracticeExercise"));
 const DigitalTextbook = lazy(() => import("./pages/DigitalTextbook"));
+const TextbookBase = lazy(() => import("./pages/TextbookBase"));
+const TextbookProf = lazy(() => import("./pages/TextbookProf"));
 const BookTest = lazy(() => import("./pages/BookTest"));
 const Subscribe = lazy(() => import("./pages/Subscribe"));
 const Pricing = lazy(() => import("./pages/Pricing"));
@@ -89,6 +91,8 @@ const App = () => (
           
                 {/* put any other pages that should share the look here: */}
                 <Route path="/textbook" element={<DigitalTextbook />} />
+                <Route path="/textbook-base" element={<TextbookBase />} />
+                <Route path="/textbook-prof" element={<TextbookProf />} />
                 <Route path="/book-test" element={<BookTest />} />
             <Route path="/ogemath" element={<OgeMath />} />
             <Route path="/ogemath-practice" element={<OgemathPractice />} />

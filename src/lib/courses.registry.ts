@@ -46,7 +46,8 @@ export const COURSES: Record<CourseId, Course> = {
       '/egemathbasic-practice',
       '/egemathbasic-progress',
       '/practice-by-number-egebasicmath',
-      '/homework-egeb'
+      '/homework-egeb',
+      '/textbook-base'
     ],
     topicsUrl: 'https://kbaazksvkvnafrwtmkcw.supabase.co/storage/v1/object/public/jsons_for_topic_skills/EGE_math_basic_topicsonly_with_names.json'
   },
@@ -63,7 +64,8 @@ export const COURSES: Record<CourseId, Course> = {
       '/egemathprof-revision',
       '/egemathprof-mock',
       '/practice-by-number-egeprofmath',
-      '/homework-egeprof'
+      '/homework-egeprof',
+      '/textbook-prof'
     ],
     topicsUrl: 'https://kbaazksvkvnafrwtmkcw.supabase.co/storage/v1/object/public/jsons_for_topic_skills/ege_math_profil_topics_only_with_names.json'
   },

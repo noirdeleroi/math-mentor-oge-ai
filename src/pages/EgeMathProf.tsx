@@ -371,7 +371,7 @@ ${updated.feedback_message}
   };
 
   const handleTextbookClick = () => {
-    navigate("/new-textbook");
+    navigate("/textbook-prof");
   };
 
   const handleProgressClick = () => {

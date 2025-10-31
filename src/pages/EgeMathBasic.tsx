@@ -404,7 +404,7 @@ ${updated.feedback_message}
   };
 
   const handleTextbookClick = () => {
-    navigate("/new-textbook");
+    navigate("/textbook-base");
   };
 
   const handleProgressClick = () => {
