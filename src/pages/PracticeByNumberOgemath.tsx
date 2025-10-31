@@ -17,8 +17,8 @@ import { awardStreakPoints, calculateStreakReward, getCurrentStreakData } from "
 import { toast } from "sonner";
 import TestStatisticsWindow from "@/components/TestStatisticsWindow";
 import FormulaBookletDialog from "@/components/FormulaBookletDialog";
-import StudentSolutionCard from "@/components/analysis/StudentSolutionCard";
-import AnalysisReviewCard from "@/components/analysis/AnalysisReviewCard";
+//import StudentSolutionCard from "@/components/analysis/StudentSolutionCard";
+//import AnalysisReviewCard from "@/components/analysis/AnalysisReviewCard";
 
 interface Question {
   question_id: string;
@@ -2129,12 +2129,7 @@ const PracticeByNumberOgemath = () => {
 
                       {/* Show Student Solution and Analysis for photo uploads - always show after marking */}
                       {currentQuestion.problem_number_type && currentQuestion.problem_number_type >= 20 && (
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                          <StudentSolutionCard />
-                          {analysisData && (
-                            <AnalysisReviewCard analysisData={analysisData as any} />
-                          )}
-                        </div>
+              
                       )}
                     </div>
                   )}
@@ -2196,31 +2191,7 @@ const PracticeByNumberOgemath = () => {
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                        <StudentSolutionCard />
-                        <AnalysisReviewCard
-                          analysisData={(() => {
-                            // If we already have structured analysisData, use it
-                            if (analysisData) return analysisData as any;
-                            // Try to parse photoFeedback if it's a JSON string
-                            try {
-                              const parsed = JSON.parse(photoFeedback);
-                              const score = toNumberOrNull(parsed?.scores);
-                              if (parsed && score !== null) return parsed;
-                            } catch {}
-                            return null;
-                          })()}
-                          fallbackSummaryLatex={(() => {
-                            // If photoFeedback is a JSON string, extract review field
-                            try {
-                              const parsed = JSON.parse(photoFeedback);
-                              if (typeof parsed?.review === 'string') return parsed.review;
-                            } catch {}
-                            return photoFeedback;
-                          })()}
-                          fallbackScore={photoScores}
-                        />
-                      </div>
+                      
 
                       {/* Structured Feedback (legacy format) */}
                       {structuredPhotoFeedback && (
