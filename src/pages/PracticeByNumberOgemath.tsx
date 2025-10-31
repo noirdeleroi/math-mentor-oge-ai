@@ -1531,18 +1531,29 @@ const PracticeByNumberOgemath = () => {
           // ALWAYS finalize and update UI state (moved outside conditional)
           const isCorrect = scores > 0;
 
-          // Step 8: Finalize attempt with score
-          await finalizeAttemptWithScore(isCorrect, scores);
+          // Step 8: Atomically finalize attempt using rpc_finalize_attempt
+          const { data: finalizeData, error: finalizeError } = await supabase.functions.invoke('rpc_finalize_attempt', {
+            body: {
+              user_id: user.id,
+              question_id: currentQuestion.question_id,
+              is_correct: isCorrect,
+              scores_fipi: scores,
+              course_id: '1',
+              attempt_id: currentAttemptId || undefined
+            }
+          });
+
+          if (finalizeError) {
+            console.error('Failed to finalize attempt:', finalizeError);
+            toast.error('Не удалось сохранить результат');
+            return;
+          }
+
+          console.log('Attempt finalized:', finalizeData);
+          const attemptIdForSubmission = finalizeData?.attempt_id;
 
           // Step 9: Fire-and-forget mastery update
-          const attemptIdForSubmission = attemptId;
-
           if (attemptIdForSubmission) {
-            const durationForSubmission = currentAttemptId && attemptStartTime
-              ? (Date.now() - attemptStartTime.getTime()) / 1000
-              : 0;
-
-            // Fire-and-forget: don't await, just start the async task
             (async () => {
               try {
                 await supabase.functions.invoke('handle-submission', {
@@ -1554,7 +1565,7 @@ const PracticeByNumberOgemath = () => {
                       attempt_id: attemptIdForSubmission,
                       finished_or_not: true,
                       is_correct: isCorrect,
-                      duration: durationForSubmission,
+                      duration: finalizeData?.duration_seconds || 0,
                       scores_fipi: scores
                     }
                   }
