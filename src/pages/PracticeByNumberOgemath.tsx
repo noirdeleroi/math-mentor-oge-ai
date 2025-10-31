@@ -467,6 +467,80 @@ const PracticeByNumberOgemath = () => {
     }
   };
 
+
+
+
+
+  // NEW: ensure we have an attempt_id and update student_activity in one safe call
+  const finalizeAttemptWithScore = async (
+    isCorrect: boolean,
+    scores: number
+  ) => {
+    if (!user || !currentQuestion) return;
+
+    try {
+      // 1. If we don't have attempt info yet, create it now
+      if (!currentAttemptId || !attemptStartTime) {
+        await startAttempt(currentQuestion.question_id);
+      }
+
+      // after startAttempt we still read latest values from state,
+      // but state updates are async. So we REFETCH the row directly from DB
+      // to know which attempt to update.
+      const { data: latestActivity, error: latestErr } = await supabase
+        .from('student_activity')
+        .select('attempt_id, answer_time_start')
+        .eq('user_id', user.id)
+        .eq('question_id', currentQuestion.question_id)
+        .order('answer_time_start', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (latestErr || !latestActivity) {
+        console.error('Could not get latest attempt row before finalizing:', latestErr);
+        return;
+      }
+
+      const attemptIdToUse = latestActivity.attempt_id;
+
+      // 2. Work out duration
+      const now = new Date();
+      const startTimeForDuration = attemptStartTime
+        ? attemptStartTime
+        : new Date(latestActivity.answer_time_start);
+      const durationInSeconds =
+        (now.getTime() - startTimeForDuration.getTime()) / 1000;
+
+      // 3. Update that attempt row with score etc.
+      const { error: updateError } = await supabase
+        .from('student_activity')
+        .update({
+          duration_answer: durationInSeconds,
+          is_correct: isCorrect,
+          scores_fipi: scores,
+          finished_or_not: true,
+        })
+        .eq('user_id', user.id)
+        .eq('attempt_id', attemptIdToUse);
+
+      if (updateError) {
+        console.error('Error updating student_activity in finalizeAttemptWithScore:', updateError);
+      } else {
+        console.log(
+          `finalizeAttemptWithScore(): saved attempt ${attemptIdToUse} with score=${scores}, correct=${isCorrect}`
+        );
+      }
+    } catch (err) {
+      console.error('finalizeAttemptWithScore() failed:', err);
+    }
+  };
+
+
+
+
+
+
+
   // Helper function to check if a string is purely numeric
   const isNumeric = (str: string): boolean => {
     // Remove spaces and check if the string contains only digits, dots, commas, and negative signs
@@ -731,19 +805,23 @@ const PracticeByNumberOgemath = () => {
     
     // Immediately move to next question
     if (currentQuestionIndex < questions.length - 1) {
+      const nextQ = questions[currentQuestionIndex + 1];
+
+      // move index first so UI shows next task
       setCurrentQuestionIndex(currentQuestionIndex + 1);
-      resetQuestionState();
-      
-      // Start next attempt in background (don't block UI)
-      const nextQuestion = questions[currentQuestionIndex + 1];
-      if (nextQuestion && user) {
-        startAttempt(nextQuestion.question_id).catch(error => 
-          console.error('Background attempt start failed:', error)
-        );
+
+      // IMPORTANT:
+      // BEFORE wiping state, start a new attempt for that next question
+      if (nextQ && user) {
+        await startAttempt(nextQ.question_id);
       }
+
+      // now clean local UI fields (answer box, images etc)
+      resetQuestionState();
     } else {
       toast.success("Все вопросы завершены!");
     }
+
   };
 
   const handleShowSolution = async () => {
@@ -952,11 +1030,14 @@ const PracticeByNumberOgemath = () => {
             
             // Handle photo submission using direct update
             const isCorrect = feedbackData.scores > 0;
-            await updateStudentActivity(isCorrect, feedbackData.scores);
-            
-            // Update UI states
+
+            // Save result (score, correct/incorrect, finished_or_not) to student_activity
+            await finalizeAttemptWithScore(isCorrect, feedbackData.scores);
+
+            // Update UI state so the big button becomes "Следующий вопрос"
             setIsCorrect(isCorrect);
             setIsAnswered(true);
+
             
             setShowUploadPrompt(false);
           } else {
@@ -1091,25 +1172,28 @@ const PracticeByNumberOgemath = () => {
             ) {
               // Treat any positive score as correct
               const isCorrectFromScores = parsed.scores > 0;
-              // Update student_activity with scores
-              await updateStudentActivity(isCorrectFromScores, parsed.scores);
-              
-              // Mark as answered so the UI shows "Следующий вопрос" instead of "Пропустить"
+
+              // Write to DB in a safe way (guarantee attempt exists)
+              await finalizeAttemptWithScore(isCorrectFromScores, parsed.scores);
+
+              // Flip UI into answered mode so button becomes "Следующий вопрос"
               setIsCorrect(isCorrectFromScores);
               setIsAnswered(true);
-              
-              // Stop polling if it's running
+
+              // Stop polling etc.
               setIsPollingForAnalysis(false);
-              
-              // Store the feedback data
+
               setPhotoScores(parsed.scores);
-              if (typeof parsed.review === 'string') {
-                setAnalysisData({ scores: parsed.scores, review: parsed.review });
-              } else {
-                setAnalysisData(parsed);
-              }
-              
+
+              // keep rest as you already have
+              setAnalysisData(
+                typeof parsed.review === 'string'
+                  ? { scores: parsed.scores, review: parsed.review }
+                  : parsed
+              );
+
               toast.success(`Анализ готов! Баллы: ${parsed.scores}/2`);
+
             }
           } catch (e) {
             console.warn('Non-fatal error while trying to update FRQ scores:', e);
