@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,7 @@ import TestStatisticsWindow from "@/components/TestStatisticsWindow";
 import FormulaBookletDialog from "@/components/FormulaBookletDialog";
 import StudentSolutionCard from "@/components/analysis/StudentSolutionCard";
 import AnalysisReviewCard from "@/components/analysis/AnalysisReviewCard";
+import Loading from "@/components/ui/Loading";
 
 interface Question {
   question_id: string;
@@ -59,7 +60,7 @@ interface PhotoAnalysisFeedback {
         char_start: number;
         char_end: number;
         snippet: string;
-        bboxes: any[];
+        bboxes: number[][];
       };
       step_ref: {
         correct_step_index: number;
@@ -213,8 +214,13 @@ const PracticeByNumberOgemath = () => {
       }
 
       // Get user's activity history for these questions if logged in
-      let userActivity: any[] = [];
-      let questionStatusMap: { [key: string]: { status: 'correct' | 'wrong' | 'unseen' | 'unfinished', priority: number } } = {};
+      let userActivity: {
+        question_id: string;
+        is_correct: boolean | null;
+        finished_or_not: boolean;
+        updated_at: string;
+      }[] = [];
+      const questionStatusMap: { [key: string]: { status: 'correct' | 'wrong' | 'unseen' | 'unfinished', priority: number } } = {};
       
       if (user && allQuestions.length > 0) {
         const questionIds = allQuestions.map(q => q.question_id);
@@ -316,6 +322,7 @@ const PracticeByNumberOgemath = () => {
     setPhotoFeedback("");
     setPhotoScores(null);
     setStructuredPhotoFeedback(null);
+    setAnalysisData(null);
     setOcrProgress("");
     setIsPollingForAnalysis(false);
     setPollingStartTime(null);
@@ -453,6 +460,7 @@ const PracticeByNumberOgemath = () => {
         .insert({
           user_id: user.id,
           question_id: questionId,
+          course_id: '1',
           answer_time_start: new Date().toISOString(),
           finished_or_not: false,
           problem_number_type: problemNumberType,
@@ -645,8 +653,8 @@ const PracticeByNumberOgemath = () => {
         const basePoints = 2;
         const pointsToShow = currentStreak >= 3 ? basePoints * 10 : basePoints;
         
-        if ((window as any).triggerEnergyPointsAnimation) {
-          (window as any).triggerEnergyPointsAnimation(pointsToShow);
+        if ((window as Window & { triggerEnergyPointsAnimation?: (points: number) => void }).triggerEnergyPointsAnimation) {
+          (window as Window & { triggerEnergyPointsAnimation?: (points: number) => void }).triggerEnergyPointsAnimation(pointsToShow);
         }
       }
 
@@ -1185,7 +1193,7 @@ const PracticeByNumberOgemath = () => {
           const parsed = JSON.parse(data.raw_output);
           // If this is FRQ (20-25) and parsed contains scores, update student_activity immediately
           try {
-            const pnt = currentQuestion ? Number((currentQuestion as any).problem_number_type) : NaN;
+            const pnt = currentQuestion ? Number(currentQuestion.problem_number_type) : NaN;
             const score = toNumberOrNull(parsed?.scores);
             if (
               parsed && score !== null &&
@@ -1241,7 +1249,7 @@ const PracticeByNumberOgemath = () => {
               });
 
               // Trigger energy animation if correct
-              if (isCorrectFromScores && (window as any).triggerEnergyPointsAnimation) {
+              if (isCorrectFromScores && (window as Window & { triggerEnergyPointsAnimation?: (points: number) => void }).triggerEnergyPointsAnimation) {
                 supabase
                   .from('user_streaks')
                   .select('current_streak')
@@ -1314,6 +1322,7 @@ const PracticeByNumberOgemath = () => {
   };
   
   // Polling effect for Telegram photo analysis
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!isPollingForAnalysis || !user || !currentQuestion) return;
     
@@ -1419,11 +1428,27 @@ const PracticeByNumberOgemath = () => {
 
       if (processError || !processData?.success) {
         console.error('Error processing device photos:', processError);
-        toast.error(processData?.error || 'Произошла ошибка при обработке. Пожалуйста, попробуйте снова.');
+
+        // Enhanced error handling for photo processing
+        let errorMessage = 'Произошла ошибка при обработке фото.';
+        if (processError?.message?.includes('timeout')) {
+          errorMessage = 'Обработка фото занимает слишком долго. Попробуйте фото меньшего размера.';
+        } else if (processError?.message?.includes('network') || processError?.message?.includes('fetch')) {
+          errorMessage = 'Проблема с подключением при обработке фото. Проверьте интернет.';
+        } else if (processData?.error) {
+          errorMessage = processData.error;
+        } else {
+          errorMessage = 'Ошибка обработки фото. Попробуйте снова или используйте фото лучшего качества.';
+        }
+
+        toast.error(errorMessage);
+
+        // Ensure all processing state is properly reset
         setIsProcessingPhoto(false);
         setOcrProgress("");
         setUploadProgress(0);
         setAnalysisProgress(0);
+        console.log('Photo processing failed, state reset completed');
         return;
       }
 
@@ -1438,9 +1463,25 @@ const PracticeByNumberOgemath = () => {
 
       if (profileError || !profile?.telegram_input) {
         console.error('Error getting telegram input:', profileError);
-        toast.error('Ошибка при получении данных');
+
+        // Enhanced error handling for profile data
+        let errorMessage = 'Ошибка при получении распознанного текста.';
+        if (profileError?.message?.includes('timeout')) {
+          errorMessage = 'Получение данных занимает слишком долго. Попробуйте снова.';
+        } else if (profileError?.message?.includes('network') || profileError?.message?.includes('fetch')) {
+          errorMessage = 'Проблема с подключением при получении данных. Проверьте интернет.';
+        } else if (!profile?.telegram_input) {
+          errorMessage = 'Текст решения не найден. Возможно, обработка фото ещё не завершилась.';
+        }
+
+        toast.error(errorMessage);
+
+        // Ensure all processing state is properly reset
         setIsProcessingPhoto(false);
         setOcrProgress("");
+        setUploadProgress(0);
+        setAnalysisProgress(0);
+        console.log('Profile data fetch failed, state reset completed');
         return;
       }
 
@@ -1456,31 +1497,63 @@ const PracticeByNumberOgemath = () => {
         });
       }, 50);
 
-      const { data: apiResponse, error: apiError } = await supabase.functions.invoke('analyze-photo-solution', {
-        body: {
-          student_solution: profile.telegram_input,
-          problem_text: currentQuestion.problem_text,
-          solution_text: currentQuestion.solution_text,
-          user_id: user.id,
-          question_id: currentQuestion.question_id,
-          problem_number: currentQuestion.problem_number_type
-        }
-      });
+      // Add timeout handling for analyze-photo-solution call
+      const analyzeWithTimeout = async () => {
+        return Promise.race([
+          supabase.functions.invoke('analyze-photo-solution', {
+            body: {
+              student_solution: profile.telegram_input,
+              problem_text: currentQuestion.problem_text,
+              solution_text: currentQuestion.solution_text,
+              user_id: user.id,
+              question_id: currentQuestion.question_id,
+              problem_number: currentQuestion.problem_number_type
+            }
+          }),
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('TIMEOUT')), 30000) // 30 second timeout
+          )
+        ]);
+      };
+
+      let apiResponse: any, apiError: any;
+
+      try {
+        const result = await analyzeWithTimeout();
+        apiResponse = result.data;
+        apiError = result.error;
+      } catch (timeoutError) {
+        console.error('Timeout in analyze-photo-solution:', timeoutError);
+        apiError = { message: 'TIMEOUT' };
+      }
 
       clearInterval(analysisInterval);
       setAnalysisProgress(100);
 
       if (apiError) {
         console.error('Error calling analyze-photo-solution:', apiError);
-        if (apiResponse?.retry_message) {
-          toast.error(apiResponse.retry_message);
+
+        // Enhanced error handling with specific messages
+        let errorMessage = 'Произошла ошибка при анализе решения.';
+
+        if (apiError.message === 'TIMEOUT') {
+          errorMessage = 'Анализ решения занимает слишком долго. Попробуйте упростить ваше решение или попробуйте позже.';
+        } else if (apiResponse?.retry_message) {
+          errorMessage = apiResponse.retry_message;
+        } else if (apiError.message?.includes('network') || apiError.message?.includes('fetch')) {
+          errorMessage = 'Проблема с подключением. Проверьте интернет и попробуйте снова.';
         } else {
-          toast.error('Ошибка API. Попробуйте ввести решение снова.');
+          errorMessage = 'Ошибка анализа решения. Попробуйте ещё раз или обратитесь в поддержку.';
         }
+
+        toast.error(errorMessage);
+
+        // Ensure all processing state is properly reset
         setIsProcessingPhoto(false);
         setOcrProgress("");
         setUploadProgress(0);
         setAnalysisProgress(0);
+        console.log('Analysis failed, state reset completed');
         return;
       }
 
@@ -1490,17 +1563,29 @@ const PracticeByNumberOgemath = () => {
           const feedbackData = JSON.parse(apiResponse.feedback);
 
           // Robust scores coercion (Step 6)
-          const scoreRaw = toNumberOrNull(feedbackData?.scores);
-          if (scoreRaw === null) {
-            throw new Error('Неверный формат баллов');
-          }
+          const raw = feedbackData?.scores;
+          let scoresNum: number;
 
-          // Clamp to [0, 2] range
-          const scores = Math.max(0, Math.min(2, scoreRaw));
+          try {
+            if (typeof raw === 'number') {
+              scoresNum = raw;
+            } else if (typeof raw === 'string') {
+              scoresNum = Number(raw.trim().replace(',', '.'));
+            } else {
+              scoresNum = NaN;
+            }
 
-          // Continue processing with validated scores
-          if (feedbackData.review) {
-            setPhotoScores(scores);
+            if (!Number.isFinite(scoresNum)) {
+              throw new Error('Неверный формат баллов');
+            }
+
+            // Clamp to [0, 2] range
+            const scores = Math.max(0, Math.min(2, scoresNum));
+
+            // Continue processing with validated scores
+            if (feedbackData.review) {
+              setPhotoScores(scores);
+              // ... rest of the flow using 'scores' instead of 'feedbackData.scores'
 
             // Check if it's the new simple format (review is string) or old structured format
             if (typeof feedbackData.review === 'string') {
@@ -1521,7 +1606,26 @@ const PracticeByNumberOgemath = () => {
             }
 
             const isCorrect = scores > 0;
-            await finalizeAttemptWithScore(isCorrect, scores);
+
+            // Step 7: Finalize attempt with RPC call
+            const { data: finalizeResult, error: finalizeError } = await supabase.functions.invoke('rpc_finalize_attempt', {
+              body: {
+                user_id: user.id,
+                question_id: currentQuestion.question_id,
+                attempt_id: attemptId,
+                is_correct: isCorrect,
+                scores_fipi: scores,
+                course_id: '1'
+              }
+            });
+
+            if (finalizeError) {
+              console.error('rpc_finalize_attempt failed, falling back to direct DB update:', finalizeError);
+              // Fallback to direct DB update
+              await finalizeAttemptWithScore(isCorrect, scores);
+            } else {
+              console.log('rpc_finalize_attempt succeeded:', finalizeResult);
+            }
 
             // Step 9: Fire-and-forget mastery update
             const attemptIdForSubmission = attemptId;
@@ -1586,6 +1690,20 @@ const PracticeByNumberOgemath = () => {
             toast.success(`Анализ готов! Баллы: ${scores}/2`);
           } else {
             toast.error('Неверный формат ответа API');
+            setIsProcessingPhoto(false);
+            setOcrProgress("");
+            setUploadProgress(0);
+            setAnalysisProgress(0);
+            return;
+          }
+          } catch (scoreError) {
+            console.error('Score validation error:', scoreError);
+            toast.error('Ошибка при обработке баллов. Пожалуйста, попробуйте снова.');
+            setIsProcessingPhoto(false);
+            setOcrProgress("");
+            setUploadProgress(0);
+            setAnalysisProgress(0);
+            return;
           }
         } catch (error) {
           // Handle both JSON parse errors and score validation errors
@@ -1609,12 +1727,27 @@ const PracticeByNumberOgemath = () => {
       }
     } catch (error) {
       console.error('Error in handleDevicePhotoCheck:', error);
-      toast.error('Произошла ошибка при обработке решения');
+
+      // Enhanced error handling for main catch block
+      let errorMessage = 'Произошла непредвиденная ошибка при обработке решения.';
+      if (error instanceof Error) {
+        if (error.message?.includes('timeout')) {
+          errorMessage = 'Операция занимает слишком долго. Попробуйте снова.';
+        } else if (error.message?.includes('network') || error.message?.includes('fetch')) {
+          errorMessage = 'Проблема с подключением. Проверьте интернет и попробуйте снова.';
+        }
+      }
+
+      toast.error(errorMessage);
+
+      // Ensure all processing state is properly reset in main catch
       setIsProcessingPhoto(false);
       setOcrProgress("");
       setUploadProgress(0);
       setAnalysisProgress(0);
+      console.log('Main catch block triggered, state reset completed');
     } finally {
+      // Additional safeguard to ensure processing state is reset
       setIsProcessingPhoto(false);
       setOcrProgress("");
       setUploadProgress(0);
@@ -2181,7 +2314,9 @@ const PracticeByNumberOgemath = () => {
                               const parsed = JSON.parse(photoFeedback);
                               const score = toNumberOrNull(parsed?.scores);
                               if (parsed && score !== null) return parsed;
-                            } catch {}
+                            } catch {
+                              // Ignore JSON parse errors, return null as fallback
+                            }
                             return null;
                           })()}
                           fallbackSummaryLatex={(() => {
@@ -2189,7 +2324,9 @@ const PracticeByNumberOgemath = () => {
                             try {
                               const parsed = JSON.parse(photoFeedback);
                               if (typeof parsed?.review === 'string') return parsed.review;
-                            } catch {}
+                            } catch {
+                              // Ignore JSON parse errors, return original photoFeedback
+                            }
                             return photoFeedback;
                           })()}
                           fallbackScore={photoScores}
@@ -2438,6 +2575,16 @@ const PracticeByNumberOgemath = () => {
             <DialogTitle className="text-center">Обработка решения</DialogTitle>
           </DialogHeader>
           <div className="space-y-6 py-4">
+            {/* Loading Spinner */}
+            <div className="flex justify-center">
+              <Loading
+                variant="ring-dots"
+                size="md"
+                message=""
+                className="py-0"
+              />
+            </div>
+
             {/* Upload Progress Bar */}
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
@@ -2465,6 +2612,15 @@ const PracticeByNumberOgemath = () => {
                 />
               </div>
             </div>
+
+            {/* Dynamic OCR Progress Text */}
+            {ocrProgress && (
+              <div className="text-center">
+                <p className="text-sm text-muted-foreground font-medium">
+                  {ocrProgress}
+                </p>
+              </div>
+            )}
           </div>
         </DialogContent>
       </Dialog>

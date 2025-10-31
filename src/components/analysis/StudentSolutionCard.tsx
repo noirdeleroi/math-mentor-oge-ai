@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 interface Props {
   title?: string;
   studentSolution?: string; // Optional: can be passed directly, otherwise fetches automatically
-  autoFetch?: boolean; // Whether to auto-fetch from telegram_uploads (default: true)
+  autoFetch?: boolean; // Whether to auto-fetch from profiles.telegram_input (default: true)
 }
 
 const StudentSolutionCard = ({ 
@@ -19,7 +19,7 @@ const StudentSolutionCard = ({
   const [fetchedSolution, setFetchedSolution] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
 
-  // Fetch student solution from telegram_uploads if not provided and autoFetch is enabled
+  // Fetch student solution from profiles.telegram_input if not provided and autoFetch is enabled
   useEffect(() => {
     const fetchStudentSolution = async () => {
       if (!autoFetch || providedSolution || !user) {
@@ -28,7 +28,7 @@ const StudentSolutionCard = ({
       
       setIsLoading(true);
       try {
-        // Fetch telegram_input for the current user
+        // Fetch telegram_input from profiles table for the current user
         const { data, error } = await supabase
           .from('profiles')
           .select('telegram_input')
