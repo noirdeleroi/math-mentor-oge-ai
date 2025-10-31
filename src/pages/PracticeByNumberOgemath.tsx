@@ -1453,7 +1453,8 @@ const PracticeByNumberOgemath = () => {
         });
       }, 50);
 
-      const { data: apiResponse, error: apiError } = await supabase.functions.invoke('analyze-photo-solution', {
+      // Trigger the edge function (doesn't wait for result)
+      const { error: apiError } = await supabase.functions.invoke('analyze-photo-solution', {
         body: {
           student_solution: profile.telegram_input,
           problem_text: currentQuestion.problem_text,
@@ -1469,11 +1470,7 @@ const PracticeByNumberOgemath = () => {
 
       if (apiError) {
         console.error('Error calling analyze-photo-solution:', apiError);
-        if (apiResponse?.retry_message) {
-          toast.error(apiResponse.retry_message);
-        } else {
-          toast.error('Ошибка API. Попробуйте ввести решение снова.');
-        }
+        toast.error('Ошибка API. Попробуйте ввести решение снова.');
         setIsProcessingPhoto(false);
         setOcrProgress("");
         setUploadProgress(0);
@@ -1481,12 +1478,47 @@ const PracticeByNumberOgemath = () => {
         return;
       }
 
-      // Step 4: Process feedback
-      if (apiResponse?.feedback) {
-        console.log('Raw apiResponse.feedback:', apiResponse.feedback);
-        try {
-          const feedbackData = JSON.parse(apiResponse.feedback);
-          console.log('Parsed feedbackData:', feedbackData);
+      console.log('📤 Edge function invoked, polling database for result...');
+
+      // Poll the database for analysis result (1 hour window, 60s timeout)
+      const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+      let rawOutput: string | null = null;
+      const maxAttempts = 30; // 60 seconds with 2-second intervals
+
+      for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        const { data, error: dbError } = await supabase
+          .from('photo_analysis_outputs')
+          .select('raw_output, created_at')
+          .eq('user_id', user.id)
+          .eq('question_id', currentQuestion.question_id)
+          .gte('created_at', oneHourAgo)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (dbError) {
+          console.error('Error querying photo_analysis_outputs:', dbError);
+          throw new Error('Database query failed');
+        }
+
+        if (data?.raw_output) {
+          rawOutput = data.raw_output;
+          console.log('📥 Raw output from database:', rawOutput);
+          break;
+        }
+
+        // Wait 2 seconds before next attempt
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      }
+
+      if (!rawOutput) {
+        throw new Error('Timeout waiting for analysis');
+      }
+
+      // Step 4: Process feedback from database
+      try {
+        const feedbackData = JSON.parse(rawOutput);
+        console.log('Parsed feedbackData:', feedbackData);
 
           // Robust scores coercion (Step 6)
           const scoreRaw = toNumberOrNull(feedbackData?.scores);
@@ -1514,7 +1546,7 @@ const PracticeByNumberOgemath = () => {
               setAnalysisData(null);
             } else {
               // Fallback: store as-is
-              setPhotoFeedback(apiResponse.feedback);
+              setPhotoFeedback(rawOutput);
               setStructuredPhotoFeedback(null);
               setAnalysisData(null);
             }
@@ -1605,37 +1637,30 @@ const PracticeByNumberOgemath = () => {
           setUploadedImages([]);
           toast.success(`Анализ готов! Баллы: ${scores}/2`);
 
-        } catch (error) {
-          // Handle both JSON parse errors and score validation errors
-          if (error instanceof SyntaxError) {
-            console.error('Error parsing API response:', error);
-            setPhotoFeedback(apiResponse.feedback);
-            setPhotoScores(null);
-            setStructuredPhotoFeedback(null);
-            
-            // Still allow proceeding to next question
-            setIsAnswered(true);
-            toast.error('Формат ответа API не распознан. Перейдите к следующему вопросу.');
-          } else {
-            console.error('Score validation error:', error);
-            toast.error('Ошибка при обработке баллов. Пожалуйста, попробуйте снова.');
-            setIsProcessingPhoto(false);
-            setOcrProgress("");
-            setUploadProgress(0);
-            setAnalysisProgress(0);
-            return;
-          }
+      } catch (error) {
+        // Handle both JSON parse errors and score validation errors
+        if (error instanceof SyntaxError) {
+          console.error('Error parsing database output:', error);
+          setPhotoFeedback(rawOutput || '');
+          setPhotoScores(null);
+          setStructuredPhotoFeedback(null);
+          
+          // Still allow proceeding to next question
+          setIsAnswered(true);
+          toast.error('Формат ответа API не распознан. Перейдите к следующему вопросу.');
+        } else {
+          console.error('Score validation error:', error);
+          toast.error('Ошибка при обработке баллов. Пожалуйста, попробуйте снова.');
+          setIsProcessingPhoto(false);
+          setOcrProgress("");
+          setUploadProgress(0);
+          setAnalysisProgress(0);
+          return;
         }
-      } else {
-        console.error('No feedback in apiResponse:', apiResponse);
-        toast.error('Не удалось получить обратную связь');
-        
-        // Still allow proceeding to next question
-        setIsAnswered(true);
       }
     } catch (error) {
       console.error('Error in handleDevicePhotoCheck:', error);
-      toast.error('Произошла ошибка при обработке решения');
+      toast.error('Произошла ошибка... Попробуйте чуть позже.');
       setIsProcessingPhoto(false);
       setOcrProgress("");
       setUploadProgress(0);
