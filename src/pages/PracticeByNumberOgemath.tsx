@@ -17,6 +17,8 @@ import { awardStreakPoints, calculateStreakReward, getCurrentStreakData } from "
 import { toast } from "sonner";
 import TestStatisticsWindow from "@/components/TestStatisticsWindow";
 import FormulaBookletDialog from "@/components/FormulaBookletDialog";
+import StudentSolutionCard from "@/components/analysis/StudentSolutionCard";
+import AnalysisReviewCard from "@/components/analysis/AnalysisReviewCard";
 
 interface Question {
   question_id: string;
@@ -115,6 +117,19 @@ const PracticeByNumberOgemath = () => {
     if (/[а-яё]/i.test(answer)) return true;
     return false;
   };
+
+  // Helper function to convert numbers or numeric strings to finite numbers, else returns null
+  const toNumberOrNull = (value: unknown): number | null => {
+    if (typeof value === 'number') {
+      return Number.isFinite(value) ? value : null;
+    }
+    if (typeof value === 'string') {
+      const cleaned = value.trim().replace(',', '.');
+      const num = Number(cleaned);
+      return Number.isFinite(num) ? num : null;
+    }
+    return null;
+  };
   const { user } = useAuth();
   const { trackActivity } = useStreakTracking();
   const [selectedNumbers, setSelectedNumbers] = useState<string[]>([]);
@@ -159,7 +174,6 @@ const PracticeByNumberOgemath = () => {
   const [photoFeedback, setPhotoFeedback] = useState<string>("");
   const [photoScores, setPhotoScores] = useState<number | null>(null);
   const [structuredPhotoFeedback, setStructuredPhotoFeedback] = useState<PhotoAnalysisFeedback | null>(null);
-  const [studentSolution, setStudentSolution] = useState<string>("");
   const [analysisData, setAnalysisData] = useState<AnalysisData | null>(null);
   
   // Device upload states
@@ -167,6 +181,12 @@ const PracticeByNumberOgemath = () => {
   const [showImagePreview, setShowImagePreview] = useState(false);
   const [selectedPreviewImage, setSelectedPreviewImage] = useState<string | null>(null);
   const [ocrProgress, setOcrProgress] = useState<string>("");
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
+  const [analysisProgress, setAnalysisProgress] = useState<number>(0);
+  
+  // Telegram polling states
+  const [isPollingForAnalysis, setIsPollingForAnalysis] = useState(false);
+  const [pollingStartTime, setPollingStartTime] = useState<Date | null>(null);
 
   // Formula booklet state
   const [showFormulaBooklet, setShowFormulaBooklet] = useState(false);
@@ -296,8 +316,9 @@ const PracticeByNumberOgemath = () => {
     setPhotoFeedback("");
     setPhotoScores(null);
     setStructuredPhotoFeedback(null);
-    setStudentSolution("");
     setOcrProgress("");
+    setIsPollingForAnalysis(false);
+    setPollingStartTime(null);
   };
 
   const toggleQuestionGroup = (groupType: string) => {
@@ -458,6 +479,83 @@ const PracticeByNumberOgemath = () => {
       console.error('Error starting attempt:', error);
     }
   };
+
+
+
+
+
+  // NEW: ensure we have an attempt_id and update student_activity in one safe call
+  const finalizeAttemptWithScore = async (
+    isCorrect: boolean,
+    scoresInput: unknown
+  ) => {
+    if (!user || !currentQuestion) return;
+
+    // Coerce scores input to number
+    const scores = toNumberOrNull(scoresInput) ?? 0;
+
+    try {
+      // 1. If we don't have attempt info yet, create it now
+      if (!currentAttemptId || !attemptStartTime) {
+        await startAttempt(currentQuestion.question_id);
+      }
+
+      // after startAttempt we still read latest values from state,
+      // but state updates are async. So we REFETCH the row directly from DB
+      // to know which attempt to update.
+      const { data: latestActivity, error: latestErr } = await supabase
+        .from('student_activity')
+        .select('attempt_id, answer_time_start')
+        .eq('user_id', user.id)
+        .eq('question_id', currentQuestion.question_id)
+        .order('answer_time_start', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (latestErr || !latestActivity) {
+        console.error('Could not get latest attempt row before finalizing:', latestErr);
+        return;
+      }
+
+      const attemptIdToUse = latestActivity.attempt_id;
+
+      // 2. Work out duration
+      const now = new Date();
+      const startTimeForDuration = attemptStartTime
+        ? attemptStartTime
+        : new Date(latestActivity.answer_time_start);
+      const durationInSeconds =
+        (now.getTime() - startTimeForDuration.getTime()) / 1000;
+
+      // 3. Update that attempt row with score etc.
+      const { error: updateError } = await supabase
+        .from('student_activity')
+        .update({
+          duration_answer: durationInSeconds,
+          is_correct: isCorrect,
+          scores_fipi: scores,
+          finished_or_not: true,
+        })
+        .eq('user_id', user.id)
+        .eq('attempt_id', attemptIdToUse);
+
+      if (updateError) {
+        console.error('Error updating student_activity in finalizeAttemptWithScore:', updateError);
+      } else {
+        console.log(
+          `finalizeAttemptWithScore(): saved attempt ${attemptIdToUse} with score=${scores}, correct=${isCorrect}`
+        );
+      }
+    } catch (err) {
+      console.error('finalizeAttemptWithScore() failed:', err);
+    }
+  };
+
+
+
+
+
+
 
   // Helper function to check if a string is purely numeric
   const isNumeric = (str: string): boolean => {
@@ -629,8 +727,11 @@ const PracticeByNumberOgemath = () => {
   };
 
   // Update student_activity directly with answer results
-  const updateStudentActivity = async (isCorrect: boolean, scores: number, isSkipped: boolean = false) => {
+  const updateStudentActivity = async (isCorrect: boolean, scoresInput: unknown, isSkipped: boolean = false) => {
     if (!user || !currentAttemptId) return;
+
+    // Coerce scores input to number
+    const scores = toNumberOrNull(scoresInput) ?? 0;
 
     try {
       // Calculate duration from attempt start time
@@ -652,6 +753,7 @@ const PracticeByNumberOgemath = () => {
 
       if (updateError) {
         console.error('Error updating student_activity:', updateError);
+        toast.error('Ошибка сохранения результата.');
         return;
       }
 
@@ -723,19 +825,23 @@ const PracticeByNumberOgemath = () => {
     
     // Immediately move to next question
     if (currentQuestionIndex < questions.length - 1) {
+      const nextQ = questions[currentQuestionIndex + 1];
+
+      // move index first so UI shows next task
       setCurrentQuestionIndex(currentQuestionIndex + 1);
-      resetQuestionState();
-      
-      // Start next attempt in background (don't block UI)
-      const nextQuestion = questions[currentQuestionIndex + 1];
-      if (nextQuestion && user) {
-        startAttempt(nextQuestion.question_id).catch(error => 
-          console.error('Background attempt start failed:', error)
-        );
+
+      // IMPORTANT:
+      // BEFORE wiping state, start a new attempt for that next question
+      if (nextQ && user) {
+        await startAttempt(nextQ.question_id);
       }
+
+      // now clean local UI fields (answer box, images etc)
+      resetQuestionState();
     } else {
       toast.success("Все вопросы завершены!");
     }
+
   };
 
   const handleShowSolution = async () => {
@@ -861,6 +967,17 @@ const PracticeByNumberOgemath = () => {
   const handlePhotoCheck = async () => {
     if (!user || !currentQuestion) return;
 
+    // For questions 20-25, start polling instead of immediate check
+    const problemNumberType = currentQuestion.problem_number_type;
+    if (problemNumberType && problemNumberType >= 20 && problemNumberType <= 25) {
+      setIsProcessingPhoto(true);
+      setPollingStartTime(new Date());
+      setIsPollingForAnalysis(true);
+      toast.info('Проверяем наличие анализа фото...');
+      return;
+    }
+
+    // For other questions, use the old immediate check logic
     setIsProcessingPhoto(true);
     
     try {
@@ -910,19 +1027,38 @@ const PracticeByNumberOgemath = () => {
         try {
           // Parse JSON response
           const feedbackData = JSON.parse(apiResponse.feedback);
-          if (feedbackData.review && typeof feedbackData.scores === 'number') {
-            // Set structured feedback
-            setStructuredPhotoFeedback(feedbackData);
-            setPhotoFeedback(feedbackData.review.overview_latex || '');
-            setPhotoScores(feedbackData.scores);
+          const score = toNumberOrNull(feedbackData.scores);
+          if (feedbackData.review && score !== null) {
+            setPhotoScores(score);
+            
+            // Check if it's the new simple format (review is string) or old structured format
+            if (typeof feedbackData.review === 'string') {
+              // New format: {scores, review: "<p>...</p>"}
+              setAnalysisData({ scores: score, review: feedbackData.review });
+              setPhotoFeedback('');
+              setStructuredPhotoFeedback(null);
+            } else if (feedbackData.review.overview_latex) {
+              // Old structured format
+              setStructuredPhotoFeedback(feedbackData);
+              setPhotoFeedback(feedbackData.review.overview_latex);
+              setAnalysisData(null);
+            } else {
+              // Fallback: store as-is
+              setPhotoFeedback(apiResponse.feedback);
+              setStructuredPhotoFeedback(null);
+              setAnalysisData(null);
+            }
             
             // Handle photo submission using direct update
-            const isCorrect = feedbackData.scores > 0;
-            await updateStudentActivity(isCorrect, feedbackData.scores);
-            
-            // Update UI states
+            const isCorrect = (score ?? 0) > 0;
+
+            // Save result (score, correct/incorrect, finished_or_not) to student_activity
+            await finalizeAttemptWithScore(isCorrect, score);
+
+            // Update UI state so the big button becomes "Следующий вопрос"
             setIsCorrect(isCorrect);
             setIsAnswered(true);
+
             
             setShowUploadPrompt(false);
           } else {
@@ -934,6 +1070,7 @@ const PracticeByNumberOgemath = () => {
           setPhotoFeedback(apiResponse.feedback);
           setPhotoScores(null);
           setStructuredPhotoFeedback(null);
+          setAnalysisData(null);
           setShowUploadPrompt(false);
         }
       } else {
@@ -1011,47 +1148,32 @@ const PracticeByNumberOgemath = () => {
     setPhotoFeedback("");
     setPhotoScores(null);
     setStructuredPhotoFeedback(null);
-    setStudentSolution("");
   };
 
-  const fetchStudentSolution = async () => {
+  const fetchAnalysisData = async (questionId?: string) => {
     if (!user) return null;
     
     try {
-      // Fetch the most recent extracted_text for the current user
-      // @ts-ignore - Supabase type instantiation issue
-      const { data, error } = await supabase
-        .from('telegram_uploads')
-        .select('extracted_text')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .single();
-
-      if (error) {
-        console.error('Error fetching student solution:', error);
-        return null;
-      }
-
-      return data?.extracted_text || '';
-    } catch (error) {
-      console.error('Error in fetchStudentSolution:', error);
-      return null;
-    }
-  };
-
-  const fetchAnalysisData = async () => {
-    if (!user) return null;
-    
-    try {
-      // @ts-ignore - Type instantiation is excessively deep
-      const { data, error } = await supabase
+      // Build query
+      let query = supabase
         .from('photo_analysis_outputs')
-        .select('raw_output')
-        .eq('user_id', user.id)
+        .select('raw_output, question_id, created_at')
+        .eq('user_id', user.id);
+      
+      // If questionId provided, filter by it
+      if (questionId) {
+        query = query.eq('question_id', questionId);
+      }
+      
+      // If polling started, only get records created after polling start
+      if (pollingStartTime) {
+        query = query.gte('created_at', pollingStartTime.toISOString());
+      }
+      
+      const { data, error } = await query
         .order('created_at', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error('Error fetching analysis data:', error);
@@ -1060,7 +1182,124 @@ const PracticeByNumberOgemath = () => {
 
       if (data?.raw_output) {
         try {
-          return JSON.parse(data.raw_output);
+          const parsed = JSON.parse(data.raw_output);
+          // If this is FRQ (20-25) and parsed contains scores, update student_activity immediately
+          try {
+            const pnt = currentQuestion ? Number((currentQuestion as any).problem_number_type) : NaN;
+            const score = toNumberOrNull(parsed?.scores);
+            if (
+              parsed && score !== null &&
+              currentQuestion &&
+              !Number.isNaN(pnt) && pnt >= 20 && pnt <= 25
+            ) {
+              // Treat any positive score as correct
+              const isCorrectFromScores = (score ?? 0) > 0;
+
+              // Write to DB in a safe way (guarantee attempt exists)
+              await finalizeAttemptWithScore(isCorrectFromScores, score);
+
+// Flip UI into answered mode so button becomes "Следующий вопрос"
+              setIsCorrect(isCorrectFromScores);
+              setIsAnswered(true);
+
+              // Stop polling etc.
+              setIsPollingForAnalysis(false);
+
+              setPhotoScores(score);
+
+              // Set analysis data - ensure it has the correct structure
+              const analysisDataToSet = typeof parsed.review === 'string'
+                ? { scores: score, review: parsed.review }
+                : parsed;
+              
+              console.log('Setting analysis data from polling:', analysisDataToSet);
+              setAnalysisData(analysisDataToSet);
+
+              toast.success(`Анализ готов! Баллы: ${score}/2`);
+
+              // Update session results
+              setSessionResults(prev => {
+                const newResults = [...prev];
+                const existingIndex = newResults.findIndex(r => r.questionIndex === currentQuestionIndex);
+                const result = {
+                  questionIndex: currentQuestionIndex,
+                  questionId: currentQuestion.question_id,
+                  isCorrect: isCorrectFromScores,
+                  userAnswer: `Фото решение (${score}/2 баллов)`,
+                  correctAnswer: currentQuestion.answer,
+                  problemText: currentQuestion.problem_text,
+                  solutionText: currentQuestion.solution_text,
+                  isAnswered: true
+                };
+                
+                if (existingIndex >= 0) {
+                  newResults[existingIndex] = result;
+                } else {
+                  newResults.push(result);
+                }
+                return newResults;
+              });
+
+              // Trigger energy animation if correct
+              if (isCorrectFromScores && (window as any).triggerEnergyPointsAnimation) {
+                supabase
+                  .from('user_streaks')
+                  .select('current_streak')
+                  .eq('user_id', user.id)
+                  .single()
+                  .then(({ data: streakData }) => {
+                    const currentStreak = streakData?.current_streak || 0;
+                    const basePoints = 2;
+                    const pointsToShow = currentStreak >= 3 ? basePoints * 10 : basePoints;
+                    (window as any).triggerEnergyPointsAnimation(pointsToShow);
+                  });
+              }
+
+              // Fire-and-forget background operations
+              Promise.all([
+                // Award energy points
+                (async () => {
+                  if (isCorrectFromScores) {
+                    const { data: streakData } = await supabase
+                      .from('user_streaks')
+                      .select('current_streak')
+                      .eq('user_id', user.id)
+                      .single();
+                    
+                    const currentStreak = streakData?.current_streak || 0;
+                    const { awardEnergyPoints } = await import('@/services/energyPoints');
+                    await awardEnergyPoints(user.id, 'problem', undefined, 'oge_math_fipi_bank', currentStreak);
+                  }
+                })(),
+                
+                // Submit to handle-submission for mastery update
+                submitToHandleSubmission(isCorrectFromScores),
+                
+                // Award streak points
+                awardStreakPoints(user.id, calculateStreakReward(currentQuestion.difficulty))
+              ]).catch(error => {
+                console.error('Error in background operations after polling:', error);
+              });              
+
+              // Stop polling etc.
+              setIsPollingForAnalysis(false);
+
+              setPhotoScores(score);
+
+              // keep rest as you already have
+              setAnalysisData(
+                typeof parsed.review === 'string'
+                  ? { scores: score, review: parsed.review }
+                  : parsed
+              );
+
+              toast.success(`Анализ готов! Баллы: ${score}/2`);
+
+            }
+          } catch (e) {
+            console.warn('Non-fatal error while trying to update FRQ scores:', e);
+          }
+          return parsed;
         } catch (parseError) {
           console.error('Error parsing analysis data:', parseError);
           return null;
@@ -1073,16 +1312,100 @@ const PracticeByNumberOgemath = () => {
       return null;
     }
   };
+  
+  // Polling effect for Telegram photo analysis
+  useEffect(() => {
+    if (!isPollingForAnalysis || !user || !currentQuestion) return;
+    
+    const POLL_INTERVAL = 3000; // 3 seconds
+    const POLL_TIMEOUT = 60000; // 60 seconds
+    
+    let pollCount = 0;
+    const maxPolls = POLL_TIMEOUT / POLL_INTERVAL;
+    
+    const pollInterval = setInterval(async () => {
+      pollCount++;
+      
+      console.log(`Polling for analysis... (attempt ${pollCount}/${maxPolls})`);
+      
+      const analysis = await fetchAnalysisData(currentQuestion.question_id);
+      
+      const score = analysis ? toNumberOrNull(analysis.scores) : null;
+      if (analysis && score !== null) {
+        // Analysis found! fetchAnalysisData already handled the update
+        clearInterval(pollInterval);
+        setIsPollingForAnalysis(false);
+        setShowUploadPrompt(false);
+        setIsProcessingPhoto(false);
+      } else if (pollCount >= maxPolls) {
+        // Timeout
+        clearInterval(pollInterval);
+        setIsPollingForAnalysis(false);
+        setIsProcessingPhoto(false);
+        toast.error('Время ожидания анализа истекло. Попробуйте загрузить фото снова.');
+      }
+    }, POLL_INTERVAL);
+    
+    return () => {
+      clearInterval(pollInterval);
+    };
+  }, [isPollingForAnalysis, user, currentQuestion]);
+
 
   const handleDevicePhotoCheck = async () => {
     if (!user || !currentQuestion) return;
     if (uploadedImages.length === 0) return;
 
+    // Ensure we have attempt, or find it
+    let attemptId = currentAttemptId;
+
+    if (!attemptId) {
+      // Step 1.2: Fallback - find latest unfinished attempt
+      try {
+        const { data: latestAttempt, error: latestErr } = await supabase
+          .from('student_activity')
+          .select('attempt_id')
+          .eq('user_id', user.id)
+          .eq('question_id', currentQuestion.question_id)
+          .eq('finished_or_not', false)
+          .order('updated_at', { ascending: false })
+          .limit(1)
+          .single();
+
+        if (latestErr || !latestAttempt) {
+          // Step 1.3: No attempt exists
+          toast.error('Не удалось зафиксировать попытку. Повторите ещё раз.');
+          return;
+        }
+
+        attemptId = latestAttempt.attempt_id;
+      } catch (e) {
+        console.error('Error finding attempt:', e);
+        toast.error('Не удалось зафиксировать попытку. Повторите ещё раз.');
+        return;
+      }
+    }
+
+    // Now we're guaranteed to have attemptId
+
     setIsProcessingPhoto(true);
+    setUploadProgress(0);
+    setAnalysisProgress(0);
     setOcrProgress(`Обработка фото 1 из ${uploadedImages.length}...`);
 
     try {
       // Step 1: Process photos via new edge function
+      // Animate upload progress from 0 to 100
+      const uploadInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= 95) {
+            clearInterval(uploadInterval);
+            return 95;
+          }
+          return prev + 2;
+        });
+      }, 50);
+
       const { data: processData, error: processError } = await supabase.functions.invoke('process-device-photos', {
         body: {
           user_id: user.id,
@@ -1091,11 +1414,16 @@ const PracticeByNumberOgemath = () => {
         }
       });
 
+      clearInterval(uploadInterval);
+      setUploadProgress(100);
+
       if (processError || !processData?.success) {
         console.error('Error processing device photos:', processError);
         toast.error(processData?.error || 'Произошла ошибка при обработке. Пожалуйста, попробуйте снова.');
         setIsProcessingPhoto(false);
         setOcrProgress("");
+        setUploadProgress(0);
+        setAnalysisProgress(0);
         return;
       }
 
@@ -1117,6 +1445,17 @@ const PracticeByNumberOgemath = () => {
       }
 
       // Step 3: Call existing analyze-photo-solution function
+      // Animate analysis progress from 0 to 100
+      const analysisInterval = setInterval(() => {
+        setAnalysisProgress(prev => {
+          if (prev >= 95) {
+            clearInterval(analysisInterval);
+            return 95;
+          }
+          return prev + 2;
+        });
+      }, 50);
+
       const { data: apiResponse, error: apiError } = await supabase.functions.invoke('analyze-photo-solution', {
         body: {
           student_solution: profile.telegram_input,
@@ -1128,6 +1467,9 @@ const PracticeByNumberOgemath = () => {
         }
       });
 
+      clearInterval(analysisInterval);
+      setAnalysisProgress(100);
+
       if (apiError) {
         console.error('Error calling analyze-photo-solution:', apiError);
         if (apiResponse?.retry_message) {
@@ -1137,6 +1479,8 @@ const PracticeByNumberOgemath = () => {
         }
         setIsProcessingPhoto(false);
         setOcrProgress("");
+        setUploadProgress(0);
+        setAnalysisProgress(0);
         return;
       }
 
@@ -1144,40 +1488,121 @@ const PracticeByNumberOgemath = () => {
       if (apiResponse?.feedback) {
         try {
           const feedbackData = JSON.parse(apiResponse.feedback);
-          if (feedbackData.review && typeof feedbackData.scores === 'number') {
-            // Set structured feedback
-            setStructuredPhotoFeedback(feedbackData);
-            setPhotoFeedback(feedbackData.review.overview_latex || '');
-            setPhotoScores(feedbackData.scores);
-            
-            const isCorrect = feedbackData.scores > 0;
-            await updateStudentActivity(isCorrect, feedbackData.scores);
-            
+
+          // Robust scores coercion (Step 6)
+          const scoreRaw = toNumberOrNull(feedbackData?.scores);
+          if (scoreRaw === null) {
+            throw new Error('Неверный формат баллов');
+          }
+
+          // Clamp to [0, 2] range
+          const scores = Math.max(0, Math.min(2, scoreRaw));
+
+          // Continue processing with validated scores
+          if (feedbackData.review) {
+            setPhotoScores(scores);
+
+            // Check if it's the new simple format (review is string) or old structured format
+            if (typeof feedbackData.review === 'string') {
+              // New format: {scores, review: "<p>...</p>"}
+              setAnalysisData({ scores: scores, review: feedbackData.review });
+              setPhotoFeedback('');
+              setStructuredPhotoFeedback(null);
+            } else if (feedbackData.review.overview_latex) {
+              // Old structured format
+              setStructuredPhotoFeedback(feedbackData);
+              setPhotoFeedback(feedbackData.review.overview_latex);
+              setAnalysisData(null);
+            } else {
+              // Fallback: store as-is
+              setPhotoFeedback(apiResponse.feedback);
+              setStructuredPhotoFeedback(null);
+              setAnalysisData(null);
+            }
+
+            const isCorrect = scores > 0;
+            await finalizeAttemptWithScore(isCorrect, scores);
+
+            // Step 9: Fire-and-forget mastery update
+            const attemptIdForSubmission = attemptId;
+
+            if (attemptIdForSubmission) {
+              const durationForSubmission = currentAttemptId && attemptStartTime
+                ? (Date.now() - attemptStartTime.getTime()) / 1000
+                : 0;
+
+              // Fire-and-forget: don't await, just start the async task
+              (async () => {
+                try {
+                  await supabase.functions.invoke('handle-submission', {
+                    body: {
+                      course_id: '1',
+                      submission_data: {
+                        user_id: user.id,
+                        question_id: currentQuestion.question_id,
+                        attempt_id: attemptIdForSubmission,
+                        finished_or_not: true,
+                        is_correct: isCorrect,
+                        duration: durationForSubmission,
+                        scores_fipi: scores
+                      }
+                    }
+                  });
+                } catch (e) {
+                  console.error('handle-submission failed (non-blocking):', e);
+                }
+              })();
+            }
+
+            // Step 10: Award energy points (non-blocking)
+            (async () => {
+              try {
+                const { data: streakData } = await supabase
+                  .from('user_streaks')
+                  .select('current_streak')
+                  .eq('user_id', user.id)
+                  .single();
+
+                const currentStreak = streakData?.current_streak || 0;
+                const { awardEnergyPoints } = await import('@/services/energyPoints');
+                await awardEnergyPoints(user.id, 'problem', undefined,
+                                      'oge_math_fipi_bank', currentStreak);
+              } catch (e) {
+                console.error('Energy points award failed (non-blocking):', e);
+              }
+            })();
+
             setIsCorrect(isCorrect);
             setIsAnswered(true);
-            
-            // Always fetch and show student solution and analysis after marking
-            const solution = await fetchStudentSolution();
-            if (solution) {
-              setStudentSolution(solution);
-            }
-            
-            // Fetch analysis data
-            const analysis = await fetchAnalysisData();
-            if (analysis) {
-              setAnalysisData(analysis);
-            }
-            
+
+            console.log('Device photo check completed:', { 
+              isCorrect, 
+              scores, 
+              isAnswered: true 
+            });
+
             // Clear uploaded images for next question
             setUploadedImages([]);
+            toast.success(`Анализ готов! Баллы: ${scores}/2`);
           } else {
             toast.error('Неверный формат ответа API');
           }
-        } catch (parseError) {
-          console.error('Error parsing API response:', parseError);
-          setPhotoFeedback(apiResponse.feedback);
-          setPhotoScores(null);
-          setStructuredPhotoFeedback(null);
+        } catch (error) {
+          // Handle both JSON parse errors and score validation errors
+          if (error instanceof SyntaxError) {
+            console.error('Error parsing API response:', error);
+            setPhotoFeedback(apiResponse.feedback);
+            setPhotoScores(null);
+            setStructuredPhotoFeedback(null);
+          } else {
+            console.error('Score validation error:', error);
+            toast.error('Ошибка при обработке баллов. Пожалуйста, попробуйте снова.');
+            setIsProcessingPhoto(false);
+            setOcrProgress("");
+            setUploadProgress(0);
+            setAnalysisProgress(0);
+            return;
+          }
         }
       } else {
         toast.error('Не удалось получить обратную связь');
@@ -1185,9 +1610,15 @@ const PracticeByNumberOgemath = () => {
     } catch (error) {
       console.error('Error in handleDevicePhotoCheck:', error);
       toast.error('Произошла ошибка при обработке решения');
+      setIsProcessingPhoto(false);
+      setOcrProgress("");
+      setUploadProgress(0);
+      setAnalysisProgress(0);
     } finally {
       setIsProcessingPhoto(false);
       setOcrProgress("");
+      setUploadProgress(0);
+      setAnalysisProgress(0);
     }
   };
 
@@ -1671,69 +2102,11 @@ const PracticeByNumberOgemath = () => {
                       </Alert>
 
                       {/* Show Student Solution and Analysis for photo uploads - always show after marking */}
-                      {studentSolution && currentQuestion.problem_number_type && currentQuestion.problem_number_type >= 20 && (
+                      {currentQuestion.problem_number_type && currentQuestion.problem_number_type >= 20 && (
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                          {/* Student Solution */}
-                          <Card className="bg-blue-50 border-blue-200">
-                            <CardHeader>
-                              <CardTitle className="text-blue-800">Ваше решение</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                              <div className="bg-white border border-blue-200 rounded-lg p-4 max-h-96 overflow-y-auto">
-                                <MathRenderer text={studentSolution} compiler="mathjax" />
-                              </div>
-                            </CardContent>
-                          </Card>
-
-                          {/* Analysis */}
+                          <StudentSolutionCard />
                           {analysisData && (
-                            <Card className="bg-purple-50 border-purple-200">
-                              <CardHeader>
-                                <CardTitle className="text-purple-800">Анализ решения</CardTitle>
-                                <CardDescription>
-                                  Оценка: {analysisData.scores}/2
-                                </CardDescription>
-                              </CardHeader>
-                              <CardContent>
-                                <div className="space-y-4 max-h-96 overflow-y-auto">
-                                  {analysisData.review.errors && analysisData.review.errors.length > 0 ? (
-                                    analysisData.review.errors.map((error, index) => (
-                                      <Card key={index} className="bg-white border border-purple-200">
-                                        <CardContent className="pt-4">
-                                          <div className="space-y-2">
-                                            <Badge variant="destructive">{error.type}</Badge>
-                                            <p className="text-sm text-gray-700">{error.message}</p>
-                                            <div className="space-y-1">
-                                              <div>
-                                                <span className="text-xs font-semibold text-red-600">Что написано:</span>
-                                                <MathRenderer text={error.student_latex} compiler="mathjax" />
-                                              </div>
-                                              <div>
-                                                <span className="text-xs font-semibold text-green-600">Должно быть:</span>
-                                                <MathRenderer text={error.expected_latex} compiler="mathjax" />
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </CardContent>
-                                      </Card>
-                                    ))
-                                  ) : (
-                                    <div className="text-center py-8 text-gray-500">
-                                      Ошибок не найдено. Отличная работа! 🎉
-                                    </div>
-                                  )}
-                                  
-                                  {analysisData.review.summary && (
-                                    <Card className="bg-green-50 border-green-200 mt-4">
-                                      <CardContent className="pt-4">
-                                        <p className="text-sm font-semibold text-green-800">Общая оценка:</p>
-                                        <MathRenderer text={analysisData.review.summary} compiler="mathjax" />
-                                      </CardContent>
-                                    </Card>
-                                  )}
-                                </div>
-                              </CardContent>
-                            </Card>
+                            <AnalysisReviewCard analysisData={analysisData as any} />
                           )}
                         </div>
                       )}
@@ -1786,7 +2159,7 @@ const PracticeByNumberOgemath = () => {
                 )}
 
                 {/* Photo Feedback */}
-                {photoFeedback && (
+                {(photoFeedback || analysisData) && (
                   <Card className="bg-green-50 border-green-200">
                     <CardHeader>
                       <CardTitle className="text-green-800 flex items-center justify-between">
@@ -1797,51 +2170,35 @@ const PracticeByNumberOgemath = () => {
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <div className="prose max-w-none">
-                        {/* Student Solution */}
-                        {studentSolution && (
-                          <div className="mb-6">
-                            <h3 className="text-lg font-semibold text-blue-800 mb-3">Ваше решение</h3>
-                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                              <MathRenderer text={studentSolution} compiler="mathjax" />
-                            </div>
-                          </div>
-                        )}
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <StudentSolutionCard />
+                        <AnalysisReviewCard
+                          analysisData={(() => {
+                            // If we already have structured analysisData, use it
+                            if (analysisData) return analysisData as any;
+                            // Try to parse photoFeedback if it's a JSON string
+                            try {
+                              const parsed = JSON.parse(photoFeedback);
+                              const score = toNumberOrNull(parsed?.scores);
+                              if (parsed && score !== null) return parsed;
+                            } catch {}
+                            return null;
+                          })()}
+                          fallbackSummaryLatex={(() => {
+                            // If photoFeedback is a JSON string, extract review field
+                            try {
+                              const parsed = JSON.parse(photoFeedback);
+                              if (typeof parsed?.review === 'string') return parsed.review;
+                            } catch {}
+                            return photoFeedback;
+                          })()}
+                          fallbackScore={photoScores}
+                        />
+                      </div>
 
-                        {/* Overview */}
-                        <div className="mb-6">
-                          <h3 className="text-lg font-semibold text-green-800 mb-3">Общая оценка</h3>
-                          <MathRenderer text={photoFeedback} compiler="mathjax" />
-                        </div>
-
-                        {/* Score Display */}
-                        {photoScores !== null && (
-                          <div className="mb-6 p-4 bg-green-100 rounded-lg border">
-                            <div className="flex items-center justify-between">
-                              <span className="text-lg font-semibold text-green-800">
-                                Баллы: {photoScores} из 2
-                              </span>
-                              <div className="flex space-x-2">
-                                {[1, 2].map((score) => (
-                                  <div
-                                    key={score}
-                                    className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
-                                      score <= photoScores
-                                        ? 'bg-green-500 text-white'
-                                        : 'bg-gray-300 text-gray-600'
-                                    }`}
-                                  >
-                                    {score}
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Structured Feedback */}
-                        {structuredPhotoFeedback && (
-                          <div className="space-y-6">
+                      {/* Structured Feedback (legacy format) */}
+                      {structuredPhotoFeedback && (
+                        <div className="space-y-6 mt-4">
                             {/* Final Answer Comparison */}
                             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                               <h4 className="font-semibold text-blue-800 mb-3">Сравнение ответов</h4>
@@ -1975,7 +2332,6 @@ const PracticeByNumberOgemath = () => {
                             )}
                           </div>
                         )}
-                      </div>
                     </CardContent>
                   </Card>
                 )}
@@ -2071,6 +2427,44 @@ const PracticeByNumberOgemath = () => {
               alt="Uploaded solution full size"
               className="max-w-full max-h-[70vh] rounded-lg"
             />
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Progress Dialog with Two Loading Bars */}
+      <Dialog open={isProcessingPhoto && uploadedImages.length > 0} onOpenChange={() => {}}>
+        <DialogContent className="sm:max-w-md [&>button]:hidden">
+          <DialogHeader>
+            <DialogTitle className="text-center">Обработка решения</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-6 py-4">
+            {/* Upload Progress Bar */}
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-700">1. Загрузка фото</span>
+                <span className="text-gray-500">{Math.round(uploadProgress)}%</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                <div
+                  className="bg-gradient-to-r from-yellow-500 to-emerald-500 h-3 rounded-full transition-all duration-300 ease-out"
+                  style={{ width: `${uploadProgress}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Analysis Progress Bar */}
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-700">2. Анализ решения</span>
+                <span className="text-gray-500">{Math.round(analysisProgress)}%</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                <div
+                  className="bg-gradient-to-r from-yellow-500 to-emerald-500 h-3 rounded-full transition-all duration-300 ease-out"
+                  style={{ width: `${analysisProgress}%` }}
+                />
+              </div>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
