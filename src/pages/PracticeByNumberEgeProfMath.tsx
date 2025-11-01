@@ -1143,10 +1143,39 @@ const PracticeByNumberEgeProfMath = () => {
           ) : (
             /* Practice Mode */
             currentQuestion && (
+              <>
+                {/* Action Buttons Above Question */}
+                <div className="mb-6 flex items-center justify-between">
+                  <h2 className="text-xl md:text-2xl font-display font-bold bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent">
+                    Вопрос {currentQuestionIndex + 1} из {questions.length}
+                  </h2>
+                  <div className="flex items-center gap-3">
+                    <FeedbackButton 
+                      contentType="mcq" 
+                      contentRef={currentQuestion.question_id}
+                    />
+                    <Button
+                      onClick={() => setShowFormulaBooklet(true)}
+                      variant="outline"
+                      className="bg-transparent border-white/20 hover:border-white/40 text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+                    >
+                      <BookOpen className="w-4 h-4 mr-2" />
+                      Справочник формул
+                    </Button>
+                    <Button
+                      onClick={handleFinishTest}
+                      variant="outline"
+                      className="bg-red-50 hover:bg-red-100 border-red-200 text-red-700 hover:text-red-700"
+                    >
+                      Завершить тест
+                    </Button>
+                  </div>
+                </div>
+
               <Card className="bg-white/95 backdrop-blur border border-white/20 rounded-2xl shadow-xl mb-6">
                 <CardHeader className="border-b border-white/20">
                   <CardTitle className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4 text-[#1a1f36]">
-                    <span className="text-lg sm:text-xl">Вопрос {currentQuestionIndex + 1} из {questions.length}</span>
+                    <span className="text-lg sm:text-xl">Вопрос №{currentQuestion.problem_number_type}</span>
                     <span className="text-xs sm:text-sm font-normal text-gray-600">ID: {currentQuestion.question_id}</span>
                   </CardTitle>
                 </CardHeader>
@@ -1500,6 +1529,7 @@ const PracticeByNumberEgeProfMath = () => {
                   )}
                 </CardContent>
               </Card>
+              </>
             )
           )}
 

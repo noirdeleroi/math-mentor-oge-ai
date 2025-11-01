@@ -884,27 +884,40 @@ const PracticeByNumberEgeBasicMath = () => {
           ) : (
             /* Practice Interface */
             questions.length > 0 && currentQuestion ? (
+            <>
+              {/* Action Buttons Above Question */}
+              <div className="mb-6 flex items-center justify-between">
+                <h2 className="text-xl md:text-2xl font-display font-bold bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent">
+                  Вопрос {currentQuestionIndex + 1} из {questions.length}
+                </h2>
+                <div className="flex items-center gap-3">
+                  <FeedbackButton 
+                    contentType="mcq" 
+                    contentRef={currentQuestion.question_id}
+                  />
+                  <Button
+                    onClick={() => setShowFormulaBooklet(true)}
+                    variant="outline"
+                    className="bg-transparent border-white/20 hover:border-white/40 text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+                  >
+                    <BookOpen className="w-4 h-4 mr-2" />
+                    Справочник формул
+                  </Button>
+                  <Button
+                    onClick={handleFinishTest}
+                    variant="outline"
+                    className="bg-red-50 hover:bg-red-100 border-red-200 text-red-700 hover:text-red-700"
+                  >
+                    Завершить тест
+                  </Button>
+                </div>
+              </div>
+
             <div>
               <Card className="mb-6 mx-auto bg-white/95 backdrop-blur border border-white/20 rounded-2xl shadow-xl">
               <CardHeader className="border-b border-white/20">
                 <CardTitle className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 text-[#1a1f36]">
-                  <span className="text-lg sm:text-xl">Вопрос №{currentQuestion.problem_number_type} ({currentQuestionIndex + 1} из {questions.length})</span>
-                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4 w-full sm:w-auto">
-                    <Button
-                      onClick={() => setShowFormulaBooklet(true)}
-                      variant="outline"
-                      className="border-[#1a1f36]/30 text-[#1a1f36] hover:bg-gray-100 hover:text-[#1a1f36] w-full sm:w-auto"
-                    >
-                      <BookOpen className="w-4 h-4 sm:mr-2" />
-                      <span className="hidden sm:inline">Справочник формул</span>
-                    </Button>
-                    <Button
-                      onClick={handleFinishTest}
-                      variant="outline"
-                      className="bg-red-50 hover:bg-red-100 border-red-200 text-red-700 w-full sm:w-auto"
-                    >
-                      Завершить тест
-                    </Button>
+                  <span className="text-lg sm:text-xl">Вопрос №{currentQuestion.problem_number_type}</span>
                    <div className="flex items-center gap-2 justify-center sm:justify-start">
                      <span className="text-xs sm:text-sm font-normal text-gray-500">
                        ID: {currentQuestion.question_id}
@@ -919,8 +932,7 @@ const PracticeByNumberEgeBasicMath = () => {
                        <div className="w-4 h-4 rounded-full border-2 border-yellow-500 bg-yellow-100" title="Начато, но не завершено" />
                      )}
                    </div>
-                 </div>
-               </CardTitle>
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Problem Text */}
@@ -1298,6 +1310,7 @@ const PracticeByNumberEgeBasicMath = () => {
               </CardContent>
               </Card>
             </div>
+            </>
             ) : null
           )}
 
