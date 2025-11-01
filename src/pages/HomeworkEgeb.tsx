@@ -468,7 +468,7 @@ const HomeworkEgeb = () => {
         correctAnswer: record.correct_answer || (question as any).correct_answer || ''
       });
     }
-    if (mountedRef.current) setAllQuestionResults(results);
+    if (mountedRef.current) setAllQuestionResults(results.reverse());
   };
 
   const handleSubmitAnswer = async () => {
