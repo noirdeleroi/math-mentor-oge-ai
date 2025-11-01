@@ -367,6 +367,16 @@ Your task: return the EXACT SAME JSON structure and meaning, but with fixes appl
     const normalized = normalizePayload(parsed);
     // Re-stringify ONCE for storage/return
     const json = JSON.stringify(normalized);
+    // --- Fetch student's telegram input ---
+    let telegram_input = null;
+    if (user_id) {
+      const { data: profileData, error: profileError } = await supabase.from("profiles").select("telegram_input").eq("user_id", user_id).maybeSingle();
+      if (profileError) {
+        console.error("Error fetching telegram_input:", profileError);
+      } else {
+        telegram_input = profileData?.telegram_input || null;
+      }
+    }
     // Save to DB for your poller
     if (user_id) {
       const { error: saveErr } = await supabase.from("photo_analysis_outputs").insert({
@@ -375,7 +385,8 @@ Your task: return the EXACT SAME JSON structure and meaning, but with fixes appl
         exam_id: exam_id || null,
         problem_number: problem_number ? String(problem_number) : null,
         raw_output: json,
-        analysis_type: "photo_solution"
+        analysis_type: "photo_solution",
+        student_solution: telegram_input
       });
       if (saveErr) console.error("Error saving raw output:", saveErr);
     }

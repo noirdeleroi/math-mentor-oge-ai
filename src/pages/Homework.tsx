@@ -692,7 +692,15 @@ const Homework = () => {
     }
 
     if (questionType === 'mcq') {
-      const correct = answer === currentQuestion.correct_answer;
+      // Normalize correct_answer to handle both "А/Б/В/Г" and "option1/option2/option3/option4" formats
+      let normalizedCorrectAnswer = currentQuestion.correct_answer || '';
+      if (normalizedCorrectAnswer.startsWith('option')) {
+        const optionNum = parseInt(normalizedCorrectAnswer.replace('option', ''));
+        if (optionNum >= 1 && optionNum <= 4) {
+          normalizedCorrectAnswer = ['А', 'Б', 'В', 'Г'][optionNum - 1];
+        }
+      }
+      const correct = answer === normalizedCorrectAnswer;
       const responseTime = Math.floor((Date.now() - questionStartTime) / 1000);
 
       setIsCorrect(correct);
@@ -1290,7 +1298,16 @@ const Homework = () => {
                   <div className="bg-green-500/10 p-4 rounded-lg space-y-2">
                     <div className="font-semibold text-sm">Правильный ответ:</div>
                     <div className="text-lg font-medium text-green-600">
-                      {allQuestionResults[currentQuestionIndex].correctAnswer}
+                      {(() => {
+                        let normalized = allQuestionResults[currentQuestionIndex].correctAnswer || '';
+                        if (allQuestionResults[currentQuestionIndex].type === 'mcq' && normalized.startsWith('option')) {
+                          const optionNum = parseInt(normalized.replace('option', ''));
+                          if (optionNum >= 1 && optionNum <= 4) {
+                            normalized = ['А', 'Б', 'В', 'Г'][optionNum - 1];
+                          }
+                        }
+                        return normalized;
+                      })()}
                     </div>
                   </div>
 
@@ -1477,7 +1494,18 @@ const Homework = () => {
                     </div>
                     {!isCorrect && !showSolution && (
                       <p className="text-gray-700">
-                        Правильный ответ: <span className="font-bold">{currentQuestion.correct_answer}</span>
+                        Правильный ответ: <span className="font-bold">{
+                          (() => {
+                            let normalized = currentQuestion.correct_answer || '';
+                            if (normalized.startsWith('option')) {
+                              const optionNum = parseInt(normalized.replace('option', ''));
+                              if (optionNum >= 1 && optionNum <= 4) {
+                                normalized = ['А', 'Б', 'В', 'Г'][optionNum - 1];
+                              }
+                            }
+                            return normalized;
+                          })()
+                        }</span>
                       </p>
                     )}
                     {showSolution && currentQuestion.solution_text && (
