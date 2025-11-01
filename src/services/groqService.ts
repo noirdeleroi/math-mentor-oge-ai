@@ -37,14 +37,12 @@ export async function streamChatCompletion(
 ): Promise<ReadableStream<Uint8Array> | null> {
   try {
     const fullMessages = buildMessagesWithContext(messages, homeworkContext, /*isStream*/ true);
-    // Diagnostics (optional)
     try {
       console.log('[groq:stream] context?', Boolean(homeworkContext), 'payload bytes:', JSON.stringify(fullMessages).length);
-    } catch { /* ignore */ }
-
-  const { data, error } = await supabase.functions.invoke('groq-chat', {
-    body: { messages: fullMessages, stream: true, user_id: userId }
-  });
+    } catch {}
+    const { data, error } = await supabase.functions.invoke('groq-chat', {
+      body: { messages: fullMessages, stream: true, user_id: userId }
+    });
     if (error) {
       console.error('Groq function error (stream):', error);
       throw new Error(`Groq function error (stream): ${error.message}`);
@@ -80,10 +78,8 @@ export async function getChatCompletion(messages: Message[], userId: string, hom
       lastMessage.includes('не понял') || lastMessage.includes('объясни') || lastMessage.includes('подробнее');
 
     if (asksAnswer || asksSolution || asksExplain) {
-      // Skip task ID check on textbook page
       if (skipTaskIdCheck) {
-        // Let the AI handle the request without requiring a task ID
-        // Continue to the general AI conversation below
+        // let the AI handle it with the current context
       } else {
         const questionId = extractLastQuestionId(messages);
         if (!questionId) return "Я не могу найти последнюю задачу. Пожалуйста, запроси новую.";
@@ -98,7 +94,6 @@ export async function getChatCompletion(messages: Message[], userId: string, hom
           return problem.solution_text || "Решение пока недоступно.";
         }
         if (asksExplain) {
-          // убедитесь, что ключ совпадает с БД
           return (problem as any).solutiontextexpanded || problem.solution_text || "Подробного объяснения нет.";
         }
       }
@@ -138,17 +133,16 @@ export async function getChatCompletion(messages: Message[], userId: string, hom
     // ---- Step 3: Default to Groq completion (with optional homework context) ----
     const fullMessages = buildMessagesWithContext(messages, homeworkContext, /*isStream*/ false);
 
-    // Diagnostics
     let payloadBytes = -1;
-    try { payloadBytes = JSON.stringify(fullMessages).length; } catch { /* ignore */ }
+    try { payloadBytes = JSON.stringify(fullMessages).length; } catch {}
     console.log('[groq] payload bytes:', payloadBytes, 'context?', Boolean(homeworkContext));
 
     // Call with context first
     let data, error;
     try {
-    const res = await supabase.functions.invoke('groq-chat', {
-      body: { messages: fullMessages, stream: false, user_id: userId }
-    });
+      const res = await supabase.functions.invoke('groq-chat', {
+        body: { messages: fullMessages, stream: false, user_id: userId }
+      });
       data = res.data;
       error = res.error;
     } catch (e: any) {
@@ -156,12 +150,12 @@ export async function getChatCompletion(messages: Message[], userId: string, hom
       // Fallback: try without context
       const fallbackMessages: Message[] = [SYSTEM_PROMPT, ...messages];
       let fbBytes = -1;
-      try { fbBytes = JSON.stringify(fallbackMessages).length; } catch { /* ignore */ }
+      try { fbBytes = JSON.stringify(fallbackMessages).length; } catch {}
       console.log('[groq] fallback payload bytes:', fbBytes);
 
-    const fb = await supabase.functions.invoke('groq-chat', {
-      body: { messages: fallbackMessages, stream: false, user_id: userId }
-    });
+      const fb = await supabase.functions.invoke('groq-chat', {
+        body: { messages: fallbackMessages, stream: false, user_id: userId }
+      });
       if (fb.error) {
         console.error('[groq] fallback error:', fb.error);
         return `Произошла ошибка (fallback): ${fb.error.message ?? 'unknown'}. Попробуй позже.`;
@@ -172,7 +166,6 @@ export async function getChatCompletion(messages: Message[], userId: string, hom
 
     if (error) {
       console.error('[groq] function error:', error);
-      // Surface the function error back to the user (useful while debugging)
       return `Произошла ошибка: ${error.message ?? 'unknown'}. Попробуй позже.`;
     }
 
@@ -193,13 +186,17 @@ export async function getChatCompletion(messages: Message[], userId: string, hom
 /* -------------------- helpers -------------------- */
 
 // Safely build messages with optional homeworkContext
-function buildMessagesWithContext(messages: Message[], homeworkContext?: any, isStream: boolean = false): Message[] {
+function buildMessagesWithContext(
+  messages: Message[],
+  homeworkContext?: any,
+  isStream: boolean = false
+): Message[] {
   // Always start with SYSTEM_PROMPT
   let fullMessages: Message[] = [SYSTEM_PROMPT, ...messages];
 
   if (!homeworkContext) return fullMessages;
 
-  // Defensive copy to avoid non-serializable stuff
+  // Defensive deep clone
   let safeContext: any;
   try {
     safeContext = JSON.parse(JSON.stringify(homeworkContext));
@@ -209,72 +206,96 @@ function buildMessagesWithContext(messages: Message[], homeworkContext?: any, is
   }
 
   // Limit questions (avoid token overflow)
-  const questions: any[] = Array.isArray(safeContext.questions) ? safeContext.questions.slice(-10) : [];
+  const questions: any[] = Array.isArray(safeContext.questions)
+    ? safeContext.questions.slice(-10)
+    : [];
+
   console.log('[groq] context summary:', {
     hasContext: true,
     questionsCount: questions.length,
-    name: safeContext.homeworkName,
-    acc: safeContext.accuracyPercentage
+    name: safeContext.homework_name || safeContext.homeworkName,
+    acc: safeContext.accuracy || safeContext.accuracyPercentage,
   });
 
-  // Build questions block safely with pretty answers
+  // Build questions block with robust field fallbacks
   const questionsBlock = questions.length
     ? questions.map((q: any, i: number) => {
-        const prettyUserAnswer = q?.user_answer ?? q?.userAnswer ?? q?.raw_user_answer ?? "—";
-        const prettyCorrectAnswer = q?.correct_answer ?? q?.correctAnswer ?? q?.raw_correct_answer ?? "—";
-        
+        // Text
+        const questionBodyText =
+          q?.text ||
+          q?.questionText ||
+          q?.question_text ||
+          q?.text_html ||
+          q?.questionTextHtml ||
+          q?.question_text_html ||
+          "Текст недоступен";
+
+        // Answers (prefer resolved pretty ones)
+        const prettyUserAnswer =
+          q?.user_answer ?? q?.userAnswer ?? q?.raw_user_answer ?? "—";
+        const prettyCorrectAnswer =
+          q?.correct_answer ?? q?.correctAnswer ?? q?.raw_correct_answer ?? "—";
+
+        // Correctness, time, ids, types
+        const isCorrect = q?.is_correct ?? q?.isCorrect ?? false;
+        const timeSec = q?.response_time_sec ?? q?.responseTimeSeconds ?? 0;
+        const questionId = q?.question_id ?? q?.questionId ?? "N/A";
+        const qType = q?.type ?? q?.questionType ?? "—";
+        const showedSolution = q?.showed_solution ?? q?.showedSolution ?? false;
+
+        // Skills can be number or array
+        let skillsReadable = "Не указаны";
+        if (Array.isArray(q?.skills) && q.skills.length) skillsReadable = q.skills.join(", ");
+        else if (typeof q?.skills === "number") skillsReadable = String(q.skills);
+
         return `
-Вопрос ${i + 1} (ID: ${q?.questionId ?? 'N/A'}):
-  Текст: ${truncate(q?.questionText, 400) || 'Текст недоступен'}
+Вопрос ${i + 1} (ID: ${questionId}):
+  Текст: ${truncate(questionBodyText, 400)}
   Ответ ученика: ${String(prettyUserAnswer)}
-  Правильный ответ: ${String(prettyCorrectAnswer)}
-  Результат: ${q?.isCorrect ? '✅ Правильно' : '❌ Неправильно'}
-  Время ответа: ${Number(q?.responseTimeSeconds ?? 0)}с
-  Тип: ${String(q?.questionType ?? '—')}
+  Правильный ответ: ${String(pretyCorrectAnswer(prettyCorrectAnswer))}
+  Результат: ${isCorrect ? '✅ Правильно' : '❌ Неправильно'}
+  Время ответа: ${Number(timeSec)}с
+  Тип: ${String(qType)}
   Сложность: ${String(q?.difficulty ?? '—')}
-  Навыки: ${Array.isArray(q?.skills) && q.skills.length ? q.skills.join(', ') : 'Не указаны'}
-  ${q?.showedSolution ? '⚠️ Показывалось решение' : ''}`.trim();
+  Навыки: ${skillsReadable}
+  ${showedSolution ? '⚠️ Показывалось решение' : ''}`.trim();
       }).join('\n')
     : 'Нет данных о вопросах';
 
   const contextPrompt: Message = {
     role: 'system',
     content: `
-КОНТЕКСТ ДОМАШНЕГО ЗАДАНИЯ (Доступен для обсуждения):
+КОНТЕКСТ ДОМАШНЕГО ЗАДАНИЯ (доступно для обсуждения в чате):
 
 Название: ${String(safeContext.homework_name ?? safeContext.homeworkName ?? 'Домашнее задание')}
-Выполнено: ${Number(safeContext.completedQuestions ?? 0)}/${Number(safeContext.totalQuestions ?? 0)} вопросов
-Правильных ответов: ${Number(safeContext.correctAnswers ?? 0)}
-Точность: ${Number(safeContext.accuracyPercentage ?? 0)}%
-Общее время: ${Number(safeContext.totalTimeSeconds ?? 0)} секунд
-Среднее время на вопрос: ${Number(safeContext.averageTimePerQuestion ?? 0)} секунд
+Выполнено: ${Number(safeContext.completed_questions ?? safeContext.completedQuestions ?? 0)}/${Number(safeContext.total_questions ?? safeContext.totalQuestions ?? 0)} вопросов
+Правильных ответов: ${Number(safeContext.correct_answers ?? safeContext.correctAnswers ?? 0)}
+Точность: ${Number(safeContext.accuracy ?? safeContext.accuracyPercentage ?? 0)}%
+Общее время: ${Number(safeContext.total_time_sec ?? safeContext.totalTimeSeconds ?? 0)} секунд
+Среднее время на вопрос: ${Number(safeContext.avg_time_per_question_sec ?? safeContext.averageTimePerQuestion ?? 0)} секунд
 
 ДЕТАЛИ ВОПРОСОВ:
 ${questionsBlock}
 
 ИНСТРУКЦИИ ДЛЯ ОТВЕТОВ:
-- Когда ученик упоминает "вопрос 3" или "задача 5", используй данные выше
-- Объясняй ПОЧЕМУ его ответ был неправильным, если он спрашивает
-- Показывай пошаговые решения когда просят
+- Если ученик спрашивает "что я ответил в вопросе 2?", используй "Ответ ученика"
+- Если спрашивает "почему я ошибся?", сравни "Ответ ученика" и "Правильный ответ"
+- Если он просит объяснить — объясни, как учитель, пошагово
 - Ссылайся на конкретные вопросы по номеру
-- Будь ободряющим и образовательным
-- Помни, что у тебя есть полный доступ ко всем деталям выполненного ДЗ
-- Если ученик спрашивает про конкретную задачу, покажи ее текст, его ответ и правильный ответ
-- Если вопрос относится к домашнему заданию, используй поля user_answer и correct_answer
-- Не отвечай буквами вариантов ("А", "Б", "В") и не используй слова типа "option1", если есть текст расшифровки ответа
-- Объясняй как учитель: "ты написал 375/1000, правильно 3/8, потому что дробь надо сократить"
-- Не говори "я не вижу логи": у тебя есть все данные
+- Не используй буквы вариантов (А, Б, В) и не пиши "option1", если есть текстовая расшифровка ответа
+- Формулы пиши LaTeX-нотацией
+- Если текст вопроса есть в поле "Текст:", показывай именно его
 `.trim()
   };
 
-  // Insert SYSTEM_PROMPT, then context, then the rest of messages
+  // Final order: persona → context → dialogue
   fullMessages = [SYSTEM_PROMPT, contextPrompt, ...messages];
-
-  // Optional: guard final payload size (useful for debugging/hard limits)
-  // const payloadSize = JSON.stringify(fullMessages).length;
-  // console.log('LLM payload bytes:', payloadSize);
-
   return fullMessages;
+}
+
+// Helper to fix a possible accidental undefined
+function pretyCorrectAnswer(s: any) {
+  return typeof s === 'string' ? s : String(s ?? '—');
 }
 
 // Truncate helper for long strings
