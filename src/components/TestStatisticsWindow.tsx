@@ -310,10 +310,7 @@ const TestStatisticsWindow = ({
                         </div>
                       </div>
                       <div className="flex items-center gap-4">
-                        <div className="text-right">
-                          <div className="text-sm text-gray-500">Правильный ответ:</div>
-                          <div className="font-medium">{result.correctAnswer}</div>
-                        </div>
+
                         <Button variant="outline" size="sm">
                           <Eye className="w-4 h-4 mr-1" />
                           Просмотр
