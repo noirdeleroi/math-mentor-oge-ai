@@ -154,6 +154,9 @@ const PracticeByNumberOgemath = () => {
     problemText: string;
     solutionText: string;
     isAnswered: boolean;
+    problemNumberType?: number;
+    analysisData?: any;
+    photoScores?: number;
   }>>([]);
   
   // Review mode states
@@ -1231,7 +1234,10 @@ const PracticeByNumberOgemath = () => {
                   correctAnswer: currentQuestion.answer,
                   problemText: currentQuestion.problem_text,
                   solutionText: currentQuestion.solution_text,
-                  isAnswered: true
+                  isAnswered: true,
+                  problemNumberType: currentQuestion.problem_number_type,
+                  analysisData: analysisDataToSet,
+                  photoScores: score
                 };
                 
                 if (existingIndex >= 0) {
@@ -1673,6 +1679,32 @@ const PracticeByNumberOgemath = () => {
             isCorrect, 
             scores, 
             isAnswered: true 
+          });
+
+          // Update session results
+          setSessionResults(prev => {
+            const newResults = [...prev];
+            const existingIndex = newResults.findIndex(r => r.questionIndex === currentQuestionIndex);
+            const result = {
+              questionIndex: currentQuestionIndex,
+              questionId: currentQuestion.question_id,
+              isCorrect,
+              userAnswer: `Фото решение (${scores}/2 баллов)`,
+              correctAnswer: currentQuestion.answer,
+              problemText: currentQuestion.problem_text,
+              solutionText: currentQuestion.solution_text,
+              isAnswered: true,
+              problemNumberType: currentQuestion.problem_number_type,
+              analysisData: feedbackData,
+              photoScores: scores
+            };
+            
+            if (existingIndex >= 0) {
+              newResults[existingIndex] = result;
+            } else {
+              newResults.push(result);
+            }
+            return newResults;
           });
 
           // Clear uploaded images and show success

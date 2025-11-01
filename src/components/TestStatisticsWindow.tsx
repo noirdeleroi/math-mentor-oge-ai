@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, XCircle, Eye, ArrowLeft, RotateCcw } from "lucide-react";
 import MathRenderer from "@/components/MathRenderer";
+import StudentSolutionCard from "@/components/analysis/StudentSolutionCard";
+import AnalysisReviewCard from "@/components/analysis/AnalysisReviewCard";
 
 interface SessionResult {
   questionIndex: number;
@@ -13,6 +15,9 @@ interface SessionResult {
   problemText: string;
   solutionText: string;
   isAnswered: boolean;
+  problemNumberType?: number;
+  analysisData?: any;
+  photoScores?: number;
 }
 
 interface TestStatisticsWindowProps {
@@ -94,23 +99,35 @@ const TestStatisticsWindow = ({
                 </div>
               </div>
 
-              {/* Student Answer */}
-              <div>
-                <h3 className="font-semibold text-gray-700 mb-2">Ваш ответ</h3>
-                <div className={`p-4 rounded-lg border-2 ${
-                  question.isAnswered 
-                    ? (question.isCorrect 
-                        ? "bg-green-50 border-green-200 text-green-800" 
-                        : "bg-red-50 border-red-200 text-red-800")
-                    : "bg-gray-50 border-gray-200 text-gray-600"
-                }`}>
-                  {question.isAnswered ? (
-                    <MathRenderer text={question.userAnswer} compiler="mathjax" />
-                  ) : (
-                    "Не отвечено"
-                  )}
+              {/* Student Answer or Photo Analysis */}
+              {question.problemNumberType && question.problemNumberType >= 20 && question.analysisData ? (
+                // For questions 20-25 with photo analysis, show analysis cards
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  <StudentSolutionCard autoFetch={false} />
+                  <AnalysisReviewCard
+                    analysisData={question.analysisData}
+                    fallbackScore={question.photoScores}
+                  />
                 </div>
-              </div>
+              ) : (
+                // For regular questions, show standard answer display
+                <div>
+                  <h3 className="font-semibold text-gray-700 mb-2">Ваш ответ</h3>
+                  <div className={`p-4 rounded-lg border-2 ${
+                    question.isAnswered 
+                      ? (question.isCorrect 
+                          ? "bg-green-50 border-green-200 text-green-800" 
+                          : "bg-red-50 border-red-200 text-red-800")
+                      : "bg-gray-50 border-gray-200 text-gray-600"
+                  }`}>
+                    {question.isAnswered ? (
+                      <MathRenderer text={question.userAnswer} compiler="mathjax" />
+                    ) : (
+                      "Не отвечено"
+                    )}
+                  </div>
+                </div>
+              )}
 
               {/* Score Display - Very Prominent and Separate */}
               <div className="flex justify-center mb-6">
@@ -120,6 +137,11 @@ const TestStatisticsWindow = ({
                     <div className="text-4xl font-black">
                       {(() => {
                         const maxPoints = question.questionIndex >= 19 ? 2 : 1;
+                        // For photo questions with photoScores, use that directly
+                        if (question.problemNumberType && question.problemNumberType >= 20 && question.photoScores !== undefined) {
+                          return `${question.photoScores}/${maxPoints}`;
+                        }
+                        // For regular questions, use the old logic
                         const earnedPoints = question.isCorrect ? maxPoints : (question.isAnswered ? (maxPoints === 2 ? 1 : 0) : 0);
                         return `${earnedPoints}/${maxPoints}`;
                       })()}
