@@ -158,14 +158,14 @@ const AnalysisReviewCard = ({
                       <Badge variant="destructive" className="text-xs">{error.type}</Badge>
 
                       <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                        <p className="text-sm text-blue-800 font-medium">ОписаниеRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR:</p>
+                        <p className="text-sm text-blue-800 font-medium">Описание:</p>
                         <MathRenderer text={error.message} compiler="mathjax" />
                       </div>
 
                       <div className="bg-red-50 border border-red-200 rounded-lg p-3">
                         <div className="flex items-center gap-2 mb-2">
                           <div className="w-2 h-2 bg-red-500 rounded-full" />
-                          <p className="text-sm text-red-800 font-medium">Решение ученикаRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR:</p>
+                          <p className="text-sm text-red-800 font-medium">Решение ученика:</p>
                         </div>
                         <MathRenderer text={error.student_latex} compiler="mathjax" />
                       </div>
@@ -173,14 +173,14 @@ const AnalysisReviewCard = ({
                       <div className="bg-green-50 border border-green-200 rounded-lg p-3">
                         <div className="flex items-center gap-2 mb-2">
                           <div className="w-2 h-2 bg-green-500 rounded-full" />
-                          <p className="text-sm text-green-800 font-medium">Правильное решение:RRRRRRRRRRRRRRRRRRRRRRRRRRR</p>
+                          <p className="text-sm text-green-800 font-medium">Правильное решение:</p>
                         </div>
                         <MathRenderer text={error.expected_latex} compiler="mathjax" />
                       </div>
 
                       {error.context_snippet && (
                         <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
-                          <p className="text-sm text-gray-800 font-medium">КонтексRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRт:</p>
+                          <p className="text-sm text-gray-800 font-medium">Контекст:</p>
                           <MathRenderer text={error.context_snippet} compiler="mathjax" />
                         </div>
                       )}
@@ -189,7 +189,7 @@ const AnalysisReviewCard = ({
                 </Card>
               ))
             ) : (
-              <div className="text-center py-8 text-gray-500">Ошибок не найдено. Отличная работа! RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR🎉</div>
+              <div className="text-center py-8 text-gray-500">Ошибок не найдено. Отличная работа! 🎉</div>
             )
           ) : parsedHtmlReview && parsedHtmlReview.errors.length > 0 ? (
             <>
@@ -212,7 +212,7 @@ const AnalysisReviewCard = ({
                 <Card className="bg-green-50 border-green-200 mt-4">
                   <CardContent className="pt-4">
                     <div className="flex items-center gap-2 mb-2">
-                      <p className="text-sm font-semibold text-green-800">ОценкаRRRRRRRRRRRRRRRRRRRRRRR:</p>
+                      <p className="text-sm font-semibold text-green-800">Оценка:</p>
                     </div>
                     <MathRenderer text={parsedHtmlReview.evaluation} compiler="mathjax" />
                   </CardContent>
@@ -227,7 +227,7 @@ const AnalysisReviewCard = ({
                 ) : normalizedData?.review ? (
                   <MathRenderer text={String(normalizedData.review)} compiler="mathjax" />
                 ) : (
-                  <MathRenderer text={fallbackSummaryLatex || 'Идёт подготовка подробного разбоRRRRRRRRRRRRRRRRRRRRRRRRRRRRRра…'} compiler="mathjax" />
+                  <MathRenderer text={fallbackSummaryLatex || 'Идёт подготовка подробного разбора…'} compiler="mathjax" />
                 )}
               </CardContent>
             </Card>
@@ -237,7 +237,7 @@ const AnalysisReviewCard = ({
             <Card className="bg-green-50 border-green-200 mt-4">
               <CardContent className="pt-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <p className="text-sm font-semibold text-green-800">Итоговый разборRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR:</p>
+                  <p className="text-sm font-semibold text-green-800">Итоговый разбор:</p>
                 </div>
                 <MathRenderer text={(normalizedData!.review as any).summary} compiler="mathjax" />
               </CardContent>
