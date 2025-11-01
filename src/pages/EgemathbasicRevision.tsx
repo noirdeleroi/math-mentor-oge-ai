@@ -71,6 +71,20 @@ const EgemathbasicRevision: React.FC = () => {
 
   const options = ['А', 'Б', 'В', 'Г'];
 
+  // Helper to normalize answer format (optionX -> А/Б/В/Г)
+  const normalizeAnswer = (answer: string | undefined): string => {
+    if (!answer) return '';
+    const upper = answer.toUpperCase();
+    // If it's already a letter, return it
+    if (['А', 'Б', 'В', 'Г'].includes(upper)) return upper;
+    // Convert optionX to corresponding letter
+    if (upper === 'OPTION1') return 'А';
+    if (upper === 'OPTION2') return 'Б';
+    if (upper === 'OPTION3') return 'В';
+    if (upper === 'OPTION4') return 'Г';
+    return upper;
+  };
+
   useEffect(() => {
     if (initializedRef.current) return;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -206,7 +220,8 @@ const EgemathbasicRevision: React.FC = () => {
     const answerLetter = options[optionIndex];
     setSelectedAnswer(answerLetter);
 
-    const correct = answerLetter === currentQuestion?.answer?.toUpperCase();
+    const normalizedCorrectAnswer = normalizeAnswer(currentQuestion?.answer);
+    const correct = answerLetter === normalizedCorrectAnswer;
     setIsCorrect(correct);
     setShowResult(true);
 
@@ -328,7 +343,8 @@ const EgemathbasicRevision: React.FC = () => {
     }
     const answerLetter = options[optionIndex];
     const isSelected = selectedAnswer === answerLetter;
-    const isCorrectAnswer = answerLetter === currentQuestion?.answer?.toUpperCase();
+    const normalizedCorrectAnswer = normalizeAnswer(currentQuestion?.answer);
+    const isCorrectAnswer = answerLetter === normalizedCorrectAnswer;
     if (isCorrectAnswer) return 'border-emerald-500 bg-emerald-50 text-emerald-700';
     if (isSelected && !isCorrect) return 'border-red-500 bg-red-50 text-red-700';
     return 'border-[#1a1f36]/20 opacity-70';

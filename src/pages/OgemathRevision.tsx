@@ -76,6 +76,20 @@ const OgemathRevision: React.FC = () => {
 
   const options = ['А', 'Б', 'В', 'Г'];
 
+  // Helper to normalize answer format (optionX -> А/Б/В/Г)
+  const normalizeAnswer = (answer: string | undefined): string => {
+    if (!answer) return '';
+    const upper = answer.toUpperCase();
+    // If it's already a letter, return it
+    if (['А', 'Б', 'В', 'Г'].includes(upper)) return upper;
+    // Convert optionX to corresponding letter
+    if (upper === 'OPTION1') return 'А';
+    if (upper === 'OPTION2') return 'Б';
+    if (upper === 'OPTION3') return 'В';
+    if (upper === 'OPTION4') return 'Г';
+    return upper;
+  };
+
   useEffect(() => {
     // Run once when we have enough info (either homework state provided or user is ready)
     if (initializedRef.current) return;
@@ -250,7 +264,8 @@ number[]) : [];
     const answerLetter = options[optionIndex];
     setSelectedAnswer(answerLetter);
 
-    const correct = answerLetter === currentQuestion?.answer?.toUpperCase();
+    const normalizedCorrectAnswer = normalizeAnswer(currentQuestion?.answer);
+    const correct = answerLetter === normalizedCorrectAnswer;
     setIsCorrect(correct);
     setShowResult(true);
 
@@ -438,8 +453,8 @@ questionIds.length)];
 
     const answerLetter = options[optionIndex];
     const isSelected = selectedAnswer === answerLetter;
-    const isCorrectAnswer = answerLetter ===
-currentQuestion?.answer?.toUpperCase();
+    const normalizedCorrectAnswer = normalizeAnswer(currentQuestion?.answer);
+    const isCorrectAnswer = answerLetter === normalizedCorrectAnswer;
 
     if (isCorrectAnswer) {
       return 'border-emerald-500 bg-emerald-50 text-emerald-700';
