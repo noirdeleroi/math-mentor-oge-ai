@@ -217,19 +217,24 @@ function buildMessagesWithContext(messages: Message[], homeworkContext?: any, is
     acc: safeContext.accuracyPercentage
   });
 
-  // Build questions block safely
+  // Build questions block safely with pretty answers
   const questionsBlock = questions.length
-    ? questions.map((q: any, i: number) => `
+    ? questions.map((q: any, i: number) => {
+        const prettyUserAnswer = q?.user_answer ?? q?.userAnswer ?? q?.raw_user_answer ?? "—";
+        const prettyCorrectAnswer = q?.correct_answer ?? q?.correctAnswer ?? q?.raw_correct_answer ?? "—";
+        
+        return `
 Вопрос ${i + 1} (ID: ${q?.questionId ?? 'N/A'}):
   Текст: ${truncate(q?.questionText, 400) || 'Текст недоступен'}
-  Ответ ученика: ${String(q?.userAnswer ?? 'Не отвечено')}
-  Правильный ответ: ${String(q?.correctAnswer ?? '—')}
+  Ответ ученика: ${String(prettyUserAnswer)}
+  Правильный ответ: ${String(prettyCorrectAnswer)}
   Результат: ${q?.isCorrect ? '✅ Правильно' : '❌ Неправильно'}
   Время ответа: ${Number(q?.responseTimeSeconds ?? 0)}с
   Тип: ${String(q?.questionType ?? '—')}
   Сложность: ${String(q?.difficulty ?? '—')}
   Навыки: ${Array.isArray(q?.skills) && q.skills.length ? q.skills.join(', ') : 'Не указаны'}
-  ${q?.showedSolution ? '⚠️ Показывалось решение' : ''}`.trim()).join('\n')
+  ${q?.showedSolution ? '⚠️ Показывалось решение' : ''}`.trim();
+      }).join('\n')
     : 'Нет данных о вопросах';
 
   const contextPrompt: Message = {
@@ -237,7 +242,7 @@ function buildMessagesWithContext(messages: Message[], homeworkContext?: any, is
     content: `
 КОНТЕКСТ ДОМАШНЕГО ЗАДАНИЯ (Доступен для обсуждения):
 
-Название: ${String(safeContext.homeworkName ?? 'Домашнее задание')}
+Название: ${String(safeContext.homework_name ?? safeContext.homeworkName ?? 'Домашнее задание')}
 Выполнено: ${Number(safeContext.completedQuestions ?? 0)}/${Number(safeContext.totalQuestions ?? 0)} вопросов
 Правильных ответов: ${Number(safeContext.correctAnswers ?? 0)}
 Точность: ${Number(safeContext.accuracyPercentage ?? 0)}%
@@ -255,6 +260,10 @@ ${questionsBlock}
 - Будь ободряющим и образовательным
 - Помни, что у тебя есть полный доступ ко всем деталям выполненного ДЗ
 - Если ученик спрашивает про конкретную задачу, покажи ее текст, его ответ и правильный ответ
+- Если вопрос относится к домашнему заданию, используй поля user_answer и correct_answer
+- Не отвечай буквами вариантов ("А", "Б", "В") и не используй слова типа "option1", если есть текст расшифровки ответа
+- Объясняй как учитель: "ты написал 375/1000, правильно 3/8, потому что дробь надо сократить"
+- Не говори "я не вижу логи": у тебя есть все данные
 `.trim()
   };
 

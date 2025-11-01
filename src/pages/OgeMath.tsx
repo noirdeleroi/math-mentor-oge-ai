@@ -66,7 +66,7 @@ const OgeMath = () => {
           // Query the pending_homework_feedback table
           const { data: feedbackRecord, error: feedbackError } = await supabase
             .from('pending_homework_feedback')
-            .select('*')
+            .select('*, chat_context, context_data')
             .eq('id', pendingFeedbackId)
             .eq('user_id', user.id)
             .single();
@@ -75,11 +75,12 @@ const OgeMath = () => {
             console.log('✅ Feedback record found:', feedbackRecord);
 
             if (feedbackRecord.processed && feedbackRecord.feedback_message) {
-              // Store homework context for follow-up questions
-              if (feedbackRecord.context_data) {
-                setHomeworkContext(feedbackRecord.context_data);
+              // Store homework context for follow-up questions - prefer chat_context
+              const contextForFollowup = feedbackRecord.chat_context || feedbackRecord.context_data || null;
+              if (contextForFollowup) {
+                setHomeworkContext(contextForFollowup);
                 setContextExpiresAt(new Date(Date.now() + 30 * 60 * 1000)); // 30 min timeout
-                console.log('📚 Loaded homework context:', feedbackRecord.context_data);
+                console.log('📚 Loaded homework context:', contextForFollowup);
               }
               
               // Feedback already generated - display immediately and save to chat logs with sentinel user message.
@@ -129,7 +130,7 @@ ${feedbackRecord.feedback_message}
               const pollInterval = setInterval(async () => {
                 const { data: updated } = await supabase
                   .from('pending_homework_feedback')
-                  .select('processed, feedback_message, error_message, homework_name, course_id, processed_at')
+                  .select('processed, feedback_message, error_message, homework_name, course_id, processed_at, chat_context, context_data')
                   .eq('id', pendingFeedbackId)
                   .single();
 
@@ -137,17 +138,12 @@ ${feedbackRecord.feedback_message}
                   clearInterval(pollInterval);
                   
                   if (updated.feedback_message) {
-                    // Store homework context when polling completes
-                    const { data: completeRecord } = await supabase
-                      .from('pending_homework_feedback')
-                      .select('context_data')
-                      .eq('id', pendingFeedbackId)
-                      .single();
-                      
-                    if (completeRecord?.context_data) {
-                      setHomeworkContext(completeRecord.context_data);
+                    // Store homework context when polling completes - prefer chat_context
+                    const contextForFollowup = updated.chat_context || updated.context_data || null;
+                    if (contextForFollowup) {
+                      setHomeworkContext(contextForFollowup);
                       setContextExpiresAt(new Date(Date.now() + 30 * 60 * 1000));
-                      console.log('📚 Loaded homework context (from polling):', completeRecord.context_data);
+                      console.log('📚 Loaded homework context (from polling):', contextForFollowup);
                     }
                     
                     const feedbackText = `🎯 **Автоматический анализ домашнего задания "${updated.homework_name}"**
@@ -320,9 +316,10 @@ ${updated.feedback_message}
         const updated = payload.new as any;
         console.log('Pending homework feedback updated (OGE):', updated);
         if (updated?.processed && updated?.feedback_message) {
-          // Set context for follow-up questions
-          if (updated.context_data) {
-            setHomeworkContext(updated.context_data);
+          // Set context for follow-up questions - prefer chat_context
+          const contextForFollowup = updated.chat_context || updated.context_data || null;
+          if (contextForFollowup) {
+            setHomeworkContext(contextForFollowup);
             setContextExpiresAt(new Date(Date.now() + 30 * 60 * 1000));
           }
           const feedbackText = `🎯 **Автоматический анализ домашнего задания "${updated.homework_name}"**
@@ -628,7 +625,7 @@ ${updated.feedback_message}
                 <div className="text-sm text-[#1a1f36] dark:text-blue-100">
                   <span className="font-semibold">Домашнее задание:</span>
                   <span className="ml-2">
-                    {homeworkContext.homeworkName || 'без названия'}
+                    {homeworkContext.homework_name || homeworkContext.homeworkName || 'без названия'}
                   </span>
                 </div>
               </div>
