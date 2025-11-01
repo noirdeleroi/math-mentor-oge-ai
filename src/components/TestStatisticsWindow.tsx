@@ -140,15 +140,55 @@ const TestStatisticsWindow = ({
                     <div className="text-lg font-bold opacity-90 mb-1">БАЛЛЫ</div>
                     <div className="text-4xl font-black">
                       {(() => {
-                        const maxPoints = question.questionIndex >= 19 ? 2 : 1;
+                        // Determine maxPoints based on questionId and problemNumberType
+                        let maxPoints = 1;
+                        const qid = question.questionId || "";
+                        const type = question.problemNumberType;
+                      
+                        if (qid.startsWith("OGE")) {
+                          maxPoints = 2;
+                        } else if (qid.startsWith("EGEPROF")) {
+                          switch (type) {
+                            case 13:
+                              maxPoints = 2;
+                              break;
+                            case 14:
+                              maxPoints = 3;
+                              break;
+                            case 15:
+                              maxPoints = 2;
+                              break;
+                            case 16:
+                              maxPoints = 2;
+                              break;
+                            case 17:
+                              maxPoints = 3;
+                              break;
+                            case 18:
+                              maxPoints = 4;
+                              break;
+                            case 19:
+                              maxPoints = 4;
+                              break;
+                            default:
+                              maxPoints = 1;
+                          }
+                        }
+                      
                         // For photo questions with photoScores, use that directly
-                        if (question.problemNumberType && question.problemNumberType >= 20 && question.photoScores !== undefined) {
+                        if (question.problemNumberType && question.problemNumberType >= 20
+                      && question.photoScores !== undefined) {
                           return `${question.photoScores}/${maxPoints}`;
                         }
-                        // For regular questions, use the old logic
-                        const earnedPoints = question.isCorrect ? maxPoints : (question.isAnswered ? (maxPoints === 2 ? 1 : 0) : 0);
+                      
+                        // For regular questions
+                        const earnedPoints = question.isCorrect
+                          ? maxPoints
+                          : (question.isAnswered ? (maxPoints === 2 ? 1 : 0) : 0);
+                      
                         return `${earnedPoints}/${maxPoints}`;
                       })()}
+
                     </div>
                   </div>
                 </div>
