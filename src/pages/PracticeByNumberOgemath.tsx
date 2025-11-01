@@ -19,6 +19,7 @@ import TestStatisticsWindow from "@/components/TestStatisticsWindow";
 import FormulaBookletDialog from "@/components/FormulaBookletDialog";
 import StudentSolutionCard from "@/components/analysis/StudentSolutionCard";
 import AnalysisReviewCard from "@/components/analysis/AnalysisReviewCard";
+import FeedbackButton from "@/components/FeedbackButton";
 
 interface Question {
   question_id: string;
@@ -1962,6 +1963,10 @@ const PracticeByNumberOgemath = () => {
                   <CardTitle className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 text-[#1a1f36]">
                     <span className="text-lg sm:text-xl">Вопрос №{currentQuestion.problem_number_type} ({currentQuestionIndex + 1} из {questions.length})</span>
                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4 w-full sm:w-auto">
+                      <FeedbackButton 
+                        contentType="mcq" 
+                        contentRef={currentQuestion.question_id}
+                      />
                       <Button
                         onClick={() => setShowFormulaBooklet(true)}
                         variant="outline"
@@ -2012,37 +2017,51 @@ const PracticeByNumberOgemath = () => {
                   </div>
                 )}
 
-                   {/* Answer Input */}
+                   {/* Answer Input - only for questions below 20 */}
                 <div className="space-y-4">
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    <Input
-                      value={userAnswer}
-                      onChange={(e) => setUserAnswer(e.target.value)}
-                      placeholder="Введите ваш ответ"
-                      disabled={isAnswered || solutionViewedBeforeAnswer}
-                      onKeyPress={(e) => e.key === 'Enter' && !isAnswered && !solutionViewedBeforeAnswer && checkAnswer()}
-                      className="flex-1 w-full bg-white border-gray-300 text-[#1a1f36] placeholder:text-gray-500"
-                    />
-                    <Button
-                      onClick={async () => {
-                        if (uploadedImages.length > 0) {
-                          await handleDevicePhotoCheck();
-                        } else {
-                          await checkAnswer();
+                  {currentQuestion.problem_number_type && currentQuestion.problem_number_type < 20 && (
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      <Input
+                        value={userAnswer}
+                        onChange={(e) => setUserAnswer(e.target.value)}
+                        placeholder="Введите ваш ответ"
+                        disabled={isAnswered || solutionViewedBeforeAnswer}
+                        onKeyPress={(e) => e.key === 'Enter' && !isAnswered && !solutionViewedBeforeAnswer && checkAnswer()}
+                        className="flex-1 w-full bg-white border-gray-300 text-[#1a1f36] placeholder:text-gray-500"
+                      />
+                      <Button
+                        onClick={checkAnswer}
+                        disabled={
+                          isAnswered || 
+                          solutionViewedBeforeAnswer || 
+                          !userAnswer.trim()
                         }
-                      }}
-                      disabled={
-                        isAnswered || 
-                        solutionViewedBeforeAnswer || 
-                        isProcessingPhoto || 
-                        (!userAnswer.trim() && uploadedImages.length === 0)
-                      }
-                      className="w-full sm:w-auto min-w-32 bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36] shadow-md font-medium disabled:opacity-50 transition-all"
-                    >
-                      <CheckCircle className="w-4 h-4 mr-2" />
-                      {isProcessingPhoto ? 'Обработка...' : 'Проверить'}
-                    </Button>
-                  </div>
+                        className="w-full sm:w-auto min-w-32 bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36] shadow-md font-medium disabled:opacity-50 transition-all"
+                      >
+                        <CheckCircle className="w-4 h-4 mr-2" />
+                        Проверить
+                      </Button>
+                    </div>
+                  )}
+                  
+                  {/* Check button for questions 20+ (photo upload only) */}
+                  {currentQuestion.problem_number_type && currentQuestion.problem_number_type >= 20 && (
+                    <div className="flex justify-center">
+                      <Button
+                        onClick={handleDevicePhotoCheck}
+                        disabled={
+                          isAnswered || 
+                          solutionViewedBeforeAnswer || 
+                          isProcessingPhoto || 
+                          uploadedImages.length === 0
+                        }
+                        className="w-full sm:w-auto min-w-48 bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-[#1a1f36] shadow-md font-medium disabled:opacity-50 transition-all"
+                      >
+                        <CheckCircle className="w-4 h-4 mr-2" />
+                        {isProcessingPhoto ? 'Обработка...' : 'Проверить'}
+                      </Button>
+                    </div>
+                  )}
                   
                   {/* OCR Progress Display */}
                   {ocrProgress && (
@@ -2419,20 +2438,6 @@ const PracticeByNumberOgemath = () => {
           )}
 
 
-          {/* Results Summary */}
-          {practiceStarted && questions.length > 0 && !showStatistics && (
-            <Card className="bg-white/95 backdrop-blur border border-white/20 rounded-2xl shadow-xl">
-              <CardHeader className="border-b border-white/20">
-                <CardTitle className="text-[#1a1f36]">Статистика</CardTitle>
-              </CardHeader>
-              <CardContent className="pt-4">
-                <p className="text-gray-700">
-                  Найдено {questions.length} вопросов для выбранных номеров
-                </p>
-                {loading && <p className="text-blue-600 mt-2">Загрузка...</p>}
-              </CardContent>
-            </Card>
-          )}
           </div>
         </div>
       </div>
