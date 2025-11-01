@@ -18,6 +18,8 @@ import { toast } from "sonner";
 import TestStatisticsWindow from "@/components/TestStatisticsWindow";
 import FormulaBookletDialog from "@/components/FormulaBookletDialog";
 import FeedbackButton from "@/components/FeedbackButton";
+import StudentSolutionCard from "@/components/analysis/StudentSolutionCard";
+import AnalysisReviewCard from "@/components/analysis/AnalysisReviewCard";
 
 interface Question {
   question_id: string;
@@ -82,59 +84,10 @@ const PracticeByNumberEgeProfMath = () => {
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [analysisProgress, setAnalysisProgress] = useState<number>(0);
   const [studentSolution, setStudentSolution] = useState<string>("");
-  const [parsedAnalysis, setParsedAnalysis] = useState<ParsedAnalysis | null>(null);
-
-  interface ParsedError {
-    type: string;
-    description: string;
-    studentSolution: string;
-    correctSolution: string;
-    context: string;
-  }
-  interface ParsedAnalysis {
-    errors: ParsedError[];
-    summary: { score: number; comment: string };
-  }
-  const parseHtmlAnalysis = (htmlContent: string): ParsedAnalysis | null => {
-    try {
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(htmlContent, 'text/html');
-      const errors: ParsedError[] = [];
-      const errorDivs = doc.querySelectorAll('div.error');
-      errorDivs.forEach((div) => {
-        const typeMatch = div.innerHTML.match(/<b>Тип ошибки:<\/b>\s*(.+?)<br>/);
-        const descriptionMatch = div.innerHTML.match(/<b>Описание:<\/b>\s*(.+?)<br>/);
-        const studentMatch = div.innerHTML.match(/<b>Решение ученика:<\/b>\s*(.+?)<br>/);
-        const correctMatch = div.innerHTML.match(/<b>Правильное решение:<\/b>\s*(.+?)<br>/);
-        const contextMatch = div.innerHTML.match(/<b>Контекст:<\/b>\s*<pre>(.+?)<\/pre>/);
-        if (typeMatch && descriptionMatch && studentMatch && correctMatch) {
-          errors.push({
-            type: typeMatch[1].trim(),
-            description: descriptionMatch[1].trim(),
-            studentSolution: studentMatch[1].trim(),
-            correctSolution: correctMatch[1].trim(),
-            context: contextMatch ? contextMatch[1].trim() : ''
-          });
-        }
-      });
-      const summaryDiv = doc.querySelector('div.summary');
-      let summary = { score: 0, comment: '' };
-      if (summaryDiv) {
-        const scoreMatch = summaryDiv.innerHTML.match(/<b>Оценка:<\/b>\s*(\d+)/);
-        const commentMatch = summaryDiv.innerHTML.match(/<b>Комментарий:<\/b>\s*(.+?)(?:$|<br>)/);
-        summary = { score: scoreMatch ? parseInt(scoreMatch[1]) : 0, comment: commentMatch ? commentMatch[1].trim() : '' };
-      }
-      return { errors, summary };
-    } catch (e) {
-      console.error('Error parsing HTML analysis:', e);
-      return null;
-    }
-  };
-
+  const [analysisData, setAnalysisData] = useState<any>(null);
   const fetchStudentSolution = async () => {
     if (!user) return null;
     try {
-      // @ts-ignore
       const { data, error } = await supabase
         .from('telegram_uploads')
         .select('extracted_text')
@@ -142,7 +95,10 @@ const PracticeByNumberEgeProfMath = () => {
         .order('created_at', { ascending: false })
         .limit(1)
         .single();
-      if (error) { console.error('fetchStudentSolution error', error); return null; }
+      if (error) { 
+        console.error('fetchStudentSolution error', error); 
+        return null; 
+      }
       return data?.extracted_text || '';
     } catch (e) {
       console.error('fetchStudentSolution exception', e);
@@ -153,7 +109,6 @@ const PracticeByNumberEgeProfMath = () => {
   const fetchAnalysisData = async () => {
     if (!user) return null;
     try {
-      // @ts-ignore
       const { data, error } = await supabase
         .from('photo_analysis_outputs')
         .select('raw_output')
@@ -161,57 +116,36 @@ const PracticeByNumberEgeProfMath = () => {
         .order('created_at', { ascending: false })
         .limit(1)
         .single();
-      if (error) { console.error('fetchAnalysisData error', error); return null; }
+      
+      if (error) { 
+        console.error('fetchAnalysisData error', error); 
+        return null; 
+      }
+      
       if (data?.raw_output) {
-        const safeParse = (raw: string): any | null => {
-          try {
-            const trimmed = (raw || '').trim();
-            // If the string has any leading garbage (like a leading colon), try to cut to first {
-            const firstBrace = trimmed.indexOf('{');
-            const lastBrace = trimmed.lastIndexOf('}');
-            const candidate = (firstBrace >= 0 && lastBrace > firstBrace)
-              ? trimmed.slice(firstBrace, lastBrace + 1)
-              : trimmed;
-            let parsed: any = JSON.parse(candidate);
-            // Handle double-encoded JSON
-            if (typeof parsed === 'string') {
-              try { parsed = JSON.parse(parsed); } catch {}
-            }
-            return parsed;
-          } catch (e) {
-            console.error('safeParse JSON failed', e);
-            return null;
+        try {
+          const trimmed = (data.raw_output || '').trim();
+          const firstBrace = trimmed.indexOf('{');
+          const lastBrace = trimmed.lastIndexOf('}');
+          const candidate = (firstBrace >= 0 && lastBrace > firstBrace)
+            ? trimmed.slice(firstBrace, lastBrace + 1)
+            : trimmed;
+          
+          let parsed: any = JSON.parse(candidate);
+          
+          // Handle double-encoded JSON
+          if (typeof parsed === 'string') {
+            try { 
+              parsed = JSON.parse(parsed); 
+            } catch {}
           }
-        };
-        const json = safeParse(data.raw_output);
-        if (!json) return null;
-        // Case 1: review is HTML string (legacy path)
-        if (json.review && typeof json.review === 'string') {
-          const parsed = parseHtmlAnalysis(json.review);
-          if (parsed) setParsedAnalysis(parsed);
-        }
-        // Case 2: review is structured object with errors array and summary string
-        if (json.review && typeof json.review === 'object' && Array.isArray(json.review.errors)) {
-          const errors = (json.review.errors as any[]).map((e) => ({
-            type: e.type ?? 'Ошибка',
-            description: e.message ?? e.description ?? '',
-            studentSolution: e.student_latex ?? e.student ?? '',
-            correctSolution: e.expected_latex ?? e.expected ?? '',
-            context: e.context_snippet ?? e.context ?? ''
-          }));
-          const scoreNum = typeof json.scores === 'number' 
-            ? json.scores 
-            : (typeof json.review.summary === 'object' && typeof json.review.summary.score === 'number' ? json.review.summary.score : 0);
-          const summaryText = typeof json.review.summary === 'string' 
-            ? json.review.summary 
-            : (typeof json.review.summary === 'object' 
-               ? (json.review.summary.comment || json.review.summary.text || json.review.summary.summary || '')
-               : '');
-          const parsed: ParsedAnalysis = {
-            errors,
-            summary: { score: scoreNum, comment: summaryText }
-          };
-          setParsedAnalysis(parsed);
+          
+          // Set the parsed analysis data
+          setAnalysisData(parsed);
+          return parsed;
+        } catch (e) {
+          console.error('Failed to parse analysis data:', e);
+          return null;
         }
       }
       return null;
@@ -339,6 +273,15 @@ const PracticeByNumberEgeProfMath = () => {
     setSolutionViewedBeforeAnswer(false);
     setCurrentAttemptId(null);
     setAttemptStartTime(null);
+    setUploadedImages([]);
+    setPhotoFeedback("");
+    setPhotoScores(null);
+    setAnalysisData(null);
+    setStudentSolution("");
+    setOcrProgress("");
+    setIsProcessingPhoto(false);
+    setUploadProgress(0);
+    setAnalysisProgress(0);
   };
 
   const toggleQuestionGroup = (groupType: string) => {
@@ -923,20 +866,8 @@ const PracticeByNumberEgeProfMath = () => {
               setPhotoFeedback(rev);
             } else if (rev && typeof rev === 'object' && Array.isArray(rev.errors)) {
               // Build parsed analysis immediately
-              const errors = (rev.errors as any[]).map((e) => ({
-                type: e.type ?? 'Ошибка',
-                description: e.message ?? e.description ?? '',
-                studentSolution: e.student_latex ?? e.student ?? '',
-                correctSolution: e.expected_latex ?? e.expected ?? '',
-                context: e.context_snippet ?? e.context ?? ''
-              }));
-              const summaryText = typeof rev.summary === 'string' 
-                ? rev.summary 
-                : (typeof rev.summary === 'object' 
-                   ? (rev.summary.comment || rev.summary.text || rev.summary.summary || '')
-                   : '');
-              const parsedNow = { errors, summary: { score: feedbackData.scores ?? 0, comment: summaryText } } as ParsedAnalysis;
-              setParsedAnalysis(parsedNow);
+              // Store the analysis data directly
+              setAnalysisData(feedbackData);
               setPhotoFeedback('');
             }
             
@@ -1486,102 +1417,19 @@ const PracticeByNumberEgeProfMath = () => {
                         </div>
                       </Alert>
                     )}
-                    {/* Show Student Solution and/or Analysis for photo uploads - 13–19 */}
-                    {(currentQuestion.problem_number_type && currentQuestion.problem_number_type >= 13 && currentQuestion.problem_number_type <= 19) && (studentSolution || parsedAnalysis || photoFeedback) && (
+                    {/* Show Student Solution and Analysis for photo uploads - 13–19 */}
+                    {(currentQuestion.problem_number_type && currentQuestion.problem_number_type >= 13 && currentQuestion.problem_number_type <= 19) && (studentSolution || analysisData) && (
                       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
-                        <Card className="bg-blue-50 border-blue-200">
-                          <CardHeader>
-                            <CardTitle className="text-blue-800">Ваше решение</CardTitle>
-                          </CardHeader>
-                          <CardContent>
-                            <div className="bg-white border border-blue-200 rounded-lg p-4 max-h-96 overflow-y-auto">
-                              {studentSolution ? (
-                                <MathRenderer text={studentSolution} compiler="mathjax" />
-                              ) : (
-                                <div className="text-sm text-gray-500">Решение из фото ещё обрабатывается…</div>
-                              )}
-                            </div>
-                          </CardContent>
-                        </Card>
-
-                        {(parsedAnalysis || photoFeedback) && (
-                          <Card className="bg-purple-50 border-purple-200">
-                            <CardHeader className="relative">
-                              <CardTitle className="text-purple-800">Анализ решения</CardTitle>
-                              {(parsedAnalysis || photoScores !== null) && (
-                                <div className="absolute top-3 right-3">
-                                  <Badge className="bg-purple-600 text-white text-[10px] px-2 py-0.5 leading-4">
-                                    {(parsedAnalysis ? parsedAnalysis.summary.score : (photoScores || 0))}/2
-                                  </Badge>
-                                </div>
-                              )}
-                            </CardHeader>
-                            <CardContent>
-                              <div className="space-y-4 max-h-96 overflow-y-auto">
-                                {parsedAnalysis ? (
-                                  parsedAnalysis.errors.length > 0 ? (
-                                    parsedAnalysis.errors.map((error, index) => (
-                                      <Card key={index} className="bg-white border border-purple-200">
-                                        <CardContent className="pt-4">
-                                          <div className="space-y-3">
-                                            <Badge variant="destructive" className="text-xs">{error.type}</Badge>
-                                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                                              <p className="text-sm text-blue-800 font-medium">Описание:</p>
-                                              <MathRenderer text={error.description} compiler="mathjax" />
-                                            </div>
-                                            <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                                              <div className="flex items-center gap-2 mb-2">
-                                                <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                                                <p className="text-sm text-red-800 font-medium">Решение ученика:</p>
-                                              </div>
-                                              <MathRenderer text={error.studentSolution} compiler="mathjax" />
-                                            </div>
-                                            <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-                                              <div className="flex items-center gap-2 mb-2">
-                                                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                                <p className="text-sm text-green-800 font-medium">Правильное решение:</p>
-                                              </div>
-                                              <MathRenderer text={error.correctSolution} compiler="mathjax" />
-                                            </div>
-                                            {error.context && (
-                                              <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
-                                                <p className="text-sm text-gray-800 font-medium">Контекст:</p>
-                                                <MathRenderer text={error.context} compiler="mathjax" />
-                                              </div>
-                                            )}
-                                          </div>
-                                        </CardContent>
-                                      </Card>
-                                    ))
-                                  ) : (
-                                    <div className="text-center py-8 text-gray-500">Ошибок не найдено. Отличная работа! 🎉</div>
-                                  )
-                                ) : (
-                                  <Card className="bg-white border border-purple-200">
-                                    <CardContent className="pt-4">
-                                      <div className="space-y-3">
-                                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                                          <p className="text-sm text-blue-800 font-medium">Общая оценка:</p>
-                                          <MathRenderer text={photoFeedback || 'Идёт подготовка подробного разбора…'} compiler="mathjax" />
-                                        </div>
-                                      </div>
-                                    </CardContent>
-                                  </Card>
-                                )}
-                                {parsedAnalysis && parsedAnalysis.summary.comment && (
-                                  <Card className="bg-green-50 border-green-200 mt-4">
-                                    <CardContent className="pt-4">
-                                      <div className="flex items-center gap-2 mb-2">
-                                        <p className="text-sm font-semibold text-green-800">Итоговый разбор:</p>
-                                      </div>
-                                      <MathRenderer text={parsedAnalysis.summary.comment} compiler="mathjax" />
-                                    </CardContent>
-                                  </Card>
-                                )}
-                              </div>
-                            </CardContent>
-                          </Card>
-                        )}
+                        <StudentSolutionCard 
+                          studentSolution={studentSolution}
+                          autoFetch={false}
+                        />
+                        
+                        <AnalysisReviewCard 
+                          analysisData={analysisData}
+                          fallbackSummaryLatex={photoFeedback}
+                          fallbackScore={photoScores}
+                        />
                       </div>
                     )}
                   </div>
