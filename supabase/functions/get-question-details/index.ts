@@ -36,6 +36,8 @@ Deno.serve(async (req)=>{
       tableName = 'egemathbase';
     } else if (question_id.startsWith('EGEPROF_')) {
       tableName = 'egemathprof';
+    } else if (question_id.startsWith('OGEMATH_SKILLS_')) {
+      tableName = 'oge_math_skills_questions';
     }
     console.log(`Querying table: ${tableName}`);
     // Fetch question details from the appropriate table
