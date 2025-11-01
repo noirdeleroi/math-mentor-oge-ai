@@ -1965,10 +1965,6 @@ const PracticeByNumberOgemath = () => {
                   Вопрос {currentQuestionIndex + 1} из {questions.length}
                 </h2>
                 <div className="flex items-center gap-3">
-                  <FeedbackButton 
-                    contentType="mcq" 
-                    contentRef={currentQuestion.question_id}
-                  />
                   <Button
                     onClick={() => setShowFormulaBooklet(true)}
                     variant="outline"
@@ -1995,6 +1991,10 @@ const PracticeByNumberOgemath = () => {
                       <span className="text-xs sm:text-sm font-normal text-gray-500">
                         ID: {currentQuestion.question_id}
                       </span>
+                      <FeedbackButton 
+                        contentType="mcq" 
+                        contentRef={currentQuestion.question_id}
+                      />
                       {currentQuestion.status === 'correct' && (
                         <CheckCircle className="w-4 h-4 text-green-600" />
                       )}

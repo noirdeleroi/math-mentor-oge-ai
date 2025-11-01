@@ -1150,10 +1150,6 @@ const PracticeByNumberEgeProfMath = () => {
                     Вопрос {currentQuestionIndex + 1} из {questions.length}
                   </h2>
                   <div className="flex items-center gap-3">
-                    <FeedbackButton 
-                      contentType="mcq" 
-                      contentRef={currentQuestion.question_id}
-                    />
                     <Button
                       onClick={() => setShowFormulaBooklet(true)}
                       variant="outline"
@@ -1176,7 +1172,13 @@ const PracticeByNumberEgeProfMath = () => {
                 <CardHeader className="border-b border-white/20">
                   <CardTitle className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4 text-[#1a1f36]">
                     <span className="text-lg sm:text-xl">Вопрос №{currentQuestion.problem_number_type}</span>
-                    <span className="text-xs sm:text-sm font-normal text-gray-600">ID: {currentQuestion.question_id}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs sm:text-sm font-normal text-gray-600">ID: {currentQuestion.question_id}</span>
+                      <FeedbackButton 
+                        contentType="mcq" 
+                        contentRef={currentQuestion.question_id}
+                      />
+                    </div>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6 pt-6">
