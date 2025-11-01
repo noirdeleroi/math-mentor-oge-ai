@@ -157,6 +157,7 @@ const PracticeByNumberOgemath = () => {
     problemNumberType?: number;
     analysisData?: any;
     photoScores?: number;
+    studentSolution?: string;
   }>>([]);
   
   // Review mode states
@@ -1162,8 +1163,8 @@ const PracticeByNumberOgemath = () => {
       // Build query
       let query = supabase
         .from('photo_analysis_outputs')
-        .select('raw_output, question_id, created_at')
-        .eq('user_id', user.id);
+        .select('raw_output, question_id, created_at, student_solution') as any
+        query = query.eq('user_id', user.id);
       
       // If questionId provided, filter by it
       if (questionId) {
@@ -1178,7 +1179,7 @@ const PracticeByNumberOgemath = () => {
       const { data, error } = await query
         .order('created_at', { ascending: false })
         .limit(1)
-        .maybeSingle();
+        .maybeSingle() as any;
 
       if (error) {
         console.error('Error fetching analysis data:', error);
@@ -1237,7 +1238,8 @@ const PracticeByNumberOgemath = () => {
                   isAnswered: true,
                   problemNumberType: currentQuestion.problem_number_type,
                   analysisData: analysisDataToSet,
-                  photoScores: score
+                  photoScores: score,
+                  studentSolution: data?.student_solution
                 };
                 
                 if (existingIndex >= 0) {
@@ -1499,13 +1501,13 @@ const PracticeByNumberOgemath = () => {
       for (let attempt = 0; attempt < maxAttempts; attempt++) {
         const { data, error: dbError } = await supabase
           .from('photo_analysis_outputs')
-          .select('raw_output, created_at')
+          .select('raw_output, created_at, student_solution')
           .eq('user_id', user.id)
           .eq('question_id', currentQuestion.question_id)
           .gte('created_at', oneHourAgo)
           .order('created_at', { ascending: false })
           .limit(1)
-          .maybeSingle();
+          .maybeSingle() as any;
 
         if (dbError) {
           console.error('Error querying photo_analysis_outputs:', dbError);
@@ -1515,6 +1517,8 @@ const PracticeByNumberOgemath = () => {
         if (data?.raw_output) {
           rawOutput = data.raw_output;
           console.log('📥 Raw output from database:', rawOutput);
+          // Store student_solution for later use
+          var studentSolutionFromDb = data.student_solution;
           break;
         }
 
@@ -1696,7 +1700,8 @@ const PracticeByNumberOgemath = () => {
               isAnswered: true,
               problemNumberType: currentQuestion.problem_number_type,
               analysisData: feedbackData,
-              photoScores: scores
+              photoScores: scores,
+              studentSolution: studentSolutionFromDb
             };
             
             if (existingIndex >= 0) {

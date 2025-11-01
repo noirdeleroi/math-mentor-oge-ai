@@ -18,6 +18,7 @@ interface SessionResult {
   problemNumberType?: number;
   analysisData?: any;
   photoScores?: number;
+  studentSolution?: string;
 }
 
 interface TestStatisticsWindowProps {
@@ -103,7 +104,10 @@ const TestStatisticsWindow = ({
               {question.problemNumberType && question.problemNumberType >= 20 && question.analysisData ? (
                 // For questions 20-25 with photo analysis, show analysis cards
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  <StudentSolutionCard autoFetch={false} />
+                  <StudentSolutionCard 
+                    autoFetch={false} 
+                    studentSolution={question.studentSolution}
+                  />
                   <AnalysisReviewCard
                     analysisData={question.analysisData}
                     fallbackScore={question.photoScores}
