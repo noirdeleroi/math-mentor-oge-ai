@@ -1410,7 +1410,12 @@ const PracticeByNumberEgeProfMath = () => {
                               </span>
                             ) : (
                               <span className="text-red-800">
-                                Неправильно. Правильный ответ: <strong>{currentQuestion.answer}</strong>
+                                Неправильно. Правильный ответ:
+                                <strong className="ml-1">
+                                  <div className="inline-block prose max-w-none text-[#1a1f36]">
+                                    <MathRenderer text={currentQuestion.answer} compiler="mathjax" />
+                                  </div>
+                                </strong>
                               </span>
                             )}
                           </AlertDescription>
