@@ -101,8 +101,11 @@ const EgeMathProf = () => {
         console.log('Pending homework feedback updated (EGE Prof):', updated);
         if (updated?.processed && updated?.feedback_message) {
           // Set context for follow-up questions
-          if (updated.context_data) {
-            setHomeworkContext(updated.context_data);
+          const contextForFollowup =
+            updated.chat_context || updated.context_data || null;
+
+          if (contextForFollowup) {
+            setHomeworkContext(contextForFollowup);
             setContextExpiresAt(new Date(Date.now() + 30 * 60 * 1000));
           }
           const feedbackText = `🎯 **Автоматический анализ домашнего задания "${updated.homework_name}"**
@@ -158,7 +161,7 @@ ${updated.feedback_message}
         
         const { data: feedbackRecord, error: feedbackError } = await supabase
           .from('pending_homework_feedback')
-          .select('*')
+          .select('*, chat_context, context_data')
           .eq('id', pendingFeedbackId)
           .eq('course_id', '3')
           .single();
@@ -166,9 +169,12 @@ ${updated.feedback_message}
         if (feedbackRecord) {
           if (feedbackRecord.processed && feedbackRecord.feedback_message) {
             // Feedback already generated, show immediately
-            if (feedbackRecord.context_data) {
-              setHomeworkContext(feedbackRecord.context_data);
-              setContextExpiresAt(new Date(Date.now() + 30 * 60 * 1000));
+            const contextForFollowup =
+              feedbackRecord.chat_context || feedbackRecord.context_data || null;
+
+            if (contextForFollowup) {
+              setHomeworkContext(contextForFollowup);
+              setContextExpiresAt(new Date(Date.now() + 30 * 60 * 1000)); // 30 min timeout
             }
             const feedbackText = `🎯 **Автоматический анализ домашнего задания "${feedbackRecord.homework_name}"**
 
@@ -198,14 +204,17 @@ ${feedbackRecord.feedback_message}
             const pollInterval = setInterval(async () => {
               const { data: updated } = await supabase
                 .from('pending_homework_feedback')
-                .select('*')
+                .select('processed, feedback_message, error_message, homework_name, course_id, processed_at, chat_context, context_data')
                 .eq('id', pendingFeedbackId)
                 .single();
 
               if (updated?.processed && updated?.feedback_message) {
                 clearInterval(pollInterval);
-                if (updated.context_data) {
-                  setHomeworkContext(updated.context_data);
+                const contextForFollowup =
+                  updated.chat_context || updated.context_data || null;
+
+                if (contextForFollowup) {
+                  setHomeworkContext(contextForFollowup);
                   setContextExpiresAt(new Date(Date.now() + 30 * 60 * 1000));
                 }
                 const feedbackText = `🎯 **Автоматический анализ домашнего задания "${updated.homework_name}"**
@@ -354,7 +363,12 @@ ${updated.feedback_message}
     setIsTyping(true);
 
     try {
-      const aiResponse = await sendChatMessage(newUserMessage, messages, isDatabaseMode, user.id);
+      const validContext =
+        homeworkContext && contextExpiresAt && new Date() < contextExpiresAt
+          ? homeworkContext
+          : null;
+
+      const aiResponse = await sendChatMessage(newUserMessage, messages, isDatabaseMode, user.id, validContext);
       addMessage(aiResponse);
       
       // Save chat interaction to database with course_id='3'
@@ -552,7 +566,9 @@ ${updated.feedback_message}
                 <div className="text-sm text-[#1a1f36] dark:text-blue-100">
                   <span className="font-semibold">Домашнее задание:</span>
                   <span className="ml-2">
-                    {homeworkContext.homeworkName || 'без названия'}
+                    {homeworkContext?.homework_name ||
+                     homeworkContext?.homeworkName ||
+                     'без названия'}
                   </span>
                 </div>
               </div>
