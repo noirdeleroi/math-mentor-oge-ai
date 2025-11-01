@@ -1,38 +1,95 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type'
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type"
+};
+// ---------- JSON hardening helpers ----------
+const cleanAndExtractJsonBlock = (raw)=>{
+  if (!raw) return null;
+  let s = raw.trim().replace(/^\uFEFF/, "");
+  // Unwrap "double-encoded" JSON strings
+  if (s.startsWith('"') && s.endsWith('"') || s.startsWith("'") && s.endsWith("'")) {
+    try {
+      const unwrapped = JSON.parse(s);
+      if (typeof unwrapped === "string") s = unwrapped.trim();
+    } catch  {}
+  }
+  // Strip code fences ```json ... ```
+  s = s.replace(/^```(?:json)?\s*/i, "").replace(/```$/i, "").trim();
+  // Normalize smart quotes
+  s = s.replace(/[“”]/g, '"').replace(/[‘’]/g, "'");
+  // Keep outermost {...}
+  const i = s.indexOf("{");
+  const j = s.lastIndexOf("}");
+  if (i !== -1 && j !== -1 && j > i) s = s.slice(i, j + 1).trim();
+  else return null;
+  return s;
+};
+const parseModelJsonSafe = (raw)=>{
+  const block = cleanAndExtractJsonBlock(raw);
+  if (!block) return null;
+  try {
+    const obj = JSON.parse(block);
+    if (typeof obj === "string") {
+      const block2 = cleanAndExtractJsonBlock(obj);
+      if (!block2) return null;
+      return JSON.parse(block2);
+    }
+    return obj;
+  } catch  {
+    return null;
+  }
+};
+const clampScore = (x)=>{
+  const n = typeof x === "number" ? x : Number(String(x ?? "").replace(",", "."));
+  if (!Number.isFinite(n)) return 0;
+  return Math.max(0, Math.min(2, n));
+};
+const sanitizeReviewHtml = (s)=>{
+  let t = String(s ?? "");
+  // Make it single-line-ish: collapse newlines to spaces
+  t = t.replace(/\r?\n+/g, " ");
+  // Replace $$..$$ with \(..\) to avoid MathJax issues
+  t = t.replace(/\$\$([\s\S]*?)\$\$/g, (_m, p1)=>`\\(${p1}\\)`);
+  // Ensure allowed tags only (very light pass)
+  // (We trust model to keep <p>,<b>,<i>,<span>,<code>,<br/>; you can add a stricter sanitizer if needed.)
+  return t.trim();
+};
+const normalizePayload = (obj)=>{
+  const scores = clampScore(obj?.scores);
+  const review = sanitizeReviewHtml(obj?.review);
+  return {
+    scores,
+    review
+  };
 };
 serve(async (req)=>{
-  // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
-    return new Response(null, {
-      headers: corsHeaders
-    });
-  }
+  if (req.method === "OPTIONS") return new Response(null, {
+    headers: corsHeaders
+  });
   try {
-    // Initialize Supabase client
-    const supabaseUrl = Deno.env.get('SUPABASE_URL');
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    // Supabase client (service role)
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    if (!supabaseUrl || !supabaseServiceKey) throw new Error("Supabase env vars are missing");
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
-    const openRouterApiKey = Deno.env.get('OPENROUTER_API_KEY');
-    if (!openRouterApiKey) {
-      throw new Error('OPENROUTER_API_KEY is not configured');
-    }
+    const openRouterApiKey = Deno.env.get("OPENROUTER_API_KEY");
+    if (!openRouterApiKey) throw new Error("OPENROUTER_API_KEY is not configured");
     const { student_solution, problem_text, solution_text, user_id, question_id, exam_id, problem_number } = await req.json();
     if (!student_solution || !problem_text || !solution_text) {
       return new Response(JSON.stringify({
-        error: 'Missing required parameters'
+        error: "Missing required parameters"
       }), {
         status: 400,
         headers: {
           ...corsHeaders,
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json"
         }
       });
     }
+    // ---------- First call: analysis ----------
     const prompt = `Ты строгий, но справедливый учитель математики. Проанализируй решение ученика по условию задачи, СРАВНИВАЯ его с "Правильным решением". Используй OCR-текст (возможны опечатки), но постарайся сохранить математический смысл.
 
 Входные данные:
@@ -74,101 +131,103 @@ ${student_solution}
 - Не добавляй Markdown, комментарии или текст вне JSON.
 - Не заключай JSON в тройные кавычки.
 - Пиши «review» на русском языке, кратко и ясно.`;
-    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
       headers: {
-        'Authorization': `Bearer ${openRouterApiKey}`,
-        'Content-Type': 'application/json'
+        Authorization: `Bearer ${openRouterApiKey}`,
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: 'anthropic/claude-haiku-4.5',
+        model: "anthropic/claude-haiku-4.5",
         messages: [
           {
-            role: 'user',
+            role: "user",
             content: prompt
           }
         ],
-        temperature: 0.2
+        temperature: 0.1,
+        // Try to enforce JSON if the router/provider supports it
+        response_format: {
+          type: "json_object"
+        }
       })
     });
     if (!response.ok) {
-      const errorData = await response.json();
-      console.error('OpenRouter API error:', errorData);
+      let err = null;
+      try {
+        err = await response.json();
+      } catch  {}
+      console.error("OpenRouter API error:", err || response.statusText);
       throw new Error(`OpenRouter API error: ${response.status}`);
     }
     const data = await response.json();
-    // === Extract token usage and calculate cost ===
-    const { prompt_tokens, completion_tokens } = data.usage || {};
-    const model = data.model;
-    const pricingTable = {
-      "google/gemini-2.5-flash-lite-preview-09-2025": [
-        0.30,
-        2.50
-      ],
-      "google/gemini-2.5-flash-lite-preview-06-17": [
-        0.10,
-        0.40
-      ],
-      "google/gemini-2.5-flash-lite": [
-        0.10,
-        0.40
-      ],
-      "google/gemini-2.5-flash": [
-        0.30,
-        2.50
-      ],
-      "google/gemini-2.5-flash-preview-09-2025": [
-        0.30,
-        2.50
-      ],
-      "x-ai/grok-3-mini": [
-        0.30,
-        0.50
-      ],
-      "x-ai/grok-4-fast": [
-        0.20,
-        0.50
-      ],
-      "x-ai/grok-code-fast-1": [
-        0.20,
-        1.50
-      ],
-      "qwen/qwen3-coder-flash": [
-        0.30,
-        1.50
-      ],
-      "openai/o4-mini": [
-        1.10,
-        4.40
-      ],
-      "anthropic/claude-haiku-4.5": [
-        1.00,
-        5.00
-      ]
-    };
-    // Get prices per million tokens
-    const [priceIn, priceOut] = pricingTable[model] || [
-      0,
-      0
-    ];
-    const price = prompt_tokens / 1_000_000 * priceIn + completion_tokens / 1_000_000 * priceOut;
-    // === Insert into Supabase user_credits table ===
-    const { error: insertError } = await supabase.from('user_credits').insert({
-      user_id: user_id,
-      tokens_in: prompt_tokens,
-      tokens_out: completion_tokens,
-      price: price
-    });
-    if (insertError) {
-      console.error('❌ Failed to insert user credits:', insertError.message);
-    } else {
-      console.log(`✅ Stored usage for ${model}: ${prompt_tokens} in, ${completion_tokens} out, $${price.toFixed(6)} total`);
+    const usage = data?.usage || {};
+    const model = data?.model;
+    // Log credits for first call (if usage available)
+    if (typeof usage.prompt_tokens === "number" || typeof usage.completion_tokens === "number") {
+      const { error: insertError } = await supabase.from("user_credits").insert({
+        user_id,
+        tokens_in: usage.prompt_tokens || 0,
+        tokens_out: usage.completion_tokens || 0,
+        price: (()=>{
+          const pricingTable = {
+            "google/gemini-2.5-flash-lite-preview-09-2025": [
+              0.30,
+              2.50
+            ],
+            "google/gemini-2.5-flash-lite-preview-06-17": [
+              0.10,
+              0.40
+            ],
+            "google/gemini-2.5-flash-lite": [
+              0.10,
+              0.40
+            ],
+            "google/gemini-2.5-flash": [
+              0.30,
+              2.50
+            ],
+            "google/gemini-2.5-flash-preview-09-2025": [
+              0.30,
+              2.50
+            ],
+            "x-ai/grok-3-mini": [
+              0.30,
+              0.50
+            ],
+            "x-ai/grok-4-fast": [
+              0.20,
+              0.50
+            ],
+            "x-ai/grok-code-fast-1": [
+              0.20,
+              1.50
+            ],
+            "qwen/qwen3-coder-flash": [
+              0.30,
+              1.50
+            ],
+            "openai/o4-mini": [
+              1.10,
+              4.40
+            ],
+            "anthropic/claude-haiku-4.5": [
+              1.00,
+              5.00
+            ]
+          };
+          const [pin, pout] = pricingTable[model] || [
+            0,
+            0
+          ];
+          return (usage.prompt_tokens || 0) / 1_000_000 * pin + (usage.completion_tokens || 0) / 1_000_000 * pout;
+        })()
+      });
+      if (insertError) console.error("❌ Failed to insert user credits (call 1):", insertError.message);
     }
-    const feedback = data.choices?.[0]?.message?.content;
-    if (!feedback) {
-      throw new Error('No feedback received from OpenRouter API');
-    }
-    // Second API call to polish & validate LaTeX WITHOUT changing structure or meaning
+    let feedback = data?.choices?.[0]?.message?.content;
+    if (!feedback) throw new Error("No feedback received from OpenRouter API");
+    // ---------- (Optional) second call: polish ONLY the review string ----------
     const polishPrompt = `You are given a JSON string called feedback:
 
 FEEDBACK_START
@@ -206,132 +265,141 @@ Your task: return the EXACT SAME JSON structure and meaning, but with fixes appl
 - **CHANGE NOTHING EXCEPT the string content of "review".**
 - DO NOT change any numbers, booleans, indices, IDs, or array orders.
 - DO NOT add explanations. Return ONLY the corrected JSON.`;
-    const polishResponse = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openRouterApiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: 'x-ai/grok-code-fast-1',
-        messages: [
-          {
-            role: 'user',
-            content: polishPrompt
+    let finalText = feedback; // fallback to first output
+    try {
+      const polishResp = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${openRouterApiKey}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: "x-ai/grok-code-fast-1",
+          messages: [
+            {
+              role: "user",
+              content: polishPrompt
+            }
+          ],
+          temperature: 0,
+          response_format: {
+            type: "json_object"
           }
-        ],
-        temperature: 0
-      })
-    });
-    let finalFeedback = feedback;
-    if (polishResponse.ok) {
-      const polishData = await polishResponse.json();
-      // === Extract token usage and calculate cost ===
-      const { prompt_tokens: prompt_tokens1, completion_tokens: completion_tokens1 } = polishData.usage || {};
-      const model1 = polishData.model;
-      const pricingTable1 = {
-        "google/gemini-2.5-flash-lite-preview-09-2025": [
-          0.30,
-          2.50
-        ],
-        "google/gemini-2.5-flash-lite-preview-06-17": [
-          0.10,
-          0.40
-        ],
-        "google/gemini-2.5-flash-lite": [
-          0.10,
-          0.40
-        ],
-        "google/gemini-2.5-flash": [
-          0.30,
-          2.50
-        ],
-        "google/gemini-2.5-flash-preview-09-2025": [
-          0.30,
-          2.50
-        ],
-        "x-ai/grok-3-mini": [
-          0.30,
-          0.50
-        ],
-        "x-ai/grok-4-fast": [
-          0.20,
-          0.50
-        ],
-        "x-ai/grok-code-fast-1": [
-          0.20,
-          1.50
-        ],
-        "qwen/qwen3-coder-flash": [
-          0.30,
-          1.50
-        ],
-        "openai/o4-mini": [
-          1.10,
-          4.40
-        ],
-        "anthropic/claude-haiku-4.5": [
-          1.00,
-          5.00
-        ]
-      };
-      // Get prices per million tokens
-      const [priceIn1, priceOut1] = pricingTable1[model1] || [
-        0,
-        0
-      ];
-      const price1 = prompt_tokens1 / 1_000_000 * priceIn1 + completion_tokens1 / 1_000_000 * priceOut1;
-      // === Insert into Supabase user_credits table ===
-      const { error: insertError1 } = await supabase.from('user_credits').insert({
-        user_id: user_id,
-        tokens_in: prompt_tokens,
-        tokens_out: completion_tokens,
-        price: price1
+        })
       });
-      if (insertError1) {
-        console.error('❌ Failed to insert user credits:', insertError1.message);
+      if (polishResp.ok) {
+        const polishData = await polishResp.json();
+        const usage2 = polishData?.usage || {};
+        const model2 = polishData?.model;
+        // Log credits for second call — FIXED (uses prompt_tokens1/completion_tokens1 equivalents)
+        if (typeof usage2.prompt_tokens === "number" || typeof usage2.completion_tokens === "number") {
+          const { error: insertError2 } = await supabase.from("user_credits").insert({
+            user_id,
+            tokens_in: usage2.prompt_tokens || 0,
+            tokens_out: usage2.completion_tokens || 0,
+            price: (()=>{
+              const pricingTable = {
+                "google/gemini-2.5-flash-lite-preview-09-2025": [
+                  0.30,
+                  2.50
+                ],
+                "google/gemini-2.5-flash-lite-preview-06-17": [
+                  0.10,
+                  0.40
+                ],
+                "google/gemini-2.5-flash-lite": [
+                  0.10,
+                  0.40
+                ],
+                "google/gemini-2.5-flash": [
+                  0.30,
+                  2.50
+                ],
+                "google/gemini-2.5-flash-preview-09-2025": [
+                  0.30,
+                  2.50
+                ],
+                "x-ai/grok-3-mini": [
+                  0.30,
+                  0.50
+                ],
+                "x-ai/grok-4-fast": [
+                  0.20,
+                  0.50
+                ],
+                "x-ai/grok-code-fast-1": [
+                  0.20,
+                  1.50
+                ],
+                "qwen/qwen3-coder-flash": [
+                  0.30,
+                  1.50
+                ],
+                "openai/o4-mini": [
+                  1.10,
+                  4.40
+                ],
+                "anthropic/claude-haiku-4.5": [
+                  1.00,
+                  5.00
+                ]
+              };
+              const [pin, pout] = pricingTable[model2] || [
+                0,
+                0
+              ];
+              return (usage2.prompt_tokens || 0) / 1_000_000 * pin + (usage2.completion_tokens || 0) / 1_000_000 * pout;
+            })()
+          });
+          if (insertError2) console.error("❌ Failed to insert user credits (call 2):", insertError2.message);
+        }
+        const polished = polishData?.choices?.[0]?.message?.content;
+        if (polished) finalText = polished;
       } else {
-        console.log(`✅ Stored usage for ${model1}: ${prompt_tokens1} in, ${completion_tokens1} out, $${price1.toFixed(6)} total`);
+        console.error("Polish API failed, using original feedback");
       }
-      finalFeedback = polishData.choices?.[0]?.message?.content || feedback;
-    } else {
-      console.error('Polish API failed, using original feedback');
+    } catch (e) {
+      console.error("Polish step error, using original feedback:", e);
     }
-    // Save raw output to photo_analysis_outputs table if user_id is provided
+    // ---------- Harden & normalize the final payload (critical) ----------
+    const parsed = parseModelJsonSafe(finalText);
+    if (!parsed) throw new Error("Model output is not valid JSON after normalization");
+    const normalized = normalizePayload(parsed);
+    // Re-stringify ONCE for storage/return
+    const json = JSON.stringify(normalized);
+    // Save to DB for your poller
     if (user_id) {
-      const { error: insertError2 } = await supabase.from('photo_analysis_outputs').insert({
-        user_id: user_id,
+      const { error: saveErr } = await supabase.from("photo_analysis_outputs").insert({
+        user_id,
         question_id: question_id || null,
         exam_id: exam_id || null,
-        problem_number: problem_number ? problem_number.toString() : null,
-        raw_output: finalFeedback,
-        analysis_type: 'photo_solution'
+        problem_number: problem_number ? String(problem_number) : null,
+        raw_output: json,
+        analysis_type: "photo_solution"
       });
-      if (insertError2) {
-        console.error('Error saving raw output:', insertError2);
-      // Don't fail the request if we can't save to database
-      }
+      if (saveErr) console.error("Error saving raw output:", saveErr);
     }
+    // Return the same clean JSON text as `feedback`
     return new Response(JSON.stringify({
-      feedback: finalFeedback
+      feedback: json
     }), {
       headers: {
         ...corsHeaders,
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json"
       }
     });
   } catch (error) {
-    console.error('Error in analyze-photo-solution function:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    console.error("Error in analyze-photo-solution function:", error);
+    const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
     return new Response(JSON.stringify({
-      error: 'Ошибка API. Попробуйте ввести решение снова.',
-      retry_message: 'Произошла ошибка при обработке. Пожалуйста, попробуйте снова.',
+      error: "Ошибка API. Попробуйте ввести решение снова.",
+      retry_message: "Произошла ошибка при обработке. Пожалуйста, попробуйте снова.",
       details: errorMessage
     }), {
       status: 500,
       headers: {
         ...corsHeaders,
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json"
       }
     });
   }
