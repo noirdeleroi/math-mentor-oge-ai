@@ -1325,10 +1325,6 @@ const PracticeByNumberEgeProfMath = () => {
                         <CheckCircle className="w-4 h-4 mr-2" />
                         {uploadedImages.length > 0 ? (isProcessingPhoto ? 'Обработка...' : 'Проверить фото') : 'Проверить'}
                       </Button>
-                      <FeedbackButton
-                        contentType="frq_question"
-                        contentRef={currentQuestion.question_id}
-                      />
                     </div>
 
                   {/* Photo Attachment Buttons for questions 13–19 */}
