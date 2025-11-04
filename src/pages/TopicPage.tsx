@@ -222,7 +222,12 @@ const TopicPage: React.FC = () => {
                 </p>
               </div>
               <Button
-                onClick={() => (window.location.href = `/textbook?topic=${topicNumber}`)}
+                onClick={() => {
+                  const textbookRoute = moduleEntry.courseId === 'ege-basic' ? '/textbook-base'
+                    : moduleEntry.courseId === 'ege-advanced' ? '/textbook-prof'
+                    : '/textbook';
+                  window.location.href = `${textbookRoute}?topic=${topicNumber}`;
+                }}
                 className="bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-white font-semibold h-9 w-full md:w-auto flex-shrink-0 px-5 text-sm"
               >
                 <BookOpen className="h-4 w-4 mr-2" />

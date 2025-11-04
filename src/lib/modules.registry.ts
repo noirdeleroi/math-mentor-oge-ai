@@ -927,6 +927,795 @@ export const modulesRegistry: Record<string, ModuleConfig> = {
       }
       return null;
     }
+  },
+
+  // ========== EGE BASIC MODULES ==========
+  
+  'ege-basic-numbers': {
+    courseId: 'ege-basic',
+    slug: 'ege-basic-numbers',
+    moduleNumber: 1,
+    title: 'Модуль 1: Числа и вычисления',
+    subtitle: '8 тем • 24 видео • 8 статей • 16 упражнений',
+    masteryPoints: 2000,
+    skillsDescription: 'Навыки: Натуральные числа, Дроби, Проценты, Рациональные числа, Действительные числа, Приближённые вычисления, Работа с данными, Прикладная геометрия',
+    topicMapping: ['1.1E', '1.2E', '1.3E', '1.4E', '1.5E', '1.6E', '1.7E', '1.8E'],
+    topics: [
+      { id: 'natural-integers', title: 'Натуральные и целые числа', videos: 3, articles: 1, exercises: 2 },
+      { id: 'fractions-percentages', title: 'Дроби и проценты', videos: 3, articles: 1, exercises: 2 },
+      { id: 'rational-numbers', title: 'Арифметический корень (n-й)', videos: 3, articles: 1, exercises: 2 },
+      { id: 'real-numbers', title: 'Степени', videos: 3, articles: 1, exercises: 2 },
+      { id: 'approximations', title: 'Тригонометрические функции (sin, cos, tg) как числа', videos: 3, articles: 1, exercises: 2 },
+      { id: 'data-graphs', title: 'Логарифм числа', videos: 3, articles: 1, exercises: 2 },
+      { id: 'applied-geometry', title: 'Действительные числа', videos: 3, articles: 1, exercises: 2 },
+      { id: 'additional-topics', title: 'Преобразование выражений', videos: 3, articles: 1, exercises: 2 }
+    ],
+    quizzes: [
+      { id: 'quiz-1', title: 'Тест 1', description: 'Проверьте темы 1.1E-1.4E' },
+      { id: 'quiz-2', title: 'Тест 2', description: 'Проверьте темы 1.5E-1.8E' }
+    ],
+    orderedContent: [
+      { type: 'topic', topicIndex: 0 },
+      { type: 'topic', topicIndex: 1 },
+      { type: 'topic', topicIndex: 2 },
+      { type: 'topic', topicIndex: 3 },
+      { type: 'quiz', quizIndex: 0 },
+      { type: 'topic', topicIndex: 4 },
+      { type: 'topic', topicIndex: 5 },
+      { type: 'topic', topicIndex: 6 },
+      { type: 'topic', topicIndex: 7 },
+      { type: 'quiz', quizIndex: 1 },
+      { type: 'quiz', isFinalTest: true }
+    ],
+    getExerciseData: (topicId: string, exerciseIndex: number) => {
+      const skillMap: Record<string, number[][]> = {
+        'natural-integers': [[1, 2, 4, 189], [3, 5]],
+        'fractions-percentages': [[6, 7, 8, 9], [195, 10]],
+        'rational-numbers': [[54, 55, 56], [57]],
+        'real-numbers': [[39, 40, 41, 42, 43], [44]],
+        'approximations': [[124, 300], [301]],
+        'data-graphs': [[302, 303, 304], [305]],
+        'applied-geometry': [[18, 19, 20, 21, 22, 23, 11, 12, 13, 103, 104, 105, 106, 107, 108, 110, 111], [197, 109]],
+        'additional-topics': [[14, 15, 16, 35, 36, 37, 38, 45, 46, 47, 48, 50, 51, 52, 53, 180], [194, 49, 179]]
+      };
+      const skills = skillMap[topicId]?.[exerciseIndex] || [];
+      return { title: `Упражнение ${exerciseIndex + 1}`, skills };
+    },
+    getQuizData: (quizId: string) => {
+      if (quizId === 'quiz-1') {
+        return { title: 'Тест 1: Числа и вычисления (часть 1)', skills: [1, 2, 4, 6, 7, 8, 9, 54, 55, 56, 39, 40, 41, 42, 43, 189], questionCount: 6, isTest: true };
+      }
+      if (quizId === 'quiz-2') {
+        return { title: 'Тест 2: Числа и вычисления (часть 2)', skills: [124, 300, 301, 302, 303, 304, 18, 19, 20, 21, 22, 23, 14, 15, 16, 35, 36, 37], questionCount: 6, isTest: true };
+      }
+      if (quizId === 'module-exam') {
+        return { title: 'Итоговый экзамен модуля', skills: [1, 2, 4, 6, 7, 8, 9, 54, 55, 56, 39, 40, 41, 42, 43, 124, 300, 302, 303, 304, 18, 19, 20, 21, 22, 23, 14, 15, 16, 35, 36, 37, 38, 45, 46, 47, 48, 50, 51, 52, 53, 189], questionCount: 10, isExam: true };
+      }
+      return null;
+    }
+  },
+
+  'ege-basic-equations': {
+    courseId: 'ege-basic',
+    slug: 'ege-basic-equations',
+    moduleNumber: 2,
+    title: 'Модуль 2: Уравнения и неравенства',
+    subtitle: '8 тем • 24 видео • 8 статей • 16 упражнений',
+    masteryPoints: 2000,
+    skillsDescription: 'Навыки: Линейные уравнения, Квадратные уравнения, Рациональные уравнения, Системы, Неравенства',
+    topicMapping: ['2.1E', '2.2E', '2.3E', '2.4E', '2.5E', '2.6E', '2.7E', '2.9E'],
+    topics: [
+      { id: 'linear-equations', title: 'Целые и дробно-рациональные уравнения', videos: 3, articles: 1, exercises: 2 },
+      { id: 'quadratic-equations', title: 'Иррациональные уравнения', videos: 3, articles: 1, exercises: 2 },
+      { id: 'rational-equations', title: 'Тригонометрические уравнения', videos: 3, articles: 1, exercises: 2 },
+      { id: 'systems-equations', title: 'Показательные и логарифмические уравнения', videos: 3, articles: 1, exercises: 2 },
+      { id: 'linear-inequalities', title: 'Целые и дробно-рациональные неравенства', videos: 3, articles: 1, exercises: 2 },
+      { id: 'quadratic-inequalities', title: 'Иррациональные неравенства', videos: 3, articles: 1, exercises: 2 },
+      { id: 'rational-inequalities', title: 'Показательные и логарифмические неравенства', videos: 3, articles: 1, exercises: 2 },
+      { id: 'advanced-topics', title: 'Системы и совокупности уравнений и неравенств', videos: 3, articles: 1, exercises: 2 }
+    ],
+    quizzes: [
+      { id: 'quiz-1', title: 'Тест 1', description: 'Проверьте темы 2.1E-2.4E' },
+      { id: 'quiz-2', title: 'Тест 2', description: 'Проверьте темы 2.5E-2.7E, 2.9E' }
+    ],
+    orderedContent: [
+      { type: 'topic', topicIndex: 0 },
+      { type: 'topic', topicIndex: 1 },
+      { type: 'quiz', quizIndex: 0 },
+      { type: 'topic', topicIndex: 2 },
+      { type: 'topic', topicIndex: 3 },
+      { type: 'topic', topicIndex: 4 },
+      { type: 'topic', topicIndex: 5 },
+      { type: 'quiz', quizIndex: 1 },
+      { type: 'topic', topicIndex: 6 },
+      { type: 'topic', topicIndex: 7 },
+      { type: 'quiz', isFinalTest: true }
+    ],
+    getExerciseData: (topicId: string, exerciseIndex: number) => {
+      const skillMap: Record<string, number[][]> = {
+        'linear-equations': [[58, 59, 60], [62, 188]],
+        'quadratic-equations': [[312, 313], []],
+        'rational-equations': [[314, 315, 316, 319, 320], [317, 318, 321, 322, 323, 324]],
+        'systems-equations': [[325, 326, 327, 330, 331, 332], [328, 329, 333, 334]],
+        'linear-inequalities': [[63, 64, 66], [67, 68]],
+        'quadratic-inequalities': [[336, 337], []],
+        'rational-inequalities': [[338, 339], [340, 341, 342]],
+        'advanced-topics': [[61, 65, 347, 348, 354, 355], [349, 350, 351, 352, 353, 356, 357, 358, 359, 360]]
+      };
+      const skills = skillMap[topicId]?.[exerciseIndex] || [];
+      return { title: `Упражнение ${exerciseIndex + 1}`, skills };
+    },
+    getQuizData: (quizId: string) => {
+      if (quizId === 'quiz-1') {
+        return { title: 'Тест 1: Уравнения', skills: [58, 59, 60, 62, 312, 313, 314, 315, 316, 319, 320, 325, 326, 330, 331, 188], questionCount: 6, isTest: true };
+      }
+      if (quizId === 'quiz-2') {
+        return { title: 'Тест 2: Неравенства', skills: [63, 64, 66, 67, 68, 336, 337, 338, 339, 61, 65, 354, 355], questionCount: 6, isTest: true };
+      }
+      if (quizId === 'module-exam') {
+        return { title: 'Итоговый экзамен модуля', skills: [58, 59, 60, 62, 312, 313, 314, 315, 316, 319, 320, 325, 326, 330, 331, 63, 64, 66, 67, 68, 336, 337, 338, 339, 61, 65, 347, 348, 354, 355, 188], questionCount: 10, isExam: true };
+      }
+      return null;
+    }
+  },
+
+  'ege-basic-functions': {
+    courseId: 'ege-basic',
+    slug: 'ege-basic-functions',
+    moduleNumber: 3,
+    title: 'Модуль 3: Функции и графики',
+    subtitle: '7 тем • 21 видео • 7 статей • 14 упражнений',
+    masteryPoints: 1750,
+    skillsDescription: 'Навыки: Свойства функций, Графики, Область определения, Монотонность, Преобразования графиков',
+    topicMapping: ['3.1E', '3.2E', '3.3E', '3.4E', '3.5E', '3.7E', '3.8E'],
+    topics: [
+      { id: 'function-basics', title: 'Функции', videos: 3, articles: 1, exercises: 2 },
+      { id: 'function-properties', title: 'Свойства функции', videos: 3, articles: 1, exercises: 2 },
+      { id: 'function-graphs', title: 'Степенная функция', videos: 3, articles: 1, exercises: 2 },
+      { id: 'linear-functions', title: 'Тригонометрические функции', videos: 3, articles: 1, exercises: 2 },
+      { id: 'quadratic-functions', title: 'Показательная и логарифмическая функции', videos: 3, articles: 1, exercises: 2 },
+      { id: 'power-functions', title: 'Последовательности', videos: 3, articles: 1, exercises: 2 },
+      { id: 'graph-transformations', title: 'Арифметическая и геометрическая прогрессии. Формула сложных процентов', videos: 3, articles: 1, exercises: 2 }
+    ],
+    quizzes: [
+      { id: 'quiz-1', title: 'Тест 1', description: 'Проверьте темы 3.1E-3.4E' },
+      { id: 'quiz-2', title: 'Тест 2', description: 'Проверьте темы 3.5E, 3.7E-3.8E' }
+    ],
+    orderedContent: [
+      { type: 'topic', topicIndex: 0 },
+      { type: 'topic', topicIndex: 1 },
+      { type: 'topic', topicIndex: 2 },
+      { type: 'quiz', quizIndex: 0 },
+      { type: 'topic', topicIndex: 3 },
+      { type: 'topic', topicIndex: 4 },
+      { type: 'topic', topicIndex: 5 },
+      { type: 'quiz', quizIndex: 1 },
+      { type: 'topic', topicIndex: 6 },
+      { type: 'quiz', isFinalTest: true }
+    ],
+    getExerciseData: (topicId: string, exerciseIndex: number) => {
+      const skillMap: Record<string, number[][]> = {
+        'function-basics': [[89, 92, 93, 94], [380, 381, 382, 383, 95, 384]],
+        'function-properties': [[90, 91, 96, 97, 99, 100, 98], [101, 102, 186, 187]],
+        'function-graphs': [[385, 386], [387, 388]],
+        'linear-functions': [[389, 390], [391]],
+        'quadratic-functions': [[393, 394], [395, 396, 397]],
+        'power-functions': [[76, 77, 78], [79]],
+        'graph-transformations': [[80, 81, 82, 84, 85, 86], [83, 87, 88]]
+      };
+      const skills = skillMap[topicId]?.[exerciseIndex] || [];
+      return { title: `Упражнение ${exerciseIndex + 1}`, skills };
+    },
+    getQuizData: (quizId: string) => {
+      if (quizId === 'quiz-1') {
+        return { title: 'Тест 1: Основы функций и графики', skills: [89, 92, 93, 94, 90, 91, 96, 97, 99, 100, 385, 386, 389, 390], questionCount: 6, isTest: true };
+      }
+      if (quizId === 'quiz-2') {
+        return { title: 'Тест 2: Специальные функции', skills: [393, 394, 76, 77, 78, 80, 81, 84, 85, 86], questionCount: 6, isTest: true };
+      }
+      if (quizId === 'module-exam') {
+        return { title: 'Итоговый экзамен модуля', skills: [89, 92, 93, 94, 90, 91, 96, 97, 99, 100, 385, 386, 389, 390, 393, 394, 76, 77, 78, 80, 81, 84, 85, 86], questionCount: 10, isExam: true };
+      }
+      return null;
+    }
+  },
+
+  'ege-basic-analysis': {
+    courseId: 'ege-basic',
+    slug: 'ege-basic-analysis',
+    moduleNumber: 4,
+    title: 'Модуль 4: Начала математического анализа',
+    subtitle: '3 темы • 9 видео • 3 статьи • 9 упражнений',
+    masteryPoints: 1200,
+    skillsDescription: 'Навыки: Производная, Исследование функций, Применение производной',
+    topicMapping: ['4.1E', '4.2E', '4.3E'],
+    topics: [
+      { id: 'derivative-basics', title: 'Производная функции', videos: 3, articles: 1, exercises: 3 },
+      { id: 'function-study', title: 'Применение производной к исследованию функций', videos: 3, articles: 1, exercises: 3 },
+      { id: 'derivative-applications', title: 'Первообразная. Интеграл', videos: 3, articles: 1, exercises: 3 }
+    ],
+    quizzes: [
+      { id: 'quiz-1', title: 'Тест 1', description: 'Проверьте тему 4.1E' },
+      { id: 'quiz-2', title: 'Тест 2', description: 'Проверьте темы 4.2E-4.3E' }
+    ],
+    orderedContent: [
+      { type: 'topic', topicIndex: 0 },
+      { type: 'quiz', quizIndex: 0 },
+      { type: 'topic', topicIndex: 1 },
+      { type: 'topic', topicIndex: 2 },
+      { type: 'quiz', quizIndex: 1 },
+      { type: 'quiz', isFinalTest: true }
+    ],
+    getExerciseData: (topicId: string, exerciseIndex: number) => {
+      const skillMap: Record<string, number[][]> = {
+        'derivative-basics': [[403, 404, 405, 406], [407, 408], [409, 410]],
+        'function-study': [[411, 412], [415], [416]],
+        'derivative-applications': [[417, 418, 419, 420], [421], [422]]
+      };
+      const skills = skillMap[topicId]?.[exerciseIndex] || [];
+      return { title: `Упражнение ${exerciseIndex + 1}`, skills };
+    },
+    getQuizData: (quizId: string) => {
+      if (quizId === 'quiz-1') {
+        return { title: 'Тест 1: Производная', skills: [403, 404, 405, 406, 407, 408], questionCount: 6, isTest: true };
+      }
+      if (quizId === 'quiz-2') {
+        return { title: 'Тест 2: Исследование и применение', skills: [411, 412, 415, 417, 418, 419, 420, 421], questionCount: 6, isTest: true };
+      }
+      if (quizId === 'module-exam') {
+        return { title: 'Итоговый экзамен модуля', skills: [403, 404, 405, 406, 407, 408, 411, 412, 415, 417, 418, 419, 420, 421], questionCount: 10, isExam: true };
+      }
+      return null;
+    }
+  },
+
+  'ege-basic-sets': {
+    courseId: 'ege-basic',
+    slug: 'ege-basic-sets',
+    moduleNumber: 5,
+    title: 'Модуль 5: Множества и логика',
+    subtitle: '2 темы • 6 видео • 2 статьи • 6 упражнений',
+    masteryPoints: 900,
+    skillsDescription: 'Навыки: Операции с множествами, Логические операции, Диаграммы Эйлера-Венна',
+    topicMapping: ['5.1E', '5.2E'],
+    topics: [
+      { id: 'sets-operations', title: 'Множества. Диаграммы Эйлера–Венна', videos: 3, articles: 1, exercises: 3 },
+      { id: 'logic', title: 'Логика', videos: 3, articles: 1, exercises: 3 }
+    ],
+    quizzes: [
+      { id: 'quiz-1', title: 'Тест 1', description: 'Проверьте тему 5.1E' },
+      { id: 'quiz-2', title: 'Тест 2', description: 'Проверьте тему 5.2E' }
+    ],
+    orderedContent: [
+      { type: 'topic', topicIndex: 0 },
+      { type: 'quiz', quizIndex: 0 },
+      { type: 'topic', topicIndex: 1 },
+      { type: 'quiz', quizIndex: 1 },
+      { type: 'quiz', isFinalTest: true }
+    ],
+    getExerciseData: (topicId: string, exerciseIndex: number) => {
+      const skillMap: Record<string, number[][]> = {
+        'sets-operations': [[173, 174], [], []],
+        'logic': [[429, 430, 431], [432], []]
+      };
+      const skills = skillMap[topicId]?.[exerciseIndex] || [];
+      return { title: `Упражнение ${exerciseIndex + 1}`, skills };
+    },
+    getQuizData: (quizId: string) => {
+      if (quizId === 'quiz-1') {
+        return { title: 'Тест 1: Множества', skills: [173, 174], questionCount: 6, isTest: true };
+      }
+      if (quizId === 'quiz-2') {
+        return { title: 'Тест 2: Логика', skills: [429, 430, 431, 432], questionCount: 6, isTest: true };
+      }
+      if (quizId === 'module-exam') {
+        return { title: 'Итоговый экзамен модуля', skills: [173, 174, 429, 430, 431, 432], questionCount: 10, isExam: true };
+      }
+      return null;
+    }
+  },
+
+  'ege-basic-probability': {
+    courseId: 'ege-basic',
+    slug: 'ege-basic-probability',
+    moduleNumber: 6,
+    title: 'Модуль 6: Вероятность и статистика',
+    subtitle: '2 темы • 6 видео • 2 статьи • 6 упражнений',
+    masteryPoints: 900,
+    skillsDescription: 'Навыки: Вероятность, Статистика, Комбинаторика',
+    topicMapping: ['6.1E', '6.2E'],
+    topics: [
+      { id: 'probability', title: 'Описательная статистика', videos: 3, articles: 1, exercises: 3 },
+      { id: 'statistics', title: 'Вероятность', videos: 3, articles: 1, exercises: 3 }
+    ],
+    quizzes: [
+      { id: 'quiz-1', title: 'Тест 1', description: 'Проверьте тему 6.1E' },
+      { id: 'quiz-2', title: 'Тест 2', description: 'Проверьте тему 6.2E' }
+    ],
+    orderedContent: [
+      { type: 'topic', topicIndex: 0 },
+      { type: 'quiz', quizIndex: 0 },
+      { type: 'topic', topicIndex: 1 },
+      { type: 'quiz', quizIndex: 1 },
+      { type: 'quiz', isFinalTest: true }
+    ],
+    getExerciseData: (topicId: string, exerciseIndex: number) => {
+      const skillMap: Record<string, number[][]> = {
+        'probability': [[162, 163, 164], [165]],
+        'statistics': [[166, 167], [168]]
+      };
+      const skills = skillMap[topicId]?.[exerciseIndex] || [];
+      return { title: `Упражнение ${exerciseIndex + 1}`, skills };
+    },
+    getQuizData: (quizId: string) => {
+      if (quizId === 'quiz-1') {
+        return { title: 'Тест 1: Описательная статистика', skills: [162, 163, 164, 165], questionCount: 6, isTest: true };
+      }
+      if (quizId === 'quiz-2') {
+        return { title: 'Тест 2: Вероятность', skills: [166, 167, 168], questionCount: 6, isTest: true };
+      }
+      if (quizId === 'module-exam') {
+        return { title: 'Итоговый экзамен модуля', skills: [162, 163, 164, 165, 166, 167, 168], questionCount: 10, isExam: true };
+      }
+      return null;
+    }
+  },
+
+  'ege-basic-geometry': {
+    courseId: 'ege-basic',
+    slug: 'ege-basic-geometry',
+    moduleNumber: 7,
+    title: 'Модуль 7: Геометрия',
+    subtitle: '3 темы • 9 видео • 3 статьи • 9 упражнений',
+    masteryPoints: 1350,
+    skillsDescription: 'Навыки: Планиметрия, Стереометрия, Измерения',
+    topicMapping: ['7.1E', '7.2E', '7.3E'],
+    topics: [
+      { id: 'planimetry', title: 'Фигуры на плоскости', videos: 3, articles: 1, exercises: 3 },
+      { id: 'stereometry', title: 'Прямые и плоскости в пространстве', videos: 3, articles: 1, exercises: 3 },
+      { id: 'measurements', title: 'Многогранники', videos: 3, articles: 1, exercises: 3 }
+    ],
+    quizzes: [
+      { id: 'quiz-1', title: 'Тест 1', description: 'Проверьте тему 7.1E' },
+      { id: 'quiz-2', title: 'Тест 2', description: 'Проверьте темы 7.2E-7.3E' }
+    ],
+    orderedContent: [
+      { type: 'topic', topicIndex: 0 },
+      { type: 'quiz', quizIndex: 0 },
+      { type: 'topic', topicIndex: 1 },
+      { type: 'topic', topicIndex: 2 },
+      { type: 'quiz', quizIndex: 1 },
+      { type: 'quiz', isFinalTest: true }
+    ],
+    getExerciseData: (topicId: string, exerciseIndex: number) => {
+      const skillMap: Record<string, number[][]> = {
+        'planimetry': [[112, 113, 114, 115, 117, 118, 119, 120, 121, 123, 125, 126, 127, 128, 130, 131, 132, 133, 134, 135, 136, 137, 139, 140, 142, 143, 144, 145, 146, 147, 148, 149, 150, 153], [116, 122, 129, 138, 141, 151], [158, 159, 160, 161]],
+        'stereometry': [[453, 454, 455], [456]],
+        'measurements': [[459], [460]]
+      };
+      const skills = skillMap[topicId]?.[exerciseIndex] || [];
+      return { title: `Упражнение ${exerciseIndex + 1}`, skills };
+    },
+    getQuizData: (quizId: string) => {
+      if (quizId === 'quiz-1') {
+        return { title: 'Тест 1: Фигуры на плоскости', skills: [112, 113, 114, 115, 117, 118, 119, 120, 121, 123, 125, 126, 127, 128, 130, 131, 132, 133, 134, 135, 136, 137, 139, 140, 142, 143, 144, 145, 146, 147, 148, 149, 150, 153], questionCount: 6, isTest: true };
+      }
+      if (quizId === 'quiz-2') {
+        return { title: 'Тест 2: Пространство и многогранники', skills: [453, 454, 455, 456, 459, 460], questionCount: 6, isTest: true };
+      }
+      if (quizId === 'module-exam') {
+        return { title: 'Итоговый экзамен модуля', skills: [112, 113, 114, 115, 117, 118, 119, 120, 121, 123, 125, 126, 127, 128, 130, 131, 132, 133, 134, 135, 136, 137, 139, 140, 142, 143, 144, 145, 146, 147, 148, 149, 150, 153, 453, 454, 455, 459, 460], questionCount: 10, isExam: true };
+      }
+      return null;
+    }
+  },
+
+  'ege-basic-applied': {
+    courseId: 'ege-basic',
+    slug: 'ege-basic-applied',
+    moduleNumber: 8,
+    title: 'Модуль 8: Применение математики к прикладным задачам',
+    subtitle: '2 темы • 6 видео • 2 статьи • 8 упражнений',
+    masteryPoints: 1000,
+    skillsDescription: 'Навыки: Прикладные задачи, Работа с данными, Практические расчёты',
+    topicMapping: ['8.1E', '8.2E'],
+    topics: [
+      { id: 'applied-tasks', title: 'Чтение и анализ графических схем', videos: 3, articles: 1, exercises: 4 },
+      { id: 'data-analysis', title: 'Прикладные задачи', videos: 3, articles: 1, exercises: 4 }
+    ],
+    quizzes: [],
+    orderedContent: [
+      { type: 'topic', topicIndex: 0 },
+      { type: 'topic', topicIndex: 1 },
+      { type: 'quiz', isFinalTest: true }
+    ],
+    getExerciseData: (topicId: string, exerciseIndex: number) => {
+      const skillMap: Record<string, number[][]> = {
+        'applied-tasks': [[24, 25], [198], [199]],
+        'data-analysis': [[69, 70, 71, 72, 73, 74, 75, 192, 200, 181, 182, 183, 184], [193, 471, 472, 473, 474, 475, 476, 477, 478, 479, 480, 481, 482, 483, 484, 485, 486, 487], [185]]
+      };
+      const skills = skillMap[topicId]?.[exerciseIndex] || [];
+      return { title: `Упражнение ${exerciseIndex + 1}`, skills };
+    },
+    getQuizData: (quizId: string) => {
+      if (quizId === 'module-exam') {
+        return { title: 'Итоговый экзамен модуля', skills: [24, 25, 198, 199, 69, 70, 71, 72, 73, 74, 75, 192, 200, 181, 182, 183, 184], questionCount: 10, isExam: true };
+      }
+      return null;
+    }
+  },
+
+  // ========== EGE PROFIL MODULES ==========
+
+  'ege-profil-numbers': {
+    courseId: 'ege-advanced',
+    slug: 'ege-profil-numbers',
+    moduleNumber: 1,
+    title: 'Модуль 1: Числа и вычисления',
+    subtitle: '9 тем • 27 видео • 9 статей • 18 упражнений',
+    masteryPoints: 2250,
+    skillsDescription: 'Навыки: Натуральные числа, Дроби, Проценты, Рациональные числа, Действительные числа, Приближённые вычисления, Работа с данными, Прикладная геометрия',
+    topicMapping: ['1.1', '1.2', '1.3', '1.4', '1.5', '1.6', '1.7', '1.8', '1.9'],
+    topics: [
+      { id: 'natural-integers', title: 'Натуральные и целые числа', videos: 3, articles: 1, exercises: 2 },
+      { id: 'fractions-percentages', title: 'Дроби и проценты', videos: 3, articles: 1, exercises: 2 },
+      { id: 'rational-numbers', title: 'Рациональные числа и арифметические действия', videos: 3, articles: 1, exercises: 2 },
+      { id: 'real-numbers', title: 'Действительные числа', videos: 3, articles: 1, exercises: 2 },
+      { id: 'approximations', title: 'Приближённые вычисления', videos: 3, articles: 1, exercises: 2 },
+      { id: 'data-graphs', title: 'Работа с данными и графиками', videos: 3, articles: 1, exercises: 2 },
+      { id: 'applied-geometry', title: 'Прикладная геометрия: площади и расстояния', videos: 3, articles: 1, exercises: 2 },
+      { id: 'additional-topics', title: 'Дополнительные темы', videos: 3, articles: 1, exercises: 2 },
+      { id: 'advanced-numbers', title: 'Продвинутые темы', videos: 3, articles: 1, exercises: 2 }
+    ],
+    quizzes: [
+      { id: 'quiz-1', title: 'Тест 1', description: 'Проверьте темы 1.1-1.5' },
+      { id: 'quiz-2', title: 'Тест 2', description: 'Проверьте темы 1.6-1.9' }
+    ],
+    orderedContent: [
+      { type: 'topic', topicIndex: 0 },
+      { type: 'topic', topicIndex: 1 },
+      { type: 'topic', topicIndex: 2 },
+      { type: 'topic', topicIndex: 3 },
+      { type: 'topic', topicIndex: 4 },
+      { type: 'quiz', quizIndex: 0 },
+      { type: 'topic', topicIndex: 5 },
+      { type: 'topic', topicIndex: 6 },
+      { type: 'topic', topicIndex: 7 },
+      { type: 'topic', topicIndex: 8 },
+      { type: 'quiz', quizIndex: 1 },
+      { type: 'quiz', isFinalTest: true }
+    ],
+    getExerciseData: (topicId: string, exerciseIndex: number) => {
+      return { title: `Упражнение ${exerciseIndex + 1}`, skills: [] };
+    },
+    getQuizData: (quizId: string) => {
+      if (quizId === 'quiz-1') {
+        return { title: 'Тест 1: Числа и вычисления (часть 1)', skills: [], questionCount: 6, isTest: true };
+      }
+      if (quizId === 'quiz-2') {
+        return { title: 'Тест 2: Числа и вычисления (часть 2)', skills: [], questionCount: 6, isTest: true };
+      }
+      if (quizId === 'module-exam') {
+        return { title: 'Итоговый экзамен модуля', skills: [], questionCount: 10, isExam: true };
+      }
+      return null;
+    }
+  },
+
+  'ege-profil-equations': {
+    courseId: 'ege-advanced',
+    slug: 'ege-profil-equations',
+    moduleNumber: 2,
+    title: 'Модуль 2: Уравнения и неравенства',
+    subtitle: '12 тем • 36 видео • 12 статей • 24 упражнений',
+    masteryPoints: 3000,
+    skillsDescription: 'Навыки: Линейные уравнения, Квадратные уравнения, Рациональные уравнения, Иррациональные уравнения, Системы, Неравенства, Параметры',
+    topicMapping: ['2.1', '2.2', '2.3', '2.4', '2.5', '2.6', '2.7', '2.8', '2.9', '2.10', '2.11', '2.12'],
+    topics: [
+      { id: 'linear-equations', title: 'Линейные уравнения', videos: 3, articles: 1, exercises: 2 },
+      { id: 'quadratic-equations', title: 'Квадратные уравнения', videos: 3, articles: 1, exercises: 2 },
+      { id: 'rational-equations', title: 'Рациональные уравнения', videos: 3, articles: 1, exercises: 2 },
+      { id: 'irrational-equations', title: 'Иррациональные уравнения', videos: 3, articles: 1, exercises: 2 },
+      { id: 'systems-equations', title: 'Системы уравнений', videos: 3, articles: 1, exercises: 2 },
+      { id: 'linear-inequalities', title: 'Линейные неравенства', videos: 3, articles: 1, exercises: 2 },
+      { id: 'quadratic-inequalities', title: 'Квадратные неравенства', videos: 3, articles: 1, exercises: 2 },
+      { id: 'rational-inequalities', title: 'Рациональные неравенства', videos: 3, articles: 1, exercises: 2 },
+      { id: 'irrational-inequalities', title: 'Иррациональные неравенства', videos: 3, articles: 1, exercises: 2 },
+      { id: 'systems-inequalities', title: 'Системы неравенств', videos: 3, articles: 1, exercises: 2 },
+      { id: 'equations-parameters', title: 'Уравнения с параметрами', videos: 3, articles: 1, exercises: 2 },
+      { id: 'advanced-topics', title: 'Продвинутые темы', videos: 3, articles: 1, exercises: 2 }
+    ],
+    quizzes: [
+      { id: 'quiz-1', title: 'Тест 1', description: 'Проверьте темы 2.1-2.6' },
+      { id: 'quiz-2', title: 'Тест 2', description: 'Проверьте темы 2.7-2.12' }
+    ],
+    orderedContent: [
+      { type: 'topic', topicIndex: 0 },
+      { type: 'topic', topicIndex: 1 },
+      { type: 'topic', topicIndex: 2 },
+      { type: 'quiz', quizIndex: 0 },
+      { type: 'topic', topicIndex: 3 },
+      { type: 'topic', topicIndex: 4 },
+      { type: 'topic', topicIndex: 5 },
+      { type: 'topic', topicIndex: 6 },
+      { type: 'topic', topicIndex: 7 },
+      { type: 'quiz', quizIndex: 1 },
+      { type: 'topic', topicIndex: 8 },
+      { type: 'topic', topicIndex: 9 },
+      { type: 'topic', topicIndex: 10 },
+      { type: 'topic', topicIndex: 11 },
+      { type: 'quiz', isFinalTest: true }
+    ],
+    getExerciseData: (topicId: string, exerciseIndex: number) => {
+      return { title: `Упражнение ${exerciseIndex + 1}`, skills: [] };
+    },
+    getQuizData: (quizId: string) => {
+      if (quizId === 'quiz-1') {
+        return { title: 'Тест 1: Уравнения', skills: [], questionCount: 6, isTest: true };
+      }
+      if (quizId === 'quiz-2') {
+        return { title: 'Тест 2: Неравенства и параметры', skills: [], questionCount: 6, isTest: true };
+      }
+      if (quizId === 'module-exam') {
+        return { title: 'Итоговый экзамен модуля', skills: [], questionCount: 10, isExam: true };
+      }
+      return null;
+    }
+  },
+
+  'ege-profil-functions': {
+    courseId: 'ege-advanced',
+    slug: 'ege-profil-functions',
+    moduleNumber: 3,
+    title: 'Модуль 3: Функции и графики',
+    subtitle: '8 тем • 24 видео • 8 статей • 16 упражнений',
+    masteryPoints: 2000,
+    skillsDescription: 'Навыки: Свойства функций, Графики, Область определения, Монотонность, Преобразования графиков, Тригонометрические функции',
+    topicMapping: ['3.1', '3.2', '3.3', '3.4', '3.5', '3.6', '3.7', '3.8'],
+    topics: [
+      { id: 'function-basics', title: 'Основы функций', videos: 3, articles: 1, exercises: 2 },
+      { id: 'function-properties', title: 'Свойства функций', videos: 3, articles: 1, exercises: 2 },
+      { id: 'function-graphs', title: 'Графики функций', videos: 3, articles: 1, exercises: 2 },
+      { id: 'linear-functions', title: 'Линейная функция', videos: 3, articles: 1, exercises: 2 },
+      { id: 'quadratic-functions', title: 'Квадратичная функция', videos: 3, articles: 1, exercises: 2 },
+      { id: 'trigonometric-functions', title: 'Тригонометрические функции', videos: 3, articles: 1, exercises: 2 },
+      { id: 'power-functions', title: 'Степенные функции', videos: 3, articles: 1, exercises: 2 },
+      { id: 'graph-transformations', title: 'Преобразования графиков', videos: 3, articles: 1, exercises: 2 }
+    ],
+    quizzes: [
+      { id: 'quiz-1', title: 'Тест 1', description: 'Проверьте темы 3.1-3.4' },
+      { id: 'quiz-2', title: 'Тест 2', description: 'Проверьте темы 3.5-3.8' }
+    ],
+    orderedContent: [
+      { type: 'topic', topicIndex: 0 },
+      { type: 'topic', topicIndex: 1 },
+      { type: 'topic', topicIndex: 2 },
+      { type: 'quiz', quizIndex: 0 },
+      { type: 'topic', topicIndex: 3 },
+      { type: 'topic', topicIndex: 4 },
+      { type: 'topic', topicIndex: 5 },
+      { type: 'quiz', quizIndex: 1 },
+      { type: 'topic', topicIndex: 6 },
+      { type: 'topic', topicIndex: 7 },
+      { type: 'quiz', isFinalTest: true }
+    ],
+    getExerciseData: (topicId: string, exerciseIndex: number) => {
+      return { title: `Упражнение ${exerciseIndex + 1}`, skills: [] };
+    },
+    getQuizData: (quizId: string) => {
+      if (quizId === 'quiz-1') {
+        return { title: 'Тест 1: Основы функций и графики', skills: [], questionCount: 6, isTest: true };
+      }
+      if (quizId === 'quiz-2') {
+        return { title: 'Тест 2: Специальные функции', skills: [], questionCount: 6, isTest: true };
+      }
+      if (quizId === 'module-exam') {
+        return { title: 'Итоговый экзамен модуля', skills: [], questionCount: 10, isExam: true };
+      }
+      return null;
+    }
+  },
+
+  'ege-profil-analysis': {
+    courseId: 'ege-advanced',
+    slug: 'ege-profil-analysis',
+    moduleNumber: 4,
+    title: 'Модуль 4: Начала математического анализа',
+    subtitle: '3 темы • 9 видео • 3 статьи • 12 упражнений',
+    masteryPoints: 1500,
+    skillsDescription: 'Навыки: Производная, Исследование функций, Применение производной, Интеграл',
+    topicMapping: ['4.1', '4.2', '4.3'],
+    topics: [
+      { id: 'derivative-basics', title: 'Производная функции', videos: 3, articles: 1, exercises: 4 },
+      { id: 'function-study', title: 'Исследование функций', videos: 3, articles: 1, exercises: 4 },
+      { id: 'integral', title: 'Интеграл и его применение', videos: 3, articles: 1, exercises: 4 }
+    ],
+    quizzes: [
+      { id: 'quiz-1', title: 'Тест 1', description: 'Проверьте тему 4.1' },
+      { id: 'quiz-2', title: 'Тест 2', description: 'Проверьте темы 4.2-4.3' }
+    ],
+    orderedContent: [
+      { type: 'topic', topicIndex: 0 },
+      { type: 'quiz', quizIndex: 0 },
+      { type: 'topic', topicIndex: 1 },
+      { type: 'topic', topicIndex: 2 },
+      { type: 'quiz', quizIndex: 1 },
+      { type: 'quiz', isFinalTest: true }
+    ],
+    getExerciseData: (topicId: string, exerciseIndex: number) => {
+      return { title: `Упражнение ${exerciseIndex + 1}`, skills: [] };
+    },
+    getQuizData: (quizId: string) => {
+      if (quizId === 'quiz-1') {
+        return { title: 'Тест 1: Производная', skills: [], questionCount: 6, isTest: true };
+      }
+      if (quizId === 'quiz-2') {
+        return { title: 'Тест 2: Исследование и интеграл', skills: [], questionCount: 6, isTest: true };
+      }
+      if (quizId === 'module-exam') {
+        return { title: 'Итоговый экзамен модуля', skills: [], questionCount: 10, isExam: true };
+      }
+      return null;
+    }
+  },
+
+  'ege-profil-sets': {
+    courseId: 'ege-advanced',
+    slug: 'ege-profil-sets',
+    moduleNumber: 5,
+    title: 'Модуль 5: Множества и логика',
+    subtitle: '2 темы • 6 видео • 2 статьи • 8 упражнений',
+    masteryPoints: 1000,
+    skillsDescription: 'Навыки: Операции с множествами, Логические операции, Диаграммы Эйлера-Венна, Логические высказывания',
+    topicMapping: ['5.1', '5.2'],
+    topics: [
+      { id: 'sets-operations', title: 'Операции с множествами', videos: 3, articles: 1, exercises: 4 },
+      { id: 'logic', title: 'Логика и высказывания', videos: 3, articles: 1, exercises: 4 }
+    ],
+    quizzes: [
+      { id: 'quiz-1', title: 'Тест 1', description: 'Проверьте тему 5.1' },
+      { id: 'quiz-2', title: 'Тест 2', description: 'Проверьте тему 5.2' }
+    ],
+    orderedContent: [
+      { type: 'topic', topicIndex: 0 },
+      { type: 'quiz', quizIndex: 0 },
+      { type: 'topic', topicIndex: 1 },
+      { type: 'quiz', quizIndex: 1 },
+      { type: 'quiz', isFinalTest: true }
+    ],
+    getExerciseData: (topicId: string, exerciseIndex: number) => {
+      return { title: `Упражнение ${exerciseIndex + 1}`, skills: [] };
+    },
+    getQuizData: (quizId: string) => {
+      if (quizId === 'quiz-1') {
+        return { title: 'Тест 1: Множества', skills: [], questionCount: 6, isTest: true };
+      }
+      if (quizId === 'quiz-2') {
+        return { title: 'Тест 2: Логика', skills: [], questionCount: 6, isTest: true };
+      }
+      if (quizId === 'module-exam') {
+        return { title: 'Итоговый экзамен модуля', skills: [], questionCount: 10, isExam: true };
+      }
+      return null;
+    }
+  },
+
+  'ege-profil-probability': {
+    courseId: 'ege-advanced',
+    slug: 'ege-profil-probability',
+    moduleNumber: 6,
+    title: 'Модуль 6: Вероятность и статистика',
+    subtitle: '3 темы • 9 видео • 3 статьи • 9 упражнений',
+    masteryPoints: 1350,
+    skillsDescription: 'Навыки: Вероятность, Статистика, Комбинаторика',
+    topicMapping: ['6.1', '6.2', '6.3'],
+    topics: [
+      { id: 'probability', title: 'Вероятность', videos: 3, articles: 1, exercises: 3 },
+      { id: 'statistics', title: 'Статистика', videos: 3, articles: 1, exercises: 3 },
+      { id: 'combinatorics', title: 'Комбинаторика', videos: 3, articles: 1, exercises: 3 }
+    ],
+    quizzes: [
+      { id: 'quiz-1', title: 'Тест 1', description: 'Проверьте тему 6.1' },
+      { id: 'quiz-2', title: 'Тест 2', description: 'Проверьте темы 6.2-6.3' }
+    ],
+    orderedContent: [
+      { type: 'topic', topicIndex: 0 },
+      { type: 'quiz', quizIndex: 0 },
+      { type: 'topic', topicIndex: 1 },
+      { type: 'topic', topicIndex: 2 },
+      { type: 'quiz', quizIndex: 1 },
+      { type: 'quiz', isFinalTest: true }
+    ],
+    getExerciseData: (topicId: string, exerciseIndex: number) => {
+      return { title: `Упражнение ${exerciseIndex + 1}`, skills: [] };
+    },
+    getQuizData: (quizId: string) => {
+      if (quizId === 'quiz-1') {
+        return { title: 'Тест 1: Вероятность', skills: [], questionCount: 6, isTest: true };
+      }
+      if (quizId === 'quiz-2') {
+        return { title: 'Тест 2: Статистика и комбинаторика', skills: [], questionCount: 6, isTest: true };
+      }
+      if (quizId === 'module-exam') {
+        return { title: 'Итоговый экзамен модуля', skills: [], questionCount: 10, isExam: true };
+      }
+      return null;
+    }
+  },
+
+  'ege-profil-geometry': {
+    courseId: 'ege-advanced',
+    slug: 'ege-profil-geometry',
+    moduleNumber: 7,
+    title: 'Модуль 7: Геометрия',
+    subtitle: '4 темы • 12 видео • 4 статьи • 12 упражнений',
+    masteryPoints: 1800,
+    skillsDescription: 'Навыки: Планиметрия, Стереометрия, Измерения, Векторы',
+    topicMapping: ['7.1', '7.2', '7.3', '7.4'],
+    topics: [
+      { id: 'planimetry', title: 'Планиметрия', videos: 3, articles: 1, exercises: 3 },
+      { id: 'stereometry', title: 'Стереометрия', videos: 3, articles: 1, exercises: 3 },
+      { id: 'measurements', title: 'Измерения в геометрии', videos: 3, articles: 1, exercises: 3 },
+      { id: 'vectors', title: 'Векторы', videos: 3, articles: 1, exercises: 3 }
+    ],
+    quizzes: [
+      { id: 'quiz-1', title: 'Тест 1', description: 'Проверьте темы 7.1-7.2' },
+      { id: 'quiz-2', title: 'Тест 2', description: 'Проверьте темы 7.3-7.4' }
+    ],
+    orderedContent: [
+      { type: 'topic', topicIndex: 0 },
+      { type: 'topic', topicIndex: 1 },
+      { type: 'quiz', quizIndex: 0 },
+      { type: 'topic', topicIndex: 2 },
+      { type: 'topic', topicIndex: 3 },
+      { type: 'quiz', quizIndex: 1 },
+      { type: 'quiz', isFinalTest: true }
+    ],
+    getExerciseData: (topicId: string, exerciseIndex: number) => {
+      return { title: `Упражнение ${exerciseIndex + 1}`, skills: [] };
+    },
+    getQuizData: (quizId: string) => {
+      if (quizId === 'quiz-1') {
+        return { title: 'Тест 1: Планиметрия и стереометрия', skills: [], questionCount: 6, isTest: true };
+      }
+      if (quizId === 'quiz-2') {
+        return { title: 'Тест 2: Измерения и векторы', skills: [], questionCount: 6, isTest: true };
+      }
+      if (quizId === 'module-exam') {
+        return { title: 'Итоговый экзамен модуля', skills: [], questionCount: 10, isExam: true };
+      }
+      return null;
+    }
+  },
+
+  'ege-profil-applied': {
+    courseId: 'ege-advanced',
+    slug: 'ege-profil-applied',
+    moduleNumber: 8,
+    title: 'Модуль 8: Применение математики к прикладным задачам',
+    subtitle: '2 темы • 6 видео • 2 статьи • 10 упражнений',
+    masteryPoints: 1200,
+    skillsDescription: 'Навыки: Прикладные задачи, Работа с данными, Практические расчёты, Оптимизация',
+    topicMapping: ['8.1', '8.2'],
+    topics: [
+      { id: 'applied-tasks', title: 'Прикладные задачи', videos: 3, articles: 1, exercises: 5 },
+      { id: 'data-analysis', title: 'Анализ данных и оптимизация', videos: 3, articles: 1, exercises: 5 }
+    ],
+    quizzes: [],
+    orderedContent: [
+      { type: 'topic', topicIndex: 0 },
+      { type: 'topic', topicIndex: 1 },
+      { type: 'quiz', isFinalTest: true }
+    ],
+    getExerciseData: (topicId: string, exerciseIndex: number) => {
+      return { title: `Упражнение ${exerciseIndex + 1}`, skills: [] };
+    },
+    getQuizData: (quizId: string) => {
+      if (quizId === 'module-exam') {
+        return { title: 'Итоговый экзамен модуля', skills: [], questionCount: 10, isExam: true };
+      }
+      return null;
+    }
   }
 
 };

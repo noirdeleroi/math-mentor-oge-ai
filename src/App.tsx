@@ -54,6 +54,8 @@ const HomeworkEgeb = lazy(() => import("./pages/HomeworkEgeb"));
 const HomeworkEgeprof = lazy(() => import("./pages/HomeworkEgeprof"));
 const HomeworkFipiPractice = lazy(() => import("./pages/HomeworkFipiPractice"));
 const CellardLp2 = lazy(() => import("./pages/CellardLp2"));
+const PlatformOgeb = lazy(() => import("./pages/PlatformOgeb"));
+const PlatformOgep = lazy(() => import("./pages/PlatformOgep"));
 
 const Egeruses2 = lazy(() => import("./pages/Egeruses2"));
 const EgerusesAnalytics = lazy(() => import("./pages/EgerusesAnalytics"));
@@ -88,6 +90,8 @@ const App = () => (
                 <Route path="/module/:moduleSlug" element={<ModulePage />} />
                 <Route path="/module/:moduleSlug/topic/:topicId" element={<TopicPage />} />
                 <Route path="/cellard-lp2" element={<CellardLp2 />} />
+                <Route path="/platformogeb" element={<PlatformOgeb />} />
+                <Route path="/platformogep" element={<PlatformOgep />} />
           
                 {/* put any other pages that should share the look here: */}
                 <Route path="/textbook" element={<DigitalTextbook />} />

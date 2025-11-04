@@ -320,3 +320,4 @@ Refer to:
 - **"How do I implement task Y?"** → `IMPLEMENTATION_TASKS.md` - Search for "Task Y"
 - **"What should I test?"** → `DEVICE_PHOTO_FLOW_SUMMARY.md` - Verification Checklist section
 
+

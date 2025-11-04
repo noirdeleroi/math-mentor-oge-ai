@@ -140,7 +140,12 @@ const ModulePage = () => {
             {/* Read Textbook */}
             <div
               className="flex items-center justify-between p-3 bg-white/70 rounded-lg border border-purple-200/40 hover:bg-white/90 cursor-pointer transition-colors"
-              onClick={() => (window.location.href = `/textbook?topic=${module.topicMapping[topicIndex]}`)}
+              onClick={() => {
+                const textbookRoute = module.courseId === 'ege-basic' ? '/textbook-base' 
+                  : module.courseId === 'ege-advanced' ? '/textbook-prof' 
+                  : '/textbook';
+                window.location.href = `${textbookRoute}?topic=${module.topicMapping[topicIndex]}`;
+              }}
             >
               <div className="flex items-center space-x-3 min-w-0 flex-1">
                 <div className="p-2 bg-purple-100 rounded-full flex-shrink-0">
@@ -272,6 +277,24 @@ const ModulePage = () => {
     </motion.div>
   );
 
+  const getCourseId = (courseId: string) => {
+    switch (courseId) {
+      case 'oge-math': return '1';
+      case 'ege-basic': return '2';
+      case 'ege-advanced': return '3';
+      default: return '1';
+    }
+  };
+
+  const getPlatformRoute = (courseId: string) => {
+    switch (courseId) {
+      case 'ege-basic': return '/platformogeb';
+      case 'ege-advanced': return '/platformogep';
+      case 'oge-math':
+      default: return '/cellard-lp2';
+    }
+  };
+
   const renderQuiz = (quiz: QuizContent, index: number) => (
     <motion.div
       key={quiz.id}
@@ -294,11 +317,12 @@ const ModulePage = () => {
 
               const isFinal = quiz.id === "module-exam";
               const itemId = `${moduleSlug}-${quiz.id}`;
+              const numericCourseId = getCourseId(module.courseId);
               setSelectedExercise({
                 ...quizData,
                 isModuleTest: isFinal,
                 moduleTopics: isFinal ? module.topicMapping : undefined,
-                courseId: isFinal ? "1" : undefined,
+                courseId: isFinal ? numericCourseId : undefined,
                 itemId
               });
             }}
@@ -383,7 +407,7 @@ const ModulePage = () => {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => navigate("/cellard-lp2")}
+            onClick={() => navigate(getPlatformRoute(module.courseId))}
             className="mr-4 hover:bg-white/20 text-white"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -470,11 +494,12 @@ const ModulePage = () => {
               const examData = module.getQuizData?.('module-exam');
               if (examData) {
                 const itemId = `${moduleSlug}-module-exam`;
+                const numericCourseId = getCourseId(module.courseId);
                 setSelectedExercise({
                   ...examData,
                   isModuleTest: true,
                   moduleTopics: module.topicMapping,
-                  courseId: "1",
+                  courseId: numericCourseId,
                   itemId
                 });
               }

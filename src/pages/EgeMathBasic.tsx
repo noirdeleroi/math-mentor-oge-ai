@@ -403,6 +403,10 @@ ${updated.feedback_message}
     navigate("/egemathbasic-practice");
   };
 
+  const handlePlatformClick = () => {
+    navigate("/platformogeb");
+  };
+
   const handleTextbookClick = () => {
     navigate("/textbook-base");
   };
@@ -491,6 +495,14 @@ ${updated.feedback_message}
         className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
       >
         Практика
+      </Button>
+      
+      <Button
+        onClick={() => { handlePlatformClick(); if (isMobile) setIsSidebarOpen(false); }}
+        variant="ghost"
+        className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground pl-8"
+      >
+        Модули
       </Button>
       
       <Button
