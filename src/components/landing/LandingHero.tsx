@@ -17,7 +17,7 @@ export default function LandingHero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
             >
-              Умная платформа подготовки к ОГЭ и ЕГЭ по математике
+              Умная платформа подготовки к ОГЭ и ЕГЭ
             </motion.h1>
             
             <motion.p 
