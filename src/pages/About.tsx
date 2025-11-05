@@ -132,6 +132,20 @@ const About = () => {
             </p>
           </div>
 
+          {/* Video Section */}
+          <div className="mb-12 rounded-2xl overflow-hidden border border-white/20 shadow-2xl">
+            <video 
+              className="w-full"
+              autoPlay 
+              loop 
+              muted 
+              playsInline
+            >
+              <source src="https://kbaazksvkvnafrwtmkcw.supabase.co/storage/v1/object/public/videos/test11.mp4" type="video/mp4" />
+              Ваш браузер не поддерживает видео.
+            </video>
+          </div>
+
           {/* Content Section */}
           <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 mb-8">
             <div className="prose prose-lg max-w-none prose-invert prose-headings:text-white prose-p:text-gray-300 prose-strong:text-white prose-li:text-gray-300 prose-table:text-gray-300 prose-code:text-white">
