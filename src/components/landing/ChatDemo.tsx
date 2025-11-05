@@ -22,7 +22,7 @@ export default function ChatDemo() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-          className="max-w-5xl mx-auto grid md:grid-cols-2 gap-6 items-center"
+          className="max-w-5xl mx-auto grid md:grid-cols-[3fr_2fr] gap-6 items-center"
         >
           {/* Video on the left */}
           <div className="relative rounded-2xl overflow-hidden shadow-2xl">
@@ -39,43 +39,43 @@ export default function ChatDemo() {
           </div>
 
           {/* Info cards on the right */}
-          <div className="space-y-4">
-            <div className="bg-white dark:bg-white/95 border-border shadow-lg p-5 rounded-xl">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
-                  <MessageCircle className="w-6 h-6 text-white" />
+          <div className="space-y-3">
+            <div className="bg-white dark:bg-white/95 border-border shadow-lg p-4 rounded-xl">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                  <MessageCircle className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-gray-900 mb-2">Персональный помощник</h3>
-                  <p className="text-sm text-gray-700">
+                  <h3 className="text-base font-bold text-gray-900 mb-1">Персональный помощник</h3>
+                  <p className="text-xs text-gray-700">
                     Ёжик отвечает на вопросы по математике, объясняет сложные темы и помогает с решением задач в режиме реального времени.
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white dark:bg-white/95 border-border shadow-lg p-5 rounded-xl">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Sparkles className="w-6 h-6 text-white" />
+            <div className="bg-white dark:bg-white/95 border-border shadow-lg p-4 rounded-xl">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Sparkles className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-gray-900 mb-2">Умный подбор заданий</h3>
-                  <p className="text-sm text-gray-700">
+                  <h3 className="text-base font-bold text-gray-900 mb-1">Умный подбор заданий</h3>
+                  <p className="text-xs text-gray-700">
                     AI-ассистент анализирует ваши слабые места и подбирает задания для эффективной подготовки к экзаменам.
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white dark:bg-white/95 border-border shadow-lg p-5 rounded-xl">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-indigo-500 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Brain className="w-6 h-6 text-white" />
+            <div className="bg-white dark:bg-white/95 border-border shadow-lg p-4 rounded-xl">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 bg-indigo-500 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Brain className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-gray-900 mb-2">Обучение с пониманием</h3>
-                  <p className="text-sm text-gray-700">
+                  <h3 className="text-base font-bold text-gray-900 mb-1">Обучение с пониманием</h3>
+                  <p className="text-xs text-gray-700">
                     Не просто решения, а детальные объяснения каждого шага. Ёжик учит думать и понимать математику.
                   </p>
                 </div>
