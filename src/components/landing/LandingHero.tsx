@@ -38,7 +38,7 @@ export default function LandingHero() {
               <Button 
                 asChild 
                 size="lg" 
-                className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white px-10 py-7 text-xl rounded-2xl font-bold shadow-2xl hover:shadow-primary/50 transition-all duration-300 hover:scale-105 hover:-translate-y-1"
+                className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-10 py-7 text-xl rounded-2xl font-bold shadow-2xl hover:shadow-orange-500/50 transition-all duration-300 hover:scale-105 hover:-translate-y-1"
               >
                 <Link to="/register" className="flex items-center gap-3">
                   <BookOpen className="w-7 h-7" />
