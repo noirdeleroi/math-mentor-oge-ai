@@ -8,7 +8,7 @@ export default function LandingHero() {
     <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
       {/* Main Content */}
       <div className="container mx-auto px-4 py-20 relative z-10 bg-transparent">
-        <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+        <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12 bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20 shadow-xl">
           {/* Left Side - Content */}
           <div className="flex-1 max-w-2xl text-left p-8 rounded-2xl shadow-lg" style={{ backgroundColor: 'rgba(248, 250, 252, 0.95)' }}>
             <motion.h1 
