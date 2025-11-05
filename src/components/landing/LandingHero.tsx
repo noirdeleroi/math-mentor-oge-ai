@@ -49,15 +49,18 @@ export default function LandingHero() {
               </Button>
               
               <Button 
-                asChild 
                 variant="outline" 
                 size="lg" 
                 className="border-2 border-primary text-primary hover:bg-primary/5 px-8 py-6 text-lg rounded-full font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                onClick={() => {
+                  document.getElementById('highlights-section')?.scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                  });
+                }}
               >
-                <Link to="/questions" className="flex items-center gap-3">
-                  <Target className="w-6 h-6" />
-                  Посмотреть практику
-                </Link>
+                <Target className="w-6 h-6" />
+                Узнать больше
               </Button>
             </motion.div>
           </div>

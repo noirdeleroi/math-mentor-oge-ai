@@ -14,7 +14,7 @@ const cardVariants = {
 
 export default function HighlightCards() {
   return (
-    <section className="py-24 bg-muted/30">
+    <section id="highlights-section" className="py-24 bg-muted/30">
       <div className="container mx-auto px-4">
         <motion.div
           initial="hidden"
