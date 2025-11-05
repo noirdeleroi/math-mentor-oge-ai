@@ -5,7 +5,7 @@ export const EssaySection = () => {
   return (
     <section id="essay-section" className="py-20 px-4">
       <div className="max-w-7xl mx-auto bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 shadow-xl">
-        <h2 className="text-4xl md:text-5xl font-bold text-center mb-12">
+        <h2 className="text-4xl md:text-5xl font-bold text-center mb-12 bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent">
           Сочинение
         </h2>
         
