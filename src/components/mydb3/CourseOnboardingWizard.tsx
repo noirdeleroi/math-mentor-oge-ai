@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
 import {
   GraduationCap,
   Gauge,
@@ -11,6 +12,7 @@ import {
   Star,
   Check,
   X,
+  Sparkles,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -268,48 +270,62 @@ export function CourseOnboardingWizard({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="text-center"
+      transition={{ type: "spring", damping: 20, stiffness: 300 }}
+      className="text-center mb-2"
     >
-      <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#a8e063]/15 to-[#56ab2f]/15 ring-1 ring-white/10">
+      <motion.div 
+        className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-[#a8e063]/20 to-[#56ab2f]/20 ring-2 ring-[#a8e063]/30 shadow-lg shadow-[#a8e063]/20"
+        whileHover={{ scale: 1.05, rotate: 5 }}
+        transition={{ type: "spring", stiffness: 400 }}
+      >
         {icon}
-      </div>
-      <h2 className="text-2xl font-bold text-white mb-1">{title}</h2>
-      <p className="text-[#9ca3af] text-sm">{subtitle}</p>
+      </motion.div>
+      <h2 className="text-2xl md:text-3xl font-bold text-white mb-2 tracking-tight">{title}</h2>
+      <p className="text-[#9ca3af] text-sm md:text-base">{subtitle}</p>
     </motion.div>
   );
 
   const Step1 = () => (
-    <div className="space-y-8">
+    <div className="space-y-10">
       <StepHeader
-        icon={<GraduationCap className="h-7 w-7 text-[#a8e063]" />}
+        icon={<GraduationCap className="h-8 w-8 text-[#a8e063]" />}
         title="Твоя школьная оценка"
         subtitle="Средняя по математике"
       />
-      <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-cols-4 gap-3 px-2">
         {gradePills.map((grade, i) => {
           const selected = data.schoolGrade === grade;
           return (
             <motion.button
               key={grade}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05 }}
+              initial={{ opacity: 0, scale: 0.8, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ 
+                delay: i * 0.08,
+                type: "spring",
+                damping: 15,
+                stiffness: 300
+              }}
+              whileHover={{ scale: 1.08, y: -2 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => updateData({ schoolGrade: grade })}
               className={[
-                "relative h-14 rounded-xl font-semibold transition-all border",
+                "relative h-16 rounded-2xl font-bold text-2xl transition-all border-2",
                 selected
-                  ? "bg-gradient-to-br from-[#a8e063] to-[#56ab2f] text-white border-transparent shadow-lg shadow-green-500/30"
-                  : "bg-[#1f2937] text-[#d1d5db] hover:bg-[#253044] border-white/10",
+                  ? "bg-gradient-to-br from-[#a8e063] to-[#56ab2f] text-white border-transparent shadow-xl shadow-green-500/40 scale-105"
+                  : "bg-[#1f2937] text-[#d1d5db] hover:bg-[#253044] border-white/10 hover:border-[#a8e063]/30",
               ].join(" ")}
               aria-pressed={selected}
             >
-              <span className="text-xl">{grade}</span>
+              {grade}
               {selected && (
                 <motion.span
                   layoutId="grade-check"
-                  className="absolute -right-2 -top-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/20"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="absolute -right-2 -top-2 inline-flex h-7 w-7 items-center justify-center rounded-full bg-white text-[#56ab2f] shadow-lg"
                 >
-                  <Check className="w-4 h-4 text-white" />
+                  <Check className="w-5 h-5" strokeWidth={3} />
                 </motion.span>
               )}
             </motion.button>
@@ -320,50 +336,65 @@ export function CourseOnboardingWizard({
   );
 
   const Step2 = () => (
-    <div className="space-y-8">
+    <div className="space-y-10">
       <StepHeader
-        icon={<Gauge className="h-7 w-7 text-[#a8e063]" />}
+        icon={<Gauge className="h-8 w-8 text-[#a8e063]" />}
         title="Самооценка уровня"
         subtitle="Выбери уровень, как ты себя ощущаешь"
       />
-      <div className="grid grid-cols-5 gap-3">
+      <div className="grid grid-cols-5 gap-2 md:gap-3">
         {([1, 2, 3, 4, 5] as const).map((lvl, i) => {
           const selected = data.basicLevel === lvl;
           return (
             <motion.button
               key={lvl}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05 }}
+              initial={{ opacity: 0, scale: 0.8, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ 
+                delay: i * 0.08,
+                type: "spring",
+                damping: 15,
+                stiffness: 300
+              }}
+              whileHover={{ scale: 1.05, y: -3 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => updateData({ basicLevel: lvl })}
               className={[
-                "group relative flex h-20 flex-col items-center justify-center gap-1 rounded-xl border text-center",
+                "group relative flex h-24 flex-col items-center justify-center gap-2 rounded-2xl border-2 text-center transition-all",
                 selected
-                  ? "bg-gradient-to-br from-[#a8e063] to-[#56ab2f] text-white border-transparent shadow-lg shadow-green-500/30"
-                  : "bg-[#1f2937] text-[#e5e7eb] hover:bg-[#253044] border-white/10",
+                  ? "bg-gradient-to-br from-[#a8e063] to-[#56ab2f] text-white border-transparent shadow-xl shadow-green-500/40 scale-105"
+                  : "bg-[#1f2937] text-[#e5e7eb] hover:bg-[#253044] border-white/10 hover:border-[#a8e063]/30",
               ].join(" ")}
               aria-pressed={selected}
             >
               <div className="flex items-center gap-0.5">
                 {Array.from({ length: 5 }).map((_, s) => (
-                  <Star
+                  <motion.div
                     key={s}
-                    className={
-                      s < lvl
-                        ? "w-4 h-4 text-current"
-                        : "w-4 h-4 text-white/30"
-                    }
-                    fill={s < lvl ? "currentColor" : "none"}
-                  />
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: i * 0.08 + s * 0.03 }}
+                  >
+                    <Star
+                      className={
+                        s < lvl
+                          ? "w-3 h-3 md:w-4 md:h-4 text-current"
+                          : "w-3 h-3 md:w-4 md:h-4 text-white/30"
+                      }
+                      fill={s < lvl ? "currentColor" : "none"}
+                    />
+                  </motion.div>
                 ))}
               </div>
-              <div className="text-xs opacity-90">{levelLabels[lvl - 1]}</div>
+              <div className="text-[10px] md:text-xs font-medium opacity-90">{levelLabels[lvl - 1]}</div>
               {selected && (
                 <motion.span
                   layoutId="level-check"
-                  className="absolute -right-2 -top-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/20"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="absolute -right-2 -top-2 inline-flex h-7 w-7 items-center justify-center rounded-full bg-white text-[#56ab2f] shadow-lg"
                 >
-                  <Check className="w-4 h-4 text-white" />
+                  <Check className="w-5 h-5" strokeWidth={3} />
                 </motion.span>
               )}
             </motion.button>
@@ -374,32 +405,39 @@ export function CourseOnboardingWizard({
   );
 
   const Step3 = () => (
-    <div className="space-y-8">
+    <div className="space-y-10">
       <StepHeader
-        icon={<ClipboardCheck className="h-7 w-7 text-[#a8e063]" />}
+        icon={<ClipboardCheck className="h-8 w-8 text-[#a8e063]" />}
         title="Пробный тест"
         subtitle="Проходил(а) ли ты недавно пробник?"
       />
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-4 px-4">
         {[{ label: "Нет", v: false }, { label: "Да", v: true }].map(
           ({ label, v }, i) => {
             const selected = data.tookMock === v;
             return (
               <motion.button
                 key={label}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05 }}
+                initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ 
+                  delay: i * 0.1,
+                  type: "spring",
+                  damping: 15,
+                  stiffness: 300
+                }}
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => updateData({ tookMock: v, mockScore: undefined })}
                 className={[
-                  "relative h-12 rounded-xl font-medium border",
+                  "relative h-16 rounded-2xl font-semibold text-lg border-2 transition-all",
                   selected
-                    ? "bg-gradient-to-br from-[#a8e063] to-[#56ab2f] text-white border-transparent shadow-lg shadow-green-500/30"
-                    : "bg-[#1f2937] text-[#e5e7eb] hover:bg-[#253044] border-white/10",
+                    ? "bg-gradient-to-br from-[#a8e063] to-[#56ab2f] text-white border-transparent shadow-xl shadow-green-500/40"
+                    : "bg-[#1f2937] text-[#e5e7eb] hover:bg-[#253044] border-white/10 hover:border-[#a8e063]/30",
                 ].join(" ")}
               >
                 <span className="inline-flex items-center gap-2">
-                  {v ? <Check className="w-4 h-4" /> : <X className="w-4 h-4" />}
+                  {v ? <Check className="w-5 h-5" strokeWidth={2.5} /> : <X className="w-5 h-5" strokeWidth={2.5} />}
                   {label}
                 </span>
               </motion.button>
@@ -408,15 +446,17 @@ export function CourseOnboardingWizard({
         )}
       </div>
 
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {data.tookMock && (
           <motion.div
-            initial={{ opacity: 0, height: 0, y: -10 }}
-            animate={{ opacity: 1, height: "auto", y: 0 }}
-            exit={{ opacity: 0, height: 0, y: -10 }}
-            className="space-y-3"
+            initial={{ opacity: 0, height: 0, scale: 0.9 }}
+            animate={{ opacity: 1, height: "auto", scale: 1 }}
+            exit={{ opacity: 0, height: 0, scale: 0.9 }}
+            transition={{ type: "spring", damping: 20, stiffness: 300 }}
+            className="space-y-4"
           >
-            <Label className="text-sm font-medium text-white">
+            <Label className="text-base font-semibold text-white flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-[#a8e063]" />
               Баллы по пробнику (0–100)
             </Label>
             <Input
@@ -433,13 +473,17 @@ export function CourseOnboardingWizard({
                 })
               }
               placeholder="Например, 62"
-              className="h-12 text-center text-lg font-semibold bg-[#1f2937] border-white/10 text-white placeholder:text-white/40 focus-visible:ring-[#a8e063]"
+              className="h-14 text-center text-xl font-bold bg-[#1f2937] border-2 border-white/10 text-white placeholder:text-white/40 focus-visible:ring-2 focus-visible:ring-[#a8e063] focus-visible:border-[#a8e063] transition-all rounded-xl"
             />
             {data.mockScore !== undefined &&
               (data.mockScore < 0 || data.mockScore > 100) && (
-                <p className="text-xs text-red-400">
+                <motion.p 
+                  initial={{ opacity: 0, y: -5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-sm text-red-400 text-center"
+                >
                   Введи число от 0 до 100.
-                </p>
+                </motion.p>
               )}
           </motion.div>
         )}
@@ -454,41 +498,44 @@ export function CourseOnboardingWizard({
     return (
       <div className="space-y-8">
         <StepHeader
-          icon={<Target className="h-7 w-7 text-[#a8e063]" />}
+          icon={<Target className="h-8 w-8 text-[#a8e063]" />}
           title="Цель по баллам"
           subtitle={`Выбери цель (макс: ${maxScore})`}
         />
 
         <motion.div
           key={currentGoal}
-          initial={{ scale: 1.05, opacity: 0 }}
+          initial={{ scale: 1.1, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="text-center"
+          transition={{ type: "spring", damping: 15, stiffness: 300 }}
+          className="text-center py-4"
         >
-          <div className="text-6xl font-black bg-gradient-to-r from-[#a8e063] to-[#56ab2f] bg-clip-text text-transparent">
+          <motion.div 
+            className="text-7xl md:text-8xl font-black bg-gradient-to-r from-[#a8e063] via-[#7fc84f] to-[#56ab2f] bg-clip-text text-transparent drop-shadow-2xl"
+            animate={{ 
+              backgroundPosition: ["0%", "100%", "0%"],
+            }}
+            transition={{ 
+              duration: 3, 
+              repeat: Infinity,
+              ease: "linear"
+            }}
+          >
             {currentGoal}
-          </div>
+          </motion.div>
+          <div className="text-sm text-white/60 mt-2 font-medium">баллов</div>
         </motion.div>
 
-        <div className="relative py-2">
-          <input
-            type="range"
+        <div className="relative py-6 px-2">
+          <Slider
+            value={[currentGoal]}
+            onValueChange={([val]) => updateData({ goalScore: val })}
             min={0}
             max={maxScore}
             step={1}
-            value={currentGoal}
-            onChange={(e) => updateData({ goalScore: parseInt(e.target.value, 10) })}
-            className="w-full h-3 bg-[#1f2937] rounded-full appearance-none cursor-pointer"
-            style={{
-              background: `linear-gradient(to right,#a8e063 0%,#56ab2f ${
-                (currentGoal / maxScore) * 100
-              }%,#1f2937 ${(currentGoal / maxScore) * 100}%,#1f2937 100%)`,
-            }}
-            aria-valuemin={0}
-            aria-valuemax={maxScore}
-            aria-valuenow={currentGoal}
+            className="w-full"
           />
-          <div className="flex justify-between text-xs text-white/60 mt-2">
+          <div className="flex justify-between text-sm font-medium text-white/70 mt-4 px-1">
             <span>0</span>
             <span>{maxScore}</span>
           </div>
@@ -536,30 +583,50 @@ export function CourseOnboardingWizard({
           {data.goalScore != null && (
             <motion.div
               key={getSmartComment()}
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -6 }}
-              className="text-center text-sm text-white/90 bg-white/[0.06] border border-white/10 py-3 px-4 rounded-xl"
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: -10 }}
+              transition={{ type: "spring", damping: 20, stiffness: 300 }}
+              className="text-center text-base font-medium text-white bg-gradient-to-r from-white/10 to-white/5 border-2 border-white/20 py-4 px-5 rounded-2xl shadow-xl backdrop-blur-sm"
             >
+              <Sparkles className="inline-block w-5 h-5 text-[#a8e063] mr-2 mb-1" />
               {getSmartComment()}
             </motion.div>
           )}
         </AnimatePresence>
 
         {error && (
-          <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-300">
+          <motion.div 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="rounded-xl border-2 border-red-500/40 bg-red-500/10 p-4 text-sm text-red-300 text-center font-medium"
+          >
             {error}
-          </div>
+          </motion.div>
         )}
 
         <motion.button
-          whileHover={{ scale: 1.01 }}
+          whileHover={{ scale: 1.02, boxShadow: "0 20px 40px rgba(168, 224, 99, 0.3)" }}
           whileTap={{ scale: 0.98 }}
           onClick={handleSubmit}
           disabled={isSubmitting}
-          className="w-full h-12 bg-gradient-to-r from-[#a8e063] to-[#56ab2f] text-white font-semibold rounded-xl shadow-lg shadow-green-500/20 disabled:opacity-50"
+          className="w-full h-14 bg-gradient-to-r from-[#a8e063] to-[#56ab2f] text-white text-lg font-bold rounded-xl shadow-2xl shadow-green-500/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
         >
-          {isSubmitting ? "Сохраняем…" : "Готово"}
+          {isSubmitting ? (
+            <span className="flex items-center justify-center gap-2">
+              <motion.div 
+                className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              />
+              Сохраняем…
+            </span>
+          ) : (
+            <span className="flex items-center justify-center gap-2">
+              <Check className="w-5 h-5" strokeWidth={3} />
+              Готово
+            </span>
+          )}
         </motion.button>
       </div>
     );
@@ -582,34 +649,47 @@ export function CourseOnboardingWizard({
 
   // stepper UI
   const Stepper = () => (
-    <div className="mb-6">
-      <div className="flex items-center gap-2">
+    <div className="mb-8">
+      <div className="flex items-center justify-center gap-2">
         {Array.from({ length: TOTAL_STEPS }, (_, i) => {
           const idx = i + 1;
           const active = idx === currentStep;
           const done = idx < currentStep;
           return (
             <React.Fragment key={idx}>
-              <div
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: i * 0.1, type: "spring", stiffness: 300 }}
                 className={[
-                  "h-2 w-2 rounded-full",
+                  "h-3 w-3 rounded-full transition-all duration-300",
                   active
-                    ? "bg-gradient-to-r from-[#a8e063] to-[#56ab2f]"
+                    ? "bg-gradient-to-r from-[#a8e063] to-[#56ab2f] shadow-lg shadow-green-500/50 scale-125"
                     : done
-                    ? "bg-white/70"
-                    : "bg-white/25",
+                    ? "bg-[#a8e063]/70 scale-110"
+                    : "bg-white/20",
                 ].join(" ")}
               />
               {idx < TOTAL_STEPS && (
-                <div className="h-[2px] w-8 bg-white/10" />
+                <motion.div 
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: done ? 1 : 0.3 }}
+                  transition={{ duration: 0.3 }}
+                  className={`h-[3px] w-12 rounded-full origin-left ${done ? "bg-[#a8e063]/70" : "bg-white/10"}`}
+                />
               )}
             </React.Fragment>
           );
         })}
       </div>
-      <div className="mt-2 text-xs text-[#9ca3af] text-right">
+      <motion.div 
+        key={currentStep}
+        initial={{ opacity: 0, y: -5 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mt-3 text-sm font-medium text-white/80 text-center"
+      >
         Шаг {currentStep} из {TOTAL_STEPS}
-      </div>
+      </motion.div>
     </div>
   );
 
@@ -638,55 +718,80 @@ export function CourseOnboardingWizard({
       ))}
 
       {/* card */}
-      <div
-        className="relative w-full max-w-2xl bg-[#0f172a]/70 border border-white/10 rounded-3xl shadow-2xl p-6 md:p-8"
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ type: "spring", damping: 20, stiffness: 300 }}
+        className="relative w-full max-w-2xl bg-gradient-to-br from-[#0f172a]/90 via-[#0f172a]/85 to-[#1a2942]/90 border-2 border-white/20 rounded-3xl shadow-2xl backdrop-blur-xl p-6 md:p-10"
         onClick={(e) => e.stopPropagation()}
       >
         {/* header */}
-        <div className="mb-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-xl md:text-2xl font-bold text-white">
+        <div className="mb-6 flex items-start justify-between">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.1 }}
+          >
+            <h1 className="text-2xl md:text-3xl font-black text-white mb-1 bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
               {course.title}
             </h1>
-            <p className="text-sm text-[#9ca3af]">
+            <p className="text-sm md:text-base text-[#9ca3af] font-medium">
               Несколько ответов — и мы настроим курс под тебя
             </p>
-          </div>
-          <button
+          </motion.div>
+          <motion.button
+            whileHover={{ scale: 1.1, rotate: 90 }}
+            whileTap={{ scale: 0.9 }}
             onClick={onDone}
             aria-label="Закрыть"
-            className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors"
+            className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors border border-white/10"
           >
             ✕
-          </button>
+          </motion.button>
         </div>
 
         <Stepper />
 
         {/* body */}
-        <div className="space-y-8">{renderStep()}</div>
+        <AnimatePresence mode="wait">
+          <motion.div 
+            key={currentStep}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            className="min-h-[280px]"
+          >
+            {renderStep()}
+          </motion.div>
+        </AnimatePresence>
 
         {/* footer nav (not on step 4) */}
         {currentStep < 4 && (
-          <div className="mt-8 flex items-center justify-between gap-3">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="mt-10 flex items-center justify-between gap-4"
+          >
             <Button
               variant="outline"
               onClick={handleBack}
               disabled={currentStep === 1}
-              className="border-white/20 text-white hover:bg-white/10"
+              className="h-12 px-6 border-2 border-white/20 text-white hover:bg-white/10 hover:border-white/30 disabled:opacity-40 disabled:cursor-not-allowed font-semibold rounded-xl transition-all"
             >
               Назад
             </Button>
             <Button
               onClick={handleNext}
               disabled={!canProceed()}
-              className="bg-gradient-to-r from-[#a8e063] to-[#56ab2f] hover:from-[#98d653] hover:to-[#4c9b2b] text-white"
+              className="h-12 px-8 bg-gradient-to-r from-[#a8e063] to-[#56ab2f] hover:from-[#98d653] hover:to-[#4c9b2b] text-white font-bold rounded-xl shadow-lg shadow-green-500/30 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
             >
               Далее
             </Button>
-          </div>
+          </motion.div>
         )}
-      </div>
+      </motion.div>
     </div>
   );
 }
