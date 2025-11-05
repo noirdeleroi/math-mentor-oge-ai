@@ -199,8 +199,8 @@ export const ProfileTabs: React.FC<ProfileTabsProps> = ({
           <DrawerTrigger asChild>
             <Button 
               variant="ghost" 
-              size="lg"
-              className="fixed top-20 left-4 z-50 bg-gradient-to-r from-yellow-500 to-emerald-500 backdrop-blur-sm border-2 border-white/30 text-white hover:from-yellow-600 hover:to-emerald-600 hover:scale-105 shadow-lg transition-all duration-200 w-12 h-12 rounded-full"
+              size="icon"
+              className="fixed top-20 left-4 z-50 bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20 shadow-lg"
             >
               <Menu className="h-5 w-5" />
             </Button>
