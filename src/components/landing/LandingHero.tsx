@@ -12,7 +12,7 @@ export default function LandingHero() {
           {/* Left Side - Content */}
           <div className="flex-1 max-w-2xl text-left">
             <motion.h1 
-              className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent mb-6 leading-tight"
+              className="text-5xl md:text-6xl font-display font-bold mb-4 bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent leading-tight"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
@@ -21,7 +21,7 @@ export default function LandingHero() {
             </motion.h1>
             
             <motion.p 
-              className="text-xl md:text-2xl text-foreground/90 mb-10 leading-relaxed font-medium"
+              className="text-xl text-gray-300 max-w-3xl mb-10 leading-relaxed"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
