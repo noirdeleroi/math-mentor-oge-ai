@@ -30,7 +30,7 @@ export default function HighlightCards() {
           </motion.h2>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
           {/* OGE Math Card */}
           <motion.div
             variants={cardVariants}
@@ -38,7 +38,7 @@ export default function HighlightCards() {
             whileInView="visible"
             viewport={{ once: true, margin: "-50px" }}
           >
-            <Card className="h-full border-2 hover:border-primary/50 transition-all duration-300 hover:shadow-lg">
+            <Card className="h-full border-2 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:scale-105">
               <CardContent className="p-8">
                 <div className="text-center mb-6">
                   <h3 className="text-2xl font-bold text-primary mb-2">OGE MATH</h3>
@@ -84,40 +84,85 @@ export default function HighlightCards() {
             viewport={{ once: true, margin: "-50px" }}
             transition={{ delay: 0.2 }}
           >
-            <Card className="h-full border-2 border-muted-foreground/20 opacity-75">
+            <Card className="h-full border-2 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:scale-105">
               <CardContent className="p-8">
                 <div className="text-center mb-6">
-                  <h3 className="text-2xl font-bold text-muted-foreground mb-2">EGE MATH</h3>
-                  <div className="w-16 h-1 bg-muted-foreground/50 mx-auto rounded-full"></div>
+                  <h3 className="text-2xl font-bold text-primary mb-2">EGE MATH</h3>
+                  <div className="w-16 h-1 bg-primary mx-auto rounded-full"></div>
                 </div>
                 
                 <ul className="space-y-4 mb-8">
                   <li className="flex items-start gap-3">
-                    <Clock className="w-5 h-5 text-muted-foreground mt-0.5 flex-shrink-0" />
-                    <span className="text-muted-foreground">5000 заданий по ЕГЭ</span>
+                    <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span className="text-foreground">5000 заданий по ЕГЭ</span>
                   </li>
                   <li className="flex items-start gap-3">
-                    <Clock className="w-5 h-5 text-muted-foreground mt-0.5 flex-shrink-0" />
-                    <span className="text-muted-foreground">Учебник и база задач</span>
+                    <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span className="text-foreground">Учебник и база задач</span>
                   </li>
                   <li className="flex items-start gap-3">
-                    <Clock className="w-5 h-5 text-muted-foreground mt-0.5 flex-shrink-0" />
-                    <span className="text-muted-foreground">Видео и методички</span>
+                    <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span className="text-foreground">Видео и методички</span>
                   </li>
                   <li className="flex items-start gap-3">
-                    <Clock className="w-5 h-5 text-muted-foreground mt-0.5 flex-shrink-0" />
-                    <span className="text-muted-foreground">Подготовка к базовому и профильному уровням</span>
+                    <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span className="text-foreground">Подготовка к базовому и профильному уровням</span>
                   </li>
                 </ul>
                 
                 <Button 
-                  disabled
-                  className="w-full bg-muted text-muted-foreground cursor-not-allowed font-medium py-3 rounded-lg relative"
+                  asChild
+                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium py-3 rounded-lg transition-all duration-300 hover:scale-105"
                 >
-                  Скоро
-                  <div className="absolute -top-2 -right-2 bg-yellow-400 text-black text-xs px-2 py-1 rounded-full font-medium">
-                    Coming Soon
-                  </div>
+                  <Link to="/egemathbasic">
+                    Перейти к ЕГЭ
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Essay Card */}
+          <motion.div
+            variants={cardVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ delay: 0.4 }}
+          >
+            <Card className="h-full border-2 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:scale-105">
+              <CardContent className="p-8">
+                <div className="text-center mb-6">
+                  <h3 className="text-2xl font-bold text-primary mb-2">Сочинение</h3>
+                  <div className="w-16 h-1 bg-primary mx-auto rounded-full"></div>
+                </div>
+                
+                <ul className="space-y-4 mb-8">
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span className="text-foreground">Проверка сочинений ЕГЭ по русскому</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span className="text-foreground">AI-анализ с подробной обратной связью</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span className="text-foreground">Оценка по критериям ФИПИ</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span className="text-foreground">Рекомендации по улучшению</span>
+                  </li>
+                </ul>
+                
+                <Button 
+                  asChild
+                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium py-3 rounded-lg transition-all duration-300 hover:scale-105"
+                >
+                  <Link to="/egeruses2">
+                    Проверить сочинение
+                  </Link>
                 </Button>
               </CardContent>
             </Card>
