@@ -20,15 +20,6 @@ const EgemathbasicPractice = () => {
       comingSoon: false
     },
     {
-      title: "По теме",
-      description: "Практика по конкретным темам и экзаменам",
-      icon: ClipboardList,
-      link: "/new-practice-skills",
-      gradient: "from-amber-500 to-emerald-400",
-      mathSymbol: "∫",
-      comingSoon: true
-    },
-    {
       title: "Повторение",
       description: "Практика навыков, которые нужно подтянуть - супер полезно!",
       icon: RefreshCw,
@@ -92,7 +83,7 @@ const EgemathbasicPractice = () => {
 
           {/* 2x2 Grid for Practice + Mock (symmetrical) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            {[...questionTypes, mockExam].map((type, index) => {
+            {[...questionTypes.filter(t => !t.comingSoon), mockExam].map((type, index) => {
               const content = (
                   <Card 
                     className="h-full relative overflow-hidden border-0 transition-all duration-300 group"

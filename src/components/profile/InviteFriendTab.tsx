@@ -125,11 +125,11 @@ const InviteFriendTab = () => {
           </div>
         ) : promoCode ? (
           <div className="space-y-6">
-            <div className="text-center space-y-2">
-              <p className="text-sm text-gray-300 uppercase tracking-wide">Твой промокод</p>
+            <div className="text-center space-y-4">
+              <p className="text-sm text-gray-300 uppercase tracking-wide font-medium">Твой промокод</p>
               <div className="flex items-center justify-center gap-3 flex-wrap">
-                <div className="bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl px-6 py-4">
-                  <code className="text-2xl md:text-3xl font-mono font-bold text-white tracking-wider">
+                <div className="bg-[#1a1f36] border-2 border-yellow-500 rounded-xl px-6 py-4 shadow-lg">
+                  <code className="text-2xl md:text-3xl font-mono font-bold text-yellow-400 tracking-wider">
                     {promoCode}
                   </code>
                 </div>

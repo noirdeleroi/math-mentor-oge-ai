@@ -15,10 +15,10 @@ const Slider = React.forwardRef<
     )}
     {...props}
   >
-    <SliderPrimitive.Track className="relative h-3 w-full grow overflow-hidden rounded-full bg-[#1f2937] border border-white/10">
-      <SliderPrimitive.Range className="absolute h-full bg-gradient-to-r from-[#a8e063] to-[#56ab2f] transition-all duration-200 ease-out" />
+    <SliderPrimitive.Track className="relative h-2 w-full grow overflow-hidden rounded-full bg-[#1f2937] border border-white/10">
+      <SliderPrimitive.Range className="absolute h-full bg-gradient-to-r from-[#a8e063] to-[#56ab2f]" />
     </SliderPrimitive.Track>
-    <SliderPrimitive.Thumb className="block h-7 w-7 rounded-full border-3 border-white bg-gradient-to-br from-[#a8e063] to-[#56ab2f] shadow-xl shadow-green-500/40 ring-offset-background transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#a8e063]/50 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:scale-125 active:scale-110 cursor-grab active:cursor-grabbing" />
+    <SliderPrimitive.Thumb className="block h-6 w-6 rounded-full border-2 border-white bg-gradient-to-br from-[#a8e063] to-[#56ab2f] shadow-lg shadow-green-500/40 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a8e063]/50 focus-visible:ring-offset-1 disabled:pointer-events-none disabled:opacity-50 cursor-grab active:cursor-grabbing" style={{ boxShadow: '0 0 0 0px rgba(168, 224, 99, 0.3)' }} />
   </SliderPrimitive.Root>
 ))
 Slider.displayName = SliderPrimitive.Root.displayName

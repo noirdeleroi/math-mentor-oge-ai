@@ -20,6 +20,7 @@ import confetti from 'canvas-confetti';
 import MathRenderer from '@/components/MathRenderer';
 import FeedbackButton from '@/components/FeedbackButton';
 import Loading from '@/components/ui/Loading';
+import LoadingOverlay from '@/components/LoadingOverlay';
 import { useMathJaxSelection } from '@/hooks/useMathJaxSelection';
 import { getSelectedTextWithMath } from '@/utils/getSelectedTextWithMath';
 import { useChatContext } from '@/contexts/ChatContext';
@@ -76,6 +77,7 @@ const Homework = () => {
 
   const [loading, setLoading] = useState(true);
   const [loadingQuestions, setLoadingQuestions] = useState(false);
+  const [isProcessingCompletion, setIsProcessingCompletion] = useState(false);
   const [questionType, setQuestionType] = useState<'mcq' | 'frq'>('mcq');
   const [showCongrats, setShowCongrats] = useState(false);
   const [showSolution, setShowSolution] = useState(false);
@@ -946,15 +948,17 @@ const Homework = () => {
   const completeHomework = async () => {
     if (!user?.id || !homeworkName) return;
 
-    const totalMCQ = homeworkData?.mcq_questions?.length || 0;
-    const totalFRQ = homeworkData?.fipi_questions?.length || 0;
-    const totalQuestions = totalMCQ + totalFRQ;
-
-    const completedCount = completedQuestions.size;
-    const correctCount = correctAnswers.size;
-    const accuracy = completedCount > 0 ? (correctCount / completedCount) * 100 : 0;
+    setIsProcessingCompletion(true);
 
     try {
+      const totalMCQ = homeworkData?.mcq_questions?.length || 0;
+      const totalFRQ = homeworkData?.fipi_questions?.length || 0;
+      const totalQuestions = totalMCQ + totalFRQ;
+
+      const completedCount = completedQuestions.size;
+      const correctCount = correctAnswers.size;
+      const accuracy = completedCount > 0 ? (correctCount / completedCount) * 100 : 0;
+
       const { error: completionError } = await supabase
         .from('homework_progress')
         .insert({
@@ -993,6 +997,8 @@ const Homework = () => {
     } catch (error) {
       console.error('Error completing homework:', error);
       toast({ title: 'Ошибка', description: 'Не удалось сохранить завершение', variant: 'destructive' });
+    } finally {
+      setIsProcessingCompletion(false);
     }
   };
 
@@ -1006,6 +1012,15 @@ const Homework = () => {
           </div>
         </div>
       </div>
+    );
+  }
+
+  if (isProcessingCompletion) {
+    return (
+      <LoadingOverlay 
+        message="Обработка результатов..." 
+        subMessage="Пожалуйста, подождите"
+      />
     );
   }
 
@@ -1298,16 +1313,19 @@ const Homework = () => {
                   <div className="bg-green-500/10 p-4 rounded-lg space-y-2">
                     <div className="font-semibold text-sm">Правильный ответ:</div>
                     <div className="text-lg font-medium text-green-600">
-                      {(() => {
-                        let normalized = allQuestionResults[currentQuestionIndex].correctAnswer || '';
-                        if (allQuestionResults[currentQuestionIndex].type === 'mcq' && normalized.startsWith('option')) {
-                          const optionNum = parseInt(normalized.replace('option', ''));
-                          if (optionNum >= 1 && optionNum <= 4) {
-                            normalized = ['А', 'Б', 'В', 'Г'][optionNum - 1];
+                      <MathRenderer 
+                        text={(() => {
+                          let normalized = allQuestionResults[currentQuestionIndex].correctAnswer || '';
+                          if (allQuestionResults[currentQuestionIndex].type === 'mcq' && normalized.startsWith('option')) {
+                            const optionNum = parseInt(normalized.replace('option', ''));
+                            if (optionNum >= 1 && optionNum <= 4) {
+                              normalized = ['А', 'Б', 'В', 'Г'][optionNum - 1];
+                            }
                           }
-                        }
-                        return normalized;
-                      })()}
+                          return normalized;
+                        })()} 
+                        compiler="mathjax" 
+                      />
                     </div>
                   </div>
 
@@ -1493,20 +1511,24 @@ const Homework = () => {
                       )}
                     </div>
                     {!isCorrect && !showSolution && (
-                      <p className="text-gray-700">
-                        Правильный ответ: <span className="font-bold">{
-                          (() => {
-                            let normalized = currentQuestion.correct_answer || '';
-                            if (normalized.startsWith('option')) {
-                              const optionNum = parseInt(normalized.replace('option', ''));
-                              if (optionNum >= 1 && optionNum <= 4) {
-                                normalized = ['А', 'Б', 'В', 'Г'][optionNum - 1];
+                      <div className="text-gray-700">
+                        <span className="font-semibold">Правильный ответ: </span>
+                        <span className="font-bold">
+                          <MathRenderer 
+                            text={(() => {
+                              let normalized = currentQuestion.correct_answer || '';
+                              if (normalized.startsWith('option')) {
+                                const optionNum = parseInt(normalized.replace('option', ''));
+                                if (optionNum >= 1 && optionNum <= 4) {
+                                  normalized = ['А', 'Б', 'В', 'Г'][optionNum - 1];
+                                }
                               }
-                            }
-                            return normalized;
-                          })()
-                        }</span>
-                      </p>
+                              return normalized;
+                            })()} 
+                            compiler="mathjax" 
+                          />
+                        </span>
+                      </div>
                     )}
                     {showSolution && currentQuestion.solution_text && (
                       <div className="mt-3 p-3 bg-blue-50 rounded-lg">
