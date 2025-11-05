@@ -2,7 +2,6 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { BookOpen, Target } from "lucide-react";
-import PromptBar from "../PromptBar";
 
 export default function LandingHero() {
   return (
@@ -57,15 +56,7 @@ export default function LandingHero() {
                 <Target className="w-6 h-6" />
                 Посмотреть практику
               </Link>
-            </Button>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
-          >
-            <PromptBar />
+          </Button>
           </motion.div>
         </div>
       </div>
