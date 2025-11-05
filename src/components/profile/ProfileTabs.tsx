@@ -19,6 +19,7 @@ import { GoalsTab } from "./GoalsTab";
 import { StreakSettings } from "../streak/StreakSettings";
 import { ProfileInfoTab } from "./ProfileInfoTab";
 import HowToTab from "./HowToTab";
+import InviteFriendTab from "./InviteFriendTab";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -33,6 +34,7 @@ import {
   Target,
   Menu,
   X,
+  Users,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -96,6 +98,15 @@ export const ProfileTabs: React.FC<ProfileTabsProps> = ({
           >
             <GraduationCap className="h-5 w-5 text-emerald-400" />
             <span className="font-medium">Как пользоваться</span>
+          </TabsTrigger>
+
+          <TabsTrigger
+            value="invite"
+            className="w-full justify-start gap-3 px-4 py-3 rounded-lg text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-yellow-500/30 data-[state=active]:to-emerald-500/30 data-[state=active]:border data-[state=active]:border-white/30 hover:bg-white/10 transition-all"
+            onClick={() => isMobile && setOpen(false)}
+          >
+            <Users className="h-5 w-5 text-yellow-400" />
+            <span className="font-medium">Пригласи друга</span>
           </TabsTrigger>
 
           <TabsTrigger
@@ -250,6 +261,10 @@ export const ProfileTabs: React.FC<ProfileTabsProps> = ({
 
         <TabsContent value="guide" className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-4 md:p-8 mt-0 shadow-xl">
           <HowToTab />
+        </TabsContent>
+
+        <TabsContent value="invite" className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-4 md:p-8 mt-0 shadow-xl">
+          <InviteFriendTab />
         </TabsContent>
 
         <TabsContent value="streak" className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-4 md:p-8 mt-0 shadow-xl">
