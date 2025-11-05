@@ -10,20 +10,18 @@ export default function LandingHero() {
       <div className="container mx-auto px-4 py-20 relative z-10 bg-transparent">
         <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12 bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20 shadow-xl">
           {/* Left Side - Content */}
-          <div className="flex-1 max-w-2xl text-left p-8 rounded-2xl shadow-lg" style={{ backgroundColor: 'rgba(248, 250, 252, 0.95)' }}>
+          <div className="flex-1 max-w-2xl text-left">
             <motion.h1 
-              className="text-4xl md:text-6xl font-bold text-foreground mb-6 leading-tight"
+              className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent mb-6 leading-tight"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
             >
-              Умная платформа подготовки к{" "}
-              <span className="text-primary">ОГЭ и ЕГЭ</span>{" "}
-              по математике
+              Умная платформа подготовки к ОГЭ и ЕГЭ по математике
             </motion.h1>
             
             <motion.p 
-              className="text-lg md:text-xl text-muted-foreground mb-8 leading-relaxed"
+              className="text-xl md:text-2xl text-foreground/90 mb-10 leading-relaxed font-medium"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
@@ -40,10 +38,10 @@ export default function LandingHero() {
               <Button 
                 asChild 
                 size="lg" 
-                className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 text-lg rounded-full font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white px-10 py-7 text-xl rounded-2xl font-bold shadow-2xl hover:shadow-primary/50 transition-all duration-300 hover:scale-105 hover:-translate-y-1"
               >
                 <Link to="/register" className="flex items-center gap-3">
-                  <BookOpen className="w-6 h-6" />
+                  <BookOpen className="w-7 h-7" />
                   Начать бесплатно
                 </Link>
               </Button>
@@ -51,7 +49,7 @@ export default function LandingHero() {
               <Button 
                 variant="outline" 
                 size="lg" 
-                className="border-2 border-primary text-primary hover:bg-primary/5 px-8 py-6 text-lg rounded-full font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                className="bg-white/80 backdrop-blur-sm border-2 border-white/50 text-foreground hover:bg-white hover:border-white transition-all duration-300 hover:scale-105 hover:-translate-y-1 px-10 py-7 text-xl rounded-2xl font-bold shadow-xl"
                 onClick={() => {
                   document.getElementById('highlights-section')?.scrollIntoView({ 
                     behavior: 'smooth',
