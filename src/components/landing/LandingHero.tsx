@@ -76,6 +76,8 @@ export default function LandingHero() {
                 loop 
                 muted 
                 playsInline
+                disablePictureInPicture
+                onLoadStart={(e) => e.currentTarget.scrollIntoView = () => {}}
               >
                 <source src="https://kbaazksvkvnafrwtmkcw.supabase.co/storage/v1/object/public/videos/vid2.mp4" type="video/mp4" />
                 Ваш браузер не поддерживает видео.

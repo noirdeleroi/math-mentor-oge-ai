@@ -1,4 +1,4 @@
-
+import { useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import LandingHeader from "@/components/landing/LandingHeader";
 import LandingHero from "@/components/landing/LandingHero";
@@ -12,6 +12,10 @@ import FlyingMathBackground from "@/components/FlyingMathBackground";
 
 const Index = () => {
   const { isLoading } = useAuth();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   // Show loading while authentication state is being determined
   if (isLoading) {
