@@ -1046,10 +1046,12 @@ const completeAttempt = async (isCorrect: boolean, scores: number) => {
   const handlePhotoCheck = async () => {
     if (!user || !currentQuestion) return;
     setIsProcessingPhoto(true);
+    
     try {
+      // 1. Query telegram_input from profiles
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
-        .select('telegram_input')
+        .select('telegram_input, exam_id')
         .eq('user_id', user.id)
         .single();
 
@@ -1061,26 +1063,62 @@ const completeAttempt = async (isCorrect: boolean, scores: number) => {
       }
 
       if (!profile?.telegram_input) {
-        toast.error('Фото не загружено.');
+        toast.error('Фото не загружено в Telegram бот.');
         setIsProcessingPhoto(false);
         return;
       }
 
-      setUserAnswer(profile.telegram_input);
+      const studentSolution = profile.telegram_input;
+      const currentExamId = profile?.exam_id || examId;
+      const problemNumber = currentQuestion.problem_number_type || (currentQuestionIndex + 1);
+
+      // 2. Set user answer for display
+      setUserAnswer(studentSolution);
+      
+      // 3. Close upload dialog
       setShowUploadPrompt(false);
 
-      supabase.functions.invoke('check-photo-solution', {
+      // 4. Insert placeholder into photo_analysis_outputs
+      const { data: placeholderData, error: placeholderError } = await supabase
+        .from('photo_analysis_outputs')
+        .insert({
+          user_id: user.id,
+          question_id: currentQuestion.question_id,
+          exam_id: currentExamId,
+          problem_number: problemNumber.toString(),
+          analysis_type: 'photo_solution',
+          raw_output: studentSolution.trim(),
+          student_solution: studentSolution.trim(),
+          openrouter_check: null
+        })
+        .select('id')
+        .single();
+
+      if (placeholderError) {
+        console.error('Error inserting placeholder:', placeholderError);
+        toast.error('Ошибка при сохранении решения');
+        setIsProcessingPhoto(false);
+        return;
+      }
+
+      const photoRowId = (placeholderData as any)?.id;
+
+      // 5. Invoke analyze-photo-solution edge function (background)
+      supabase.functions.invoke('analyze-photo-solution', {
         body: {
-          student_solution: profile.telegram_input,
+          student_solution: studentSolution,
           problem_text: currentQuestion.problem_text,
           solution_text: currentQuestion.solution_text,
           user_id: user.id,
           question_id: currentQuestion.question_id,
-          exam_id: examId
+          exam_id: currentExamId,
+          problem_number: problemNumber.toString(),
+          photo_row_id: photoRowId
         }
       }).catch(error => console.error('Background photo analysis error:', error));
 
       toast.success('Фото решения сохранено и отправлено на анализ');
+      
     } catch (error) {
       console.error('Error in handlePhotoCheck:', error);
       toast.error('Произошла ошибка при обработке решения');

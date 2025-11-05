@@ -195,6 +195,102 @@ const PracticeByNumberOgemath = () => {
 
   const currentQuestion = questions[currentQuestionIndex];
 
+  // Polling useEffect for questions 20-25 analysis completion
+  useEffect(() => {
+    if (!isPollingForAnalysis || !user || !currentQuestion || !pollingStartTime) return;
+
+    const POLLING_INTERVAL = 2500; // 2.5 seconds
+    const TIMEOUT_MS = 60000; // 60 seconds timeout
+
+    let intervalId: NodeJS.Timeout;
+
+    const pollForAnalysis = async () => {
+      try {
+        // Check if timeout exceeded
+        const elapsed = Date.now() - pollingStartTime.getTime();
+        if (elapsed > TIMEOUT_MS) {
+          setIsPollingForAnalysis(false);
+          setIsProcessingPhoto(false);
+          toast.error('Превышено время ожидания анализа. Попробуйте снова.');
+          return;
+        }
+
+        // Query photo_analysis_outputs for completion
+        const { data, error } = await supabase
+          .from('photo_analysis_outputs')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('question_id', currentQuestion.question_id)
+          .not('openrouter_check', 'is', null)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (error) {
+          console.error('Error polling for analysis:', error);
+          return;
+        }
+
+        if (data?.openrouter_check) {
+          // Analysis complete!
+          clearInterval(intervalId);
+          setIsPollingForAnalysis(false);
+          setIsProcessingPhoto(false);
+
+          try {
+            // Parse the analysis result
+            const feedbackData = JSON.parse(data.openrouter_check);
+            const score = toNumberOrNull(feedbackData.scores);
+            
+            if (feedbackData.review && score !== null) {
+              setPhotoScores(score);
+              
+              if (typeof feedbackData.review === 'string') {
+                setAnalysisData({ scores: score, review: feedbackData.review });
+                setPhotoFeedback('');
+                setStructuredPhotoFeedback(null);
+              } else if (feedbackData.review.overview_latex) {
+                setStructuredPhotoFeedback(feedbackData);
+                setPhotoFeedback(feedbackData.review.overview_latex);
+                setAnalysisData(null);
+              } else {
+                setPhotoFeedback(data.openrouter_check);
+                setStructuredPhotoFeedback(null);
+                setAnalysisData(null);
+              }
+              
+              const isCorrect = (score ?? 0) > 0;
+              await finalizeAttemptWithScore(isCorrect, score);
+              setIsCorrect(isCorrect);
+              setIsAnswered(true);
+              
+              toast.success('Анализ завершен!');
+            } else {
+              toast.error('Неверный формат результата анализа');
+            }
+          } catch (parseError) {
+            console.error('Error parsing analysis result:', parseError);
+            setPhotoFeedback(data.openrouter_check);
+            setPhotoScores(null);
+            setStructuredPhotoFeedback(null);
+            setAnalysisData(null);
+            toast.error('Ошибка при обработке результата');
+          }
+        }
+      } catch (error) {
+        console.error('Error in polling:', error);
+      }
+    };
+
+    // Start polling
+    intervalId = setInterval(pollForAnalysis, POLLING_INTERVAL);
+    pollForAnalysis(); // Check immediately
+
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [isPollingForAnalysis, user, currentQuestion, pollingStartTime]);
+
   const fetchQuestions = async (questionNumbers: string[]) => {
     setLoading(true);
     try {
@@ -973,21 +1069,97 @@ const PracticeByNumberOgemath = () => {
   const handlePhotoCheck = async () => {
     if (!user || !currentQuestion) return;
 
-    // For questions 20-25, start polling instead of immediate check
     const problemNumberType = currentQuestion.problem_number_type;
+
+    // For questions 20-25, handle with polling workflow
     if (problemNumberType && problemNumberType >= 20 && problemNumberType <= 25) {
       setIsProcessingPhoto(true);
-      setPollingStartTime(new Date());
-      setIsPollingForAnalysis(true);
-      toast.info('Проверяем наличие анализа фото...');
+      
+      try {
+        // 1. Query telegram_input from profiles
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('telegram_input')
+          .eq('user_id', user.id)
+          .single();
+
+        if (profileError && profileError.code !== 'PGRST116') {
+          console.error('Error getting telegram input:', profileError);
+          toast.error('Ошибка при получении данных');
+          setIsProcessingPhoto(false);
+          return;
+        }
+
+        if (!profile?.telegram_input) {
+          toast.error('Фото не загружено в Telegram бот.');
+          setIsProcessingPhoto(false);
+          return;
+        }
+
+        const studentSolution = profile.telegram_input;
+
+        // 2. Set user answer for display
+        setUserAnswer(studentSolution);
+        
+        // 3. Close upload dialog
+        setShowUploadPrompt(false);
+
+        // 4. Insert placeholder into photo_analysis_outputs
+        const { data: placeholderData, error: placeholderError } = await supabase
+          .from('photo_analysis_outputs')
+          .insert({
+            user_id: user.id,
+            question_id: currentQuestion.question_id,
+            problem_number: problemNumberType.toString(),
+            analysis_type: 'photo_solution',
+            raw_output: studentSolution.trim(),
+            student_solution: studentSolution.trim(),
+            openrouter_check: null
+          })
+          .select('id')
+          .single();
+
+        if (placeholderError) {
+          console.error('Error inserting placeholder:', placeholderError);
+          toast.error('Ошибка при сохранении решения');
+          setIsProcessingPhoto(false);
+          return;
+        }
+
+        const photoRowId = (placeholderData as any)?.id;
+
+        // 5. Invoke analyze-photo-solution edge function (background)
+        supabase.functions.invoke('analyze-photo-solution', {
+          body: {
+            student_solution: studentSolution,
+            problem_text: currentQuestion.problem_text,
+            solution_text: currentQuestion.solution_text,
+            user_id: user.id,
+            question_id: currentQuestion.question_id,
+            problem_number: problemNumberType.toString(),
+            photo_row_id: photoRowId
+          }
+        }).catch(error => console.error('Background photo analysis error:', error));
+
+        // 6. Start polling for completion
+        setPollingStartTime(new Date());
+        setIsPollingForAnalysis(true);
+        toast.info('Решение отправлено на анализ. Ожидайте результата...');
+        
+      } catch (error) {
+        console.error('Error in Telegram photo workflow:', error);
+        toast.error('Ошибка при обработке решения');
+        setIsProcessingPhoto(false);
+      }
+      
       return;
     }
 
-    // For other questions, use the old immediate check logic
+    // For questions 1-19, use analyze-photo-solution with await
     setIsProcessingPhoto(true);
     
     try {
-      // Check telegram_input for data
+      // 1. Query telegram_input from profiles
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('telegram_input')
@@ -1002,24 +1174,58 @@ const PracticeByNumberOgemath = () => {
       }
 
       if (!profile?.telegram_input) {
-        toast.error('Фото не загружено.');
+        toast.error('Фото не загружено в Telegram бот.');
         setIsProcessingPhoto(false);
         return;
       }
 
-      // Make OpenRouter API call
-      const { data: apiResponse, error: apiError } = await supabase.functions.invoke('check-photo-solution', {
+      const studentSolution = profile.telegram_input;
+
+      // 2. Set user answer for display
+      setUserAnswer(studentSolution);
+      
+      // 3. Close upload dialog
+      setShowUploadPrompt(false);
+
+      // 4. Insert placeholder into photo_analysis_outputs
+      const { data: placeholderData, error: placeholderError } = await supabase
+        .from('photo_analysis_outputs')
+        .insert({
+          user_id: user.id,
+          question_id: currentQuestion.question_id,
+          problem_number: problemNumberType?.toString() || (currentQuestionIndex + 1).toString(),
+          analysis_type: 'photo_solution',
+          raw_output: studentSolution.trim(),
+          student_solution: studentSolution.trim(),
+          openrouter_check: null
+        })
+        .select('id')
+        .single();
+
+      if (placeholderError) {
+        console.error('Error inserting placeholder:', placeholderError);
+        toast.error('Ошибка при сохранении решения');
+        setIsProcessingPhoto(false);
+        return;
+      }
+
+      const photoRowId = (placeholderData as any)?.id;
+
+      // 5. Invoke analyze-photo-solution and AWAIT response
+      const { data: apiResponse, error: apiError } = await supabase.functions.invoke('analyze-photo-solution', {
         body: {
-          student_solution: profile.telegram_input,
+          student_solution: studentSolution,
           problem_text: currentQuestion.problem_text,
           solution_text: currentQuestion.solution_text,
           user_id: user.id,
-          question_id: currentQuestion.question_id
+          question_id: currentQuestion.question_id,
+          problem_number: problemNumberType?.toString() || (currentQuestionIndex + 1).toString(),
+          photo_row_id: photoRowId
         }
       });
 
       if (apiError) {
-        console.error('Error calling check-photo-solution:', apiError);
+        console.error('Error calling analyze-photo-solution:', apiError);
         if (apiResponse?.retry_message) {
           toast.error(apiResponse.retry_message);
         } else {
@@ -1065,8 +1271,7 @@ const PracticeByNumberOgemath = () => {
             setIsCorrect(isCorrect);
             setIsAnswered(true);
 
-            
-            setShowUploadPrompt(false);
+            toast.success('Анализ завершен!');
           } else {
             toast.error('Неверный формат ответа API');
           }
@@ -1077,7 +1282,6 @@ const PracticeByNumberOgemath = () => {
           setPhotoScores(null);
           setStructuredPhotoFeedback(null);
           setAnalysisData(null);
-          setShowUploadPrompt(false);
         }
       } else {
         toast.error('Не удалось получить обратную связь');
