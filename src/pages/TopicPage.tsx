@@ -28,7 +28,7 @@ import {
 
 // ✅ Import global simulation opener
 import { useSimulation } from "@/contexts/SimulationProvider";
-import { OGE_TOPIC_SKILL_MAPPING } from "@/lib/topic-skill-mappings";
+import { OGE_TOPIC_SKILL_MAPPING, EGE_BASIC_TOPIC_SKILL_MAPPING, EGE_PROFIL_TOPIC_SKILL_MAPPING } from "@/lib/topic-skill-mappings";
 
 type TopicArticleRow = {
   topic_id: string;
@@ -158,42 +158,37 @@ const TopicPage: React.FC = () => {
       }
 
       try {
-        // Use hardcoded mapping for OGE (course_id=1)
+        // Use hardcoded mappings for all courses
         let mapping: any = null;
         
         if (moduleEntry.courseId === 'oge-math') {
           // Use hardcoded OGE mapping
           mapping = OGE_TOPIC_SKILL_MAPPING;
           console.log('[Articles] Using hardcoded OGE mapping');
+        } else if (moduleEntry.courseId === 'ege-basic') {
+          // Use hardcoded EGE Basic mapping
+          mapping = EGE_BASIC_TOPIC_SKILL_MAPPING;
+          console.log('[Articles] Using hardcoded EGE Basic mapping');
+        } else if (moduleEntry.courseId === 'ege-advanced') {
+          // Use hardcoded EGE Profil mapping
+          mapping = EGE_PROFIL_TOPIC_SKILL_MAPPING;
+          console.log('[Articles] Using hardcoded EGE Profil mapping');
         } else {
-          // For EGE courses, still fetch from database (can be hardcoded later if needed)
-          const jsonFileId = getJsonFileIdForCourse(moduleEntry.courseId);
-          const numericCourseId = getNumericCourseId(moduleEntry.courseId);
-
-          const { data: jsonData, error: jsonError } = await supabase
-            .from('json_files')
-            .select('content')
-            .eq('id', jsonFileId)
-            .eq('course_id', numericCourseId)
-            .maybeSingle();
-
-          if (jsonError || !jsonData?.content) {
-            console.error('Failed to load topic-skill mapping:', jsonError);
-            if (!ignore) {
-              setTopicArticles([]);
-              setLoadingArticles(false);
-            }
-            return;
+          console.error('[Articles] Unknown course ID:', moduleEntry.courseId);
+          if (!ignore) {
+            setTopicArticles([]);
+            setLoadingArticles(false);
           }
-
-          mapping = jsonData.content as any;
-          console.log('[Articles] Fetched mapping from database for EGE course');
+          return;
         }
 
         // Parse the mapping - OGE uses nested structure: { "Module Name": { "Topic Code": { "Темы": "...", "навыки": [...] } } }
         
-        // Normalize topicNumber - remove E suffix for OGE (OGE uses "1.1", not "1.1E")
-        const normalizedTopicNumber = topicNumber.replace('E', '');
+        // Normalize topicNumber - remove E suffix only for OGE (OGE uses "1.1", not "1.1E")
+        // EGE courses keep the "E" suffix
+        const normalizedTopicNumber = moduleEntry.courseId === 'oge-math' 
+          ? topicNumber.replace('E', '') 
+          : topicNumber;
         
         console.log('[Articles] Using mapping:', {
           courseId: moduleEntry.courseId,

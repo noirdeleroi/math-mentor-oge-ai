@@ -1746,38 +1746,49 @@ const PracticeByNumberOgemath = () => {
 
   return (
     <div className="min-h-screen text-white relative" style={{ background: "linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)" }}>
-      <div className="container mx-auto px-4 py-8 relative z-10">
+      <div className="container mx-auto px-4 py-4 md:py-8 relative z-10">
         <div className="max-w-6xl mx-auto">
           <div className="max-w-4xl mx-auto">
 
           {/* Header with Back Button */}
-          <div className="relative text-center mb-16">
-            {/* Back Button - positioned to the left */}
-            <div className="absolute left-0 top-0">
-              {practiceStarted ? (
-                <Button 
-                  onClick={handleBackToSelection}
-                  variant="ghost"
-                  size="sm"
-                  className="hover:bg-white/20 text-white"
-                >
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  К выбору вопросов
-                </Button>
-              ) : (
-                <Link to="/ogemath-practice">
-                  <Button variant="ghost" size="sm" className="hover:bg-white/20 text-white">
+          <div className="mb-8 md:mb-16">
+            {/* Mobile: Stack vertically, Desktop: Flex with space-between */}
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between md:gap-4 gap-3 mb-4 md:mb-0">
+              {/* Back Button - Above on mobile, left on desktop */}
+              <div className="flex-shrink-0 md:absolute md:left-0 md:top-0">
+                {practiceStarted ? (
+                  <Button 
+                    onClick={handleBackToSelection}
+                    variant="ghost"
+                    size="sm"
+                    className="hover:bg-white/20 text-white"
+                  >
                     <ArrowLeft className="h-4 w-4 mr-2" />
-                    Назад
+                    <span className="hidden sm:inline">К выбору вопросов</span>
+                    <span className="sm:hidden">Назад</span>
                   </Button>
-                </Link>
-              )}
+                ) : (
+                  <Link to="/ogemath-practice">
+                    <Button variant="ghost" size="sm" className="hover:bg-white/20 text-white">
+                      <ArrowLeft className="h-4 w-4 mr-2" />
+                      Назад
+                    </Button>
+                  </Link>
+                )}
+              </div>
+              
+              {/* Header Text - Center on mobile, normal on desktop */}
+              <div className="flex-1 text-center md:text-center">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-display font-bold bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent" style={{ fontSize: 'clamp(1.25rem, 4vw, 3rem)' }}>
+                  Практика по номеру
+                </h1>
+              </div>
+              
+              {/* Spacer for desktop to balance the absolute positioned button */}
+              <div className="hidden md:block w-32 flex-shrink-0"></div>
             </div>
             
-            <h1 className="text-4xl md:text-5xl font-display font-bold mb-6 bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent">
-              Практика по номеру
-            </h1>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+            <p className="text-base sm:text-lg md:text-xl text-gray-300 max-w-3xl mx-auto text-center mt-4">
               Выберите номер(а) для тренировки задач выбранного типа
             </p>
           </div>
@@ -1997,23 +2008,24 @@ const PracticeByNumberOgemath = () => {
             questions.length > 0 && currentQuestion ? (
             <>
               {/* Action Buttons Above Question */}
-              <div className="mb-6 flex items-center justify-between">
-                <h2 className="text-xl md:text-2xl font-display font-bold bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent">
+              <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+                <h2 className="text-lg sm:text-xl md:text-2xl font-display font-bold bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent">
                   Вопрос {currentQuestionIndex + 1} из {questions.length}
                 </h2>
-                <div className="flex items-center gap-3">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
                   <Button
                     onClick={() => setShowFormulaBooklet(true)}
                     variant="outline"
-                    className="bg-transparent border-white/20 hover:border-white/40 text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+                    className="bg-transparent border-white/20 hover:border-white/40 text-white/70 hover:text-white hover:bg-white/10 transition-colors text-sm sm:text-base"
                   >
                     <BookOpen className="w-4 h-4 mr-2" />
-                    Справочник формул
+                    <span className="hidden sm:inline">Справочник формул</span>
+                    <span className="sm:hidden">Справочник</span>
                   </Button>
                   <Button 
                     onClick={handleFinishTest} 
                     variant="outline" 
-                    className="bg-red-50 hover:bg-red-100 border-red-200 text-red-700 hover:text-red-700"
+                    className="bg-red-50 hover:bg-red-100 border-red-200 text-red-700 hover:text-red-700 text-[0.9rem] md:text-base py-[0.4rem] px-[0.8rem] md:py-2 md:px-4 rounded-lg max-w-[90vw] overflow-wrap break-word w-full sm:w-auto"
                   >
                     Завершить тест
                   </Button>

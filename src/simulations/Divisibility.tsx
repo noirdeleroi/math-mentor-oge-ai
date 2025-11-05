@@ -9,7 +9,7 @@ import React, { useEffect, useMemo, useState } from "react";
  * — Привёл CSS в <AnimStyles/> к валидному виду (убраны лишние строки/скобки).
  * — Оставлены улучшения UI: анти-оверлап, подсветка, конфетти, неон-аура, паттерн-фон.
  * — Добавлены дополнительные мини-тесты (placePositions, диапазоны, уникальность чисел).
- * — Сильно уменьшена высота игры, чтобы полностью влезала в попап на ноутбуке и мобайле.
+ * — Ужата высота игры под попап: окей и на ноуте, и на мобиле.
  */
 
 // ==== Типы ====
@@ -59,16 +59,26 @@ const MIN_DIST_PCT = 12;
 const randInt = (a: number, b: number) => a + Math.floor(Math.random() * (b - a + 1));
 const pick = <T,>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
 
-const sumDigits = (n: number) => Math.abs(n).toString().split("").reduce((s, d) => s + Number(d), 0);
+const sumDigits = (n: number) =>
+  Math.abs(n)
+    .toString()
+    .split("")
+    .reduce((s, d) => s + Number(d), 0);
 
 const divisible = (n: number, d: Divisor) => {
   switch (d) {
-    case 2:  return n % 2 === 0;
-    case 3:  return sumDigits(n) % 3 === 0;
-    case 5:  return n % 10 === 0 || n % 10 === 5;
-    case 9:  return sumDigits(n) % 9 === 0;
-    case 10: return n % 10 === 0;
-    default: return false;
+    case 2:
+      return n % 2 === 0;
+    case 3:
+      return sumDigits(n) % 3 === 0;
+    case 5:
+      return n % 10 === 0 || n % 10 === 5;
+    case 9:
+      return sumDigits(n) % 9 === 0;
+    case 10:
+      return n % 10 === 0;
+    default:
+      return false;
   }
 };
 
@@ -160,7 +170,12 @@ const AnimStyles = () => (
 );
 
 // ==== Компоненты UI ====
-const TagButton: React.FC<{ label: string; selected?: boolean; tone?: "neutral" | "good" | "bad"; onClick?: () => void; }> = ({ label, selected, tone = "neutral", onClick }) => {
+const TagButton: React.FC<{
+  label: string;
+  selected?: boolean;
+  tone?: "neutral" | "good" | "bad";
+  onClick?: () => void;
+}> = ({ label, selected, tone = "neutral", onClick }) => {
   const toneClass = tone === "good" ? "glow-green" : tone === "bad" ? "glow-red" : "";
   return (
     <button
@@ -195,7 +210,9 @@ const DivisionGame: React.FC = () => {
   const [round, setRound] = useState<number>(0);
   const [pickedValue, setPickedValue] = useState<number | null>(null);
   const [pickedTone, setPickedTone] = useState<"good" | "bad" | "none">("none");
-  const [confetti, setConfetti] = useState<{ id: string; x: number; r: number; dur: number; ch: string }[]>([]);
+  const [confetti, setConfetti] = useState<
+    { id: string; x: number; r: number; dur: number; ch: string }[]
+  >([]);
 
   const spawnConfetti = () => {
     const shapes = ["✦", "✧", "★", "◆", "●", "▲", "✺", "✱", "✸", "✿"];
@@ -332,7 +349,7 @@ const DivisionGame: React.FC = () => {
 
   return (
     <div
-      className="relative w-full max-w-[720px] h-[420px] sm:h-[460px] md:h-[500px] overflow-hidden rounded-3xl"
+      className="relative w-full max-w-[720px] h-[340px] sm:h-[360px] md:h-[380px] overflow-hidden rounded-3xl"
       style={{
         background: "linear-gradient(135deg, #0b1220 0%, #14203a 45%, #0b776f 100%)",
       }}
@@ -342,10 +359,10 @@ const DivisionGame: React.FC = () => {
 
       {/* Шапка */}
       <div className="sticky top-0 z-20">
-        <div className="px-4 md:px-6 pt-4">
+        <div className="px-4 md:px-6 pt-3">
           <div
             className={[
-              "glass border border-white/10 rounded-3xl px-4 py-3 md:py-4",
+              "glass border border-white/10 rounded-3xl px-4 py-2.5 md:py-3",
               headerTone === "good"
                 ? "glow-green"
                 : headerTone === "bad"
@@ -355,11 +372,13 @@ const DivisionGame: React.FC = () => {
           >
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
               <div className="flex items-center gap-2">
-                <span className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
+                <span className="text-lg md:text-xl font-extrabold text-white tracking-tight">
                   ОГЭ-тренажёр
                 </span>
                 <span className="hidden md:inline text-white/70">·</span>
-                <span className="text-white/80">Признаки делимости</span>
+                <span className="text-white/80 text-sm md:text-base">
+                  Признаки делимости
+                </span>
               </div>
               <div className="flex items-center gap-2 md:gap-3 flex-wrap">
                 {DIVISORS.map((d) => (
@@ -371,7 +390,7 @@ const DivisionGame: React.FC = () => {
                     onClick={() => setDivisor(d)}
                   />
                 ))}
-                <div className="score-chip glass border border-white/20 rounded-2xl px-3 py-1.5 text-white/90 text-sm md:text-base font-semibold flex items-center gap-2">
+                <div className="score-chip glass border border-white/20 rounded-2xl px-3 py-1.5 text-white/90 text-xs md:text-sm font-semibold flex items-center gap-2">
                   <span>Очки</span>
                   <span className="text-white bg-white/20 rounded-xl px-2 py-0.5 font-bold">
                     {score}
@@ -385,7 +404,7 @@ const DivisionGame: React.FC = () => {
       </div>
 
       {/* Поле игры */}
-      <div className="relative z-10 h-[260px] sm:h-[290px] md:h-[320px]">
+      <div className="relative z-10 h-[210px] sm:h-[225px] md:h-[235px]">
         <div className="absolute inset-0">
           {cloud.map((item) => (
             <button
@@ -530,8 +549,7 @@ const BackgroundOrbs: React.FC<{ round: number }> = ({ round }) => {
 
 function placePositions(count: number): { top: number; left: number }[] {
   const placed: { top: number; left: number }[] = [];
-  const clamp = (v: number, lo: number, hi: number) =>
-    Math.max(lo, Math.min(hi, v));
+  const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
   const maxAttemptsPerPoint = 200;
   const bounds = { topMin: 8, topMax: 78, leftMin: 6, leftMax: 88 };
   let dist = MIN_DIST_PCT;
@@ -539,16 +557,8 @@ function placePositions(count: number): { top: number; left: number }[] {
     let attempts = 0;
     let placedOk = false;
     while (attempts++ < maxAttemptsPerPoint && !placedOk) {
-      const top = clamp(
-        randInt(bounds.topMin, bounds.topMax),
-        bounds.topMin,
-        bounds.topMax
-      );
-      const left = clamp(
-        randInt(bounds.leftMin, bounds.leftMax),
-        bounds.leftMin,
-        bounds.leftMax
-      );
+      const top = clamp(randInt(bounds.topMin, bounds.topMax), bounds.topMin, bounds.topMax);
+      const left = clamp(randInt(bounds.leftMin, bounds.leftMax), bounds.leftMin, bounds.leftMax);
       const ok = placed.every((p) => {
         const dx = p.left - left;
         const dy = p.top - top;
