@@ -34,6 +34,44 @@ type TopicArticleRow = {
   topic_text: string | null;
 };
 
+interface Article {
+  ID: number;
+  article_text: string | null;
+  img1?: string | null;
+  img2?: string | null;
+  img3?: string | null;
+  img4?: string | null;
+  img5?: string | null;
+  img6?: string | null;
+  img7?: string | null;
+  image_recommendations?: string | null;
+}
+
+interface TopicArticle {
+  skillId: number;
+  article: Article | null;
+}
+
+// Helper to get JSON file ID from course ID
+const getJsonFileIdForCourse = (courseId: string): number => {
+  switch (courseId) {
+    case 'oge-math': return 10;
+    case 'ege-basic': return 9;
+    case 'ege-advanced': return 11;
+    default: return 10;
+  }
+};
+
+// Helper to get numeric course ID from course ID string
+const getNumericCourseId = (courseId: string): string => {
+  switch (courseId) {
+    case 'oge-math': return '1';
+    case 'ege-basic': return '2';
+    case 'ege-advanced': return '3';
+    default: return '1';
+  }
+};
+
 const TopicPage: React.FC = () => {
   const navigate = useNavigate();
   const { refetch, getProgressStatus, progressData } = useModuleProgress();
@@ -64,9 +102,20 @@ const TopicPage: React.FC = () => {
     return moduleEntry.topicMapping[topicIndex] || "";
   }, [moduleEntry, topicIndex]);
 
+  // Check if this is OGE topic 1.1 (the only one with demonstrations)
+  const hasDemonstrations = moduleSlug === 'numbers-calculations' && topicId === 'natural-integers';
+
   // Right-pane: load Обзор (article) from DB by topic_number
   const [loadingArticle, setLoadingArticle] = useState<boolean>(true);
   const [article, setArticle] = useState<TopicArticleRow | null>(null);
+
+  // Articles tab: load articles from articles_oge_full based on topic-skill mapping
+  const [loadingArticles, setLoadingArticles] = useState<boolean>(true);
+  const [topicArticles, setTopicArticles] = useState<TopicArticle[]>([]);
+  const [selectedArticleQuiz, setSelectedArticleQuiz] = useState<{
+    skillId: number;
+    title: string;
+  } | null>(null);
 
   useEffect(() => {
     let ignore = false;
@@ -92,6 +141,117 @@ const TopicPage: React.FC = () => {
       ignore = true;
     };
   }, [topicNumber]);
+
+  // Load articles for Articles tab
+  useEffect(() => {
+    let ignore = false;
+    setLoadingArticles(true);
+    (async () => {
+      if (!topicNumber || !moduleEntry?.courseId) {
+        if (!ignore) {
+          setTopicArticles([]);
+          setLoadingArticles(false);
+        }
+        return;
+      }
+
+      try {
+        // Get JSON file ID for this course
+        const jsonFileId = getJsonFileIdForCourse(moduleEntry.courseId);
+        const numericCourseId = getNumericCourseId(moduleEntry.courseId);
+
+        // Fetch topic-skill mapping from json_files
+        const { data: jsonData, error: jsonError } = await supabase
+          .from('json_files')
+          .select('content')
+          .eq('id', jsonFileId)
+          .eq('course_id', numericCourseId)
+          .maybeSingle();
+
+        if (jsonError || !jsonData?.content) {
+          console.error('Failed to load topic-skill mapping:', jsonError);
+          if (!ignore) {
+            setTopicArticles([]);
+            setLoadingArticles(false);
+          }
+          return;
+        }
+
+        // Parse the mapping - it's a nested structure like { "1 Числа и вычисления": { "1.1E": { "name": "...", "skills": [...] } } }
+        const mapping = jsonData.content as any;
+        
+        // Find skills for current topicNumber
+        let skills: number[] = [];
+        
+        // Search through all modules and topics in the mapping
+        for (const moduleKey in mapping) {
+          const module = mapping[moduleKey];
+          if (typeof module === 'object' && module !== null) {
+            for (const topicKey in module) {
+              if (topicKey === topicNumber) {
+                const topicData = module[topicKey];
+                if (topicData?.skills && Array.isArray(topicData.skills)) {
+                  // Extract skill numbers from the skills array (each skill is an object with 'number' property)
+                  skills = topicData.skills.map((s: any) => {
+                    if (typeof s === 'number') return s;
+                    if (typeof s === 'object' && s?.number) return s.number;
+                    return null;
+                  }).filter((s: any) => s !== null && typeof s === 'number');
+                  break;
+                } else if (Array.isArray(topicData)) {
+                  // If skills is directly an array of numbers
+                  skills = topicData.filter((s: any) => typeof s === 'number');
+                  break;
+                }
+              }
+            }
+            if (skills.length > 0) break;
+          }
+        }
+
+        if (skills.length === 0) {
+          console.log(`No skills found for topic ${topicNumber}`);
+          if (!ignore) {
+            setTopicArticles([]);
+            setLoadingArticles(false);
+          }
+          return;
+        }
+
+        // Fetch articles for each skill, maintaining order
+        const articlesPromises = skills.map(async (skillId) => {
+          const { data, error } = await supabase
+            .from('articles_oge_full')
+            .select('*')
+            .eq('ID', skillId)
+            .maybeSingle();
+
+          if (error) {
+            console.error(`Error fetching article for skill ${skillId}:`, error);
+            return { skillId, article: null };
+          }
+
+          return { skillId, article: data };
+        });
+
+        const articles = await Promise.all(articlesPromises);
+
+        if (!ignore) {
+          setTopicArticles(articles);
+          setLoadingArticles(false);
+        }
+      } catch (error) {
+        console.error('Error loading articles:', error);
+        if (!ignore) {
+          setTopicArticles([]);
+          setLoadingArticles(false);
+        }
+      }
+    })();
+    return () => {
+      ignore = true;
+    };
+  }, [topicNumber, moduleEntry?.courseId]);
 
   // State for exercise
   const [selectedExercise, setSelectedExercise] = useState<
@@ -166,8 +326,31 @@ const TopicPage: React.FC = () => {
               questionCount={selectedExercise.questionCount}
               isModuleTest={false}
               itemId={selectedExercise.itemId}
+              courseId={getNumericCourseId(moduleEntry?.courseId || 'oge-math')}
               onBack={() => {
                 setSelectedExercise(null);
+                refetch();
+                setRefreshKey((prev) => prev + 1);
+              }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Article Quiz Modal */}
+      {selectedArticleQuiz && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4">
+          <div className="w-full max-w-6xl max-h-[90vh] overflow-y-auto">
+            <OgeExerciseQuiz
+              key={`article-quiz-${selectedArticleQuiz.skillId}-${refreshKey}`}
+              title={selectedArticleQuiz.title}
+              skills={[selectedArticleQuiz.skillId]}
+              questionCount={4}
+              isModuleTest={false}
+              itemId={`article-quiz-${moduleSlug}-${topicId}-skill-${selectedArticleQuiz.skillId}`}
+              courseId={getNumericCourseId(moduleEntry?.courseId || 'oge-math')}
+              onBack={() => {
+                setSelectedArticleQuiz(null);
                 refetch();
                 setRefreshKey((prev) => prev + 1);
               }}
@@ -368,6 +551,13 @@ const TopicPage: React.FC = () => {
                 <span className="sm:hidden">Обзор</span>
               </TabsTrigger>
               <TabsTrigger
+                value="articles"
+                className="flex-1 rounded-t-lg rounded-b-none border border-b-0 border-gray-200 data-[state=active]:bg-white data-[state=active]:border-gray-300 data-[state=active]:shadow-sm data-[state=inactive]:bg-gray-50/50 data-[state=inactive]:text-gray-600 px-2 md:px-6 py-2 md:py-3 font-medium text-xs md:text-sm"
+              >
+                <span className="hidden sm:inline">Статьи ({topicArticles.length})</span>
+                <span className="sm:hidden">Статьи</span>
+              </TabsTrigger>
+              <TabsTrigger
                 value="demonstrations"
                 className="flex-1 rounded-t-lg rounded-b-none border border-b-0 border-gray-200 data-[state=active]:bg-white data-[state=active]:border-gray-300 data-[state=active]:shadow-sm data-[state=inactive]:bg-gray-50/50 data-[state=inactive]:text-gray-600 px-2 md:px-6 py-2 md:py-3 font-medium text-xs md:text-sm"
               >
@@ -406,25 +596,85 @@ const TopicPage: React.FC = () => {
               )}
             </TabsContent>
 
-            {/* ✅ Updated Demonstrations tab with two buttons */}
+            {/* Articles tab */}
+            <TabsContent value="articles" className="m-0 p-6 space-y-8">
+              {loadingArticles ? (
+                <div className="text-sm text-gray-700">Загружаем статьи…</div>
+              ) : topicArticles.length === 0 ? (
+                <div className="text-sm text-gray-700">
+                  Статьи для этой темы пока не найдены.
+                </div>
+              ) : (
+                topicArticles.map((topicArticle, index) => (
+                  <div key={topicArticle.skillId} className="space-y-4">
+                    {topicArticle.article?.article_text ? (
+                      <>
+                        <div className="border-b border-gray-200 pb-2">
+                          <h3 className="text-lg font-semibold text-[#1a1f36]">
+                            Статья {index + 1} (Навык {topicArticle.skillId})
+                          </h3>
+                        </div>
+                        <ArticleRenderer
+                          text={topicArticle.article.article_text}
+                          article={{
+                            skill: topicArticle.skillId,
+                            art: topicArticle.article.article_text
+                          }}
+                        />
+                        <div className="flex justify-start pt-2">
+                          <Button
+                            onClick={() => {
+                              setSelectedArticleQuiz({
+                                skillId: topicArticle.skillId,
+                                title: `Тест по статье ${index + 1} (Навык ${topicArticle.skillId})`
+                              });
+                            }}
+                            className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white"
+                          >
+                            <Target className="h-4 w-4 mr-2" />
+                            Пройти тест по статье
+                          </Button>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                        <div className="text-sm text-gray-600">
+                          Статья для навыка {topicArticle.skillId} пока не добавлена.
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))
+              )}
+            </TabsContent>
+
+            {/* ✅ Demonstrations tab */}
             <TabsContent value="demonstrations" className="m-0 p-6 space-y-3">
-              <div className="text-sm text-gray-700">
-                Запусти интерактивные симуляции по теме.
-              </div>
-              <div className="flex flex-wrap gap-3">
-                <Button
-                  className="bg-[#1a1f36] text-white hover:bg-[#2d3748]"
-                  onClick={() => open("divisibility")}
-                >
-                  Открыть «Признаки делимости»
-                </Button>
-                <Button
-                  variant="secondary"
-                  onClick={() => open("sci-notation")}
-                >
-                  Открыть «Scientific notation»
-                </Button>
-              </div>
+              {hasDemonstrations ? (
+                <>
+                  <div className="text-sm text-gray-700">
+                    Запусти интерактивные симуляции по теме.
+                  </div>
+                  <div className="flex flex-wrap gap-3">
+                    <Button
+                      className="bg-[#1a1f36] text-white hover:bg-[#2d3748]"
+                      onClick={() => open("divisibility")}
+                    >
+                      Открыть «Признаки делимости»
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      onClick={() => open("sci-notation")}
+                    >
+                      Открыть «Scientific notation»
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <div className="text-sm text-gray-700">
+                  Демонстрации скоро появятся.
+                </div>
+              )}
             </TabsContent>
 
             <TabsContent value="videos" className="m-0 p-6 space-y-6">

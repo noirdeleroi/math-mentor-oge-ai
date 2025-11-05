@@ -56,24 +56,24 @@ const ModulePage = () => {
   };
 
   const renderTopicItem = (topic: TopicContent, topicIndex: number) => (
-    <motion.div
-      key={topic.id}
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: topicIndex * 0.05 }}
-      className="bg-white/95 text-[#1a1f36] rounded-lg p-6 mb-4 border border-white/20 shadow-sm"
-      style={{ backdropFilter: "blur(8px)" }}
-    >
-      <h3 className="text-xl font-semibold mb-6">
-        <Link
-          to={`/module/${moduleSlug}/topic/${topic.id}`}
-          className="inline-block relative z-10 hover:underline focus:outline-none focus:underline"
-        >
-          {topic.title}
-        </Link>
-      </h3>
+      <motion.div
+        key={topic.id}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: topicIndex * 0.05 }}
+        className="bg-white/95 text-[#1a1f36] rounded-lg p-6 mb-4 border border-white/20 shadow-sm"
+        style={{ backdropFilter: "blur(8px)" }}
+      >
+        <h3 className="text-xl font-semibold mb-6">
+          <Link
+            to={`/module/${moduleSlug}/topic/${topic.id}`}
+            className="inline-block relative z-10 hover:underline focus:outline-none focus:underline"
+          >
+            {topic.title}
+          </Link>
+        </h3>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
         {/* Left Column - Learn */}
         <div>
           <h4 className="text-sm font-medium text-gray-600 mb-3 uppercase tracking-wide">Изучение</h4>

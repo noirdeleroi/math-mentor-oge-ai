@@ -19,14 +19,14 @@ type ModuleCard = {
 };
 
 const moduleDefinitions = [
-  { n: 1, title: "1. Числа и вычисления", subtitle: "Основы арифметики и работа с числами", img: moduleImgs[1], topicCodes: ['1.1', '1.2', '1.3', '1.4', '1.5', '1.6', '1.7', '1.8', '1.9'] },
-  { n: 2, title: "2. Уравнения и неравенства", subtitle: "Решение уравнений и систем", img: moduleImgs[3], topicCodes: ['2.1', '2.2', '2.3', '2.4', '2.5', '2.6', '2.7', '2.8', '2.9', '2.10', '2.11', '2.12'] },
-  { n: 3, title: "3. Функции и графики", subtitle: "Графики и свойства функций", img: moduleImgs[5], topicCodes: ['3.1', '3.2', '3.3', '3.4', '3.5', '3.6', '3.7', '3.8'] },
-  { n: 4, title: "4. Начала математического анализа", subtitle: "Производная, интеграл и исследование функций", img: moduleImgs[4], topicCodes: ['4.1', '4.2', '4.3'] },
-  { n: 5, title: "5. Множества и логика", subtitle: "Операции с множествами и логические высказывания", img: moduleImgs[8], topicCodes: ['5.1', '5.2'] },
-  { n: 6, title: "6. Вероятность и статистика", subtitle: "Теория вероятностей и анализ данных", img: moduleImgs[8], topicCodes: ['6.1', '6.2', '6.3'] },
-  { n: 7, title: "7. Геометрия", subtitle: "Планиметрия и стереометрия", img: moduleImgs[7], topicCodes: ['7.1', '7.2', '7.3', '7.4'] },
-  { n: 8, title: "8. Применение математики", subtitle: "Реальные задачи и прикладные проблемы", img: moduleImgs[9], topicCodes: ['8.1', '8.2'] },
+  { n: 1, title: "1. Числа и вычисления", subtitle: "Основы арифметики и работа с числами", img: moduleImgs[1], topicCodes: ['1.1E', '1.2E', '1.3E', '1.4E', '1.5E', '1.6E', '1.7E', '1.8E', '1.9E'] },
+  { n: 2, title: "2. Уравнения и неравенства", subtitle: "Решение уравнений и систем", img: moduleImgs[3], topicCodes: ['2.1E', '2.2E', '2.3E', '2.4E', '2.5E', '2.6E', '2.7E', '2.8E', '2.9E', '2.10E', '2.11E', '2.12E'] },
+  { n: 3, title: "3. Функции и графики", subtitle: "Графики и свойства функций", img: moduleImgs[5], topicCodes: ['3.1E', '3.2E', '3.3E', '3.4E', '3.5E', '3.6E', '3.7E', '3.8E'] },
+  { n: 4, title: "4. Начала математического анализа", subtitle: "Производная, интеграл и исследование функций", img: moduleImgs[4], topicCodes: ['4.1E', '4.2E', '4.3E'] },
+  { n: 5, title: "5. Множества и логика", subtitle: "Операции с множествами и логические высказывания", img: moduleImgs[8], topicCodes: ['5.1E', '5.2E'] },
+  { n: 6, title: "6. Вероятность и статистика", subtitle: "Теория вероятностей и анализ данных", img: moduleImgs[8], topicCodes: ['6.1E', '6.2E', '6.3E'] },
+  { n: 7, title: "7. Геометрия", subtitle: "Планиметрия и стереометрия", img: moduleImgs[7], topicCodes: ['7.1E', '7.2E', '7.3E', '7.4E', '7.5E'] },
+  { n: 8, title: "8. Применение математики", subtitle: "Реальные задачи и прикладные проблемы", img: moduleImgs[9], topicCodes: ['8.1E', '8.2E'] },
 ];
 
 const circumference = 2 * Math.PI * 28; // radius 28 in your SVG
@@ -73,7 +73,7 @@ const PlatformOgep: React.FC = () => {
     const loadProgressData = async () => {
       if (!user) {
         // Set default modules with 0 progress if not logged in
-        setModules(moduleDefinitions.map(m => ({ ...m, progress: 0, locked: true })));
+        setModules(moduleDefinitions.map(m => ({ ...m, progress: 0, locked: false })));
         setLoading(false);
         return;
       }
@@ -90,7 +90,7 @@ const PlatformOgep: React.FC = () => {
 
         if (error || !snapshot?.raw_data) {
           console.log('No snapshot found, using default values');
-          setModules(moduleDefinitions.map(m => ({ ...m, progress: 0 })));
+          setModules(moduleDefinitions.map(m => ({ ...m, progress: 0, locked: false })));
           setLoading(false);
           return;
         }
@@ -101,7 +101,7 @@ const PlatformOgep: React.FC = () => {
         const topicProgressMap: {[key: string]: number} = {};
         rawData.forEach((item: any) => {
           if (item.topic && !item.topic.includes('задача ФИПИ') && !item.topic.includes('навык')) {
-            const topicMatch = item.topic.match(/^(\d+\.\d+)/);
+            const topicMatch = item.topic.match(/^(\d+\.\d+E?)/);
             if (topicMatch) {
               const topicCode = topicMatch[1];
               topicProgressMap[topicCode] = Math.round(item.prob * 100);
@@ -130,7 +130,7 @@ const PlatformOgep: React.FC = () => {
             subtitle: moduleDef.subtitle,
             img: moduleDef.img,
             progress,
-            locked: progress === 0
+            locked: false
           };
         });
 
@@ -155,7 +155,7 @@ const PlatformOgep: React.FC = () => {
         }
       } catch (err) {
         console.error('Error loading progress data:', err);
-        setModules(moduleDefinitions.map(m => ({ ...m, progress: 0 })));
+        setModules(moduleDefinitions.map(m => ({ ...m, progress: 0, locked: false })));
       } finally {
         setLoading(false);
       }
@@ -359,7 +359,7 @@ const PlatformOgep: React.FC = () => {
                 <div
                   key={m.n}
                   className={`module-card rounded-xl p-4 sm:p-6 cursor-pointer bg-white/95 text-[#1a1f36] border border-white/20 ${offsetClass} sm:${offsetClass}`}
-                  onClick={() => (m.locked ? null : goToModule(m.n))}
+                  onClick={() => goToModule(m.n)}
                   style={{ backdropFilter: "blur(10px)" }}
                 >
                   <div className="flex items-center justify-between mb-3 sm:mb-4">

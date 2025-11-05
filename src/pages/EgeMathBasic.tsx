@@ -500,9 +500,9 @@ ${updated.feedback_message}
       <Button
         onClick={() => { handlePlatformClick(); if (isMobile) setIsSidebarOpen(false); }}
         variant="ghost"
-        className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground pl-8"
+        className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
       >
-        Модули
+        Платформа
       </Button>
       
       <Button

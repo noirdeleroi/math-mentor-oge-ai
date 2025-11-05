@@ -11,6 +11,7 @@ interface TopicContent {
   articles: number;
   exercises: number;
   videoData?: VideoData[];
+  description?: string;
 }
 
 interface QuizContent {
@@ -941,14 +942,14 @@ export const modulesRegistry: Record<string, ModuleConfig> = {
     skillsDescription: 'Навыки: Натуральные числа, Дроби, Проценты, Рациональные числа, Действительные числа, Приближённые вычисления, Работа с данными, Прикладная геометрия',
     topicMapping: ['1.1E', '1.2E', '1.3E', '1.4E', '1.5E', '1.6E', '1.7E', '1.8E'],
     topics: [
-      { id: 'natural-integers', title: 'Натуральные и целые числа', videos: 3, articles: 1, exercises: 2 },
-      { id: 'fractions-percentages', title: 'Дроби и проценты', videos: 3, articles: 1, exercises: 2 },
-      { id: 'rational-numbers', title: 'Арифметический корень (n-й)', videos: 3, articles: 1, exercises: 2 },
-      { id: 'real-numbers', title: 'Степени', videos: 3, articles: 1, exercises: 2 },
-      { id: 'approximations', title: 'Тригонометрические функции (sin, cos, tg) как числа', videos: 3, articles: 1, exercises: 2 },
-      { id: 'data-graphs', title: 'Логарифм числа', videos: 3, articles: 1, exercises: 2 },
-      { id: 'applied-geometry', title: 'Действительные числа', videos: 3, articles: 1, exercises: 2 },
-      { id: 'additional-topics', title: 'Преобразование выражений', videos: 3, articles: 1, exercises: 2 }
+      { id: 'natural-integers', title: 'Натуральные и целые числа', videos: 3, articles: 1, exercises: 2, description: 'Изучение натуральных чисел, их свойств, признаков делимости, нахождения НОД и НОК' },
+      { id: 'fractions-percentages', title: 'Дроби и проценты', videos: 3, articles: 1, exercises: 2, description: 'Работа с обыкновенными и десятичными дробями, вычисление процентов, процентные изменения' },
+      { id: 'rational-numbers', title: 'Арифметический корень (n-й)', videos: 3, articles: 1, exercises: 2, description: 'Определение и свойства корней, арифметические операции с корнями, рационализация знаменателя' },
+      { id: 'real-numbers', title: 'Степени', videos: 3, articles: 1, exercises: 2, description: 'Степени с целым и рациональным показателем, свойства степеней, операции со степенями' },
+      { id: 'approximations', title: 'Тригонометрические функции (sin, cos, tg) как числа', videos: 3, articles: 1, exercises: 2, description: 'Тригонометрия в прямоугольном треугольнике, стандартные углы, обратные тригонометрические функции' },
+      { id: 'data-graphs', title: 'Логарифм числа', videos: 3, articles: 1, exercises: 2, description: 'Определение логарифма, основные свойства, вычисление простых логарифмов, формула перехода к новому основанию' },
+      { id: 'applied-geometry', title: 'Действительные числа', videos: 3, articles: 1, exercises: 2, description: 'Классификация действительных чисел, приближённые вычисления, округление, работа с координатной прямой' },
+      { id: 'additional-topics', title: 'Преобразование выражений', videos: 3, articles: 1, exercises: 2, description: 'Преобразование дробей, работа с многочленами, алгебраические дроби, упрощение выражений' }
     ],
     quizzes: [
       { id: 'quiz-1', title: 'Тест 1', description: 'Проверьте темы 1.1E-1.4E' },
@@ -1355,21 +1356,21 @@ export const modulesRegistry: Record<string, ModuleConfig> = {
     subtitle: '9 тем • 27 видео • 9 статей • 18 упражнений',
     masteryPoints: 2250,
     skillsDescription: 'Навыки: Натуральные числа, Дроби, Проценты, Рациональные числа, Действительные числа, Приближённые вычисления, Работа с данными, Прикладная геометрия',
-    topicMapping: ['1.1', '1.2', '1.3', '1.4', '1.5', '1.6', '1.7', '1.8', '1.9'],
+    topicMapping: ['1.1E', '1.2E', '1.3E', '1.4E', '1.5E', '1.6E', '1.7E', '1.8E', '1.9E'],
     topics: [
       { id: 'natural-integers', title: 'Натуральные и целые числа', videos: 3, articles: 1, exercises: 2 },
       { id: 'fractions-percentages', title: 'Дроби и проценты', videos: 3, articles: 1, exercises: 2 },
-      { id: 'rational-numbers', title: 'Рациональные числа и арифметические действия', videos: 3, articles: 1, exercises: 2 },
-      { id: 'real-numbers', title: 'Действительные числа', videos: 3, articles: 1, exercises: 2 },
-      { id: 'approximations', title: 'Приближённые вычисления', videos: 3, articles: 1, exercises: 2 },
-      { id: 'data-graphs', title: 'Работа с данными и графиками', videos: 3, articles: 1, exercises: 2 },
-      { id: 'applied-geometry', title: 'Прикладная геометрия: площади и расстояния', videos: 3, articles: 1, exercises: 2 },
-      { id: 'additional-topics', title: 'Дополнительные темы', videos: 3, articles: 1, exercises: 2 },
-      { id: 'advanced-numbers', title: 'Продвинутые темы', videos: 3, articles: 1, exercises: 2 }
+      { id: 'rational-numbers', title: 'Арифметический корень (n-й)', videos: 3, articles: 1, exercises: 2 },
+      { id: 'real-numbers', title: 'Степени', videos: 3, articles: 1, exercises: 2 },
+      { id: 'approximations', title: 'Тригонометрические функции (sin, cos, tg) как числа', videos: 3, articles: 1, exercises: 2 },
+      { id: 'data-graphs', title: 'Логарифм числа', videos: 3, articles: 1, exercises: 2 },
+      { id: 'applied-geometry', title: 'Действительные числа', videos: 3, articles: 1, exercises: 2 },
+      { id: 'additional-topics', title: 'Преобразование выражений', videos: 3, articles: 1, exercises: 2 },
+      { id: 'advanced-numbers', title: 'Комплексные числа', videos: 3, articles: 1, exercises: 2 }
     ],
     quizzes: [
-      { id: 'quiz-1', title: 'Тест 1', description: 'Проверьте темы 1.1-1.5' },
-      { id: 'quiz-2', title: 'Тест 2', description: 'Проверьте темы 1.6-1.9' }
+      { id: 'quiz-1', title: 'Тест 1', description: 'Проверьте темы 1.1E-1.5E' },
+      { id: 'quiz-2', title: 'Тест 2', description: 'Проверьте темы 1.6E-1.9E' }
     ],
     orderedContent: [
       { type: 'topic', topicIndex: 0 },
@@ -1386,17 +1387,29 @@ export const modulesRegistry: Record<string, ModuleConfig> = {
       { type: 'quiz', isFinalTest: true }
     ],
     getExerciseData: (topicId: string, exerciseIndex: number) => {
-      return { title: `Упражнение ${exerciseIndex + 1}`, skills: [] };
+      const skillMap: Record<string, number[][]> = {
+        'natural-integers': [[1, 2, 4, 189], [3, 5]],
+        'fractions-percentages': [[6, 7, 8, 9], [195, 10]],
+        'rational-numbers': [[54, 55, 56], [57]],
+        'real-numbers': [[39, 40, 41, 42, 43], [44]],
+        'approximations': [[124, 300], [301]],
+        'data-graphs': [[302, 303, 304], [305]],
+        'applied-geometry': [[18, 19, 20, 21, 22, 23, 11, 12, 13, 103, 104, 105, 106, 107, 108, 110, 111], [197, 109, 306]],
+        'additional-topics': [[14, 15, 16, 35, 36, 37, 38, 45, 46, 47, 48, 50, 51, 52, 53, 180], [194, 49, 179]],
+        'advanced-numbers': [[307, 308, 309], [310, 311]]
+      };
+      const skills = skillMap[topicId]?.[exerciseIndex] || [];
+      return { title: `Упражнение ${exerciseIndex + 1}`, skills };
     },
     getQuizData: (quizId: string) => {
       if (quizId === 'quiz-1') {
-        return { title: 'Тест 1: Числа и вычисления (часть 1)', skills: [], questionCount: 6, isTest: true };
+        return { title: 'Тест 1: Числа и вычисления (часть 1)', skills: [1, 2, 4, 189, 3, 5, 6, 7, 8, 9, 195, 10, 54, 55, 56, 57, 39, 40, 41, 42, 43, 44, 124, 300, 301], questionCount: 6, isTest: true };
       }
       if (quizId === 'quiz-2') {
-        return { title: 'Тест 2: Числа и вычисления (часть 2)', skills: [], questionCount: 6, isTest: true };
+        return { title: 'Тест 2: Числа и вычисления (часть 2)', skills: [302, 303, 304, 305, 18, 19, 20, 21, 22, 23, 11, 12, 13, 197, 103, 104, 105, 106, 107, 108, 109, 110, 111, 306, 14, 15, 16, 35, 36, 37, 38, 194, 45, 46, 47, 48, 49, 50, 51, 52, 53, 180, 179, 307, 308, 309, 310, 311], questionCount: 6, isTest: true };
       }
       if (quizId === 'module-exam') {
-        return { title: 'Итоговый экзамен модуля', skills: [], questionCount: 10, isExam: true };
+        return { title: 'Итоговый экзамен модуля', skills: [1, 2, 4, 189, 3, 5, 6, 7, 8, 9, 195, 10, 54, 55, 56, 57, 39, 40, 41, 42, 43, 44, 124, 300, 301, 302, 303, 304, 305, 18, 19, 20, 21, 22, 23, 11, 12, 13, 197, 103, 104, 105, 106, 107, 108, 109, 110, 111, 306, 14, 15, 16, 35, 36, 37, 38, 194, 45, 46, 47, 48, 49, 50, 51, 52, 53, 180, 179, 307, 308, 309, 310, 311], questionCount: 10, isExam: true };
       }
       return null;
     }
@@ -1410,24 +1423,24 @@ export const modulesRegistry: Record<string, ModuleConfig> = {
     subtitle: '12 тем • 36 видео • 12 статей • 24 упражнений',
     masteryPoints: 3000,
     skillsDescription: 'Навыки: Линейные уравнения, Квадратные уравнения, Рациональные уравнения, Иррациональные уравнения, Системы, Неравенства, Параметры',
-    topicMapping: ['2.1', '2.2', '2.3', '2.4', '2.5', '2.6', '2.7', '2.8', '2.9', '2.10', '2.11', '2.12'],
+    topicMapping: ['2.1E', '2.2E', '2.3E', '2.4E', '2.5E', '2.6E', '2.7E', '2.8E', '2.9E', '2.10E', '2.11E', '2.12E'],
     topics: [
-      { id: 'linear-equations', title: 'Линейные уравнения', videos: 3, articles: 1, exercises: 2 },
-      { id: 'quadratic-equations', title: 'Квадратные уравнения', videos: 3, articles: 1, exercises: 2 },
-      { id: 'rational-equations', title: 'Рациональные уравнения', videos: 3, articles: 1, exercises: 2 },
-      { id: 'irrational-equations', title: 'Иррациональные уравнения', videos: 3, articles: 1, exercises: 2 },
-      { id: 'systems-equations', title: 'Системы уравнений', videos: 3, articles: 1, exercises: 2 },
-      { id: 'linear-inequalities', title: 'Линейные неравенства', videos: 3, articles: 1, exercises: 2 },
-      { id: 'quadratic-inequalities', title: 'Квадратные неравенства', videos: 3, articles: 1, exercises: 2 },
-      { id: 'rational-inequalities', title: 'Рациональные неравенства', videos: 3, articles: 1, exercises: 2 },
-      { id: 'irrational-inequalities', title: 'Иррациональные неравенства', videos: 3, articles: 1, exercises: 2 },
-      { id: 'systems-inequalities', title: 'Системы неравенств', videos: 3, articles: 1, exercises: 2 },
-      { id: 'equations-parameters', title: 'Уравнения с параметрами', videos: 3, articles: 1, exercises: 2 },
-      { id: 'advanced-topics', title: 'Продвинутые темы', videos: 3, articles: 1, exercises: 2 }
+      { id: 'linear-equations', title: 'Целые и дробно-рациональные уравнения', videos: 3, articles: 1, exercises: 2 },
+      { id: 'quadratic-equations', title: 'Иррациональные уравнения', videos: 3, articles: 1, exercises: 2 },
+      { id: 'rational-equations', title: 'Тригонометрические уравнения', videos: 3, articles: 1, exercises: 2 },
+      { id: 'irrational-equations', title: 'Показательные и логарифмические уравнения', videos: 3, articles: 1, exercises: 2 },
+      { id: 'systems-equations', title: 'Целые и дробно-рациональные неравенства', videos: 3, articles: 1, exercises: 2 },
+      { id: 'linear-inequalities', title: 'Иррациональные неравенства', videos: 3, articles: 1, exercises: 2 },
+      { id: 'quadratic-inequalities', title: 'Показательные и логарифмические неравенства', videos: 3, articles: 1, exercises: 2 },
+      { id: 'rational-inequalities', title: 'Тригонометрические неравенства', videos: 3, articles: 1, exercises: 2 },
+      { id: 'irrational-inequalities', title: 'Системы и совокупности уравнений и неравенств', videos: 3, articles: 1, exercises: 2 },
+      { id: 'systems-inequalities', title: 'Уравнения, неравенства и системы с параметрами', videos: 3, articles: 1, exercises: 2 },
+      { id: 'equations-parameters', title: 'Матрица системы линейных уравнений', videos: 3, articles: 1, exercises: 2 },
+      { id: 'advanced-topics', title: 'Графические методы решения уравнений и неравенств', videos: 3, articles: 1, exercises: 2 }
     ],
     quizzes: [
-      { id: 'quiz-1', title: 'Тест 1', description: 'Проверьте темы 2.1-2.6' },
-      { id: 'quiz-2', title: 'Тест 2', description: 'Проверьте темы 2.7-2.12' }
+      { id: 'quiz-1', title: 'Тест 1', description: 'Проверьте темы 2.1E-2.6E' },
+      { id: 'quiz-2', title: 'Тест 2', description: 'Проверьте темы 2.7E-2.12E' }
     ],
     orderedContent: [
       { type: 'topic', topicIndex: 0 },
@@ -1447,17 +1460,32 @@ export const modulesRegistry: Record<string, ModuleConfig> = {
       { type: 'quiz', isFinalTest: true }
     ],
     getExerciseData: (topicId: string, exerciseIndex: number) => {
-      return { title: `Упражнение ${exerciseIndex + 1}`, skills: [] };
+      const skillMap: Record<string, number[][]> = {
+        'linear-equations': [[58, 59, 60, 62], [188, 191]],
+        'quadratic-equations': [[312], [313]],
+        'rational-equations': [[314, 315, 316, 317, 318, 319, 320], [321, 322, 323, 324]],
+        'irrational-equations': [[325, 326, 327, 328], [329, 330, 331, 332, 333, 334]],
+        'systems-equations': [[63, 64, 66, 67], [68, 335]],
+        'linear-inequalities': [[336], [337]],
+        'quadratic-inequalities': [[338, 339], [340, 341, 342]],
+        'rational-inequalities': [[343, 344], [345, 346]],
+        'irrational-inequalities': [[61, 347, 348, 349, 350, 351, 352], [353, 65, 354, 355, 356, 357, 358, 359, 360, 361, 362, 363, 364]],
+        'systems-inequalities': [[365, 366, 367], [368, 369]],
+        'equations-parameters': [[370, 371, 372], [373, 374, 375]],
+        'advanced-topics': [[376, 377], [378, 379]]
+      };
+      const skills = skillMap[topicId]?.[exerciseIndex] || [];
+      return { title: `Упражнение ${exerciseIndex + 1}`, skills };
     },
     getQuizData: (quizId: string) => {
       if (quizId === 'quiz-1') {
-        return { title: 'Тест 1: Уравнения', skills: [], questionCount: 6, isTest: true };
+        return { title: 'Тест 1: Уравнения', skills: [58, 59, 60, 62, 188, 191, 312, 313, 314, 315, 316, 317, 318, 319, 320, 321, 322, 323, 324, 325, 326, 327, 328, 329, 330, 331, 332, 333, 334, 63, 64, 66, 67, 68, 335, 336, 337], questionCount: 6, isTest: true };
       }
       if (quizId === 'quiz-2') {
-        return { title: 'Тест 2: Неравенства и параметры', skills: [], questionCount: 6, isTest: true };
+        return { title: 'Тест 2: Неравенства и параметры', skills: [338, 339, 340, 341, 342, 343, 344, 345, 346, 61, 347, 348, 349, 350, 351, 352, 353, 65, 354, 355, 356, 357, 358, 359, 360, 361, 362, 363, 364, 365, 366, 367, 368, 369, 370, 371, 372, 373, 374, 375, 376, 377, 378, 379], questionCount: 6, isTest: true };
       }
       if (quizId === 'module-exam') {
-        return { title: 'Итоговый экзамен модуля', skills: [], questionCount: 10, isExam: true };
+        return { title: 'Итоговый экзамен модуля', skills: [58, 59, 60, 62, 188, 191, 312, 313, 314, 315, 316, 317, 318, 319, 320, 321, 322, 323, 324, 325, 326, 327, 328, 329, 330, 331, 332, 333, 334, 63, 64, 66, 67, 68, 335, 336, 337, 338, 339, 340, 341, 342, 343, 344, 345, 346, 61, 347, 348, 349, 350, 351, 352, 353, 65, 354, 355, 356, 357, 358, 359, 360, 361, 362, 363, 364, 365, 366, 367, 368, 369, 370, 371, 372, 373, 374, 375, 376, 377, 378, 379], questionCount: 10, isExam: true };
       }
       return null;
     }
@@ -1471,20 +1499,20 @@ export const modulesRegistry: Record<string, ModuleConfig> = {
     subtitle: '8 тем • 24 видео • 8 статей • 16 упражнений',
     masteryPoints: 2000,
     skillsDescription: 'Навыки: Свойства функций, Графики, Область определения, Монотонность, Преобразования графиков, Тригонометрические функции',
-    topicMapping: ['3.1', '3.2', '3.3', '3.4', '3.5', '3.6', '3.7', '3.8'],
+    topicMapping: ['3.1E', '3.2E', '3.3E', '3.4E', '3.5E', '3.6E', '3.7E', '3.8E'],
     topics: [
-      { id: 'function-basics', title: 'Основы функций', videos: 3, articles: 1, exercises: 2 },
-      { id: 'function-properties', title: 'Свойства функций', videos: 3, articles: 1, exercises: 2 },
-      { id: 'function-graphs', title: 'Графики функций', videos: 3, articles: 1, exercises: 2 },
-      { id: 'linear-functions', title: 'Линейная функция', videos: 3, articles: 1, exercises: 2 },
-      { id: 'quadratic-functions', title: 'Квадратичная функция', videos: 3, articles: 1, exercises: 2 },
-      { id: 'trigonometric-functions', title: 'Тригонометрические функции', videos: 3, articles: 1, exercises: 2 },
-      { id: 'power-functions', title: 'Степенные функции', videos: 3, articles: 1, exercises: 2 },
-      { id: 'graph-transformations', title: 'Преобразования графиков', videos: 3, articles: 1, exercises: 2 }
+      { id: 'function-basics', title: 'Функции', videos: 3, articles: 1, exercises: 2 },
+      { id: 'function-properties', title: 'Свойства функции', videos: 3, articles: 1, exercises: 2 },
+      { id: 'function-graphs', title: 'Степенная функция', videos: 3, articles: 1, exercises: 2 },
+      { id: 'linear-functions', title: 'Тригонометрические функции', videos: 3, articles: 1, exercises: 2 },
+      { id: 'quadratic-functions', title: 'Показательная и логарифмическая функции', videos: 3, articles: 1, exercises: 2 },
+      { id: 'trigonometric-functions', title: 'Непрерывность функций и асимптоты', videos: 3, articles: 1, exercises: 2 },
+      { id: 'power-functions', title: 'Последовательности', videos: 3, articles: 1, exercises: 2 },
+      { id: 'graph-transformations', title: 'Арифметическая и геометрическая прогрессии. Формула сложных процентов', videos: 3, articles: 1, exercises: 2 }
     ],
     quizzes: [
-      { id: 'quiz-1', title: 'Тест 1', description: 'Проверьте темы 3.1-3.4' },
-      { id: 'quiz-2', title: 'Тест 2', description: 'Проверьте темы 3.5-3.8' }
+      { id: 'quiz-1', title: 'Тест 1', description: 'Проверьте темы 3.1E-3.4E' },
+      { id: 'quiz-2', title: 'Тест 2', description: 'Проверьте темы 3.5E-3.8E' }
     ],
     orderedContent: [
       { type: 'topic', topicIndex: 0 },
@@ -1500,17 +1528,28 @@ export const modulesRegistry: Record<string, ModuleConfig> = {
       { type: 'quiz', isFinalTest: true }
     ],
     getExerciseData: (topicId: string, exerciseIndex: number) => {
-      return { title: `Упражнение ${exerciseIndex + 1}`, skills: [] };
+      const skillMap: Record<string, number[][]> = {
+        'function-basics': [[89, 92, 93, 94], [380, 381, 382, 383, 95, 384]],
+        'function-properties': [[90, 91, 96, 97, 99, 100], [98, 101, 102, 186, 187]],
+        'function-graphs': [[385, 386], [387, 388]],
+        'linear-functions': [[389, 390], [391, 392]],
+        'quadratic-functions': [[393, 394, 395], [396, 397]],
+        'trigonometric-functions': [[398, 399], [400, 401, 402]],
+        'power-functions': [[76, 77], [78, 79]],
+        'graph-transformations': [[80, 81, 82, 83, 84, 85, 86, 87], [88]]
+      };
+      const skills = skillMap[topicId]?.[exerciseIndex] || [];
+      return { title: `Упражнение ${exerciseIndex + 1}`, skills };
     },
     getQuizData: (quizId: string) => {
       if (quizId === 'quiz-1') {
-        return { title: 'Тест 1: Основы функций и графики', skills: [], questionCount: 6, isTest: true };
+        return { title: 'Тест 1: Основы функций и графики', skills: [89, 92, 93, 94, 380, 381, 382, 383, 95, 384, 90, 91, 96, 97, 99, 100, 98, 101, 102, 186, 187, 385, 386, 387, 388, 389, 390, 391, 392], questionCount: 6, isTest: true };
       }
       if (quizId === 'quiz-2') {
-        return { title: 'Тест 2: Специальные функции', skills: [], questionCount: 6, isTest: true };
+        return { title: 'Тест 2: Специальные функции', skills: [393, 394, 395, 396, 397, 398, 399, 400, 401, 402, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88], questionCount: 6, isTest: true };
       }
       if (quizId === 'module-exam') {
-        return { title: 'Итоговый экзамен модуля', skills: [], questionCount: 10, isExam: true };
+        return { title: 'Итоговый экзамен модуля', skills: [89, 92, 93, 94, 380, 381, 382, 383, 95, 384, 90, 91, 96, 97, 99, 100, 98, 101, 102, 186, 187, 385, 386, 387, 388, 389, 390, 391, 392, 393, 394, 395, 396, 397, 398, 399, 400, 401, 402, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88], questionCount: 10, isExam: true };
       }
       return null;
     }
@@ -1524,15 +1563,15 @@ export const modulesRegistry: Record<string, ModuleConfig> = {
     subtitle: '3 темы • 9 видео • 3 статьи • 12 упражнений',
     masteryPoints: 1500,
     skillsDescription: 'Навыки: Производная, Исследование функций, Применение производной, Интеграл',
-    topicMapping: ['4.1', '4.2', '4.3'],
+    topicMapping: ['4.1E', '4.2E', '4.3E'],
     topics: [
       { id: 'derivative-basics', title: 'Производная функции', videos: 3, articles: 1, exercises: 4 },
-      { id: 'function-study', title: 'Исследование функций', videos: 3, articles: 1, exercises: 4 },
-      { id: 'integral', title: 'Интеграл и его применение', videos: 3, articles: 1, exercises: 4 }
+      { id: 'function-study', title: 'Применение производной к исследованию функций', videos: 3, articles: 1, exercises: 4 },
+      { id: 'integral', title: 'Первообразная. Интеграл', videos: 3, articles: 1, exercises: 4 }
     ],
     quizzes: [
-      { id: 'quiz-1', title: 'Тест 1', description: 'Проверьте тему 4.1' },
-      { id: 'quiz-2', title: 'Тест 2', description: 'Проверьте темы 4.2-4.3' }
+      { id: 'quiz-1', title: 'Тест 1', description: 'Проверьте тему 4.1E' },
+      { id: 'quiz-2', title: 'Тест 2', description: 'Проверьте темы 4.2E-4.3E' }
     ],
     orderedContent: [
       { type: 'topic', topicIndex: 0 },
@@ -1543,17 +1582,23 @@ export const modulesRegistry: Record<string, ModuleConfig> = {
       { type: 'quiz', isFinalTest: true }
     ],
     getExerciseData: (topicId: string, exerciseIndex: number) => {
-      return { title: `Упражнение ${exerciseIndex + 1}`, skills: [] };
+      const skillMap: Record<string, number[][]> = {
+        'derivative-basics': [[403, 404, 405, 406], [407, 408, 409, 410]],
+        'function-study': [[411, 412], [413, 414, 415, 416]],
+        'integral': [[417, 418, 419, 420], [421, 422, 423, 424, 425, 426, 427, 428]]
+      };
+      const skills = skillMap[topicId]?.[exerciseIndex] || [];
+      return { title: `Упражнение ${exerciseIndex + 1}`, skills };
     },
     getQuizData: (quizId: string) => {
       if (quizId === 'quiz-1') {
-        return { title: 'Тест 1: Производная', skills: [], questionCount: 6, isTest: true };
+        return { title: 'Тест 1: Производная', skills: [403, 404, 405, 406, 407, 408, 409, 410], questionCount: 6, isTest: true };
       }
       if (quizId === 'quiz-2') {
-        return { title: 'Тест 2: Исследование и интеграл', skills: [], questionCount: 6, isTest: true };
+        return { title: 'Тест 2: Исследование и интеграл', skills: [411, 412, 413, 414, 415, 416, 417, 418, 419, 420, 421, 422, 423, 424, 425, 426, 427, 428], questionCount: 6, isTest: true };
       }
       if (quizId === 'module-exam') {
-        return { title: 'Итоговый экзамен модуля', skills: [], questionCount: 10, isExam: true };
+        return { title: 'Итоговый экзамен модуля', skills: [403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418, 419, 420, 421, 422, 423, 424, 425, 426, 427, 428], questionCount: 10, isExam: true };
       }
       return null;
     }
@@ -1567,14 +1612,14 @@ export const modulesRegistry: Record<string, ModuleConfig> = {
     subtitle: '2 темы • 6 видео • 2 статьи • 8 упражнений',
     masteryPoints: 1000,
     skillsDescription: 'Навыки: Операции с множествами, Логические операции, Диаграммы Эйлера-Венна, Логические высказывания',
-    topicMapping: ['5.1', '5.2'],
+    topicMapping: ['5.1E', '5.2E'],
     topics: [
-      { id: 'sets-operations', title: 'Операции с множествами', videos: 3, articles: 1, exercises: 4 },
-      { id: 'logic', title: 'Логика и высказывания', videos: 3, articles: 1, exercises: 4 }
+      { id: 'sets-operations', title: 'Множества. Диаграммы Эйлера–Венна', videos: 3, articles: 1, exercises: 4 },
+      { id: 'logic', title: 'Логика', videos: 3, articles: 1, exercises: 4 }
     ],
     quizzes: [
-      { id: 'quiz-1', title: 'Тест 1', description: 'Проверьте тему 5.1' },
-      { id: 'quiz-2', title: 'Тест 2', description: 'Проверьте тему 5.2' }
+      { id: 'quiz-1', title: 'Тест 1', description: 'Проверьте тему 5.1E' },
+      { id: 'quiz-2', title: 'Тест 2', description: 'Проверьте тему 5.2E' }
     ],
     orderedContent: [
       { type: 'topic', topicIndex: 0 },
@@ -1584,17 +1629,22 @@ export const modulesRegistry: Record<string, ModuleConfig> = {
       { type: 'quiz', isFinalTest: true }
     ],
     getExerciseData: (topicId: string, exerciseIndex: number) => {
-      return { title: `Упражнение ${exerciseIndex + 1}`, skills: [] };
+      const skillMap: Record<string, number[][]> = {
+        'sets-operations': [[173], [174]],
+        'logic': [[429, 430, 431], [432]]
+      };
+      const skills = skillMap[topicId]?.[exerciseIndex] || [];
+      return { title: `Упражнение ${exerciseIndex + 1}`, skills };
     },
     getQuizData: (quizId: string) => {
       if (quizId === 'quiz-1') {
-        return { title: 'Тест 1: Множества', skills: [], questionCount: 6, isTest: true };
+        return { title: 'Тест 1: Множества', skills: [173, 174], questionCount: 6, isTest: true };
       }
       if (quizId === 'quiz-2') {
-        return { title: 'Тест 2: Логика', skills: [], questionCount: 6, isTest: true };
+        return { title: 'Тест 2: Логика', skills: [429, 430, 431, 432], questionCount: 6, isTest: true };
       }
       if (quizId === 'module-exam') {
-        return { title: 'Итоговый экзамен модуля', skills: [], questionCount: 10, isExam: true };
+        return { title: 'Итоговый экзамен модуля', skills: [173, 174, 429, 430, 431, 432], questionCount: 10, isExam: true };
       }
       return null;
     }
@@ -1608,15 +1658,15 @@ export const modulesRegistry: Record<string, ModuleConfig> = {
     subtitle: '3 темы • 9 видео • 3 статьи • 9 упражнений',
     masteryPoints: 1350,
     skillsDescription: 'Навыки: Вероятность, Статистика, Комбинаторика',
-    topicMapping: ['6.1', '6.2', '6.3'],
+    topicMapping: ['6.1E', '6.2E', '6.3E'],
     topics: [
-      { id: 'probability', title: 'Вероятность', videos: 3, articles: 1, exercises: 3 },
-      { id: 'statistics', title: 'Статистика', videos: 3, articles: 1, exercises: 3 },
+      { id: 'probability', title: 'Описательная статистика', videos: 3, articles: 1, exercises: 3 },
+      { id: 'statistics', title: 'Вероятность', videos: 3, articles: 1, exercises: 3 },
       { id: 'combinatorics', title: 'Комбинаторика', videos: 3, articles: 1, exercises: 3 }
     ],
     quizzes: [
-      { id: 'quiz-1', title: 'Тест 1', description: 'Проверьте тему 6.1' },
-      { id: 'quiz-2', title: 'Тест 2', description: 'Проверьте темы 6.2-6.3' }
+      { id: 'quiz-1', title: 'Тест 1', description: 'Проверьте тему 6.1E' },
+      { id: 'quiz-2', title: 'Тест 2', description: 'Проверьте темы 6.2E-6.3E' }
     ],
     orderedContent: [
       { type: 'topic', topicIndex: 0 },
@@ -1627,17 +1677,23 @@ export const modulesRegistry: Record<string, ModuleConfig> = {
       { type: 'quiz', isFinalTest: true }
     ],
     getExerciseData: (topicId: string, exerciseIndex: number) => {
-      return { title: `Упражнение ${exerciseIndex + 1}`, skills: [] };
+      const skillMap: Record<string, number[][]> = {
+        'probability': [[162, 163], [164, 165, 433, 434]],
+        'statistics': [[166, 167, 168], [435, 436, 437, 438, 439, 440]],
+        'combinatorics': [[169, 170], [171, 172]]
+      };
+      const skills = skillMap[topicId]?.[exerciseIndex] || [];
+      return { title: `Упражнение ${exerciseIndex + 1}`, skills };
     },
     getQuizData: (quizId: string) => {
       if (quizId === 'quiz-1') {
-        return { title: 'Тест 1: Вероятность', skills: [], questionCount: 6, isTest: true };
+        return { title: 'Тест 1: Вероятность', skills: [162, 163, 164, 165, 433, 434], questionCount: 6, isTest: true };
       }
       if (quizId === 'quiz-2') {
-        return { title: 'Тест 2: Статистика и комбинаторика', skills: [], questionCount: 6, isTest: true };
+        return { title: 'Тест 2: Статистика и комбинаторика', skills: [166, 167, 168, 435, 436, 437, 438, 439, 440, 169, 170, 171, 172], questionCount: 6, isTest: true };
       }
       if (quizId === 'module-exam') {
-        return { title: 'Итоговый экзамен модуля', skills: [], questionCount: 10, isExam: true };
+        return { title: 'Итоговый экзамен модуля', skills: [162, 163, 164, 165, 433, 434, 166, 167, 168, 435, 436, 437, 438, 439, 440, 169, 170, 171, 172], questionCount: 10, isExam: true };
       }
       return null;
     }
@@ -1648,19 +1704,20 @@ export const modulesRegistry: Record<string, ModuleConfig> = {
     slug: 'ege-profil-geometry',
     moduleNumber: 7,
     title: 'Модуль 7: Геометрия',
-    subtitle: '4 темы • 12 видео • 4 статьи • 12 упражнений',
+    subtitle: '5 тем • 15 видео • 5 статей • 15 упражнений',
     masteryPoints: 1800,
     skillsDescription: 'Навыки: Планиметрия, Стереометрия, Измерения, Векторы',
-    topicMapping: ['7.1', '7.2', '7.3', '7.4'],
+    topicMapping: ['7.1E', '7.2E', '7.3E', '7.4E', '7.5E'],
     topics: [
-      { id: 'planimetry', title: 'Планиметрия', videos: 3, articles: 1, exercises: 3 },
-      { id: 'stereometry', title: 'Стереометрия', videos: 3, articles: 1, exercises: 3 },
-      { id: 'measurements', title: 'Измерения в геометрии', videos: 3, articles: 1, exercises: 3 },
-      { id: 'vectors', title: 'Векторы', videos: 3, articles: 1, exercises: 3 }
+      { id: 'planimetry', title: 'Фигуры на плоскости', videos: 3, articles: 1, exercises: 3 },
+      { id: 'stereometry', title: 'Прямые и плоскости в пространстве', videos: 3, articles: 1, exercises: 3 },
+      { id: 'measurements', title: 'Многогранники', videos: 3, articles: 1, exercises: 3 },
+      { id: 'vectors', title: 'Тела и поверхности вращения', videos: 3, articles: 1, exercises: 3 },
+      { id: 'coordinates-vectors', title: 'Координаты и векторы', videos: 3, articles: 1, exercises: 3 }
     ],
     quizzes: [
-      { id: 'quiz-1', title: 'Тест 1', description: 'Проверьте темы 7.1-7.2' },
-      { id: 'quiz-2', title: 'Тест 2', description: 'Проверьте темы 7.3-7.4' }
+      { id: 'quiz-1', title: 'Тест 1', description: 'Проверьте темы 7.1E-7.2E' },
+      { id: 'quiz-2', title: 'Тест 2', description: 'Проверьте темы 7.3E-7.5E' }
     ],
     orderedContent: [
       { type: 'topic', topicIndex: 0 },
@@ -1668,21 +1725,30 @@ export const modulesRegistry: Record<string, ModuleConfig> = {
       { type: 'quiz', quizIndex: 0 },
       { type: 'topic', topicIndex: 2 },
       { type: 'topic', topicIndex: 3 },
+      { type: 'topic', topicIndex: 4 },
       { type: 'quiz', quizIndex: 1 },
       { type: 'quiz', isFinalTest: true }
     ],
     getExerciseData: (topicId: string, exerciseIndex: number) => {
-      return { title: `Упражнение ${exerciseIndex + 1}`, skills: [] };
+      const skillMap: Record<string, number[][]> = {
+        'planimetry': [[112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129], [130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 153, 158, 159, 160, 161, 441, 442, 443, 444, 445, 446, 447, 448, 449, 450, 451, 452]],
+        'stereometry': [[453, 454, 455, 456], [457, 458]],
+        'measurements': [[459, 460], [461]],
+        'vectors': [[462, 463], [464]],
+        'coordinates-vectors': [[465, 466, 467, 154, 155, 156, 157, 468], [469, 470]]
+      };
+      const skills = skillMap[topicId]?.[exerciseIndex] || [];
+      return { title: `Упражнение ${exerciseIndex + 1}`, skills };
     },
     getQuizData: (quizId: string) => {
       if (quizId === 'quiz-1') {
-        return { title: 'Тест 1: Планиметрия и стереометрия', skills: [], questionCount: 6, isTest: true };
+        return { title: 'Тест 1: Планиметрия и стереометрия', skills: [112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 153, 158, 159, 160, 161, 441, 442, 443, 444, 445, 446, 447, 448, 449, 450, 451, 452, 453, 454, 455, 456, 457, 458], questionCount: 6, isTest: true };
       }
       if (quizId === 'quiz-2') {
-        return { title: 'Тест 2: Измерения и векторы', skills: [], questionCount: 6, isTest: true };
+        return { title: 'Тест 2: Измерения и векторы', skills: [459, 460, 461, 462, 463, 464, 465, 466, 467, 154, 155, 156, 157, 468, 469, 470], questionCount: 6, isTest: true };
       }
       if (quizId === 'module-exam') {
-        return { title: 'Итоговый экзамен модуля', skills: [], questionCount: 10, isExam: true };
+        return { title: 'Итоговый экзамен модуля', skills: [112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 153, 158, 159, 160, 161, 441, 442, 443, 444, 445, 446, 447, 448, 449, 450, 451, 452, 453, 454, 455, 456, 457, 458, 459, 460, 461, 462, 463, 464, 465, 466, 467, 154, 155, 156, 157, 468, 469, 470], questionCount: 10, isExam: true };
       }
       return null;
     }
@@ -1696,10 +1762,10 @@ export const modulesRegistry: Record<string, ModuleConfig> = {
     subtitle: '2 темы • 6 видео • 2 статьи • 10 упражнений',
     masteryPoints: 1200,
     skillsDescription: 'Навыки: Прикладные задачи, Работа с данными, Практические расчёты, Оптимизация',
-    topicMapping: ['8.1', '8.2'],
+    topicMapping: ['8.1E', '8.2E'],
     topics: [
-      { id: 'applied-tasks', title: 'Прикладные задачи', videos: 3, articles: 1, exercises: 5 },
-      { id: 'data-analysis', title: 'Анализ данных и оптимизация', videos: 3, articles: 1, exercises: 5 }
+      { id: 'applied-tasks', title: 'Чтение и анализ графических схем', videos: 3, articles: 1, exercises: 5 },
+      { id: 'data-analysis', title: 'Прикладные задачи', videos: 3, articles: 1, exercises: 5 }
     ],
     quizzes: [],
     orderedContent: [
@@ -1708,11 +1774,16 @@ export const modulesRegistry: Record<string, ModuleConfig> = {
       { type: 'quiz', isFinalTest: true }
     ],
     getExerciseData: (topicId: string, exerciseIndex: number) => {
-      return { title: `Упражнение ${exerciseIndex + 1}`, skills: [] };
+      const skillMap: Record<string, number[][]> = {
+        'applied-tasks': [[24], [25], [198], [199], []],
+        'data-analysis': [[69, 193, 70, 71], [72, 73, 74, 75], [471, 472, 192, 473, 474, 475, 476, 477, 478], [479, 480, 481, 482, 483, 484, 485, 486, 200], [181, 182, 183, 184, 185, 487]]
+      };
+      const skills = skillMap[topicId]?.[exerciseIndex] || [];
+      return { title: `Упражнение ${exerciseIndex + 1}`, skills };
     },
     getQuizData: (quizId: string) => {
       if (quizId === 'module-exam') {
-        return { title: 'Итоговый экзамен модуля', skills: [], questionCount: 10, isExam: true };
+        return { title: 'Итоговый экзамен модуля', skills: [24, 25, 198, 199, 69, 193, 70, 71, 72, 73, 74, 75, 471, 472, 192, 473, 474, 475, 476, 477, 478, 479, 480, 481, 482, 483, 484, 485, 486, 200, 181, 182, 183, 184, 185, 487], questionCount: 10, isExam: true };
       }
       return null;
     }
