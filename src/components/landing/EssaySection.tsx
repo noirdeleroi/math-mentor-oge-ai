@@ -12,7 +12,7 @@ export const EssaySection = () => {
         <div className="grid md:grid-cols-2 gap-8 items-center">
           {/* Left side - Info cards */}
           <div className="space-y-4">
-            <Card className="p-6 bg-card/50 backdrop-blur border-border hover:scale-105 transition-transform duration-300">
+            <Card className="p-6 bg-white dark:bg-white/95 border-border hover:scale-105 transition-transform duration-300 shadow-lg">
               <div className="flex items-start gap-4">
                 <div className="p-3 rounded-lg bg-primary/10">
                   <FileText className="w-6 h-6 text-primary" />
@@ -26,7 +26,7 @@ export const EssaySection = () => {
               </div>
             </Card>
 
-            <Card className="p-6 bg-card/50 backdrop-blur border-border hover:scale-105 transition-transform duration-300">
+            <Card className="p-6 bg-white dark:bg-white/95 border-border hover:scale-105 transition-transform duration-300 shadow-lg">
               <div className="flex items-start gap-4">
                 <div className="p-3 rounded-lg bg-primary/10">
                   <Target className="w-6 h-6 text-primary" />
@@ -40,7 +40,7 @@ export const EssaySection = () => {
               </div>
             </Card>
 
-            <Card className="p-6 bg-card/50 backdrop-blur border-border hover:scale-105 transition-transform duration-300">
+            <Card className="p-6 bg-white dark:bg-white/95 border-border hover:scale-105 transition-transform duration-300 shadow-lg">
               <div className="flex items-start gap-4">
                 <div className="p-3 rounded-lg bg-primary/10">
                   <Award className="w-6 h-6 text-primary" />
@@ -65,7 +65,7 @@ export const EssaySection = () => {
               className="w-full h-full object-cover"
             >
               <source
-                src="https://kbaazksvkvnafrwtmkcw.supabase.co/storage/v1/object/public/videos/essay1.mp4"
+                src="https://kbaazksvkvnafrwtmkcw.supabase.co/storage/v1/object/public/videos/essayLight.mp4"
                 type="video/mp4"
               />
             </video>
