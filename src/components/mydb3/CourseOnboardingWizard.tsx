@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
@@ -108,14 +108,6 @@ export function CourseOnboardingWizard({
     return () => window.removeEventListener("keydown", handleEscape);
   }, [onDone]);
 
-  useEffect(() => {
-    setCurrentStep(1);
-    setData({});
-    setError(null);
-    setIsSubmitting(false);
-    void loadExistingData();
-  }, [courseId, user?.id]);
-
   const loadExistingData = async () => {
     if (!user) return;
     try {
@@ -140,7 +132,9 @@ export function CourseOnboardingWizard({
             (profile as any)[`selfestimation${courseNumber}`] ?? undefined,
           mockScore: (profile as any)[`testmark${courseNumber}`] ?? undefined,
           tookMock:
-            (profile as any)[`testmark${courseNumber}`] != null ? true : undefined,
+            (profile as any)[`testmark${courseNumber}`] != null
+              ? true
+              : undefined,
           goalScore: (profile as any)[`course_${courseNumber}_goal`]
             ? parseInt((profile as any)[`course_${courseNumber}_goal`], 10)
             : undefined,
@@ -150,6 +144,21 @@ export function CourseOnboardingWizard({
       console.error("Error loading existing data:", e);
     }
   };
+
+  // Reset only when course changes, not on every user object change
+  useEffect(() => {
+    setCurrentStep(1);
+    setData({});
+    setError(null);
+    setIsSubmitting(false);
+  }, [courseId]);
+
+  // Load existing data when we have a user and course
+  useEffect(() => {
+    if (user) {
+      void loadExistingData();
+    }
+  }, [courseId, user?.id]);
 
   const updateData = (patch: Partial<CourseFormData>) => {
     setData((prev) => ({ ...prev, ...patch }));
@@ -209,7 +218,8 @@ export function CourseOnboardingWizard({
   };
 
   const handleNext = () => {
-    if (currentStep < TOTAL_STEPS && canProceed()) setCurrentStep((p) => p + 1);
+    if (currentStep < TOTAL_STEPS && canProceed())
+      setCurrentStep((p) => p + 1);
   };
   const handleBack = () => {
     if (currentStep > 1) setCurrentStep((p) => p - 1);
@@ -224,7 +234,9 @@ export function CourseOnboardingWizard({
       const updateObject: Record<string, number | string | null> = {
         [`schoolmark${courseNumber}`]: data.schoolGrade ?? null,
         [`selfestimation${courseNumber}`]: data.basicLevel ?? null,
-        [`testmark${courseNumber}`]: data.tookMock ? data.mockScore ?? null : null,
+        [`testmark${courseNumber}`]: data.tookMock
+          ? data.mockScore ?? null
+          : null,
         [`course_${courseNumber}_goal`]:
           data.goalScore != null ? String(data.goalScore) : null,
       };
@@ -380,7 +392,9 @@ export function CourseOnboardingWizard({
               transition={{ delay: i * 0.05 }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => updateData({ tookMock: value, mockScore: undefined })}
+              onClick={() =>
+                updateData({ tookMock: value, mockScore: undefined })
+              }
               className={`relative py-6 rounded-xl transition-all duration-200 ${
                 selected
                   ? "bg-gradient-to-br from-amber-500 to-orange-500 text-white shadow-lg shadow-amber-500/50"
@@ -404,27 +418,32 @@ export function CourseOnboardingWizard({
       </div>
 
       <div
-        className={`space-y-2 bg-white/5 p-3 rounded-lg border border-white/10 transition-opacity duration-300 ${data.tookMock ? 'opacity-100' : 'opacity-50 pointer-events-none'}`}
+        className={`space-y-2 bg-white/5 p-3 rounded-lg border border-white/10 transition-opacity duration-300 ${
+          data.tookMock ? "opacity-100" : "opacity-50 pointer-events-none"
+        }`}
       >
         <label className="block text-xs font-semibold text-white">
           Сколько баллов ты получил? (0–100)
         </label>
-            <Input
-              type="number"
-              min={0}
-              max={100}
-              value={data.mockScore ?? ""}
-              onChange={(e) =>
-                updateData({
-                  mockScore:
-                    e.target.value === ""
-                      ? undefined
-                      : Math.max(0, Math.min(100, parseInt(e.target.value, 10) || 0)),
-                })
-              }
-              placeholder="Например, 62"
-              className="text-center text-2xl font-bold bg-white/10 border-white/20 text-white placeholder:text-white/30 focus-visible:ring-amber-500/50 py-2"
-            />
+        <Input
+          type="number"
+          min={0}
+          max={100}
+          value={data.mockScore ?? ""}
+          onChange={(e) =>
+            updateData({
+              mockScore:
+                e.target.value === ""
+                  ? undefined
+                  : Math.max(
+                      0,
+                      Math.min(100, parseInt(e.target.value, 10) || 0)
+                    ),
+            })
+          }
+          placeholder="Например, 62"
+          className="text-center text-2xl font-bold bg-white/10 border-white/20 text-white placeholder:text-white/30 focus-visible:ring-amber-500/50 py-2"
+        />
         {data.mockScore !== undefined &&
           (data.mockScore < 0 || data.mockScore > 100) && (
             <motion.p
@@ -449,20 +468,14 @@ export function CourseOnboardingWizard({
           <h3 className="text-base font-semibold text-white mb-0.5">
             Какая твоя цель по баллам?
           </h3>
-          <p className="text-xs text-gray-400">
-            Максимум: {maxScore} баллов
-          </p>
+          <p className="text-xs text-gray-400">Максимум: {maxScore} баллов</p>
         </div>
 
+        {/* No motion around the frequently-updating number to avoid micro-blinks */}
         <div className="bg-gradient-to-br from-green-500/20 to-emerald-500/20 border border-green-500/30 rounded-lg p-4 text-center">
-          <motion.div
-            key={currentGoal}
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="text-4xl font-black bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent"
-          >
+          <div className="text-4xl font-black bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
             {currentGoal}
-          </motion.div>
+          </div>
           <div className="text-xs text-gray-300 mt-1">баллов</div>
         </div>
 
@@ -497,7 +510,9 @@ export function CourseOnboardingWizard({
                 className={`rounded bg-gradient-to-br ${cls} p-1.5 text-center shadow-lg`}
               >
                 <div className="font-black text-sm text-white">{grade}</div>
-                <div className="text-white/90 font-semibold text-xs">{range}</div>
+                <div className="text-white/90 font-semibold text-xs">
+                  {range}
+                </div>
               </motion.div>
             ))}
           </div>
@@ -506,9 +521,21 @@ export function CourseOnboardingWizard({
         {isEgeBasic && (
           <div className="grid grid-cols-3 gap-1 text-xs">
             {[
-              { grade: "3", range: "7–11", cls: "from-orange-500 to-orange-600" },
-              { grade: "4", range: "12–16", cls: "from-blue-500 to-blue-600" },
-              { grade: "5", range: "17–21", cls: "from-green-500 to-green-600" },
+              {
+                grade: "3",
+                range: "7–11",
+                cls: "from-orange-500 to-orange-600",
+              },
+              {
+                grade: "4",
+                range: "12–16",
+                cls: "from-blue-500 to-blue-600",
+              },
+              {
+                grade: "5",
+                range: "17–21",
+                cls: "from-green-500 to-green-600",
+              },
             ].map(({ grade, range, cls }, i) => (
               <motion.div
                 key={grade}
@@ -518,7 +545,9 @@ export function CourseOnboardingWizard({
                 className={`rounded bg-gradient-to-br ${cls} p-1.5 text-center shadow-lg`}
               >
                 <div className="font-black text-sm text-white">{grade}</div>
-                <div className="text-white/90 font-semibold text-xs">{range}</div>
+                <div className="text-white/90 font-semibold text-xs">
+                  {range}
+                </div>
               </motion.div>
             ))}
           </div>
@@ -581,7 +610,12 @@ export function CourseOnboardingWizard({
             x: [0, -20, 0],
             y: [0, 20, 0],
           }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 0.5,
+          }}
         />
       </div>
 
@@ -589,7 +623,6 @@ export function CourseOnboardingWizard({
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.9 }}
         transition={{ type: "spring", damping: 25, stiffness: 280 }}
         className="relative w-full max-w-lg max-h-[80vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
@@ -636,7 +669,9 @@ export function CourseOnboardingWizard({
                 return (
                   <React.Fragment key={step.id}>
                     <motion.button
-                      onClick={() => step.id < currentStep && setCurrentStep(step.id)}
+                      onClick={() =>
+                        step.id < currentStep && setCurrentStep(step.id)
+                      }
                       whileHover={step.id < currentStep ? { scale: 1.05 } : {}}
                       className={`relative flex items-center justify-center w-12 h-12 rounded-full transition-all ${
                         isActive
@@ -681,9 +716,7 @@ export function CourseOnboardingWizard({
           </motion.div>
 
           {/* Step content */}
-          <div className="min-h-[240px] mb-6">
-            {renderStep()}
-          </div>
+          <div className="min-h-[240px] mb-6">{renderStep()}</div>
 
           {/* Action buttons */}
           <motion.div
@@ -705,7 +738,11 @@ export function CourseOnboardingWizard({
                     <motion.div
                       className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full"
                       animate={{ rotate: 360 }}
-                      transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
+                      transition={{
+                        duration: 0.8,
+                        repeat: Infinity,
+                        ease: "linear",
+                      }}
                     />
                     Сохраняем…
                   </>
