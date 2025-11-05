@@ -3,10 +3,10 @@ import { BookOpen, GraduationCap, Target } from "lucide-react";
 
 export default function MathematicsSection() {
   return (
-    <section className="py-24 bg-background">
+    <section className="py-12 bg-background">
       <div className="container mx-auto px-4">
         <motion.h2 
-          className="text-4xl md:text-5xl font-bold text-center text-foreground mb-16"
+          className="text-3xl md:text-4xl font-bold text-center text-foreground mb-8"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -15,7 +15,7 @@ export default function MathematicsSection() {
           Математика
         </motion.h2>
 
-        <div className="flex flex-col lg:flex-row items-center gap-12 max-w-7xl mx-auto">
+        <div className="flex flex-col lg:flex-row items-center gap-8 max-w-7xl mx-auto">
           {/* Left Side - Video */}
           <motion.div
             className="flex-1 w-full"
@@ -41,56 +41,52 @@ export default function MathematicsSection() {
 
           {/* Right Side - Information */}
           <motion.div
-            className="flex-1 space-y-8"
+            className="flex-1 space-y-4"
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             {/* OGE Math */}
-            <div className="p-6 rounded-xl bg-muted/50 border border-border hover:shadow-lg transition-all duration-300">
-              <div className="flex items-start gap-4">
-                <div className="p-3 rounded-lg bg-primary/10">
-                  <Target className="w-6 h-6 text-primary" />
+            <div className="p-4 rounded-xl bg-muted/50 border border-border hover:shadow-lg transition-all duration-300">
+              <div className="flex items-start gap-3">
+                <div className="p-2 rounded-lg bg-primary/10 shrink-0">
+                  <Target className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold text-foreground mb-2">ОГЭ Математика</h3>
-                  <p className="text-muted-foreground leading-relaxed">
-                    Полная подготовка к ОГЭ по математике. 300+ заданий из банка ФИПИ с подробными разборами, 
-                    интерактивные практики и видеоуроки. Адаптивная система отслеживания прогресса помогает 
-                    сосредоточиться на слабых местах.
+                  <h3 className="text-xl font-bold text-foreground mb-1">ОГЭ Математика</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    300+ заданий из банка ФИПИ с подробными разборами, интерактивные практики и видеоуроки.
                   </p>
                 </div>
               </div>
             </div>
 
             {/* EGE Basic */}
-            <div className="p-6 rounded-xl bg-muted/50 border border-border hover:shadow-lg transition-all duration-300">
-              <div className="flex items-start gap-4">
-                <div className="p-3 rounded-lg bg-primary/10">
-                  <BookOpen className="w-6 h-6 text-primary" />
+            <div className="p-4 rounded-xl bg-muted/50 border border-border hover:shadow-lg transition-all duration-300">
+              <div className="flex items-start gap-3">
+                <div className="p-2 rounded-lg bg-primary/10 shrink-0">
+                  <BookOpen className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold text-foreground mb-2">ЕГЭ Базовый уровень</h3>
-                  <p className="text-muted-foreground leading-relaxed">
-                    Базовый уровень ЕГЭ по математике. Более 2000 задач с решениями и теорией. 
-                    Видеоразборы сложных тем, пробные варианты и система диагностики знаний.
+                  <h3 className="text-xl font-bold text-foreground mb-1">ЕГЭ Базовый уровень</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Более 2000 задач с решениями и теорией. Видеоразборы сложных тем и пробные варианты.
                   </p>
                 </div>
               </div>
             </div>
 
             {/* EGE Profil */}
-            <div className="p-6 rounded-xl bg-muted/50 border border-border hover:shadow-lg transition-all duration-300">
-              <div className="flex items-start gap-4">
-                <div className="p-3 rounded-lg bg-primary/10">
-                  <GraduationCap className="w-6 h-6 text-primary" />
+            <div className="p-4 rounded-xl bg-muted/50 border border-border hover:shadow-lg transition-all duration-300">
+              <div className="flex items-start gap-3">
+                <div className="p-2 rounded-lg bg-primary/10 shrink-0">
+                  <GraduationCap className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold text-foreground mb-2">ЕГЭ Профильный уровень</h3>
-                  <p className="text-muted-foreground leading-relaxed">
-                    Профильный уровень ЕГЭ для поступления в технические вузы. 3000+ задач повышенной сложности, 
-                    углубленная теория, методички и тренировочные варианты. Полная подготовка ко второй части.
+                  <h3 className="text-xl font-bold text-foreground mb-1">ЕГЭ Профильный уровень</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    3000+ задач повышенной сложности, углубленная теория и тренировочные варианты.
                   </p>
                 </div>
               </div>
