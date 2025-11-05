@@ -1596,7 +1596,7 @@ const PracticeByNumberEgeProfMath = () => {
           </DialogHeader>
           <div className="space-y-4">
             <p className="text-sm text-gray-600">
-              Отправьте фото вашего решения в Telegram боте для автоматической проверки.
+              Отправьте фото вашего решения в Telegram боте для автоматической проверки. После этого нажмите кнопку "Проверить фото".
             </p>
             <div className="flex gap-2">
               <Button 
