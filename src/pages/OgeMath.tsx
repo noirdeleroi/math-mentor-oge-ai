@@ -571,7 +571,7 @@ ${updated.feedback_message}
     </>
   );
 
-  return <div className="flex h-[calc(100vh-68px)] w-full bg-background overflow-hidden">
+  return <div className="flex h-[calc(100vh-68px)] w-full max-w-full bg-background overflow-hidden overflow-x-hidden">
       {/* Mobile Hamburger Button */}
       {isMobile && !isSidebarOpen && (
         <button

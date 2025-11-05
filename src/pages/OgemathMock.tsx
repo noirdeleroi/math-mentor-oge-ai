@@ -1206,7 +1206,7 @@ const completeAttempt = async (isCorrect: boolean, scores: number) => {
 
     return (
       <div 
-        className="min-h-screen text-white relative" 
+        className="min-h-screen md:min-h-screen text-white relative w-full max-w-full overflow-x-hidden" 
         style={{ background: 'linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)' }}
       >
         <div className="container mx-auto px-4 py-8 relative z-10">
@@ -1481,7 +1481,7 @@ const completeAttempt = async (isCorrect: boolean, scores: number) => {
 
   return (
     <div 
-      className="min-h-screen text-white relative" 
+      className="min-h-screen md:min-h-screen text-white relative w-full max-w-full overflow-x-hidden" 
       style={{ background: 'linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)' }}
     >
       <div className="container mx-auto px-4 py-8 relative z-10">

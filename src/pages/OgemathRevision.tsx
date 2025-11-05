@@ -468,11 +468,11 @@ questionIds.length)];
   };
 
   if (!user) {
-    return (
-      <div
-        className="min-h-screen text-white relative"
-        style={{ background: 'linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)' }}
-      >
+  return (
+    <div
+      className="min-h-screen md:min-h-screen text-white relative w-full max-w-full overflow-x-hidden"
+      style={{ background: 'linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)' }}
+    >
         <div className="container mx-auto px-4 py-8 relative z-10">
           <div className="max-w-5xl mx-auto">
             <div className="mb-6">
@@ -509,7 +509,7 @@ session.questionsAttempted) * 100)
 
     return (
     <div
-      className="min-h-screen text-white relative"
+      className="min-h-screen md:min-h-screen text-white relative w-full max-w-full overflow-x-hidden"
       style={{ background: 'linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)' }}
     >
         <div className="container mx-auto px-4 py-8 relative z-10">
@@ -616,7 +616,7 @@ text-[#1a1f36] hover:bg-gray-100"
 
   return (
     <div
-      className="min-h-screen text-white relative"
+      className="min-h-screen md:min-h-screen text-white relative w-full max-w-full overflow-x-hidden"
       style={{ background: 'linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)' }}
     >
       <div className="container mx-auto px-4 py-8 relative z-10">

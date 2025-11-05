@@ -1370,7 +1370,7 @@ const Homework = () => {
     (questionType === 'mcq' && !hasFRQ && currentQuestionIndex === currentQuestions.length - 1);
 
   return (
-    <div className="min-h-screen text-white relative" style={{ background: "linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)" }}>
+    <div className="min-h-screen md:min-h-screen text-white relative w-full max-w-full overflow-x-hidden" style={{ background: "linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)" }}>
 
       {showCongrats && (
         <></>

@@ -337,7 +337,7 @@ const MyDb3 = () => {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)' }}>
+    <div className="min-h-screen md:min-h-screen relative overflow-hidden overflow-x-hidden w-full max-w-full" style={{ background: 'linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)' }}>
       {/* Flying Math Symbols Background */}
       <FlyingStarsBackground />
 
