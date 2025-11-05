@@ -200,7 +200,12 @@ export const ProfileTabs: React.FC<ProfileTabsProps> = ({
             <Button 
               variant="ghost" 
               size="icon"
-              className="fixed top-32 left-4 z-[9999] bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20 shadow-lg"
+              className="fixed left-4 z-[9999] bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20 shadow-lg"
+              style={{ 
+                position: 'fixed',
+                top: '180px', // nav bar (64px) + padding (16px) + title section (~100px) = ~180px
+                zIndex: 9999
+              }}
             >
               <Menu className="h-5 w-5" />
             </Button>

@@ -33,7 +33,10 @@ export const StreakDisplay = () => {
   const [showCelebration, setShowCelebration] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [energyPointsAnimation, setEnergyPointsAnimation] = useState({ isVisible: false, points: 0 });
+  const containerRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, right: 0 });
 
   useEffect(() => {
     if (user) {
@@ -41,17 +44,53 @@ export const StreakDisplay = () => {
     }
   }, [user]);
 
+  // Calculate dropdown position when opening
+  useEffect(() => {
+    if (showDropdown && buttonRef.current) {
+      // Use requestAnimationFrame to ensure DOM is ready
+      requestAnimationFrame(() => {
+        if (buttonRef.current) {
+          const buttonRect = buttonRef.current.getBoundingClientRect();
+          const dropdownWidth = isMobile ? Math.min(window.innerWidth - 32, 280) : 256;
+          const rightPosition = window.innerWidth - buttonRect.right;
+          
+          setDropdownPosition({
+            top: Math.max(72, buttonRect.bottom + 8), // Ensure it's below nav (64px) + some margin
+            right: Math.max(8, Math.min(rightPosition, window.innerWidth - dropdownWidth - 8))
+          });
+        }
+      });
+    }
+  }, [showDropdown, isMobile]);
+
   // Close dropdown when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+      const target = event.target as Node;
+      // Don't close if clicking on the button (it's handled by button onClick)
+      if (buttonRef.current && buttonRef.current.contains(target)) {
+        return;
+      }
+      // Close if clicking outside both dropdown and container
+      if (dropdownRef.current && !dropdownRef.current.contains(target)) {
         setShowDropdown(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+    if (showDropdown) {
+      // Use setTimeout to avoid immediate closure
+      const timer = setTimeout(() => {
+        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('touchstart', handleClickOutside, { passive: true });
+      }, 100);
+      
+      return () => {
+        clearTimeout(timer);
+        document.removeEventListener('mousedown', handleClickOutside);
+        document.removeEventListener('touchstart', handleClickOutside);
+      };
+    }
+  }, [showDropdown]);
 
   const fetchStreakData = async () => {
     if (!user) return;
@@ -130,7 +169,7 @@ export const StreakDisplay = () => {
   }, []);
 
   return (
-    <div className="relative flex items-center gap-3 group -ml-3" ref={dropdownRef}>
+    <div className="relative flex items-center gap-3 group -ml-3 overflow-visible" ref={containerRef}>
       {/* Energy Points Animation Container */}
       <div className="relative">
         <EnergyPointsHeaderAnimation
@@ -144,14 +183,25 @@ export const StreakDisplay = () => {
       <div className="flex flex-col gap-1">
         {isMobile ? (
           <button 
-            onClick={() => setShowDropdown(!showDropdown)}
-            className="flex items-center gap-1 text-sm text-white hover:opacity-80 transition-opacity duration-200 px-1.5 py-1"
+            ref={buttonRef}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setShowDropdown(!showDropdown);
+            }}
+            onTouchStart={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setShowDropdown(!showDropdown);
+            }}
+            className="flex items-center gap-1 text-sm text-white hover:opacity-80 transition-opacity duration-200 px-1.5 py-1 touch-manipulation"
           >
             <span className="text-xl">🔥</span>
             <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${showDropdown ? 'rotate-180' : ''}`} />
           </button>
         ) : (
           <button 
+            ref={buttonRef}
             onClick={() => setShowDropdown(!showDropdown)}
             className="flex items-center gap-3 text-sm text-white hover:opacity-80 transition-opacity duration-200 px-2"
           >
@@ -178,7 +228,20 @@ export const StreakDisplay = () => {
 
       {/* Dropdown Menu */}
       {showDropdown && (
-        <div className="absolute top-full right-0 mt-2 w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-[9999] animate-fade-in">
+        <div 
+          className={`fixed bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-[10000] animate-fade-in ${
+            isMobile ? 'w-[calc(100vw-2rem)] max-w-[280px]' : 'w-64'
+          }`}
+          style={{ 
+            top: `${dropdownPosition.top}px`,
+            right: `${dropdownPosition.right}px`,
+            zIndex: 10000,
+            position: 'fixed'
+          }}
+          ref={dropdownRef}
+          onClick={(e) => e.stopPropagation()}
+          onTouchStart={(e) => e.stopPropagation()}
+        >
           <div className="p-4 space-y-3">
             <div className="flex items-center justify-between p-2 bg-primary/10 rounded-lg">
               <span className="text-sm font-medium text-gray-900 dark:text-gray-100">Ваш уровень</span>
