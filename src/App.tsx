@@ -1,5 +1,6 @@
 
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -64,6 +65,17 @@ const Login = lazy(() => import("./pages/Login"));
 
 const queryClient = new QueryClient();
 
+// ScrollToTop component to reset scroll position on route change
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <BrowserRouter>
@@ -71,6 +83,7 @@ const App = () => (
         <ChatProvider>
           <SimulationProvider>
             <TooltipProvider>
+              <ScrollToTop />
               <Toaster />
               <Sonner />
               <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Загрузка...</div>}>
