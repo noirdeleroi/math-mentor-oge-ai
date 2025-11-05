@@ -1745,10 +1745,10 @@ const PracticeByNumberOgemath = () => {
   const questionNumbers = Array.from({ length: 25 }, (_, i) => (i + 1).toString());
 
   return (
-    <div className="min-h-screen text-white relative" style={{ background: "linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)" }}>
-      <div className="container mx-auto px-4 py-4 md:py-8 relative z-10">
-        <div className="max-w-6xl mx-auto">
-          <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen md:min-h-screen text-white relative w-full max-w-full overflow-x-hidden" style={{ background: "linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)" }}>
+      <div className="container mx-auto px-4 py-4 md:py-8 relative z-10 w-full max-w-full overflow-x-hidden">
+        <div className="max-w-6xl mx-auto w-full">
+          <div className="max-w-4xl mx-auto w-full">
 
           {/* Header with Back Button */}
           <div className="mb-8 md:mb-16">
