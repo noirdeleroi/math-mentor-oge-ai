@@ -894,7 +894,7 @@
                             disabled={starting || loadingPending || checking}
                             className="w-full md:w-auto px-4 md:px-6 py-2 bg-gradient-to-r from-yellow-500 to-emerald-500 text-[#1a1f36] font-semibold rounded-lg hover:from-yellow-600 hover:to-emerald-600 transition disabled:opacity-50 text-sm md:text-base"
                           >
-                            Получить другую тему
+                            Получить тему
                           </button>
                         </div>
                       </div>
