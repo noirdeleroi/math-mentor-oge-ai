@@ -27,7 +27,7 @@ export default function ChatDemo() {
           {/* Video on the left */}
           <div className="relative aspect-video rounded-xl overflow-hidden shadow-2xl">
             <video
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain"
               autoPlay
               loop
               muted
