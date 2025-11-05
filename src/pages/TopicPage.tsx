@@ -28,6 +28,7 @@ import {
 
 // ✅ Import global simulation opener
 import { useSimulation } from "@/contexts/SimulationProvider";
+import { OGE_TOPIC_SKILL_MAPPING } from "@/lib/topic-skill-mappings";
 
 type TopicArticleRow = {
   topic_id: string;
@@ -52,12 +53,13 @@ interface TopicArticle {
   article: Article | null;
 }
 
-// Helper to get JSON file ID from course ID
+// Helper to get JSON file ID from course ID (topic-skill mapping files)
+// Based on boost-low-mastery-skills/index.ts and user confirmation
 const getJsonFileIdForCourse = (courseId: string): number => {
   switch (courseId) {
-    case 'oge-math': return 10;
-    case 'ege-basic': return 9;
-    case 'ege-advanced': return 11;
+    case 'oge-math': return 10;  // OGE uses file ID 10
+    case 'ege-basic': return 9;   // EGE Basic uses file ID 9
+    case 'ege-advanced': return 11; // EGE Profil uses file ID 11
     default: return 10;
   }
 };
@@ -156,67 +158,130 @@ const TopicPage: React.FC = () => {
       }
 
       try {
-        // Get JSON file ID for this course
-        const jsonFileId = getJsonFileIdForCourse(moduleEntry.courseId);
-        const numericCourseId = getNumericCourseId(moduleEntry.courseId);
+        // Use hardcoded mapping for OGE (course_id=1)
+        let mapping: any = null;
+        
+        if (moduleEntry.courseId === 'oge-math') {
+          // Use hardcoded OGE mapping
+          mapping = OGE_TOPIC_SKILL_MAPPING;
+          console.log('[Articles] Using hardcoded OGE mapping');
+        } else {
+          // For EGE courses, still fetch from database (can be hardcoded later if needed)
+          const jsonFileId = getJsonFileIdForCourse(moduleEntry.courseId);
+          const numericCourseId = getNumericCourseId(moduleEntry.courseId);
 
-        // Fetch topic-skill mapping from json_files
-        const { data: jsonData, error: jsonError } = await supabase
-          .from('json_files')
-          .select('content')
-          .eq('id', jsonFileId)
-          .eq('course_id', numericCourseId)
-          .maybeSingle();
+          const { data: jsonData, error: jsonError } = await supabase
+            .from('json_files')
+            .select('content')
+            .eq('id', jsonFileId)
+            .eq('course_id', numericCourseId)
+            .maybeSingle();
 
-        if (jsonError || !jsonData?.content) {
-          console.error('Failed to load topic-skill mapping:', jsonError);
-          if (!ignore) {
-            setTopicArticles([]);
-            setLoadingArticles(false);
+          if (jsonError || !jsonData?.content) {
+            console.error('Failed to load topic-skill mapping:', jsonError);
+            if (!ignore) {
+              setTopicArticles([]);
+              setLoadingArticles(false);
+            }
+            return;
           }
-          return;
+
+          mapping = jsonData.content as any;
+          console.log('[Articles] Fetched mapping from database for EGE course');
         }
 
-        // Parse the mapping - it's a nested structure like { "1 Числа и вычисления": { "1.1E": { "name": "...", "skills": [...] } } }
-        const mapping = jsonData.content as any;
+        // Parse the mapping - OGE uses nested structure: { "Module Name": { "Topic Code": { "Темы": "...", "навыки": [...] } } }
+        
+        // Normalize topicNumber - remove E suffix for OGE (OGE uses "1.1", not "1.1E")
+        const normalizedTopicNumber = topicNumber.replace('E', '');
+        
+        console.log('[Articles] Using mapping:', {
+          courseId: moduleEntry.courseId,
+          topicNumber,
+          normalizedTopicNumber,
+          mappingType: Array.isArray(mapping) ? 'array' : typeof mapping,
+          moduleKeys: mapping ? Object.keys(mapping).slice(0, 5) : null,
+        });
         
         // Find skills for current topicNumber
         let skills: number[] = [];
         
-        // Search through all modules and topics in the mapping
-        for (const moduleKey in mapping) {
-          const module = mapping[moduleKey];
-          if (typeof module === 'object' && module !== null) {
-            for (const topicKey in module) {
-              if (topicKey === topicNumber) {
-                const topicData = module[topicKey];
-                if (topicData?.skills && Array.isArray(topicData.skills)) {
-                  // Extract skill numbers from the skills array (each skill is an object with 'number' property)
-                  skills = topicData.skills.map((s: any) => {
-                    if (typeof s === 'number') return s;
-                    if (typeof s === 'object' && s?.number) return s.number;
-                    return null;
-                  }).filter((s: any) => s !== null && typeof s === 'number');
-                  break;
-                } else if (Array.isArray(topicData)) {
-                  // If skills is directly an array of numbers
-                  skills = topicData.filter((s: any) => typeof s === 'number');
-                  break;
+        // Try flat structure first: Record<string, number[]> like { "1.1": [1, 2, 3] }
+        if (mapping && typeof mapping === 'object' && !Array.isArray(mapping)) {
+          // Check if it's a flat structure (topic codes as direct keys)
+          const firstKey = Object.keys(mapping)[0];
+          if (firstKey && /^\d+\.\d+/.test(firstKey)) {
+            // Flat structure - topic codes are direct keys
+            if (mapping[topicNumber] && Array.isArray(mapping[topicNumber])) {
+              skills = mapping[topicNumber].filter((s: any) => typeof s === 'number');
+              console.log('[Articles] Found skills in flat structure (exact match):', skills);
+            } else if (mapping[normalizedTopicNumber] && Array.isArray(mapping[normalizedTopicNumber])) {
+              skills = mapping[normalizedTopicNumber].filter((s: any) => typeof s === 'number');
+              console.log('[Articles] Found skills in flat structure (normalized):', skills);
+            }
+          }
+        }
+        
+        // If not found in flat structure, try nested structure (OGE format)
+        if (skills.length === 0 && mapping && typeof mapping === 'object') {
+          for (const moduleKey in mapping) {
+            const module = mapping[moduleKey];
+            if (typeof module === 'object' && module !== null && !Array.isArray(module)) {
+              for (const topicKey in module) {
+                // Try exact match, normalized match (without E), and vice versa
+                const topicMatch = topicKey === topicNumber || 
+                                  topicKey === normalizedTopicNumber ||
+                                  topicKey.replace('E', '') === normalizedTopicNumber ||
+                                  topicKey === topicNumber.replace('E', '');
+                if (topicMatch) {
+                  console.log('[Articles] Found topic match:', { topicKey, topicNumber, normalizedTopicNumber, topicData: module[topicKey] });
+                  const topicData = module[topicKey];
+                  if (topicData?.навыки && Array.isArray(topicData.навыки)) {
+                    // Extract skill numbers from the навыки array (each skill is an object with 'number' property)
+                    skills = topicData.навыки
+                      .map((s: any) => {
+                        if (typeof s === 'number') return s;
+                        if (typeof s === 'object' && s !== null && s.number !== undefined) return s.number;
+                        return null;
+                      })
+                      .filter((s: any) => s !== null && typeof s === 'number');
+                    console.log('[Articles] Extracted skills from навыки:', skills);
+                    break;
+                  } else if (topicData?.skills && Array.isArray(topicData.skills)) {
+                    // Try English key as fallback
+                    skills = topicData.skills
+                      .map((s: any) => {
+                        if (typeof s === 'number') return s;
+                        if (typeof s === 'object' && s !== null && s.number !== undefined) return s.number;
+                        return null;
+                      })
+                      .filter((s: any) => s !== null && typeof s === 'number');
+                    console.log('[Articles] Extracted skills from skills:', skills);
+                    break;
+                  } else if (Array.isArray(topicData)) {
+                    // If skills is directly an array of numbers
+                    skills = topicData.filter((s: any) => typeof s === 'number');
+                    console.log('[Articles] Extracted skills from array:', skills);
+                    break;
+                  }
                 }
               }
+              if (skills.length > 0) break;
             }
-            if (skills.length > 0) break;
           }
         }
 
         if (skills.length === 0) {
-          console.log(`No skills found for topic ${topicNumber}`);
+          console.warn(`[Articles] No skills found for topic ${topicNumber}. Available topics:`, 
+            mapping ? Object.keys(mapping).flatMap(mk => Object.keys(mapping[mk] || {})) : []);
           if (!ignore) {
             setTopicArticles([]);
             setLoadingArticles(false);
           }
           return;
         }
+        
+        console.log(`[Articles] Found ${skills.length} skills for topic ${topicNumber}:`, skills);
 
         // Fetch articles for each skill, maintaining order
         const articlesPromises = skills.map(async (skillId) => {
@@ -227,14 +292,21 @@ const TopicPage: React.FC = () => {
             .maybeSingle();
 
           if (error) {
-            console.error(`Error fetching article for skill ${skillId}:`, error);
+            console.error(`[Articles] Error fetching article for skill ${skillId}:`, error);
             return { skillId, article: null };
+          }
+
+          if (!data) {
+            console.log(`[Articles] No article found for skill ${skillId}`);
+          } else {
+            console.log(`[Articles] Found article for skill ${skillId}:`, data.ID, data.article_text ? 'has text' : 'no text');
           }
 
           return { skillId, article: data };
         });
 
         const articles = await Promise.all(articlesPromises);
+        console.log(`[Articles] Total articles loaded: ${articles.length}, with content: ${articles.filter(a => a.article?.article_text).length}`);
 
         if (!ignore) {
           setTopicArticles(articles);
