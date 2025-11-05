@@ -200,13 +200,13 @@ export const ProfileTabs: React.FC<ProfileTabsProps> = ({
             <Button 
               variant="ghost" 
               size="icon"
-              className="fixed top-20 left-4 z-[9999] bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20 shadow-lg"
+              className="fixed top-32 left-4 z-[9999] bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20 shadow-lg"
             >
               <Menu className="h-5 w-5" />
             </Button>
           </DrawerTrigger>
-          <DrawerContent className="bg-[#1a1f36] border-white/20">
-            <DrawerHeader className="border-b border-white/20">
+          <DrawerContent className="bg-[#1a1f36] border-white/20 max-h-[85vh] flex flex-col">
+            <DrawerHeader className="border-b border-white/20 flex-shrink-0">
               <DrawerTitle className="text-white">Меню профиля</DrawerTitle>
               <DrawerClose asChild>
                 <Button 
@@ -218,7 +218,7 @@ export const ProfileTabs: React.FC<ProfileTabsProps> = ({
                 </Button>
               </DrawerClose>
             </DrawerHeader>
-            <div className="p-4">
+            <div className="p-4 overflow-y-auto flex-1 min-h-0">
               <SidebarNav />
             </div>
           </DrawerContent>
