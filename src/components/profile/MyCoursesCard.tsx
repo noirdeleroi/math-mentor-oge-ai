@@ -5,25 +5,30 @@ import { GraduationCap } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const COURSES = [
   {
     name: "Математика ОГЭ",
+    shortName: "Математика ОГЭ",
     course_id: 1,
     route: "/ogemath"
   },
   {
     name: "Математика ЕГЭ (База)",
+    shortName: "Математика ЕГЭ (База)",
     course_id: 2,
     route: "/egemathbasic"
   },
   {
     name: "Математика ЕГЭ (Профиль)",
+    shortName: "Математика ЕГЭ (Профиль)",
     course_id: 3,
     route: "/egemathprof"
   },
   {
     name: "Проверка сочинений по ЕГЭ и ОГЭ",
+    shortName: "Проверка сочинений",
     course_id: 4,
     route: "/egeruses2"
   }
@@ -32,6 +37,7 @@ const COURSES = [
 export const MyCoursesCard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [userCourses, setUserCourses] = useState<number[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -98,7 +104,7 @@ export const MyCoursesCard = () => {
               className="w-full bg-black text-white hover:bg-gradient-to-r hover:from-yellow-500 hover:to-emerald-500 hover:text-black justify-start transition-all duration-300"
             >
               <GraduationCap className="w-4 h-4 mr-2" />
-              {course.name}
+              {isMobile ? course.shortName : course.name}
             </Button>
           ))}
         </div>
