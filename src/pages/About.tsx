@@ -133,17 +133,19 @@ const About = () => {
           </div>
 
           {/* Video Section */}
-          <div className="mb-12 rounded-2xl overflow-hidden border border-white/20 shadow-2xl">
-            <video 
-              className="w-full"
-              autoPlay 
-              loop 
-              muted 
-              playsInline
-            >
-              <source src="https://kbaazksvkvnafrwtmkcw.supabase.co/storage/v1/object/public/videos/test11.mp4" type="video/mp4" />
-              Ваш браузер не поддерживает видео.
-            </video>
+          <div className="mb-12 flex justify-center">
+            <div className="rounded-2xl overflow-hidden border border-white/20 shadow-2xl w-full max-w-md aspect-square">
+              <video 
+                className="w-full h-full object-cover"
+                autoPlay 
+                loop 
+                muted 
+                playsInline
+              >
+                <source src="https://kbaazksvkvnafrwtmkcw.supabase.co/storage/v1/object/public/videos/test11.mp4" type="video/mp4" />
+                Ваш браузер не поддерживает видео.
+              </video>
+            </div>
           </div>
 
           {/* Content Section */}
