@@ -918,7 +918,16 @@
                         className="bg-white/10 backdrop-blur border border-white/20 rounded-xl p-4 flex flex-col min-h-0 md:h-full md:max-h-full overflow-hidden h-[45vh]"
                         style={{ WebkitOverflowScrolling: 'touch' as any }}
                       >
-                        <div className="text-white font-semibold mb-3 flex-shrink-0">Сочинение</div>
+                        <div className="flex items-center justify-between mb-3 flex-shrink-0">
+                          <div className="text-white font-semibold">Сочинение</div>
+                          <button
+                            onClick={handleCheck}
+                            disabled={!essayText.trim() || checking || !currentTopic}
+                            className="px-4 py-2 bg-gradient-to-r from-yellow-500 to-emerald-500 text-[#1a1f36] font-semibold rounded-lg hover:from-yellow-600 hover:to-emerald-600 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base hidden md:block"
+                          >
+                            Проверить
+                          </button>
+                        </div>
 
                         <textarea
                           value={essayText}
@@ -927,14 +936,6 @@
                           disabled={checking}
                           className="flex-1 min-h-0 w-full p-3 bg-white/5 border border-white/10 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500 text-white placeholder-white/50 disabled:opacity-50 overflow-auto md:pb-0 pb-24"
                         />
-
-                        <button
-                          onClick={handleCheck}
-                          disabled={!essayText.trim() || checking || !currentTopic}
-                          className="mt-4 w-full px-4 py-3 bg-gradient-to-r from-yellow-500 to-emerald-500 text-[#1a1f36] font-bold rounded-lg hover:from-yellow-600 hover:to-emerald-600 transition disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0 hidden md:block"
-                        >
-                          Проверить
-                        </button>
 
                         {/* Mobile spacer to keep text area above the fixed button */}
                         <div className="h-24 md:hidden" />
@@ -1000,7 +1001,49 @@
                             </div>
                 ) : (
                   /* Review mode - Results */
-                  <div className="h-full grid grid-cols-1 lg:grid-cols-3 gap-4 overflow-hidden min-h-0">
+                  <div className="h-full flex flex-col overflow-hidden min-h-0">
+                    {/* Navigation buttons at top */}
+                    <div className="flex items-center gap-2 mb-4 flex-shrink-0 flex-wrap">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setAnalysisData(null);
+                          setEssayText('');
+                          setCurrentTopic(null);
+                          setCurrentEssay(null);
+                        }}
+                        className="hover:bg-white/20 text-white"
+                      >
+                        Назад
+                      </Button>
+                      <div className="text-white font-semibold">
+                        Проверка сочинения
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => window.location.href = '/egeruses-analytics'}
+                        className="hover:bg-white/20 text-white"
+                      >
+                        Аналитика
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setShowHistory(true);
+                          loadEssayHistory();
+                        }}
+                        className="hover:bg-white/20 text-white"
+                      >
+                        <History className="h-4 w-4 mr-2" />
+                        История сочинений
+                      </Button>
+                    </div>
+
+                    {/* Results grid */}
+                  <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-4 overflow-hidden min-h-0">
                     {/* Left column - Task (collapsible) and Essay with unified scroll */}
                     <div className="lg:col-span-2 flex flex-col gap-4 overflow-hidden min-h-0">
                       {/* Combined Task and Essay container with single scroll */}
@@ -1158,10 +1201,11 @@
                           <div className="text-xs text-white/70">{analysisData.overall_quality}</div>
                         </div>
                       </div>
-                      </div>
                     </div>
-                  )}
-                </div>
+                      </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
           {/* Mobile fixed action button */}
