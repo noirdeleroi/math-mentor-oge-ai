@@ -20,6 +20,7 @@ import FormulaBookletDialog from "@/components/FormulaBookletDialog";
 import StudentSolutionCard from "@/components/analysis/StudentSolutionCard";
 import AnalysisReviewCard from "@/components/analysis/AnalysisReviewCard";
 import FeedbackButton from "@/components/FeedbackButton";
+import Loading from "@/components/ui/Loading";
 
 interface Question {
   question_id: string;
@@ -2776,7 +2777,7 @@ const PracticeByNumberOgemath = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Progress Dialog with Two Loading Bars */}
+      {/* Progress Dialog with Two Loading Bars (Device Upload) */}
       <Dialog open={isProcessingPhoto && uploadedImages.length > 0} onOpenChange={() => {}}>
         <DialogContent className="sm:max-w-md [&>button]:hidden">
           <DialogHeader>
@@ -2810,6 +2811,23 @@ const PracticeByNumberOgemath = () => {
                 />
               </div>
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Loading Dialog for Telegram Upload */}
+      <Dialog open={isProcessingPhoto && uploadedImages.length === 0} onOpenChange={() => {}}>
+        <DialogContent className="sm:max-w-md [&>button]:hidden">
+          <DialogHeader>
+            <DialogTitle className="text-center">Анализ решения</DialogTitle>
+          </DialogHeader>
+          <div className="py-8">
+            <Loading 
+              variant="ring-dots"
+              size="lg"
+              message="Обработка вашего решения..."
+              subMessage="Пожалуйста, подождите"
+            />
           </div>
         </DialogContent>
       </Dialog>

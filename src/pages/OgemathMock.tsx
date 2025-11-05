@@ -1683,6 +1683,23 @@ const completeAttempt = async (isCorrect: boolean, scores: number) => {
         </DialogContent>
       </Dialog>
 
+      {/* Loading Dialog for Telegram Upload Analysis */}
+      <Dialog open={isProcessingPhoto} onOpenChange={() => {}}>
+        <DialogContent className="sm:max-w-md [&>button]:hidden">
+          <DialogHeader>
+            <DialogTitle className="text-center">Анализ решения</DialogTitle>
+          </DialogHeader>
+          <div className="py-8">
+            <Loading 
+              variant="ring-dots"
+              size="lg"
+              message="Обработка вашего решения..."
+              subMessage="Пожалуйста, подождите"
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Question Navigation Menu */}
       <Dialog open={showQuestionMenu} onOpenChange={setShowQuestionMenu}>
         <DialogContent className="sm:max-w-2xl">
