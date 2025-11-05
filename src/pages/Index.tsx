@@ -7,6 +7,7 @@ import HighlightCards from "@/components/landing/HighlightCards";
 import VideoEmbed from "@/components/landing/VideoEmbed";
 import ChatDemo from "@/components/landing/ChatDemo";
 import MathematicsSection from "@/components/landing/MathematicsSection";
+import { EssaySection } from "@/components/landing/EssaySection";
 import LandingCTA from "@/components/landing/LandingCTA";
 import LandingFooter from "@/components/landing/LandingFooter";
 import FlyingMathBackground from "@/components/FlyingMathBackground";
@@ -31,8 +32,9 @@ const Index = () => {
         <main>
           <LandingHero />
           <HighlightCards />
-          <MathematicsSection />
-          <VideoEmbed />
+      <MathematicsSection />
+      <EssaySection />
+      <VideoEmbed />
           <ChatDemo />
           <LandingCTA />
         </main>
