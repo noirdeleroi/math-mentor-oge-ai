@@ -40,9 +40,9 @@ export default function LandingHero() {
               size="lg" 
               className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 text-lg rounded-full font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
             >
-              <Link to="/new-textbook" className="flex items-center gap-3">
+              <Link to="/register" className="flex items-center gap-3">
                 <BookOpen className="w-6 h-6" />
-                Начать с ОГЭ
+                Начать бесплатно
               </Link>
             </Button>
             
