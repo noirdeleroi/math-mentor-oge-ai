@@ -178,10 +178,10 @@ export const StreakDisplay = () => {
 
       {/* Dropdown Menu */}
       {showDropdown && (
-        <div className="absolute top-full right-0 mt-2 w-64 bg-background border border-border rounded-lg shadow-lg z-50 animate-fade-in">
+        <div className="absolute top-full right-0 mt-2 w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-[9999] animate-fade-in">
           <div className="p-4 space-y-3">
             <div className="flex items-center justify-between p-2 bg-primary/10 rounded-lg">
-              <span className="text-sm font-medium text-foreground">Ваш уровень</span>
+              <span className="text-sm font-medium text-gray-900 dark:text-gray-100">Ваш уровень</span>
               <div className="flex items-center gap-2">
                 <span className="text-xl">{earnedBadge.emoji}</span>
                 <span className="text-sm font-semibold text-primary">{earnedBadge.name}</span>
@@ -189,26 +189,26 @@ export const StreakDisplay = () => {
             </div>
             
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-foreground">Заработано очков</span>
-              <span className="text-sm text-muted-foreground">{streakData.earnedEnergyPoints} {getPointsLabel(streakData.earnedEnergyPoints)}</span>
+              <span className="text-sm font-medium text-gray-900 dark:text-gray-100">Заработано очков</span>
+              <span className="text-sm text-gray-600 dark:text-gray-400">{streakData.earnedEnergyPoints} {getPointsLabel(streakData.earnedEnergyPoints)}</span>
             </div>
             
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-foreground">Текущая серия</span>
-              <span className="text-sm text-muted-foreground">{streakData.currentStreak} дней</span>
+              <span className="text-sm font-medium text-gray-900 dark:text-gray-100">Текущая серия</span>
+              <span className="text-sm text-gray-600 dark:text-gray-400">{streakData.currentStreak} дней</span>
             </div>
             
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-foreground">Недельная цель</span>
-              <span className="text-sm text-muted-foreground">{streakData.energyPoints} / {streakData.weeklyGoalPoints}</span>
+              <span className="text-sm font-medium text-gray-900 dark:text-gray-100">Недельная цель</span>
+              <span className="text-sm text-gray-600 dark:text-gray-400">{streakData.energyPoints} / {streakData.weeklyGoalPoints}</span>
             </div>
             
-            <div className="pt-2 border-t border-border">
+            <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs text-muted-foreground">Прогресс</span>
-                <span className="text-xs text-muted-foreground">{Math.round(progressPercentage)}%</span>
+                <span className="text-xs text-gray-600 dark:text-gray-400">Прогресс</span>
+                <span className="text-xs text-gray-600 dark:text-gray-400">{Math.round(progressPercentage)}%</span>
               </div>
-              <div className="w-full bg-muted rounded-full h-2">
+              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                 <div 
                   className="bg-primary h-2 rounded-full transition-all duration-500"
                   style={{ width: `${progressPercentage}%` }}
