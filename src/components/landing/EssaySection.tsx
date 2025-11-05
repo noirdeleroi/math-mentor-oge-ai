@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 
 export const EssaySection = () => {
   return (
-    <section className="py-20 px-4">
+    <section id="essay-section" className="py-20 px-4">
       <div className="max-w-7xl mx-auto bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 shadow-xl">
         <h2 className="text-4xl md:text-5xl font-bold text-center mb-12">
           Сочинение

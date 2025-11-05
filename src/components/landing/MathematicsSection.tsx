@@ -3,7 +3,7 @@ import { BookOpen, GraduationCap, Target } from "lucide-react";
 
 export default function MathematicsSection() {
   return (
-    <section className="py-12 bg-background">
+    <section id="mathematics-section" className="py-12 bg-background">
       <div className="container mx-auto px-4">
         <motion.h2 
           className="text-3xl md:text-4xl font-bold text-center text-foreground mb-8"
