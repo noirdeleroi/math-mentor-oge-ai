@@ -34,8 +34,8 @@ const Index = () => {
           <HighlightCards />
       <MathematicsSection />
       <EssaySection />
-      <VideoEmbed />
           <ChatDemo />
+      <VideoEmbed />
           <LandingCTA />
         </main>
         <LandingFooter />
