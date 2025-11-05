@@ -783,13 +783,13 @@
       <div className="fixed left-0 right-0 bottom-0 top-16 overflow-hidden" style={pageBg}>
         <FlyingCyrillicBackground />
         <div
-          className="relative z-10 h-[100vh] overflow-y-auto overscroll-contain"
+          className="relative z-10 h-full md:overflow-hidden overflow-y-auto overscroll-contain"
           style={{ WebkitOverflowScrolling: 'touch' as any }}
         >
-          <div className="container mx-auto px-4 pb-20">
-            <div className="max-w-7xl mx-auto flex flex-col">
+          <div className="container mx-auto px-4 md:pb-0 pb-20 h-full overflow-hidden flex flex-col">
+            <div className="max-w-7xl mx-auto flex flex-col h-full">
               {/* Title and Navigation */}
-              <div className="flex flex-col md:flex-row items-center justify-between mb-4 gap-4 flex-shrink-0">
+              <div className="flex flex-col md:flex-row items-center justify-between mb-4 gap-4 flex-shrink-0 pt-4">
                 <Button
                   variant="ghost"
                   size="sm"
@@ -1001,47 +1001,7 @@
                             </div>
                 ) : (
                   /* Review mode - Results */
-                  <div className="h-full flex flex-col overflow-hidden min-h-0">
-                    {/* Navigation buttons at top */}
-                    <div className="flex items-center gap-2 mb-4 flex-shrink-0 flex-wrap">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          setAnalysisData(null);
-                          setEssayText('');
-                          setCurrentTopic(null);
-                          setCurrentEssay(null);
-                        }}
-                        className="hover:bg-white/20 text-white"
-                      >
-                        Назад
-                      </Button>
-                      <div className="text-white font-semibold">
-                        Проверка сочинения
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => window.location.href = '/egeruses-analytics'}
-                        className="hover:bg-white/20 text-white"
-                      >
-                        Аналитика
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          setShowHistory(true);
-                          loadEssayHistory();
-                        }}
-                        className="hover:bg-white/20 text-white"
-                      >
-                        <History className="h-4 w-4 mr-2" />
-                        История сочинений
-                      </Button>
-                    </div>
-
+                  <div className="flex flex-col overflow-hidden min-h-0 h-full">
                     {/* Results grid */}
                   <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-4 overflow-hidden min-h-0">
                     {/* Left column - Task (collapsible) and Essay with unified scroll */}
@@ -1072,8 +1032,8 @@
 
                         {/* Essay area always visible and fills the rest */}
                         <div className="flex-1 min-h-0 mt-3 flex flex-col">
-                          <div className="text-white font-semibold mb-3">Сочинение</div>
-                          <div className="text-white/90 whitespace-pre-wrap pr-2 overflow-auto min-h-0 flex-1">
+                          <div className="text-white font-semibold mb-3 flex-shrink-0">Сочинение</div>
+                          <div className="text-white/90 whitespace-pre-wrap pr-2 overflow-y-auto min-h-0 flex-1 md:overflow-y-auto">
                             {analysisData?.errors && analysisData.errors.length > 0 ? (
                               <div dangerouslySetInnerHTML={{ __html: highlightTextWithErrors(essayText, analysisData.errors) }} />
                             ) : (
@@ -1087,7 +1047,7 @@
 
                     {/* Right column - Scrollable criteria with errors first, overall score last */}
                     <div className="flex flex-col overflow-hidden lg:order-2 order-1 min-h-0">
-                      <div className="flex-1 overflow-auto space-y-3 pr-2 min-h-0">
+                      <div className="flex-1 overflow-y-auto space-y-3 pr-2 min-h-0">
                         {/* Errors Summary */}
                         {analysisData.errors && analysisData.errors.length > 0 && (
                           <div className="bg-white/10 backdrop-blur border border-white/20 rounded-xl p-4">
