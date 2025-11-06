@@ -130,9 +130,9 @@ export default function LandingHeader() {
 
   const dropdownItems = {
     textbook: [
-      { label: "ОГЭ математика", href: "/new-textbook" },
-      { label: "ЕГЭ базовый уровень (математика)", disabled: true, tooltip: "Скоро" },
-      { label: "ЕГЭ профильный уровень (математика)", disabled: true, tooltip: "Скоро" }
+      { label: "ОГЭ математика", href: "/textbook" },
+      { label: "ЕГЭ базовый уровень (математика)", href: "/textbook-base" },
+      { label: "ЕГЭ профильный уровень (математика)", href: "/textbook-prof" }
     ],
     platform: [
       { label: "ОГЭ математика", href: "/textbook3" },
@@ -141,8 +141,8 @@ export default function LandingHeader() {
     ],
     practice: [
       { label: "ОГЭ математика", href: "/questionbankoge" },
-      { label: "ЕГЭ базовый уровень (математика)", disabled: true, tooltip: "Скоро" },
-      { label: "ЕГЭ профильный уровень (математика)", disabled: true, tooltip: "Скоро" }
+      { label: "ЕГЭ базовый уровень (математика)", href: "/questionbankegeb" },
+      { label: "ЕГЭ профильный уровень (математика)", href: "/questionbankegep" }
     ]
   };
 
