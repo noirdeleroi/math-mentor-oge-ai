@@ -54,7 +54,7 @@ const AdaptiveLayout: React.FC = () => {
 
   return (
     <div
-      className="h-screen overflow-hidden overflow-x-hidden text-foreground relative w-full max-w-full"
+      className={`${user ? 'h-screen overflow-hidden' : 'min-h-screen overflow-y-auto'} overflow-x-hidden text-foreground relative w-full max-w-full`}
       style={{ background: "linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)" }}
     >
       <FlyingMathBackground />
