@@ -27,13 +27,7 @@ export default function HighlightCards() {
   };
 
   return (
-    <section id="highlights-section" className="py-24 bg-gradient-to-b from-background via-primary/5 to-background relative overflow-hidden">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 opacity-30">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-primary/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-      </div>
-      
+    <section id="highlights-section" className="py-24 relative overflow-hidden">
       <div className="container mx-auto px-4 relative z-10">
         <motion.div
           initial="hidden"
@@ -63,7 +57,7 @@ export default function HighlightCards() {
               {/* Animated border glow */}
               <div className="absolute -inset-[1px] bg-gradient-to-r from-green-500 to-green-400 opacity-0 group-hover:opacity-20 blur-sm transition-opacity duration-500 rounded-lg"></div>
               
-              <CardContent className="p-8 relative z-10 group-hover:opacity-90 transition-opacity duration-500">
+              <CardContent className="p-8 relative z-10">
                 <div className="text-center mb-6">
                   <h3 className="text-2xl font-display font-bold bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent mb-2 group-hover:scale-110 transition-transform duration-300">ОГЭ Математика</h3>
                   <div className="w-16 h-1 bg-gradient-to-r from-yellow-500 to-emerald-500 mx-auto rounded-full group-hover:w-24 transition-all duration-300"></div>
@@ -71,20 +65,20 @@ export default function HighlightCards() {
                 
                 <ul className="space-y-4">
                   <li className="flex items-start gap-3 group/item">
-                    <CheckCircle className="w-5 h-5 text-orange-500 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform duration-200" />
-                    <span className="text-foreground">3500 заданий ФИПИ и 3000 новых задач</span>
+                    <CheckCircle className="w-5 h-5 text-yellow-400 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform duration-200" />
+                    <span className="text-gray-900">3500 заданий ФИПИ и 3000 новых задач</span>
                   </li>
                   <li className="flex items-start gap-3 group/item">
-                    <CheckCircle className="w-5 h-5 text-orange-500 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform duration-200" />
-                    <span className="text-foreground">Реалистичные тренировочные экзамены на время</span>
+                    <CheckCircle className="w-5 h-5 text-yellow-400 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform duration-200" />
+                    <span className="text-gray-900">Реалистичные тренировочные экзамены на время</span>
                   </li>
                   <li className="flex items-start gap-3 group/item">
-                    <CheckCircle className="w-5 h-5 text-orange-500 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform duration-200" />
-                    <span className="text-foreground">Загрузи фото решения и получи разбор</span>
+                    <CheckCircle className="w-5 h-5 text-yellow-400 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform duration-200" />
+                    <span className="text-gray-900">Загрузи фото решения и получи разбор</span>
                   </li>
                   <li className="flex items-start gap-3 group/item">
-                    <CheckCircle className="w-5 h-5 text-orange-500 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform duration-200" />
-                    <span className="text-foreground">Интерактивная практика и прогресс</span>
+                    <CheckCircle className="w-5 h-5 text-yellow-400 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform duration-200" />
+                    <span className="text-gray-900">Интерактивная практика и прогресс</span>
                   </li>
                 </ul>
               </CardContent>
@@ -105,7 +99,7 @@ export default function HighlightCards() {
               {/* Animated border glow */}
               <div className="absolute -inset-[1px] bg-gradient-to-r from-green-500 to-green-400 opacity-0 group-hover:opacity-20 blur-sm transition-opacity duration-500 rounded-lg"></div>
               
-              <CardContent className="p-8 relative z-10 group-hover:opacity-90 transition-opacity duration-500">
+              <CardContent className="p-8 relative z-10">
                 <div className="text-center mb-6">
                   <h3 className="text-2xl font-display font-bold bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent mb-2 group-hover:scale-110 transition-transform duration-300">ЕГЭ Математика (Профиль и База)</h3>
                   <div className="w-16 h-1 bg-gradient-to-r from-yellow-500 to-emerald-500 mx-auto rounded-full group-hover:w-24 transition-all duration-300"></div>
@@ -113,20 +107,20 @@ export default function HighlightCards() {
                 
                 <ul className="space-y-4">
                   <li className="flex items-start gap-3 group/item">
-                    <CheckCircle className="w-5 h-5 text-orange-500 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform duration-200" />
-                    <span className="text-foreground">9100 заданий ФИПИ по Базе, 900 заданий ФИПИ по Профилю</span>
+                    <CheckCircle className="w-5 h-5 text-yellow-400 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform duration-200" />
+                    <span className="text-gray-900">9100 заданий ФИПИ по Базе, 900 заданий ФИПИ по Профилю</span>
                   </li>
                   <li className="flex items-start gap-3 group/item">
-                    <CheckCircle className="w-5 h-5 text-orange-500 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform duration-200" />
-                    <span className="text-foreground">Реалистичные тренировочные экзамены на время</span>
+                    <CheckCircle className="w-5 h-5 text-yellow-400 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform duration-200" />
+                    <span className="text-gray-900">Реалистичные тренировочные экзамены на время</span>
                   </li>
                   <li className="flex items-start gap-3 group/item">
-                    <CheckCircle className="w-5 h-5 text-orange-500 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform duration-200" />
-                    <span className="text-foreground">Загрузи фото решения и получи разбор</span>
+                    <CheckCircle className="w-5 h-5 text-yellow-400 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform duration-200" />
+                    <span className="text-gray-900">Загрузи фото решения и получи разбор</span>
                   </li>
                   <li className="flex items-start gap-3 group/item">
-                    <CheckCircle className="w-5 h-5 text-orange-500 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform duration-200" />
-                    <span className="text-foreground">Интерактивная практика и прогресс</span>
+                    <CheckCircle className="w-5 h-5 text-yellow-400 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform duration-200" />
+                    <span className="text-gray-900">Интерактивная практика и прогресс</span>
                   </li>
                 </ul>
               </CardContent>
@@ -147,7 +141,7 @@ export default function HighlightCards() {
               {/* Animated border glow */}
               <div className="absolute -inset-[1px] bg-gradient-to-r from-green-500 to-green-400 opacity-0 group-hover:opacity-20 blur-sm transition-opacity duration-500 rounded-lg"></div>
               
-              <CardContent className="p-8 relative z-10 group-hover:opacity-90 transition-opacity duration-500">
+              <CardContent className="p-8 relative z-10">
                 <div className="text-center mb-6">
                   <h3 className="text-2xl font-display font-bold bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent mb-2 group-hover:scale-110 transition-transform duration-300">Сочинение</h3>
                   <div className="w-16 h-1 bg-gradient-to-r from-yellow-500 to-emerald-500 mx-auto rounded-full group-hover:w-24 transition-all duration-300"></div>
@@ -155,20 +149,20 @@ export default function HighlightCards() {
                 
                 <ul className="space-y-4">
                   <li className="flex items-start gap-3 group/item">
-                    <CheckCircle className="w-5 h-5 text-orange-500 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform duration-200" />
-                    <span className="text-foreground">Проверка сочинений ЕГЭ/ОГЭ по русскому</span>
+                    <CheckCircle className="w-5 h-5 text-yellow-400 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform duration-200" />
+                    <span className="text-gray-900">Проверка сочинений ЕГЭ/ОГЭ по русскому</span>
                   </li>
                   <li className="flex items-start gap-3 group/item">
-                    <CheckCircle className="w-5 h-5 text-orange-500 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform duration-200" />
-                    <span className="text-foreground">AI-анализ с подробной обратной связью</span>
+                    <CheckCircle className="w-5 h-5 text-yellow-400 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform duration-200" />
+                    <span className="text-gray-900">AI-анализ с подробной обратной связью</span>
                   </li>
                   <li className="flex items-start gap-3 group/item">
-                    <CheckCircle className="w-5 h-5 text-orange-500 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform duration-200" />
-                    <span className="text-foreground">Находим грамматические, речевые и логические ошибки по критериям ФИПИ 2026 года</span>
+                    <CheckCircle className="w-5 h-5 text-yellow-400 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform duration-200" />
+                    <span className="text-gray-900">Находим грамматические, речевые и логические ошибки по критериям ФИПИ 2026 года</span>
                   </li>
                   <li className="flex items-start gap-3 group/item">
-                    <CheckCircle className="w-5 h-5 text-orange-500 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform duration-200" />
-                    <span className="text-foreground">Выставляем баллы, как на реальном экзамене</span>
+                    <CheckCircle className="w-5 h-5 text-yellow-400 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform duration-200" />
+                    <span className="text-gray-900">Выставляем баллы, как на реальном экзамене</span>
                   </li>
                 </ul>
               </CardContent>

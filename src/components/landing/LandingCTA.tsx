@@ -5,22 +5,22 @@ import { Crown, Shield, RefreshCw, CreditCard } from "lucide-react";
 
 export default function LandingCTA() {
   return (
-    <section className="py-24 bg-gradient-to-br from-primary/5 via-background to-secondary/5">
+    <section className="py-24">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="text-center max-w-4xl mx-auto"
+          className="text-center max-w-4xl mx-auto bg-white/10 backdrop-blur-md rounded-3xl p-12 border border-white/20 shadow-xl"
         >
-          <h2 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
-            Подписка за{" "}
-            <span className="text-primary">999 ₽/месяц</span>{" "}
-            — полный доступ ко всему!
+          <h2 className="text-4xl md:text-6xl font-display font-bold mb-6">
+            <span className="bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent">Подписка за 999 ₽/месяц</span>
+            <br />
+            <span className="text-white">— полный доступ ко всему!</span>
           </h2>
           
-          <p className="text-xl md:text-2xl text-muted-foreground mb-12 leading-relaxed">
+          <p className="text-xl md:text-2xl text-white/80 mb-12 leading-relaxed">
             Учебник, видео, база задач, практика и AI-ассистент.
           </p>
           
@@ -41,37 +41,26 @@ export default function LandingCTA() {
                 Оформить подписку
               </Link>
             </Button>
-            
-            <Button 
-              asChild 
-              variant="outline" 
-              size="lg" 
-              className="border-2 border-foreground/20 text-foreground hover:bg-muted px-8 py-6 text-lg rounded-full font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-            >
-              <Link to="/pricing">
-                Узнать больше
-              </Link>
-            </Button>
           </motion.div>
 
           {/* Trust Badges */}
           <motion.div 
-            className="flex flex-wrap justify-center items-center gap-8 text-muted-foreground"
+            className="flex flex-wrap justify-center items-center gap-8 text-white/70"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
             <div className="flex items-center gap-2">
-              <Shield className="w-5 h-5" />
+              <Shield className="w-5 h-5 text-yellow-400" />
               <span className="font-medium">Безопасная оплата</span>
             </div>
             <div className="flex items-center gap-2">
-              <RefreshCw className="w-5 h-5" />
+              <RefreshCw className="w-5 h-5 text-yellow-400" />
               <span className="font-medium">Отмена в любой момент</span>
             </div>
             <div className="flex items-center gap-2">
-              <CreditCard className="w-5 h-5" />
+              <CreditCard className="w-5 h-5 text-yellow-400" />
               <span className="font-medium">Все способы оплаты</span>
             </div>
           </motion.div>

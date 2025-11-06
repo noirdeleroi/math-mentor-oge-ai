@@ -25,7 +25,7 @@ export default function VideoEmbed() {
           transition={{ duration: 0.6, ease: "easeOut" }}
           className="text-center mb-12"
         >
-          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+          <h2 className="text-4xl md:text-6xl font-display font-bold bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent mb-4">
             Короткое демо платформы
           </h2>
         </motion.div>
@@ -62,7 +62,7 @@ export default function VideoEmbed() {
           </div>
           
           <motion.p 
-            className="text-center text-muted-foreground mt-6 text-lg"
+            className="text-center text-white/80 mt-6 text-lg"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}

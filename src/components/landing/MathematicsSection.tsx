@@ -3,10 +3,10 @@ import { BookOpen, GraduationCap, Target } from "lucide-react";
 
 export default function MathematicsSection() {
   return (
-    <section id="mathematics-section" className="py-12 bg-background">
+    <section id="mathematics-section" className="py-24">
       <div className="container mx-auto px-4">
         <motion.h2 
-          className="text-3xl md:text-4xl font-bold text-center text-foreground mb-8"
+          className="text-4xl md:text-6xl font-display font-bold text-center bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent mb-12"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -47,46 +47,57 @@ export default function MathematicsSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            {/* OGE Math */}
-            <div className="p-4 rounded-xl bg-muted/50 border border-border hover:shadow-lg transition-all duration-300">
-              <div className="flex items-start gap-3">
-                <div className="p-2 rounded-lg bg-primary/10 shrink-0">
-                  <Target className="w-5 h-5 text-primary" />
+            {/* Курсы */}
+            <div className="p-6 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 hover:border-yellow-500/40 hover:shadow-xl hover:shadow-yellow-500/10 transition-all duration-300">
+              <div className="flex items-start gap-4">
+                <div className="p-3 rounded-lg bg-yellow-500/20 shrink-0">
+                  <GraduationCap className="w-6 h-6 text-yellow-400" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-foreground mb-1">ОГЭ Математика</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    3500 заданий ФИПИ и 3000 новых задач, реалистичные тренировочные экзамены на время, интерактивная практика и прогресс, персональные домашние задания от чата, загрузи фото задачи и получи разбор или ответ, учебник по навыкам и темам, селектор — выдели непонятный текст и получи объяснение.
+                  <h3 className="text-xl font-bold text-white mb-2">Курсы</h3>
+                  <p className="text-sm text-white/80 leading-relaxed">
+                    Мы предлагаем три курса по математике: <strong>ОГЭ</strong>, <strong>ЕГЭ Базовый уровень</strong> и <strong>ЕГЭ Профильный уровень</strong>. 
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* EGE Basic */}
-            <div className="p-4 rounded-xl bg-muted/50 border border-border hover:shadow-lg transition-all duration-300">
-              <div className="flex items-start gap-3">
-                <div className="p-2 rounded-lg bg-primary/10 shrink-0">
-                  <BookOpen className="w-5 h-5 text-primary" />
+            {/* Практика */}
+            <div className="p-6 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 hover:border-yellow-500/40 hover:shadow-xl hover:shadow-yellow-500/10 transition-all duration-300">
+              <div className="flex items-start gap-4">
+                <div className="p-3 rounded-lg bg-yellow-500/20 shrink-0">
+                  <Target className="w-6 h-6 text-yellow-400" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-foreground mb-1">ЕГЭ Базовый уровень</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    9100 заданий ФИПИ и 4000 новых задач, реалистичные тренировочные экзамены на время, интерактивная практика и прогресс, персональные домашние задания от чата, загрузи фото задачи и получи разбор или ответ, учебник по навыкам и темам, селектор — выдели непонятный текст и получи объяснение.
+                  <h3 className="text-xl font-bold text-white mb-2">Практика</h3>
+                  <p className="text-sm text-white/80 leading-relaxed">
+                    <p>
+                      В каждом курсе — <strong>огромный банк заданий</strong>, интерактивные тренировки, 
+                      <strong>реалистичные экзамены на время</strong>, автоматическая 
+                      <strong>проверка по фото</strong> и <strong>умное отслеживание прогресса</strong>.
+                    </p>
+
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* EGE Profil */}
-            <div className="p-4 rounded-xl bg-muted/50 border border-border hover:shadow-lg transition-all duration-300">
-              <div className="flex items-start gap-3">
-                <div className="p-2 rounded-lg bg-primary/10 shrink-0">
-                  <GraduationCap className="w-5 h-5 text-primary" />
+            {/* Обучение */}
+            <div className="p-6 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 hover:border-yellow-500/40 hover:shadow-xl hover:shadow-yellow-500/10 transition-all duration-300">
+              <div className="flex items-start gap-4">
+                <div className="p-3 rounded-lg bg-yellow-500/20 shrink-0">
+                  <BookOpen className="w-6 h-6 text-yellow-400" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-foreground mb-1">ЕГЭ Профильный уровень</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    900 заданий ФИПИ, 2000 новых задач, реалистичные тренировочные экзамены на время, интерактивная практика и прогресс, персональные домашние задания от чата, загрузи фото задачи и получи разбор или ответ, учебник по навыкам и темам, селектор — выдели непонятный текст и получи объяснение.
+                  <h3 className="text-xl font-bold text-white mb-2">Обучение</h3>
+                  <p className="text-sm text-white/80 leading-relaxed">
+                    <p>
+                      Твой чат-напарник анализирует прогресс, даёт <strong>домашку под тебя</strong> и потом честно разбирает, где ты красавчик, а где можно подтянуться.  
+                      Он <strong>объяснит любую тему</strong>, покажет нужный раздел <strong>учебника</strong>, <strong>видео</strong> или даже <strong>симуляцию и игру</strong>, чтобы ты понял на практике.  
+                      <strong>Учись с умным и реально крутым ассистентом</strong> — как с другом, только умнее.
+                    </p>
+
+
                   </p>
                 </div>
               </div>
