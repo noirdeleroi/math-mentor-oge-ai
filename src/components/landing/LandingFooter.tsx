@@ -7,7 +7,7 @@ export default function LandingFooter() {
     <footer className="bg-gradient-to-b from-slate-800/95 to-slate-900/95 border-t border-white/10 text-white">
       <div className="container mx-auto px-4 py-6">
         <motion.div
-          className="flex items-center justify-between gap-6"
+          className="flex flex-col items-center gap-4 md:flex-row md:justify-between md:items-center md:gap-6"
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -25,8 +25,8 @@ export default function LandingFooter() {
             </span>
           </Link>
 
-          {/* Center: Navigation */}
-          <nav className="hidden md:flex items-center gap-8 text-xs md:text-sm font-semibold tracking-wide uppercase">
+          {/* Center: Navigation (now also visible on mobile, centered) */}
+          <nav className="flex flex-wrap justify-center gap-4 text-xs font-semibold tracking-wide uppercase md:gap-8 md:text-sm">
             <Link
               to="/about"
               className="hover:text-yellow-400 transition-colors duration-200"
