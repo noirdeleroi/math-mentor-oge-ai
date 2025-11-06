@@ -395,6 +395,54 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
+    /* Table styling for problem text */
+    .problem-text table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .problem-text table td {
+      padding: 0.75rem 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+    }
+
+    .problem-text table tr:first-child td {
+      background: rgba(251, 191, 36, 0.1);
+      font-weight: 600;
+      color: #fbbf24;
+    }
+
+    /* Back Button */
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: rgba(209, 213, 219, 1);
+      text-decoration: none;
+      margin-bottom: 2rem;
+      transition: color 0.3s ease;
+      font-size: 1rem;
+    }
+
+    .back-button:hover {
+      color: #ffffff;
+    }
+
+    .back-button svg {
+      width: 1rem;
+      height: 1rem;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
     /* Mobile Responsiveness */
     @media (max-width: 768px) {
       .header h1 {
@@ -465,6 +513,12 @@
   <div class="flying-math" id="flyingMath"></div>
 
   <div class="container">
+    <a href="/questionbankegep" class="back-button">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      Назад
+    </a>
     <div class="header">
       <h1>Задание 6</h1>
       <p>Банк заданий ЕГЭ профиль по математике</p>
@@ -475,7 +529,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 1</div>
          
-         <div class="problem-text">Дайте развернутый ответ. а) Решите уравнение $\frac{{\log_2^2(\sin x) + \log_2(\sin x)}}{{2\cos x + \sqrt{3}}} = 0$. б) Найдите все корни этого уравнения, принадлежащие отрезку $[0; \frac{3\pi}{2}]$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. а) Решите уравнение $\frac{{\log_2^2(\sin x) + \log_2(\sin x)}}{{2\cos x + \sqrt{3}}} = 0$. б) Найдите все корни этого уравнения, принадлежащие отрезку $[0; \frac{3\pi}{2}]$.</div>
          <button class="show-answer-btn"
                  data-answer="а) $x=\frac{\pi}{6}+2\pi k$, $x=\frac{\pi}{2}+2\pi k$, $x=\frac{5\pi}{6}+2\pi k$, где $k \in \mathbb{Z}$.
 б) $x=\frac{\pi}{6}$, $x=\frac{\pi}{2}$."
@@ -491,7 +545,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 2</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите корень уравнения $3^{x+2} = 81$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите корень уравнения $3^{x+2} = 81$.</div>
          <button class="show-answer-btn"
                  data-answer="x=2"
                  onclick="showAnswer(1, this.dataset.answer)">
@@ -506,7 +560,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 3</div>
          
-         <div class="problem-text">Дайте развернутый ответ. Решите неравенство $\frac{\log_{4}(64x)}{\log_{4}x-3}+\frac{\log_{4}x-3}{\log_{4}(64x)}\geq\frac{\log_{4}x^{4}+16}{\log_{4}^{2}x-9}$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. Решите неравенство $\frac{\log_{4}(64x)}{\log_{4}x-3}+\frac{\log_{4}x-3}{\log_{4}(64x)}\geq\frac{\log_{4}x^{4}+16}{\log_{4}^{2}x-9}$.</div>
          <button class="show-answer-btn"
                  data-answer="$x \in (0, \frac{1}{64}) \cup \{4\} \cup (64, +\infty)$"
                  onclick="showAnswer(2, this.dataset.answer)">
@@ -521,7 +575,8 @@
        <div class="question-item">
          <div class="question-number">Вопрос 4</div>
          
-         <div class="problem-text">Дайте развернутый ответ. а) Решите уравнение $27^x - 28 \cdot 3^{x+1} + 3^{5-x} = 0$.<br>б) Укажите корни этого уравнения, принадлежащие отрезку $[\sqrt{3} ; \log_2 5]$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. а) Решите уравнение $27^x - 28 \cdot 3^{x+1} + 3^{5-x} = 0$.
+б) Укажите корни этого уравнения, принадлежащие отрезку $[\sqrt{3} ; \log_2 5]$.</div>
          <button class="show-answer-btn"
                  data-answer="а) $x=0.5, x=2$
 б) $x=2$"
@@ -537,7 +592,12 @@
        <div class="question-item">
          <div class="question-number">Вопрос 5</div>
          
-         <div class="problem-text">Дайте развернутый ответ.<br><br>Решите неравенство<br>\[<br>x^2 \log_{512} (x + 7) \leq \log_2 (x^2 + 14x + 49).<br>\]</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ.
+
+Решите неравенство
+\[
+x^2 \log_{512} (x + 7) \leq \log_2 (x^2 + 14x + 49).
+\]</div>
          <button class="show-answer-btn"
                  data-answer="$x\in(-7,-6]\cup[-\sqrt{18},\sqrt{18}]$"
                  onclick="showAnswer(4, this.dataset.answer)">
@@ -552,7 +612,8 @@
        <div class="question-item">
          <div class="question-number">Вопрос 6</div>
          
-         <div class="problem-text">Дайте развернутый ответ. а) Решите уравнение $16^{\sin x} + 16^{\sin(x + \pi)} = \frac{17}{4}$.<br>б) Укажите корни этого уравнения, принадлежащие отрезку $[\frac{3\pi}{2}; 3\pi]$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. а) Решите уравнение $16^{\sin x} + 16^{\sin(x + \pi)} = \frac{17}{4}$.
+б) Укажите корни этого уравнения, принадлежащие отрезку $[\frac{3\pi}{2}; 3\pi]$.</div>
          <button class="show-answer-btn"
                  data-answer="а) $x = \frac{\pi}{6} + 2\pi k$, $x = \frac{5\pi}{6} + 2\pi k$, $x = \frac{7\pi}{6} + 2\pi k$, $x = \frac{11\pi}{6} + 2\pi k$, $k\in\mathbb{Z}$.
 б) $x = \frac{11\pi}{6}$, $x = \frac{13\pi}{6}$, $x = \frac{17\pi}{6}$."
@@ -568,7 +629,8 @@
        <div class="question-item">
          <div class="question-number">Вопрос 7</div>
          
-         <div class="problem-text">Дайте развернутый ответ. а) Решите уравнение $\cos 2x + \sqrt{3} \sin(\frac{\pi}{2} + x) + 1 = 0$.<br>б) Укажите корни этого уравнения, принадлежащие отрезку $[-3\pi; -\frac{3\pi}{2}]$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. а) Решите уравнение $\cos 2x + \sqrt{3} \sin(\frac{\pi}{2} + x) + 1 = 0$.
+б) Укажите корни этого уравнения, принадлежащие отрезку $[-3\pi; -\frac{3\pi}{2}]$.</div>
          <button class="show-answer-btn"
                  data-answer="а) $\cos 2x + \sqrt{3} \sin(\frac{\pi}{2} + x) + 1 = 0$
 б) $x = -\frac{5\pi}{2}, -\frac{3\pi}{2}, -\frac{17\pi}{6}$"
@@ -584,7 +646,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 8</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите корень уравнения $\sqrt{5x+11}=4.$</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите корень уравнения $\sqrt{5x+11}=4.$</div>
          <button class="show-answer-btn"
                  data-answer="1"
                  onclick="showAnswer(7, this.dataset.answer)">
@@ -599,7 +661,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 9</div>
          
-         <div class="problem-text">Дайте развернутый ответ. Решите неравенство $3^x + \frac{243}{3^x - 36} \geq 0$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. Решите неравенство $3^x + \frac{243}{3^x - 36} \geq 0$.</div>
          <button class="show-answer-btn"
                  data-answer="$x\in[2,3]\cup(\log_3 36,+\infty)$"
                  onclick="showAnswer(8, this.dataset.answer)">
@@ -614,7 +676,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 10</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите корень уравнения $8^{9 - x} = 64$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите корень уравнения $8^{9 - x} = 64$.</div>
          <button class="show-answer-btn"
                  data-answer="7"
                  onclick="showAnswer(9, this.dataset.answer)">
@@ -629,7 +691,8 @@
        <div class="question-item">
          <div class="question-number">Вопрос 11</div>
          
-         <div class="problem-text">Дайте развернутый ответ. а) Решите уравнение $\cos 2x - 3\sin(-x) - 2 = 0$.<br>б) Укажите корни этого уравнения, принадлежащие отрезку $[3\pi; \frac{9\pi}{2}]$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. а) Решите уравнение $\cos 2x - 3\sin(-x) - 2 = 0$.
+б) Укажите корни этого уравнения, принадлежащие отрезку $[3\pi; \frac{9\pi}{2}]$.</div>
          <button class="show-answer-btn"
                  data-answer="а) $x = \frac{\pi}{2} + 2\pi k$, $x = \frac{\pi}{6} + 2\pi k$, $x = \frac{5\pi}{6} + 2\pi k$, где $k \in \mathbb{Z}$.
 б) $\frac{25\pi}{6}$, $\frac{9\pi}{2}$."
@@ -645,7 +708,8 @@
        <div class="question-item">
          <div class="question-number">Вопрос 12</div>
          
-         <div class="problem-text">Дайте развернутый ответ. а) Решите уравнение $\sin 2x - \sin(-x) + 2\cos(-x) + 1 = 0$.<br>б) Укажите корни этого уравнения, принадлежащие отрезку $[\frac{3\pi}{2}; 3\pi]$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. а) Решите уравнение $\sin 2x - \sin(-x) + 2\cos(-x) + 1 = 0$.
+б) Укажите корни этого уравнения, принадлежащие отрезку $[\frac{3\pi}{2}; 3\pi]$.</div>
          <button class="show-answer-btn"
                  data-answer="а) $\sin 2x - \sin(-x) + 2\cos(-x) + 1 = 0$
 $\sin 2x + \sin x + 2\cos x + 1 = 0$
@@ -672,7 +736,7 @@ $2\cos x + 1 = 0 \implies \cos x = -\frac{1}{2} \implies x = \frac{2\pi}{3} + 2\
        <div class="question-item">
          <div class="question-number">Вопрос 13</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите корень уравнения $\log_5(20-x)=2.$</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите корень уравнения $\log_5(20-x)=2.$</div>
          <button class="show-answer-btn"
                  data-answer="x = -5"
                  onclick="showAnswer(12, this.dataset.answer)">
@@ -687,7 +751,7 @@ $2\cos x + 1 = 0 \implies \cos x = -\frac{1}{2} \implies x = \frac{2\pi}{3} + 2\
        <div class="question-item">
          <div class="question-number">Вопрос 14</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите корень уравнения $5^{2 - x} = 125.$</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите корень уравнения $5^{2 - x} = 125.$</div>
          <button class="show-answer-btn"
                  data-answer="x = -1"
                  onclick="showAnswer(13, this.dataset.answer)">
@@ -702,7 +766,7 @@ $2\cos x + 1 = 0 \implies \cos x = -\frac{1}{2} \implies x = \frac{2\pi}{3} + 2\
        <div class="question-item">
          <div class="question-number">Вопрос 15</div>
          
-         <div class="problem-text">Дайте развернутый ответ. Решите неравенство $1+\frac{5}{\log_4 x-3}+\frac{6}{(\log_4 x)^2-\log_4 (64x^6)+12} \geq 0$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. Решите неравенство $1+\frac{5}{\log_4 x-3}+\frac{6}{(\log_4 x)^2-\log_4 (64x^6)+12} \geq 0$.</div>
          <button class="show-answer-btn"
                  data-answer="$x \in (0,1] \cup [4,64) \cup (64,\infty)$"
                  onclick="showAnswer(14, this.dataset.answer)">
@@ -717,7 +781,7 @@ $2\cos x + 1 = 0 \implies \cos x = -\frac{1}{2} \implies x = \frac{2\pi}{3} + 2\
        <div class="question-item">
          <div class="question-number">Вопрос 16</div>
          
-         <div class="problem-text">Дайте развернутый ответ. Решите неравенство $1+\frac{6}{\log_3 x-3}+\frac{5}{(\log_3 x)^2-\log_3 (27x^6)+12} \geq 0$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. Решите неравенство $1+\frac{6}{\log_3 x-3}+\frac{5}{(\log_3 x)^2-\log_3 (27x^6)+12} \geq 0$.</div>
          <button class="show-answer-btn"
                  data-answer="$x \in (0, 1/9] \cup [9, 27) \cup (27, \infty)$"
                  onclick="showAnswer(15, this.dataset.answer)">
@@ -732,7 +796,7 @@ $2\cos x + 1 = 0 \implies \cos x = -\frac{1}{2} \implies x = \frac{2\pi}{3} + 2\
        <div class="question-item">
          <div class="question-number">Вопрос 17</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите корень уравнения $2^{x - 3} = \frac{1}{16}$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите корень уравнения $2^{x - 3} = \frac{1}{16}$.</div>
          <button class="show-answer-btn"
                  data-answer="-1"
                  onclick="showAnswer(16, this.dataset.answer)">
@@ -747,7 +811,10 @@ $2\cos x + 1 = 0 \implies \cos x = -\frac{1}{2} \implies x = \frac{2\pi}{3} + 2\
        <div class="question-item">
          <div class="question-number">Вопрос 18</div>
          
-         <div class="problem-text">Дайте развернутый ответ. а) Решите уравнение<br>\[ \sin(2x) = \cos(x) \]<br>б) Укажите корни этого уравнения, принадлежащие отрезку<br>\[ \left[ \frac{\pi}{2}, \frac{3\pi}{2} \right] \]</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. а) Решите уравнение
+\[ \sin(2x) = \cos(x) \]
+б) Укажите корни этого уравнения, принадлежащие отрезку
+\[ \left[ \frac{\pi}{2}, \frac{3\pi}{2} \right] \]</div>
          <button class="show-answer-btn"
                  data-answer="а) $x=\frac{\pi}{2}+\pi k$, $x=\frac{\pi}{6}+2\pi k$, $x=\frac{5\pi}{6}+2\pi k$, $k\in\mathbb{Z}$
 б) $\frac{\pi}{2}$, $\frac{5\pi}{6}$, $\frac{3\pi}{2}$"
@@ -763,7 +830,7 @@ $2\cos x + 1 = 0 \implies \cos x = -\frac{1}{2} \implies x = \frac{2\pi}{3} + 2\
        <div class="question-item">
          <div class="question-number">Вопрос 19</div>
          
-         <div class="problem-text">Дайте развернутый ответ. а) Решите уравнение $16^{\cos x} + 16^{\cos (\pi - x)} = \frac{17}{4}$. б) Укажите корни этого уравнения, принадлежащие отрезку $[\pi ; \frac{5\pi}{2}]$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. а) Решите уравнение $16^{\cos x} + 16^{\cos (\pi - x)} = \frac{17}{4}$. б) Укажите корни этого уравнения, принадлежащие отрезку $[\pi ; \frac{5\pi}{2}]$.</div>
          <button class="show-answer-btn"
                  data-answer="а) $x = 2\pi k \pm \frac{\pi}{3}$, $x = 2\pi k \pm \frac{2\pi}{3}$, $k \in \mathbb{Z}$
 б) $x \in \left\{\frac{4\pi}{3},\,\frac{5\pi}{3},\,\frac{7\pi}{3}\right\}$"
@@ -779,7 +846,8 @@ $2\cos x + 1 = 0 \implies \cos x = -\frac{1}{2} \implies x = \frac{2\pi}{3} + 2\
        <div class="question-item">
          <div class="question-number">Вопрос 20</div>
          
-         <div class="problem-text">Дайте развернутый ответ. а) Решите уравнение $2\cos^2 x + 3\sin(x+\pi) - 3 = 0$.<br>б) Укажите корни этого уравнения, принадлежащие отрезку $[2\pi; \frac{7\pi}{2}]$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. а) Решите уравнение $2\cos^2 x + 3\sin(x+\pi) - 3 = 0$.
+б) Укажите корни этого уравнения, принадлежащие отрезку $[2\pi; \frac{7\pi}{2}]$.</div>
          <button class="show-answer-btn"
                  data-answer="а) $x = -\frac{\pi}{6} + 2\pi k$, $x = \frac{7\pi}{6} + 2\pi k$, $x = \frac{3\pi}{2} + 2\pi k$, $k\in\mathbb{Z}$.
 б) $x = \frac{19\pi}{6}$, $x = \frac{7\pi}{2}$."
@@ -795,7 +863,7 @@ $2\cos x + 1 = 0 \implies \cos x = -\frac{1}{2} \implies x = \frac{2\pi}{3} + 2\
        <div class="question-item">
          <div class="question-number">Вопрос 21</div>
          
-         <div class="problem-text">Дайте развернутый ответ. Решите неравенство $\log_{11} (8x^2 + 7) - \log_{11} (x^2 + x + 1) \geq \log_{11} (\frac{x}{x+5} + 7)$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. Решите неравенство $\log_{11} (8x^2 + 7) - \log_{11} (x^2 + x + 1) \geq \log_{11} (\frac{x}{x+5} + 7)$.</div>
          <button class="show-answer-btn"
                  data-answer="$x\in(-\infty,-12]\cup(-4.375,0]$"
                  onclick="showAnswer(20, this.dataset.answer)">
@@ -810,7 +878,7 @@ $2\cos x + 1 = 0 \implies \cos x = -\frac{1}{2} \implies x = \frac{2\pi}{3} + 2\
        <div class="question-item">
          <div class="question-number">Вопрос 22</div>
          
-         <div class="problem-text">Дайте развернутый ответ. а) Решите уравнение $2\sin\left(x+\frac{\pi}{3}\right)+\cos 2x=\sqrt{3}\cos x+1$. б) Укажите корни этого уравнения, принадлежащие отрезку $\left[-3\pi; -\frac{3\pi}{2}\right]$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. а) Решите уравнение $2\sin\left(x+\frac{\pi}{3}\right)+\cos 2x=\sqrt{3}\cos x+1$. б) Укажите корни этого уравнения, принадлежащие отрезку $\left[-3\pi; -\frac{3\pi}{2}\right]$.</div>
          <button class="show-answer-btn"
                  data-answer="а) $x=\pi k$, $x=\frac{\pi}{6}+2\pi k$, $x=\frac{5\pi}{6}+2\pi k$, $k\in\mathbb{Z}$.
 б) $-3\pi$, $-2\pi$, $-\frac{11\pi}{6}$."
@@ -826,7 +894,8 @@ $2\cos x + 1 = 0 \implies \cos x = -\frac{1}{2} \implies x = \frac{2\pi}{3} + 2\
        <div class="question-item">
          <div class="question-number">Вопрос 23</div>
          
-         <div class="problem-text">Дайте развернутый ответ. Решите неравенство \( x^2 \log_{625} (6 - x) \leq \log_5 (x^2 - 12x + 36) \).<br></div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. Решите неравенство \( x^2 \log_{625} (6 - x) \leq \log_5 (x^2 - 12x + 36) \).
+</div>
          <button class="show-answer-btn"
                  data-answer="$x\in[-2\sqrt{2},2\sqrt{2}]\cup[5,6)$"
                  onclick="showAnswer(22, this.dataset.answer)">
@@ -841,7 +910,8 @@ $2\cos x + 1 = 0 \implies \cos x = -\frac{1}{2} \implies x = \frac{2\pi}{3} + 2\
        <div class="question-item">
          <div class="question-number">Вопрос 24</div>
          
-         <div class="problem-text">Дайте развернутый ответ. а) Решите уравнение $\left(\frac{1}{49}\right)^{\sin(x+\pi)} = 7^{2\sqrt{3}\sin(\frac{\pi}{2}-x)}$.<br>б) Укажите корни этого уравнения, принадлежащие отрезку $[3\pi; \frac{9\pi}{2}]$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. а) Решите уравнение $\left(\frac{1}{49}\right)^{\sin(x+\pi)} = 7^{2\sqrt{3}\sin(\frac{\pi}{2}-x)}$.
+б) Укажите корни этого уравнения, принадлежащие отрезку $[3\pi; \frac{9\pi}{2}]$.</div>
          <button class="show-answer-btn"
                  data-answer="а) $x=\frac{\pi}{3}+\pi k,\quad k\in\mathbb{Z}$
 б) $x=\frac{10\pi}{3},\ x=\frac{13\pi}{3}$"
@@ -857,7 +927,7 @@ $2\cos x + 1 = 0 \implies \cos x = -\frac{1}{2} \implies x = \frac{2\pi}{3} + 2\
        <div class="question-item">
          <div class="question-number">Вопрос 25</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите корень уравнения $\sqrt{8x-20}=2.$</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите корень уравнения $\sqrt{8x-20}=2.$</div>
          <button class="show-answer-btn"
                  data-answer="3"
                  onclick="showAnswer(24, this.dataset.answer)">
@@ -872,7 +942,7 @@ $2\cos x + 1 = 0 \implies \cos x = -\frac{1}{2} \implies x = \frac{2\pi}{3} + 2\
        <div class="question-item">
          <div class="question-number">Вопрос 26</div>
          
-         <div class="problem-text">Дайте развернутый ответ. Решите неравенство $\log_{2}^{2}(x^2-9) - 9\log_{2}(x^2-9) + 20 \geq 0$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. Решите неравенство $\log_{2}^{2}(x^2-9) - 9\log_{2}(x^2-9) + 20 \geq 0$.</div>
          <button class="show-answer-btn"
                  data-answer="$x\in(-\infty,-\sqrt{41}]\cup[-5,-3)\cup(3,5]\cup[\sqrt{41},\infty)$"
                  onclick="showAnswer(25, this.dataset.answer)">
@@ -887,7 +957,8 @@ $2\cos x + 1 = 0 \implies \cos x = -\frac{1}{2} \implies x = \frac{2\pi}{3} + 2\
        <div class="question-item">
          <div class="question-number">Вопрос 27</div>
          
-         <div class="problem-text">Дайте развернутый ответ. а) Решите уравнение $9 \cdot 81^{\cos x} - 28 \cdot 9^{\cos x} + 3 = 0$.<br>б) Укажите корни этого уравнения, принадлежащие отрезку $[\frac{5\pi}{2}; 4\pi]$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. а) Решите уравнение $9 \cdot 81^{\cos x} - 28 \cdot 9^{\cos x} + 3 = 0$.
+б) Укажите корни этого уравнения, принадлежащие отрезку $[\frac{5\pi}{2}; 4\pi]$.</div>
          <button class="show-answer-btn"
                  data-answer="а) $x=2\pi k\pm\tfrac{\pi}{3}$, $x=(2k+1)\pi$, $k\in\mathbb{Z}$
 б) $3\pi$, $\tfrac{11\pi}{3}$"
@@ -903,7 +974,8 @@ $2\cos x + 1 = 0 \implies \cos x = -\frac{1}{2} \implies x = \frac{2\pi}{3} + 2\
        <div class="question-item">
          <div class="question-number">Вопрос 28</div>
          
-         <div class="problem-text">Дайте развернутый ответ. а) Решите уравнение $27^x - 4 \cdot 3^{x+2} + 3^{5-x} = 0$.<br>б) Укажите корни этого уравнения, принадлежащие отрезку $[\log_7 4 ; \log_7 16]$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. а) Решите уравнение $27^x - 4 \cdot 3^{x+2} + 3^{5-x} = 0$.
+б) Укажите корни этого уравнения, принадлежащие отрезку $[\log_7 4 ; \log_7 16]$.</div>
          <button class="show-answer-btn"
                  data-answer="а) $x=1, x=\frac32$
 б) $x=1$"
@@ -919,7 +991,7 @@ $2\cos x + 1 = 0 \implies \cos x = -\frac{1}{2} \implies x = \frac{2\pi}{3} + 2\
        <div class="question-item">
          <div class="question-number">Вопрос 29</div>
          
-         <div class="problem-text">Впишите правильный ответ. Высота над землёй подброшенного вверх мяча меняется по закону $h(t)=1,4+9\,t-5\,t^2$, где $h$ — высота в метрах, $t$ — время в секундах, прошедшее с момента броска. Сколько секунд мяч будет находиться на высоте не менее 3 метров?</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Высота над землёй подброшенного вверх мяча меняется по закону $h(t)=1,4+9\,t-5\,t^2$, где $h$ — высота в метрах, $t$ — время в секундах, прошедшее с момента броска. Сколько секунд мяч будет находиться на высоте не менее 3 метров?</div>
          <button class="show-answer-btn"
                  data-answer="1.4"
                  onclick="showAnswer(28, this.dataset.answer)">
@@ -934,7 +1006,7 @@ $2\cos x + 1 = 0 \implies \cos x = -\frac{1}{2} \implies x = \frac{2\pi}{3} + 2\
        <div class="question-item">
          <div class="question-number">Вопрос 30</div>
          
-         <div class="problem-text">Дайте развернутый ответ. Решите неравенство $\frac{4^x - 3 \cdot 2^{x + 1} + 4}{2^x - 5} + \frac{3 \cdot 2^{x + 1} - 46}{2^x - 8} \leq 2^x + 5.$</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. Решите неравенство $\frac{4^x - 3 \cdot 2^{x + 1} + 4}{2^x - 5} + \frac{3 \cdot 2^{x + 1} - 46}{2^x - 8} \leq 2^x + 5.$</div>
          <button class="show-answer-btn"
                  data-answer="$x \le 1$ или $\log_2 5 &lt; x &lt; 3$"
                  onclick="showAnswer(29, this.dataset.answer)">

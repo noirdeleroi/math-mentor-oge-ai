@@ -395,6 +395,54 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
+    /* Table styling for problem text */
+    .problem-text table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .problem-text table td {
+      padding: 0.75rem 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+    }
+
+    .problem-text table tr:first-child td {
+      background: rgba(251, 191, 36, 0.1);
+      font-weight: 600;
+      color: #fbbf24;
+    }
+
+    /* Back Button */
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: rgba(209, 213, 219, 1);
+      text-decoration: none;
+      margin-bottom: 2rem;
+      transition: color 0.3s ease;
+      font-size: 1rem;
+    }
+
+    .back-button:hover {
+      color: #ffffff;
+    }
+
+    .back-button svg {
+      width: 1rem;
+      height: 1rem;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
     /* Mobile Responsiveness */
     @media (max-width: 768px) {
       .header h1 {
@@ -465,6 +513,12 @@
   <div class="flying-math" id="flyingMath"></div>
 
   <div class="container">
+    <a href="/questionbankegep" class="back-button">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      Назад
+    </a>
     <div class="header">
       <h1>Задание 7</h1>
       <p>Банк заданий ЕГЭ профиль по математике</p>
@@ -475,7 +529,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 1</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите значение выражения $\left(2^{16}\right)^5:2^{74}$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите значение выражения $\left(2^{16}\right)^5:2^{74}$.</div>
          <button class="show-answer-btn"
                  data-answer="64"
                  onclick="showAnswer(0, this.dataset.answer)">
@@ -490,7 +544,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 2</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите значение выражения $\frac{\sqrt[3]{121} \cdot \sqrt[4]{121}}{\sqrt[12]{121}}$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите значение выражения $\frac{\sqrt[3]{121} \cdot \sqrt[4]{121}}{\sqrt[12]{121}}$.</div>
          <button class="show-answer-btn"
                  data-answer="11"
                  onclick="showAnswer(1, this.dataset.answer)">
@@ -505,7 +559,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 3</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите значение выражения $\frac{\sqrt[3]{400} \cdot \sqrt[3]{25}}{\sqrt[3]{80}}$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите значение выражения $\frac{\sqrt[3]{400} \cdot \sqrt[3]{25}}{\sqrt[3]{80}}$.</div>
          <button class="show-answer-btn"
                  data-answer="5"
                  onclick="showAnswer(2, this.dataset.answer)">
@@ -520,7 +574,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 4</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите значение выражения $\frac{8\sin 64^\circ \cdot \cos 64^\circ}{\sin 128^\circ}$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите значение выражения $\frac{8\sin 64^\circ \cdot \cos 64^\circ}{\sin 128^\circ}$.</div>
          <button class="show-answer-btn"
                  data-answer="4"
                  onclick="showAnswer(3, this.dataset.answer)">
@@ -535,7 +589,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 5</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите значение выражения $2\sqrt{3}\cos^2\frac{13\pi}{12}-\sqrt{3}$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите значение выражения $2\sqrt{3}\cos^2\frac{13\pi}{12}-\sqrt{3}$.</div>
          <button class="show-answer-btn"
                  data-answer="1,5"
                  onclick="showAnswer(4, this.dataset.answer)">
@@ -550,7 +604,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 6</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите значение выражения $(\sqrt{96}-\sqrt{24})\cdot\sqrt{6}$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите значение выражения $(\sqrt{96}-\sqrt{24})\cdot\sqrt{6}$.</div>
          <button class="show-answer-btn"
                  data-answer="12"
                  onclick="showAnswer(5, this.dataset.answer)">
@@ -565,7 +619,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 7</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите значение выражения $8\log_5 \sqrt[4]{5}$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите значение выражения $8\log_5 \sqrt[4]{5}$.</div>
          <button class="show-answer-btn"
                  data-answer="2"
                  onclick="showAnswer(6, this.dataset.answer)">
@@ -580,7 +634,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 8</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите значение выражения $4\sqrt{3}\cos^2\frac{23\pi}{12}-4\sqrt{3}\sin^2\frac{23\pi}{12}$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите значение выражения $4\sqrt{3}\cos^2\frac{23\pi}{12}-4\sqrt{3}\sin^2\frac{23\pi}{12}$.</div>
          <button class="show-answer-btn"
                  data-answer="6"
                  onclick="showAnswer(7, this.dataset.answer)">
@@ -595,7 +649,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 9</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите $\operatorname{tg}\alpha$, если $\cos\alpha = -\frac{\sqrt{26}}{26}$ и $\alpha \in \left(\frac{\pi}{2}; \pi\right)$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите $\operatorname{tg}\alpha$, если $\cos\alpha = -\frac{\sqrt{26}}{26}$ и $\alpha \in \left(\frac{\pi}{2}; \pi\right)$.</div>
          <button class="show-answer-btn"
                  data-answer="-5"
                  onclick="showAnswer(8, this.dataset.answer)">
@@ -610,7 +664,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 10</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите $\sin \alpha$, если $\cos \alpha = -\dfrac{\sqrt{21}}{5}$ и $\alpha \in \left( \dfrac{\pi}{2}; \pi \right)$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите $\sin \alpha$, если $\cos \alpha = -\dfrac{\sqrt{21}}{5}$ и $\alpha \in \left( \dfrac{\pi}{2}; \pi \right)$.</div>
          <button class="show-answer-btn"
                  data-answer="$\frac{2}{5}$"
                  onclick="showAnswer(9, this.dataset.answer)">
@@ -625,7 +679,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 11</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите значение выражения $3\sqrt{3}-6\sqrt{3}\sin^2\frac{13\pi}{12}$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите значение выражения $3\sqrt{3}-6\sqrt{3}\sin^2\frac{13\pi}{12}$.</div>
          <button class="show-answer-btn"
                  data-answer="4.5"
                  onclick="showAnswer(10, this.dataset.answer)">
@@ -640,7 +694,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 12</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите значение выражения $(4^{15})^5:4^{73}$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите значение выражения $(4^{15})^5:4^{73}$.</div>
          <button class="show-answer-btn"
                  data-answer="16"
                  onclick="showAnswer(11, this.dataset.answer)">
@@ -655,7 +709,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 13</div>
          
-         <div class="problem-text">Дайте развернутый ответ. Решите неравенство $\frac{\log_3(81x)}{\log_3 x - 4} + \frac{\log_3 x - 4}{\log_3(81x)} \ge \frac{24 - \log_3 x^8}{(\log_3 x)^2 - 16}$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. Решите неравенство $\frac{\log_3(81x)}{\log_3 x - 4} + \frac{\log_3 x - 4}{\log_3(81x)} \ge \frac{24 - \log_3 x^8}{(\log_3 x)^2 - 16}$.</div>
          <button class="show-answer-btn"
                  data-answer="$x\in(0, 1/81)\cup\{1/9\}\cup(81,\infty)$"
                  onclick="showAnswer(12, this.dataset.answer)">
@@ -670,7 +724,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 14</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите значение выражения $3\sin \frac{13\pi}{12} \cdot \cos \frac{13\pi}{12}$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите значение выражения $3\sin \frac{13\pi}{12} \cdot \cos \frac{13\pi}{12}$.</div>
          <button class="show-answer-btn"
                  data-answer="0,75"
                  onclick="showAnswer(13, this.dataset.answer)">
@@ -685,7 +739,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 15</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите значение выражения $5^{0,06} \cdot 25^{0,97}$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите значение выражения $5^{0,06} \cdot 25^{0,97}$.</div>
          <button class="show-answer-btn"
                  data-answer="25"
                  onclick="showAnswer(14, this.dataset.answer)">
@@ -700,7 +754,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 16</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите значение выражения $\frac{(5\sqrt{6})^2}{10}$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите значение выражения $\frac{(5\sqrt{6})^2}{10}$.</div>
          <button class="show-answer-btn"
                  data-answer="15"
                  onclick="showAnswer(15, this.dataset.answer)">
@@ -715,7 +769,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 17</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите значение выражения $(64^9)^3 : (16^5)^8$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите значение выражения $(64^9)^3 : (16^5)^8$.</div>
          <button class="show-answer-btn"
                  data-answer="4"
                  onclick="showAnswer(16, this.dataset.answer)">
@@ -730,7 +784,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 18</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите значение выражения $\sqrt{2}-2\sqrt{2}\sin^2\frac{15\pi}{8}$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите значение выражения $\sqrt{2}-2\sqrt{2}\sin^2\frac{15\pi}{8}$.</div>
          <button class="show-answer-btn"
                  data-answer="1"
                  onclick="showAnswer(17, this.dataset.answer)">
@@ -745,7 +799,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 19</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите значение выражения $\frac{81^{2,6}}{9^{3,7}}$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите значение выражения $\frac{81^{2,6}}{9^{3,7}}$.</div>
          <button class="show-answer-btn"
                  data-answer="27"
                  onclick="showAnswer(18, this.dataset.answer)">
@@ -760,7 +814,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 20</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите значение выражения $5\sqrt{2}\cos^2\frac{7\pi}{8}-5\sqrt{2}\sin^2\frac{7\pi}{8}$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите значение выражения $5\sqrt{2}\cos^2\frac{7\pi}{8}-5\sqrt{2}\sin^2\frac{7\pi}{8}$.</div>
          <button class="show-answer-btn"
                  data-answer="5"
                  onclick="showAnswer(19, this.dataset.answer)">
@@ -775,7 +829,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 21</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите значение выражения $5\sqrt{2}\sin\frac{3\pi}{8}\cos\frac{3\pi}{8}$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите значение выражения $5\sqrt{2}\sin\frac{3\pi}{8}\cos\frac{3\pi}{8}$.</div>
          <button class="show-answer-btn"
                  data-answer="2.5"
                  onclick="showAnswer(20, this.dataset.answer)">
@@ -790,7 +844,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 22</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите значение выражения $\sqrt[3]{125}$</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите значение выражения $\sqrt[3]{125}$</div>
          <button class="show-answer-btn"
                  data-answer="5"
                  onclick="showAnswer(21, this.dataset.answer)">
@@ -805,7 +859,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 23</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/DA4F4F.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На рисунке изображён график функции вида $f(x) = \log_a x$. Найдите $f(8)$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На рисунке изображён график функции вида $f(x) = \log_a x$. Найдите $f(8)$.</div>
          <button class="show-answer-btn"
                  data-answer="-3"
                  onclick="showAnswer(22, this.dataset.answer)">
@@ -820,7 +874,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 24</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите значение выражения $\log_{2}6,4+\log_{2}10.$</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите значение выражения $\log_{2}6,4+\log_{2}10.$</div>
          <button class="show-answer-btn"
                  data-answer="6"
                  onclick="showAnswer(23, this.dataset.answer)">
@@ -835,7 +889,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 25</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите значение выражения $6\cos^2\alpha$, если $\sin\alpha = -0,8.$</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите значение выражения $6\cos^2\alpha$, если $\sin\alpha = -0,8.$</div>
          <button class="show-answer-btn"
                  data-answer="2,16"
                  onclick="showAnswer(24, this.dataset.answer)">
@@ -850,7 +904,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 26</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите значение выражения $\log_{2}56 - \log_{2}7.$</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите значение выражения $\log_{2}56 - \log_{2}7.$</div>
          <button class="show-answer-btn"
                  data-answer="3"
                  onclick="showAnswer(25, this.dataset.answer)">
@@ -865,7 +919,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 27</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите значение выражения $4\sqrt{2}-8\sqrt{2}\sin^2\frac{7\pi}{8}$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите значение выражения $4\sqrt{2}-8\sqrt{2}\sin^2\frac{7\pi}{8}$.</div>
          <button class="show-answer-btn"
                  data-answer="4"
                  onclick="showAnswer(26, this.dataset.answer)">
@@ -880,7 +934,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 28</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите значение выражения $\frac{\log_9 28}{\log_9 7} + \log_7 \frac{7}{4}$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите значение выражения $\frac{\log_9 28}{\log_9 7} + \log_7 \frac{7}{4}$.</div>
          <button class="show-answer-btn"
                  data-answer="2"
                  onclick="showAnswer(27, this.dataset.answer)">
@@ -895,7 +949,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 29</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите значение выражения $\frac{3^{9,2}}{9^{2,6}}$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите значение выражения $\frac{3^{9,2}}{9^{2,6}}$.</div>
          <button class="show-answer-btn"
                  data-answer="81"
                  onclick="showAnswer(28, this.dataset.answer)">
@@ -910,7 +964,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 30</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите значение выражения $\frac{\mroot[4]{8} \cdot \mroot[4]{48}}{\mroot[4]{24}}$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите значение выражения $\frac{\mroot[4]{8} \cdot \mroot[4]{48}}{\mroot[4]{24}}$.</div>
          <button class="show-answer-btn"
                  data-answer="2"
                  onclick="showAnswer(29, this.dataset.answer)">

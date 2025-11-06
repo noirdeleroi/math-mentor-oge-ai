@@ -395,6 +395,54 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
+    /* Table styling for problem text */
+    .problem-text table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .problem-text table td {
+      padding: 0.75rem 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+    }
+
+    .problem-text table tr:first-child td {
+      background: rgba(251, 191, 36, 0.1);
+      font-weight: 600;
+      color: #fbbf24;
+    }
+
+    /* Back Button */
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: rgba(209, 213, 219, 1);
+      text-decoration: none;
+      margin-bottom: 2rem;
+      transition: color 0.3s ease;
+      font-size: 1rem;
+    }
+
+    .back-button:hover {
+      color: #ffffff;
+    }
+
+    .back-button svg {
+      width: 1rem;
+      height: 1rem;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
     /* Mobile Responsiveness */
     @media (max-width: 768px) {
       .header h1 {
@@ -465,6 +513,12 @@
   <div class="flying-math" id="flyingMath"></div>
 
   <div class="container">
+    <a href="/questionbankegep" class="back-button">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      Назад
+    </a>
     <div class="header">
       <h1>Задание 1</h1>
       <p>Банк заданий ЕГЭ профиль по математике</p>
@@ -475,7 +529,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 1</div>
          
-         <div class="problem-text">Впишите правильный ответ. Четырёхугольник $ABCD$ вписан в окружность. Угол $ABD$ равен $58^\circ$, угол $CAD$ равен $39^\circ$. Найдите угол $ABC$. Ответ дайте в градусах.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Четырёхугольник $ABCD$ вписан в окружность. Угол $ABD$ равен $58^\circ$, угол $CAD$ равен $39^\circ$. Найдите угол $ABC$. Ответ дайте в градусах.</div>
          <button class="show-answer-btn"
                  data-answer="97"
                  onclick="showAnswer(0, this.dataset.answer)">
@@ -490,7 +544,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 2</div>
          
-         <div class="problem-text">Впишите правильный ответ. Центральный угол на $32^\circ$ больше острого вписанного угла, опирающегося на ту же дугу окружности. Найдите вписанный угол. Ответ дайте в градусах.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Центральный угол на $32^\circ$ больше острого вписанного угла, опирающегося на ту же дугу окружности. Найдите вписанный угол. Ответ дайте в градусах.</div>
          <button class="show-answer-btn"
                  data-answer="32"
                  onclick="showAnswer(1, this.dataset.answer)">
@@ -505,7 +559,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 3</div>
          
-         <div class="problem-text">Впишите правильный ответ. Два угла вписанного в окружность четырёхугольника равны $59^\circ$ и $102^\circ$. Найдите больший из оставшихся углов. Ответ дайте в градусах.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Два угла вписанного в окружность четырёхугольника равны $59^\circ$ и $102^\circ$. Найдите больший из оставшихся углов. Ответ дайте в градусах.</div>
          <button class="show-answer-btn"
                  data-answer="121"
                  onclick="showAnswer(2, this.dataset.answer)">
@@ -520,7 +574,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 4</div>
          
-         <div class="problem-text">Впишите правильный ответ. Площадь параллелограмма $ABCD$ равна 24. Точка $E$ — середина стороны $AD$. Найдите площадь трапеции $BCDE$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Площадь параллелограмма $ABCD$ равна 24. Точка $E$ — середина стороны $AD$. Найдите площадь трапеции $BCDE$.</div>
          <button class="show-answer-btn"
                  data-answer="18"
                  onclick="showAnswer(3, this.dataset.answer)">
@@ -535,7 +589,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 5</div>
          
-         <div class="problem-text">Впишите правильный ответ. Отрезки $AC$ и $BD$ — диаметры окружности с центром $O$. Угол $AOD$ равен $16^\circ$. Найдите вписанный угол $ACB$. Ответ дайте в градусах.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Отрезки $AC$ и $BD$ — диаметры окружности с центром $O$. Угол $AOD$ равен $16^\circ$. Найдите вписанный угол $ACB$. Ответ дайте в градусах.</div>
          <button class="show-answer-btn"
                  data-answer="82"
                  onclick="showAnswer(4, this.dataset.answer)">
@@ -550,7 +604,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 6</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/84E9F2.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. Найдите величину угла $ACO$, если его сторона $CA$ касается окружности с центром $O$, отрезок $CO$ пересекает окружность в точке $B$ (см. рисунок), а дуга $AB$ окружности, заключённая внутри этого угла, равна $66^\circ$. Ответьте в градусах.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите величину угла $ACO$, если его сторона $CA$ касается окружности с центром $O$, отрезок $CO$ пересекает окружность в точке $B$ (см. рисунок), а дуга $AB$ окружности, заключённая внутри этого угла, равна $66^\circ$. Ответьте в градусах.</div>
          <button class="show-answer-btn"
                  data-answer="24"
                  onclick="showAnswer(5, this.dataset.answer)">
@@ -565,7 +619,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 7</div>
          
-         <div class="problem-text">Впишите правильный ответ. Центральный угол на $29^\circ$ больше острого вписанного угла, опирающегося на ту же дугу окружности. Найдите величину вписанного угла. Ответ дайте в градусах.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Центральный угол на $29^\circ$ больше острого вписанного угла, опирающегося на ту же дугу окружности. Найдите величину вписанного угла. Ответ дайте в градусах.</div>
          <button class="show-answer-btn"
                  data-answer="29"
                  onclick="showAnswer(6, this.dataset.answer)">
@@ -580,7 +634,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 8</div>
          
-         <div class="problem-text">Впишите правильный ответ. Четырёхугольник $ABCD$ вписан в окружность. Угол $ABC$ равен $103^\circ$, угол $CAD$ равен $42^\circ$. Найдите угол $ABD$. Ответ дайте в градусах.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Четырёхугольник $ABCD$ вписан в окружность. Угол $ABC$ равен $103^\circ$, угол $CAD$ равен $42^\circ$. Найдите угол $ABD$. Ответ дайте в градусах.</div>
          <button class="show-answer-btn"
                  data-answer="61"
                  onclick="showAnswer(7, this.dataset.answer)">
@@ -595,7 +649,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 9</div>
          
-         <div class="problem-text">Впишите правильный ответ. Стороны параллелограмма равны 18 и 20. Высота, опущенная на меньшую из этих сторон, равна 10. Найдите длину высоты, опущенной на бо\u043b\u044cшую сторону параллелограмма.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Стороны параллелограмма равны 18 и 20. Высота, опущенная на меньшую из этих сторон, равна 10. Найдите длину высоты, опущенной на бо\u043b\u044cшую сторону параллелограмма.</div>
          <button class="show-answer-btn"
                  data-answer="9"
                  onclick="showAnswer(8, this.dataset.answer)">
@@ -610,7 +664,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 10</div>
          
-         <div class="problem-text">Впишите правильный ответ. В треугольнике $ \triangle ABC $ сторона $ BC $ равна $ 12 $, угол $ \angle BAC $ равен $ 30^\circ $. Найдите радиус описанной около этого треугольника окружности.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. В треугольнике $ \triangle ABC $ сторона $ BC $ равна $ 12 $, угол $ \angle BAC $ равен $ 30^\circ $. Найдите радиус описанной около этого треугольника окружности.</div>
          <button class="show-answer-btn"
                  data-answer="12"
                  onclick="showAnswer(9, this.dataset.answer)">
@@ -625,7 +679,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 11</div>
          
-         <div class="problem-text">Впишите правильный ответ. Площадь треугольника $ABC$ равна 60, $DE$ — средняя линия, параллельная стороне $AB$. Найдите площадь трапеции $ABED$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Площадь треугольника $ABC$ равна 60, $DE$ — средняя линия, параллельная стороне $AB$. Найдите площадь трапеции $ABED$.</div>
          <button class="show-answer-btn"
                  data-answer="45"
                  onclick="showAnswer(10, this.dataset.answer)">
@@ -640,7 +694,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 12</div>
          
-         <div class="problem-text">Впишите правильный ответ. Две стороны треугольника равны 21 и 28. Высота, опущенная на бо́льшую из этих сторон, равна 15. Найдите высоту, опущенную на меньшую из этих сторон треугольника.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Две стороны треугольника равны 21 и 28. Высота, опущенная на бо́льшую из этих сторон, равна 15. Найдите высоту, опущенную на меньшую из этих сторон треугольника.</div>
          <button class="show-answer-btn"
                  data-answer="20"
                  onclick="showAnswer(11, this.dataset.answer)">
@@ -655,7 +709,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 13</div>
          
-         <div class="problem-text">Впишите правильный ответ. Две стороны треугольника равны 15 и 18. Высота, опущенная на большую из этих сторон, равна 10. Найдите длину высоты, опущенной на меньшую из этих сторон треугольника.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Две стороны треугольника равны 15 и 18. Высота, опущенная на большую из этих сторон, равна 10. Найдите длину высоты, опущенной на меньшую из этих сторон треугольника.</div>
          <button class="show-answer-btn"
                  data-answer="12"
                  onclick="showAnswer(12, this.dataset.answer)">
@@ -670,7 +724,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 14</div>
          
-         <div class="problem-text">Впишите правильный ответ. Два угла вписанного в окружность четырёхугольника равны $\boxed{}$ и $\boxed{}$. Найдите бо́льший из оставшихся углов. Ответ дайте в градусах.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Два угла вписанного в окружность четырёхугольника равны $\boxed{}$ и $\boxed{}$. Найдите бо́льший из оставшихся углов. Ответ дайте в градусах.</div>
          <button class="show-answer-btn"
                  data-answer="$180^\circ - \min(\alpha,\beta)$"
                  onclick="showAnswer(13, this.dataset.answer)">
@@ -685,7 +739,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 15</div>
          
-         <div class="problem-text">Впишите правильный ответ. Четырёхугольник $ABCD$ вписан в окружность. Угол $ABD$ равен $61^\circ$, угол $CAD$ равен $37^\circ$. Найдите угол $ABC$. Ответ дайте в градусах.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Четырёхугольник $ABCD$ вписан в окружность. Угол $ABD$ равен $61^\circ$, угол $CAD$ равен $37^\circ$. Найдите угол $ABC$. Ответ дайте в градусах.</div>
          <button class="show-answer-btn"
                  data-answer="98"
                  onclick="showAnswer(14, this.dataset.answer)">
@@ -700,7 +754,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 16</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите величину центрального угла, если он на $69^\circ$ больше острого вписанного угла, опирающегося на ту же дугу. Ответ дайте в градусах.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите величину центрального угла, если он на $69^\circ$ больше острого вписанного угла, опирающегося на ту же дугу. Ответ дайте в градусах.</div>
          <button class="show-answer-btn"
                  data-answer="138"
                  onclick="showAnswer(15, this.dataset.answer)">
@@ -715,7 +769,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 17</div>
          
-         <div class="problem-text">Впишите правильный ответ. Отрезки $AC$ и $BD$ — диаметры окружности с центром $O$. Угол $AOD$ равен $114^\circ$. Найдите величину вписанного угла $ACB$. Ответ дайте в градусах.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Отрезки $AC$ и $BD$ — диаметры окружности с центром $O$. Угол $AOD$ равен $114^\circ$. Найдите величину вписанного угла $ACB$. Ответ дайте в градусах.</div>
          <button class="show-answer-btn"
                  data-answer="33"
                  onclick="showAnswer(16, this.dataset.answer)">
@@ -730,7 +784,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 18</div>
          
-         <div class="problem-text">Впишите правильный ответ. В треугольнике $\text{ } \text{ } $ сторона $\text{ } \text{ } $ равна $\text{ } \text{ } $, угол $\text{ } \text{ } $ равен $\text{ } \text{ } $ Найдите радиус описанной около этого треугольника окружности.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. В треугольнике $\text{ } \text{ } $ сторона $\text{ } \text{ } $ равна $\text{ } \text{ } $, угол $\text{ } \text{ } $ равен $\text{ } \text{ } $ Найдите радиус описанной около этого треугольника окружности.</div>
          <button class="show-answer-btn"
                  data-answer="Недостаточно данных для решения задачи."
                  onclick="showAnswer(17, this.dataset.answer)">
@@ -745,7 +799,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 19</div>
          
-         <div class="problem-text">Впишите правильный ответ. Угол $\angle ACO$ равен $62^\circ$. Его сторона $CA$ касается окружности с центром в точке $O$. Отрезок $CO$ пересекает окружность в точке $B$ (см. рис.). Найдите градусную меру дуги $AB$ окружности, заключённой внутри этого угла. Ответ дайте в градусах.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Угол $\angle ACO$ равен $62^\circ$. Его сторона $CA$ касается окружности с центром в точке $O$. Отрезок $CO$ пересекает окружность в точке $B$ (см. рис.). Найдите градусную меру дуги $AB$ окружности, заключённой внутри этого угла. Ответ дайте в градусах.</div>
          <button class="show-answer-btn"
                  data-answer="118"
                  onclick="showAnswer(18, this.dataset.answer)">
@@ -760,7 +814,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 20</div>
          
-         <div class="problem-text">Впишите правильный ответ. В треугольнике $ABC$ угол $C$ равен $90^\circ$, $AB=5$, $BC=4$. Найдите $\cos A$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. В треугольнике $ABC$ угол $C$ равен $90^\circ$, $AB=5$, $BC=4$. Найдите $\cos A$.</div>
          <button class="show-answer-btn"
                  data-answer="0,6"
                  onclick="showAnswer(19, this.dataset.answer)">
@@ -775,7 +829,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 21</div>
          
-         <div class="problem-text">Впишите правильный ответ. Четырёхугольник $ABCD$ вписан в окружность. Угол $ABC$ равен $120^\circ$, угол $ABD$ равен $43^\circ$. Найдите угол $CAD$. Ответ дайте в градусах.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Четырёхугольник $ABCD$ вписан в окружность. Угол $ABC$ равен $120^\circ$, угол $ABD$ равен $43^\circ$. Найдите угол $CAD$. Ответ дайте в градусах.</div>
          <button class="show-answer-btn"
                  data-answer="77"
                  onclick="showAnswer(20, this.dataset.answer)">
@@ -790,7 +844,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 22</div>
          
-         <div class="problem-text">Впишите правильный ответ. В треугольнике $ABC$ угол $C$ равен $90^\circ$, $AB=10$, $BC=\sqrt{19}$. Найдите $\cos A$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. В треугольнике $ABC$ угол $C$ равен $90^\circ$, $AB=10$, $BC=\sqrt{19}$. Найдите $\cos A$.</div>
          <button class="show-answer-btn"
                  data-answer="0.9"
                  onclick="showAnswer(21, this.dataset.answer)">
@@ -805,7 +859,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 23</div>
          
-         <div class="problem-text">Впишите правильный ответ. В треугольнике $ABC$ угол $C$ равен $90^\circ$, $AB=10$, $AC=\sqrt{91}$. Найдите $\sin A$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. В треугольнике $ABC$ угол $C$ равен $90^\circ$, $AB=10$, $AC=\sqrt{91}$. Найдите $\sin A$.</div>
          <button class="show-answer-btn"
                  data-answer="0.3"
                  onclick="showAnswer(22, this.dataset.answer)">
@@ -820,7 +874,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 24</div>
          
-         <div class="problem-text">Впишите правильный ответ. Площадь параллелограмма $ABCD$ равна 60. Точка $E$ — середина стороны $AD$. Найдите площадь треугольника $ABE$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Площадь параллелограмма $ABCD$ равна 60. Точка $E$ — середина стороны $AD$. Найдите площадь треугольника $ABE$.</div>
          <button class="show-answer-btn"
                  data-answer="15"
                  onclick="showAnswer(23, this.dataset.answer)">
@@ -835,7 +889,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 25</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите центральный угол, если он на $28^\circ$ больше острого вписанного угла, опирающегося на ту же дугу. Ответ дайте в градусах.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите центральный угол, если он на $28^\circ$ больше острого вписанного угла, опирающегося на ту же дугу. Ответ дайте в градусах.</div>
          <button class="show-answer-btn"
                  data-answer="56"
                  onclick="showAnswer(24, this.dataset.answer)">
@@ -850,7 +904,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 26</div>
          
-         <div class="problem-text">Впишите правильный ответ. Четырёхугольник $ABCD$ вписан в окружность. Угол $ABD$ равен $62^\circ$, угол $CAD$ равен $41^\circ$. Найдите угол $ABC$. Ответ дайте в градусах.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Четырёхугольник $ABCD$ вписан в окружность. Угол $ABD$ равен $62^\circ$, угол $CAD$ равен $41^\circ$. Найдите угол $ABC$. Ответ дайте в градусах.</div>
          <button class="show-answer-btn"
                  data-answer="21"
                  onclick="showAnswer(25, this.dataset.answer)">
@@ -865,7 +919,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 27</div>
          
-         <div class="problem-text">Впишите правильный ответ. Угол $\mathrm{ACO}$ равен $57^\circ$. Его сторона $\mathrm{CA}$ касается окружности с центром в точке $\mathrm{O}$. Отрезок $\mathrm{CO}$ пересекает окружность в точке $\mathrm{B}$ (см. рисунок). Найдите градусную меру дуги $\mathrm{AB}$ окружности, заключённой внутри этого угла. Ответ дайте в градусах.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Угол $\mathrm{ACO}$ равен $57^\circ$. Его сторона $\mathrm{CA}$ касается окружности с центром в точке $\mathrm{O}$. Отрезок $\mathrm{CO}$ пересекает окружность в точке $\mathrm{B}$ (см. рисунок). Найдите градусную меру дуги $\mathrm{AB}$ окружности, заключённой внутри этого угла. Ответ дайте в градусах.</div>
          <button class="show-answer-btn"
                  data-answer="33"
                  onclick="showAnswer(26, this.dataset.answer)">
@@ -880,7 +934,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 28</div>
          
-         <div class="problem-text">Впишите правильный ответ. Четырёхугольник $ABCD$ вписан в окружность. Угол $ABC$ равен $98^\circ$, угол $CAD$ равен $44^\circ$. Найдите угол $ABD$. Ответ дайте в градусах.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Четырёхугольник $ABCD$ вписан в окружность. Угол $ABC$ равен $98^\circ$, угол $CAD$ равен $44^\circ$. Найдите угол $ABD$. Ответ дайте в градусах.</div>
          <button class="show-answer-btn"
                  data-answer="54"
                  onclick="showAnswer(27, this.dataset.answer)">
@@ -895,7 +949,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 29</div>
          
-         <div class="problem-text">Впишите правильный ответ. Площадь треугольника $ABC$ равна 24, $DE$ — средняя линия, параллельная стороне $AB$. Найдите площадь треугольника $CDE$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Площадь треугольника $ABC$ равна 24, $DE$ — средняя линия, параллельная стороне $AB$. Найдите площадь треугольника $CDE$.</div>
          <button class="show-answer-btn"
                  data-answer="6"
                  onclick="showAnswer(28, this.dataset.answer)">
@@ -910,7 +964,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 30</div>
          
-         <div class="problem-text">Впишите правильный ответ. В четырёхугольник $ABCD$ вписана окружность, $AB=10$, $CD=17$. Найдите периметр четырёхугольника $ABCD$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. В четырёхугольник $ABCD$ вписана окружность, $AB=10$, $CD=17$. Найдите периметр четырёхугольника $ABCD$.</div>
          <button class="show-answer-btn"
                  data-answer="54"
                  onclick="showAnswer(29, this.dataset.answer)">

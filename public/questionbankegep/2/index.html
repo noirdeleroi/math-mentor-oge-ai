@@ -395,6 +395,54 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
+    /* Table styling for problem text */
+    .problem-text table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .problem-text table td {
+      padding: 0.75rem 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+    }
+
+    .problem-text table tr:first-child td {
+      background: rgba(251, 191, 36, 0.1);
+      font-weight: 600;
+      color: #fbbf24;
+    }
+
+    /* Back Button */
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: rgba(209, 213, 219, 1);
+      text-decoration: none;
+      margin-bottom: 2rem;
+      transition: color 0.3s ease;
+      font-size: 1rem;
+    }
+
+    .back-button:hover {
+      color: #ffffff;
+    }
+
+    .back-button svg {
+      width: 1rem;
+      height: 1rem;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
     /* Mobile Responsiveness */
     @media (max-width: 768px) {
       .header h1 {
@@ -465,6 +513,12 @@
   <div class="flying-math" id="flyingMath"></div>
 
   <div class="container">
+    <a href="/questionbankegep" class="back-button">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      Назад
+    </a>
     <div class="header">
       <h1>Задание 2</h1>
       <p>Банк заданий ЕГЭ профиль по математике</p>
@@ -475,7 +529,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 1</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/A288A1.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На координатной плоскости изображены векторы $\vec{a}$ и $\vec{b}$, координатами которых являются целые числа. Найдите скалярное произведение $\vec{a} \cdot \vec{b}$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На координатной плоскости изображены векторы $\vec{a}$ и $\vec{b}$, координатами которых являются целые числа. Найдите скалярное произведение $\vec{a} \cdot \vec{b}$.</div>
          <button class="show-answer-btn"
                  data-answer="3"
                  onclick="showAnswer(0, this.dataset.answer)">
@@ -490,7 +544,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 2</div>
          
-         <div class="problem-text">Впишите правильный ответ. Даны векторы $\vec{a}(2;\,1)$ и $\vec{b}(2;\, -4)$. Найдите скалярное произведение векторов $\vec{a}+\vec{b}$ и $7\vec{a}-\vec{b}$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Даны векторы $\vec{a}(2;\,1)$ и $\vec{b}(2;\, -4)$. Найдите скалярное произведение векторов $\vec{a}+\vec{b}$ и $7\vec{a}-\vec{b}$.</div>
          <button class="show-answer-btn"
                  data-answer="15"
                  onclick="showAnswer(1, this.dataset.answer)">
@@ -505,7 +559,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 3</div>
          
-         <div class="problem-text">Впишите правильный ответ. Даны векторы $\vec{a}(14; -2)$ и $\vec{b}(5; -8)$. Найдите скалярное произведение $\vec{a} \cdot \vec{b}$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Даны векторы $\vec{a}(14; -2)$ и $\vec{b}(5; -8)$. Найдите скалярное произведение $\vec{a} \cdot \vec{b}$.</div>
          <button class="show-answer-btn"
                  data-answer="86"
                  onclick="showAnswer(2, this.dataset.answer)">
@@ -520,7 +574,8 @@
        <div class="question-item">
          <div class="question-number">Вопрос 4</div>
          
-         <div class="problem-text">Впишите правильный ответ.<br>Даны векторы $\vec{a}(-3;5)$ и $\vec{b}(1;13)$. Найдите скалярное произведение $\vec{a} \cdot \vec{b}$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ.
+Даны векторы $\vec{a}(-3;5)$ и $\vec{b}(1;13)$. Найдите скалярное произведение $\vec{a} \cdot \vec{b}$.</div>
          <button class="show-answer-btn"
                  data-answer="62"
                  onclick="showAnswer(3, this.dataset.answer)">
@@ -535,7 +590,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 5</div>
          
-         <div class="problem-text">Впишите правильный ответ. Длины векторов $\vec{a}$ и $\vec{b}$ равны 3 и 7, а угол между ними равен $60^\circ$. Найдите скалярное произведение $\vec{a} \cdot \vec{b}$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Длины векторов $\vec{a}$ и $\vec{b}$ равны 3 и 7, а угол между ними равен $60^\circ$. Найдите скалярное произведение $\vec{a} \cdot \vec{b}$.</div>
          <button class="show-answer-btn"
                  data-answer="10.5"
                  onclick="showAnswer(4, this.dataset.answer)">
@@ -550,7 +605,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 6</div>
          
-         <div class="problem-text">Впишите правильный ответ. Даны векторы $\vec{a}(-13; 4)$ и $\vec{b}(-6; 1)$. Найдите скалярное произведение $\vec{a} \cdot \vec{b}$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Даны векторы $\vec{a}(-13; 4)$ и $\vec{b}(-6; 1)$. Найдите скалярное произведение $\vec{a} \cdot \vec{b}$.</div>
          <button class="show-answer-btn"
                  data-answer="82"
                  onclick="showAnswer(5, this.dataset.answer)">
@@ -565,7 +620,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 7</div>
          
-         <div class="problem-text">Впишите правильный ответ. Даны векторы $\vec{a}(31; 0)$ и $\vec{b}(1; -1)$. Найдите длину вектора $\vec{a}-24\vec{b}$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Даны векторы $\vec{a}(31; 0)$ и $\vec{b}(1; -1)$. Найдите длину вектора $\vec{a}-24\vec{b}$.</div>
          <button class="show-answer-btn"
                  data-answer="25"
                  onclick="showAnswer(6, this.dataset.answer)">
@@ -580,7 +635,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 8</div>
          
-         <div class="problem-text">Впишите правильный ответ. Даны векторы $\vec{a}(25; 0)$ и $\vec{b}(1; -5)$. Найдите длину вектора $\vec{a}-4\vec{b}$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Даны векторы $\vec{a}(25; 0)$ и $\vec{b}(1; -5)$. Найдите длину вектора $\vec{a}-4\vec{b}$.</div>
          <button class="show-answer-btn"
                  data-answer="29"
                  onclick="showAnswer(7, this.dataset.answer)">
@@ -595,7 +650,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 9</div>
          
-         <div class="problem-text">Впишите правильный ответ. Даны векторы $\vec{a}(5; -7)$ и $\vec{b}(14; 1)$. Найдите скалярное произведение $\vec{a} \cdot \vec{b}$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Даны векторы $\vec{a}(5; -7)$ и $\vec{b}(14; 1)$. Найдите скалярное произведение $\vec{a} \cdot \vec{b}$.</div>
          <button class="show-answer-btn"
                  data-answer="63"
                  onclick="showAnswer(8, this.dataset.answer)">
@@ -610,7 +665,8 @@
        <div class="question-item">
          <div class="question-number">Вопрос 10</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/0432E9.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На координатной плоскости изображены векторы $\vec{a}$ и $\vec{b}$, координатами которых являются целые числа. Найдите скалярное произведение $\vec{a} \cdot \vec{b}$.<br>&lt;img src=&quot;docs/AC437B34557F88EA4115D2F374B0A07B/questions/F8FC9901FC9CB2324669725B0EA812E9(copy1)/xs3qstsrcC2BE06E217178B834447C3762E2F8633_2_1710757488.png&quot; alt=&quot;Vector diagram&quot;&gt;</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На координатной плоскости изображены векторы $\vec{a}$ и $\vec{b}$, координатами которых являются целые числа. Найдите скалярное произведение $\vec{a} \cdot \vec{b}$.
+<img src="docs/AC437B34557F88EA4115D2F374B0A07B/questions/F8FC9901FC9CB2324669725B0EA812E9(copy1)/xs3qstsrcC2BE06E217178B834447C3762E2F8633_2_1710757488.png" alt="Vector diagram"></div>
          <button class="show-answer-btn"
                  data-answer="$\vec{a} = (2, 3)$
 $\vec{b} = (4, -1)$
@@ -627,7 +683,7 @@ $\vec{a} \cdot \vec{b} = 2 \cdot 4 + 3 \cdot (-1) = 8 - 3 = 5$"
        <div class="question-item">
          <div class="question-number">Вопрос 11</div>
          
-         <div class="problem-text">Впишите правильный ответ. Даны векторы $\vec{a}(1; 1)$ и $\vec{b}(0; 7)$. Найдите длину вектора $8\vec{a}+\vec{b}$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Даны векторы $\vec{a}(1; 1)$ и $\vec{b}(0; 7)$. Найдите длину вектора $8\vec{a}+\vec{b}$.</div>
          <button class="show-answer-btn"
                  data-answer="17"
                  onclick="showAnswer(10, this.dataset.answer)">
@@ -642,7 +698,7 @@ $\vec{a} \cdot \vec{b} = 2 \cdot 4 + 3 \cdot (-1) = 8 - 3 = 5$"
        <div class="question-item">
          <div class="question-number">Вопрос 12</div>
          
-         <div class="problem-text">Впишите правильный ответ. Длины векторов $\vec{a}$ и $\vec{b}$ равны 3 и 5, а угол между ними равен $60^\circ$. Найдите скалярное произведение $\vec{a} \cdot \vec{b}$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Длины векторов $\vec{a}$ и $\vec{b}$ равны 3 и 5, а угол между ними равен $60^\circ$. Найдите скалярное произведение $\vec{a} \cdot \vec{b}$.</div>
          <button class="show-answer-btn"
                  data-answer="7.5"
                  onclick="showAnswer(11, this.dataset.answer)">
@@ -657,7 +713,7 @@ $\vec{a} \cdot \vec{b} = 2 \cdot 4 + 3 \cdot (-1) = 8 - 3 = 5$"
        <div class="question-item">
          <div class="question-number">Вопрос 13</div>
          
-         <div class="problem-text">Впишите правильный ответ. Даны векторы $\vec{a}(5;\,3)$ и $\vec{b}(4;\, -6)$. Найдите скалярное произведение $\vec{a} \cdot \vec{b}$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Даны векторы $\vec{a}(5;\,3)$ и $\vec{b}(4;\, -6)$. Найдите скалярное произведение $\vec{a} \cdot \vec{b}$.</div>
          <button class="show-answer-btn"
                  data-answer="2"
                  onclick="showAnswer(12, this.dataset.answer)">
@@ -672,7 +728,7 @@ $\vec{a} \cdot \vec{b} = 2 \cdot 4 + 3 \cdot (-1) = 8 - 3 = 5$"
        <div class="question-item">
          <div class="question-number">Вопрос 14</div>
          
-         <div class="problem-text">Впишите правильный ответ. Даны векторы $\vec{a}\left(2; 0\right)$ и $\vec{b}\left(1; 4\right)$. Найдите длину вектора $\vec{a}+3\vec{b}$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Даны векторы $\vec{a}\left(2; 0\right)$ и $\vec{b}\left(1; 4\right)$. Найдите длину вектора $\vec{a}+3\vec{b}$.</div>
          <button class="show-answer-btn"
                  data-answer="13"
                  onclick="showAnswer(13, this.dataset.answer)">
@@ -687,7 +743,7 @@ $\vec{a} \cdot \vec{b} = 2 \cdot 4 + 3 \cdot (-1) = 8 - 3 = 5$"
        <div class="question-item">
          <div class="question-number">Вопрос 15</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/E5399A.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На координатной плоскости изображены векторы $\vec{a}$ и $\vec{b}$, координатами которых являются целые числа. Найдите скалярное произведение $\vec{a} \cdot \vec{b}$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На координатной плоскости изображены векторы $\vec{a}$ и $\vec{b}$, координатами которых являются целые числа. Найдите скалярное произведение $\vec{a} \cdot \vec{b}$.</div>
          <button class="show-answer-btn"
                  data-answer="39"
                  onclick="showAnswer(14, this.dataset.answer)">
@@ -702,7 +758,7 @@ $\vec{a} \cdot \vec{b} = 2 \cdot 4 + 3 \cdot (-1) = 8 - 3 = 5$"
        <div class="question-item">
          <div class="question-number">Вопрос 16</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/579B74.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На координатной плоскости изображены векторы $\vec{a}$ и $\vec{b}$, координатами которых являются целые числа. Найдите длину вектора $\vec{a} + 4\vec{b}$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На координатной плоскости изображены векторы $\vec{a}$ и $\vec{b}$, координатами которых являются целые числа. Найдите длину вектора $\vec{a} + 4\vec{b}$.</div>
          <button class="show-answer-btn"
                  data-answer="$\sqrt{137}$"
                  onclick="showAnswer(15, this.dataset.answer)">

@@ -395,6 +395,54 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
+    /* Table styling for problem text */
+    .problem-text table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .problem-text table td {
+      padding: 0.75rem 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+    }
+
+    .problem-text table tr:first-child td {
+      background: rgba(251, 191, 36, 0.1);
+      font-weight: 600;
+      color: #fbbf24;
+    }
+
+    /* Back Button */
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: rgba(209, 213, 219, 1);
+      text-decoration: none;
+      margin-bottom: 2rem;
+      transition: color 0.3s ease;
+      font-size: 1rem;
+    }
+
+    .back-button:hover {
+      color: #ffffff;
+    }
+
+    .back-button svg {
+      width: 1rem;
+      height: 1rem;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
     /* Mobile Responsiveness */
     @media (max-width: 768px) {
       .header h1 {
@@ -465,6 +513,12 @@
   <div class="flying-math" id="flyingMath"></div>
 
   <div class="container">
+    <a href="/questionbankegep" class="back-button">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      Назад
+    </a>
     <div class="header">
       <h1>Задание 12</h1>
       <p>Банк заданий ЕГЭ профиль по математике</p>
@@ -475,7 +529,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 1</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/162BAA.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На рисунке изображён график $y=f&#x27;(x)$ — производной функции $f(x)$, определённой на интервале $(-15; 5)$. Найдите количество точек максимума функции $f(x)$, принадлежащих отрезку $[-11; 4]$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На рисунке изображён график $y=f'(x)$ — производной функции $f(x)$, определённой на интервале $(-15; 5)$. Найдите количество точек максимума функции $f(x)$, принадлежащих отрезку $[-11; 4]$.</div>
          <button class="show-answer-btn"
                  data-answer="1"
                  onclick="showAnswer(0, this.dataset.answer)">
@@ -490,7 +544,12 @@
        <div class="question-item">
          <div class="question-number">Вопрос 2</div>
          
-         <div class="problem-text">Впишите правильный ответ.<br><br>Найдите точку минимума функции<br>\[<br>y = x^{\frac{3}{2}} - 21x + 11.<br>\]</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ.
+
+Найдите точку минимума функции
+\[
+y = x^{\frac{3}{2}} - 21x + 11.
+\]</div>
          <button class="show-answer-btn"
                  data-answer="(196, -1361)"
                  onclick="showAnswer(1, this.dataset.answer)">
@@ -505,7 +564,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 3</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите наибольшее значение функции $y=10\sin x-\frac{36x}{\pi}+7$ на отрезке $\left[-\frac{5\pi}{6};0\right]$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите наибольшее значение функции $y=10\sin x-\frac{36x}{\pi}+7$ на отрезке $\left[-\frac{5\pi}{6};0\right]$.</div>
          <button class="show-answer-btn"
                  data-answer="32"
                  onclick="showAnswer(2, this.dataset.answer)">
@@ -520,7 +579,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 4</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите наименьшее значение функции $y=3\cos x-5x+5$ на отрезке $[-\frac{3\pi}{2}; 0]$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите наименьшее значение функции $y=3\cos x-5x+5$ на отрезке $[-\frac{3\pi}{2}; 0]$.</div>
          <button class="show-answer-btn"
                  data-answer="8"
                  onclick="showAnswer(3, this.dataset.answer)">
@@ -535,7 +594,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 5</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите точку максимума функции $y=3,5x^2 - 29x + 30 \cdot \ln x + 67.$</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите точку максимума функции $y=3,5x^2 - 29x + 30 \cdot \ln x + 67.$</div>
          <button class="show-answer-btn"
                  data-answer="x = 2"
                  onclick="showAnswer(4, this.dataset.answer)">
@@ -550,7 +609,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 6</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите точку минимума функции $y=5x-\ln^5(x+3)+6$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите точку минимума функции $y=5x-\ln^5(x+3)+6$.</div>
          <button class="show-answer-btn"
                  data-answer="$x_{\min} \approx 5502{,}7$"
                  onclick="showAnswer(5, this.dataset.answer)">
@@ -565,7 +624,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 7</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/B65F3D.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На рисунке изображён график функции $y=f(x)$. На оси абсцисс отмечены точки $-2$, 1, 3, 4. В какой из этих точек значение производной функции $f(x)$ наибольшее? В ответе укажите эту точку.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На рисунке изображён график функции $y=f(x)$. На оси абсцисс отмечены точки $-2$, 1, 3, 4. В какой из этих точек значение производной функции $f(x)$ наибольшее? В ответе укажите эту точку.</div>
          <button class="show-answer-btn"
                  data-answer="1"
                  onclick="showAnswer(6, this.dataset.answer)">
@@ -580,7 +639,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 8</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/57A7B1.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На рисунке изображён график $y=f&#x27;(x)$ — производной функции $f(x)$. На оси абсцисс отмечено девять точек: $x_1$, $x_2$, $x_3$, $x_4$, $x_5$, $x_6$, $x_7$, $x_8$, $x_9$. Сколько из этих точек принадлежит промежуткам убывания функции $f(x)$?</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На рисунке изображён график $y=f'(x)$ — производной функции $f(x)$. На оси абсцисс отмечено девять точек: $x_1$, $x_2$, $x_3$, $x_4$, $x_5$, $x_6$, $x_7$, $x_8$, $x_9$. Сколько из этих точек принадлежит промежуткам убывания функции $f(x)$?</div>
          <button class="show-answer-btn"
                  data-answer="2"
                  onclick="showAnswer(7, this.dataset.answer)">
@@ -595,7 +654,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 9</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите точку максимума функции $y=x^3+16x^2+64x+12.$</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите точку максимума функции $y=x^3+16x^2+64x+12.$</div>
          <button class="show-answer-btn"
                  data-answer="$(-8, 12)$"
                  onclick="showAnswer(8, this.dataset.answer)">
@@ -610,7 +669,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 10</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/C97E7E.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На рисунке изображён график $y=f&#x27;(x)$ — производной функции $f(x),$ определённой на интервале $(-9;4).$ В какой точке отрезка $[-2;3]$ функция $f(x)$ принимает наименьшее значение?</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На рисунке изображён график $y=f'(x)$ — производной функции $f(x),$ определённой на интервале $(-9;4).$ В какой точке отрезка $[-2;3]$ функция $f(x)$ принимает наименьшее значение?</div>
          <button class="show-answer-btn"
                  data-answer="$x \approx 1.5$"
                  onclick="showAnswer(9, this.dataset.answer)">
@@ -625,7 +684,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 11</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите точку максимума функции $y=x^3-108x+23.$</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите точку максимума функции $y=x^3-108x+23.$</div>
          <button class="show-answer-btn"
                  data-answer="(-6, 455)"
                  onclick="showAnswer(10, this.dataset.answer)">
@@ -640,7 +699,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 12</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите наибольшее значение функции $y=\ln(8x)-8x+7$ на отрезке $[\frac{1}{16};\frac{5}{16}]$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите наибольшее значение функции $y=\ln(8x)-8x+7$ на отрезке $[\frac{1}{16};\frac{5}{16}]$.</div>
          <button class="show-answer-btn"
                  data-answer="6"
                  onclick="showAnswer(11, this.dataset.answer)">
@@ -655,7 +714,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 13</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите точку максимума функции $y=17+27x-2x^{\frac{3}{2}}$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите точку максимума функции $y=17+27x-2x^{\frac{3}{2}}$.</div>
          <button class="show-answer-btn"
                  data-answer="(81,746)"
                  onclick="showAnswer(12, this.dataset.answer)">
@@ -670,7 +729,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 14</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/D65930.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На рисунке изображён график $y=f&#x27;(x)$ — производной функции $f(x)$, определённой на интервале $(-12; 11)$. Найдите количество точек максимума функции $f(x)$, принадлежащих отрезку $[-11; 5]$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На рисунке изображён график $y=f'(x)$ — производной функции $f(x)$, определённой на интервале $(-12; 11)$. Найдите количество точек максимума функции $f(x)$, принадлежащих отрезку $[-11; 5]$.</div>
          <button class="show-answer-btn"
                  data-answer="3"
                  onclick="showAnswer(13, this.dataset.answer)">
@@ -685,7 +744,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 15</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/BE1DDB.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На рисунке изображён график функции $y=f(x)$, определённой на интервале $(-10; 3)$. Найдите количество корней уравнения $f&#x27;(x)=0$, принадлежащих отрезку $[-7; 2]$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На рисунке изображён график функции $y=f(x)$, определённой на интервале $(-10; 3)$. Найдите количество корней уравнения $f'(x)=0$, принадлежащих отрезку $[-7; 2]$.</div>
          <button class="show-answer-btn"
                  data-answer="5"
                  onclick="showAnswer(14, this.dataset.answer)">
@@ -700,7 +759,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 16</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите точку максимума функции $y=10 \cdot \ln(x-2)-10x+11$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите точку максимума функции $y=10 \cdot \ln(x-2)-10x+11$.</div>
          <button class="show-answer-btn"
                  data-answer="(3, -19)"
                  onclick="showAnswer(15, this.dataset.answer)">
@@ -715,7 +774,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 17</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите точку минимума функции $y=x^3-14x^2+49x+3.$</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите точку минимума функции $y=x^3-14x^2+49x+3.$</div>
          <button class="show-answer-btn"
                  data-answer="(7,3)"
                  onclick="showAnswer(16, this.dataset.answer)">
@@ -730,7 +789,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 18</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите точку минимума функции $y=x^3-300x+14.$</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите точку минимума функции $y=x^3-300x+14.$</div>
          <button class="show-answer-btn"
                  data-answer="(10, -1986)"
                  onclick="showAnswer(17, this.dataset.answer)">
@@ -745,7 +804,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 19</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите наименьшее значение функции $y=12x-\ln(12x)+4$ на отрезке $[\frac{1}{24};\frac{5}{24}]$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите наименьшее значение функции $y=12x-\ln(12x)+4$ на отрезке $[\frac{1}{24};\frac{5}{24}]$.</div>
          <button class="show-answer-btn"
                  data-answer="5"
                  onclick="showAnswer(18, this.dataset.answer)">
@@ -760,7 +819,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 20</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/321FCD.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На рисунке изображён график $y=f&#x27;(x)$ — производной функции $f(x)$, определённой на интервале $(-12; 12)$. Найдите количество точек максимума функции $f(x)$, принадлежащих отрезку $[-6; 11]$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На рисунке изображён график $y=f'(x)$ — производной функции $f(x)$, определённой на интервале $(-12; 12)$. Найдите количество точек максимума функции $f(x)$, принадлежащих отрезку $[-6; 11]$.</div>
          <button class="show-answer-btn"
                  data-answer="6"
                  onclick="showAnswer(19, this.dataset.answer)">
@@ -775,7 +834,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 21</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/4849A6.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На рисунке изображён график $y=f&#x27;(x)$ — производной функции $f(x)$, определённой на интервале $(-5; 14)$. Найдите количество точек минимума функции $f(x)$, принадлежащих отрезку $[-4; 9]$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На рисунке изображён график $y=f'(x)$ — производной функции $f(x)$, определённой на интервале $(-5; 14)$. Найдите количество точек минимума функции $f(x)$, принадлежащих отрезку $[-4; 9]$.</div>
          <button class="show-answer-btn"
                  data-answer="5"
                  onclick="showAnswer(20, this.dataset.answer)">
@@ -790,7 +849,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 22</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите точку максимума функции $y=0,5x^2 - 21x + 110 \cdot \ln x + 43$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите точку максимума функции $y=0,5x^2 - 21x + 110 \cdot \ln x + 43$.</div>
          <button class="show-answer-btn"
                  data-answer="(10;136,29)"
                  onclick="showAnswer(21, this.dataset.answer)">
@@ -805,7 +864,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 23</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/875A8A.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На рисунке изображён график функции $y=f(x)$. На оси абсцисс отмечено десять точек: $x_1$, $x_2$, $x_3$, $x_4$, $x_5$, $x_6$, $x_7$, $x_8$, $x_9$, $x_{10}$. Найдите количество отмеченных точек, в которых производная функции $f(x)$ положительна.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На рисунке изображён график функции $y=f(x)$. На оси абсцисс отмечено десять точек: $x_1$, $x_2$, $x_3$, $x_4$, $x_5$, $x_6$, $x_7$, $x_8$, $x_9$, $x_{10}$. Найдите количество отмеченных точек, в которых производная функции $f(x)$ положительна.</div>
          <button class="show-answer-btn"
                  data-answer="5"
                  onclick="showAnswer(22, this.dataset.answer)">
@@ -820,7 +879,12 @@
        <div class="question-item">
          <div class="question-number">Вопрос 24</div>
          
-         <div class="problem-text">Впишите правильный ответ.<br><br>Найдите точку минимума функции<br>\[<br>y = x^{\frac{3}{2}} - 18x + 29.<br>\]</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ.
+
+Найдите точку минимума функции
+\[
+y = x^{\frac{3}{2}} - 18x + 29.
+\]</div>
          <button class="show-answer-btn"
                  data-answer="(144, -835)"
                  onclick="showAnswer(23, this.dataset.answer)">
@@ -835,7 +899,13 @@
        <div class="question-item">
          <div class="question-number">Вопрос 25</div>
          
-         <div class="problem-text">Впишите правильный ответ.<br><br>Найдите наименьшее значение функции<br>\[<br>y = x\sqrt{x} - 6x + 3<br>\]<br>на отрезке $[0;\, 40]$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ.
+
+Найдите наименьшее значение функции
+\[
+y = x\sqrt{x} - 6x + 3
+\]
+на отрезке $[0;\, 40]$.</div>
          <button class="show-answer-btn"
                  data-answer="-29"
                  onclick="showAnswer(24, this.dataset.answer)">
@@ -850,7 +920,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 26</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/099555.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На рисунке изображён график функции $y=f(x)$. На оси абсцисс отмечены точки $-2$, $-1$, 3, 4. В какой из этих точек значение производной наименьшее? В ответе укажите эту точку.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На рисунке изображён график функции $y=f(x)$. На оси абсцисс отмечены точки $-2$, $-1$, 3, 4. В какой из этих точек значение производной наименьшее? В ответе укажите эту точку.</div>
          <button class="show-answer-btn"
                  data-answer="-1"
                  onclick="showAnswer(25, this.dataset.answer)">
@@ -865,7 +935,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 27</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите наибольшее значение функции $y=10\sin x-\frac{42x}{\pi}-12$ на отрезке $\left[-\frac{5\pi}{6}; 0\right]$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите наибольшее значение функции $y=10\sin x-\frac{42x}{\pi}-12$ на отрезке $\left[-\frac{5\pi}{6}; 0\right]$.</div>
          <button class="show-answer-btn"
                  data-answer="18"
                  onclick="showAnswer(26, this.dataset.answer)">
@@ -880,7 +950,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 28</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/4DB285.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На рисунке изображён график $y=f&#x27;(x)$ — производной функции $f(x)$, определённой на интервале $(-6; 5)$. В какой точке отрезка $[-5; -2]$ функция $f(x)$ принимает наименьшее значение?</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На рисунке изображён график $y=f'(x)$ — производной функции $f(x)$, определённой на интервале $(-6; 5)$. В какой точке отрезка $[-5; -2]$ функция $f(x)$ принимает наименьшее значение?</div>
          <button class="show-answer-btn"
                  data-answer="x=-5"
                  onclick="showAnswer(27, this.dataset.answer)">
@@ -895,7 +965,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 29</div>
          
-         <div class="problem-text">Впишите правильный ответ. Найдите наименьшее значение функции $y=x\sqrt{x}-9x+25$ на отрезке $[1; 50]$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. Найдите наименьшее значение функции $y=x\sqrt{x}-9x+25$ на отрезке $[1; 50]$.</div>
          <button class="show-answer-btn"
                  data-answer="-83"
                  onclick="showAnswer(28, this.dataset.answer)">
@@ -910,7 +980,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 30</div>
          
-         <div class="problem-text">Найдите точку максимума функции \( y = (x + 3) \cdot e^{3 - x} \).</div>
+         <div class="problem-text tex2jax_process">Найдите точку максимума функции \( y = (x + 3) \cdot e^{3 - x} \).</div>
          <button class="show-answer-btn"
                  data-answer="x = -2"
                  onclick="showAnswer(29, this.dataset.answer)">

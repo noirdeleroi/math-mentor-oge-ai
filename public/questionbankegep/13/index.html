@@ -395,6 +395,54 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
+    /* Table styling for problem text */
+    .problem-text table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .problem-text table td {
+      padding: 0.75rem 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+    }
+
+    .problem-text table tr:first-child td {
+      background: rgba(251, 191, 36, 0.1);
+      font-weight: 600;
+      color: #fbbf24;
+    }
+
+    /* Back Button */
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: rgba(209, 213, 219, 1);
+      text-decoration: none;
+      margin-bottom: 2rem;
+      transition: color 0.3s ease;
+      font-size: 1rem;
+    }
+
+    .back-button:hover {
+      color: #ffffff;
+    }
+
+    .back-button svg {
+      width: 1rem;
+      height: 1rem;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
     /* Mobile Responsiveness */
     @media (max-width: 768px) {
       .header h1 {
@@ -465,6 +513,12 @@
   <div class="flying-math" id="flyingMath"></div>
 
   <div class="container">
+    <a href="/questionbankegep" class="back-button">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      Назад
+    </a>
     <div class="header">
       <h1>Задание 13</h1>
       <p>Банк заданий ЕГЭ профиль по математике</p>
@@ -475,7 +529,12 @@
        <div class="question-item">
          <div class="question-number">Вопрос 1</div>
          
-         <div class="problem-text">Дайте развернутый ответ.<br><br>Решите неравенство<br>\[<br>x^2 \log_{625} (-2 - x) \geq \log_5 (x^2 + 4x + 4).<br>\]</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ.
+
+Решите неравенство
+\[
+x^2 \log_{625} (-2 - x) \geq \log_5 (x^2 + 4x + 4).
+\]</div>
          <button class="show-answer-btn"
                  data-answer="\[
 (-\infty, -3] \cup [-2\sqrt{2}, -2)
@@ -492,7 +551,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 2</div>
          
-         <div class="problem-text">Дайте развернутый ответ. Решите неравенство $\log_5((3-x)(x^2+2)) \geq \log_5(x^2-7x+12) + \log_5(5-x)$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. Решите неравенство $\log_5((3-x)(x^2+2)) \geq \log_5(x^2-7x+12) + \log_5(5-x)$.</div>
          <button class="show-answer-btn"
                  data-answer="$x\in[2;3)$"
                  onclick="showAnswer(1, this.dataset.answer)">
@@ -507,7 +566,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 3</div>
          
-         <div class="problem-text">Дайте развернутый ответ. Решите неравенство $\frac{2 \cdot 8^{x - 1}}{2 \cdot 8^{x - 1} - 1} \geq \frac{3}{8^x - 1} + \frac{8}{64^x - 5 \cdot 8^x + 4}$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. Решите неравенство $\frac{2 \cdot 8^{x - 1}}{2 \cdot 8^{x - 1} - 1} \geq \frac{3}{8^x - 1} + \frac{8}{64^x - 5 \cdot 8^x + 4}$.</div>
          <button class="show-answer-btn"
                  data-answer="$x&lt;0$, $x=\frac{1}{3}$, $x&gt;\frac{2}{3}$"
                  onclick="showAnswer(2, this.dataset.answer)">
@@ -522,7 +581,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 4</div>
          
-         <div class="problem-text">Дайте развернутый ответ. Решите неравенство $\frac{\log_5(25x)}{\log_5 x - 2} + \frac{\log_5 x - 2}{\log_5(25x)} \geq \frac{6 - \log_5 x^4}{(\log_5 x)^2 - 4}$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. Решите неравенство $\frac{\log_5(25x)}{\log_5 x - 2} + \frac{\log_5 x - 2}{\log_5(25x)} \geq \frac{6 - \log_5 x^4}{(\log_5 x)^2 - 4}$.</div>
          <button class="show-answer-btn"
                  data-answer="$x\in(0,0.04)\cup\{0.2\}\cup(25,\infty)$"
                  onclick="showAnswer(3, this.dataset.answer)">
@@ -537,7 +596,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 5</div>
          
-         <div class="problem-text">Дайте развернутый ответ. Решите неравенство $7 \log_{12}(x^2 - 13x + 42) \leq 8 + \log_{12}\frac{(x-7)^7}{x-6}$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. Решите неравенство $7 \log_{12}(x^2 - 13x + 42) \leq 8 + \log_{12}\frac{(x-7)^7}{x-6}$.</div>
          <button class="show-answer-btn"
                  data-answer="$x\in[-6,6)\cup(7,18]$"
                  onclick="showAnswer(4, this.dataset.answer)">
@@ -552,7 +611,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 6</div>
          
-         <div class="problem-text">Дайте развернутый ответ. Решите неравенство $\frac{10^x - 25 \cdot 2^x - 2 \cdot 5^x + 50}{5x - x^2 - 4} \geq 0$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. Решите неравенство $\frac{10^x - 25 \cdot 2^x - 2 \cdot 5^x + 50}{5x - x^2 - 4} \geq 0$.</div>
          <button class="show-answer-btn"
                  data-answer="$x \in [2, 4)$"
                  onclick="showAnswer(5, this.dataset.answer)">
@@ -567,7 +626,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 7</div>
          
-         <div class="problem-text">Дайте развернутый ответ. Решите неравенство $\frac{\log_{2}(8x) \cdot \log_{3}(27x)}{x^2 - |x|} \leq 0$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. Решите неравенство $\frac{\log_{2}(8x) \cdot \log_{3}(27x)}{x^2 - |x|} \leq 0$.</div>
          <button class="show-answer-btn"
                  data-answer="$x\in(0;0{,}037037\ldots]\cup[0{,}125;1)$"
                  onclick="showAnswer(6, this.dataset.answer)">
@@ -582,7 +641,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 8</div>
          
-         <div class="problem-text">Дайте развернутый ответ. Решите неравенство $\log_3((2-x)(x^2+5)) \geq \log_3(x^2-5x+6) + \log_3(4-x)$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. Решите неравенство $\log_3((2-x)(x^2+5)) \geq \log_3(x^2-5x+6) + \log_3(4-x)$.</div>
          <button class="show-answer-btn"
                  data-answer="[1, 2)"
                  onclick="showAnswer(7, this.dataset.answer)">
@@ -597,7 +656,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 9</div>
          
-         <div class="problem-text">Дайте развернутый ответ. Решите неравенство $\log_5\left(\frac{2}{x}+2\right)-\log_5(x+3)\leq\log_5\left(\frac{x+6}{x^2}\right)$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. Решите неравенство $\log_5\left(\frac{2}{x}+2\right)-\log_5(x+3)\leq\log_5\left(\frac{x+6}{x^2}\right)$.</div>
          <button class="show-answer-btn"
                  data-answer="$x \in [-2,-1) \cup (0,9]$"
                  onclick="showAnswer(8, this.dataset.answer)">
@@ -612,7 +671,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 10</div>
          
-         <div class="problem-text">Дайте развернутый ответ. Решите неравенство $\frac{\log_2 32x}{\log_2 x - 5} + \frac{\log_2 x - 5}{\log_2 32x} \geq \frac{\log_2 x^{16} + 18}{(\log_2 x)^2 - 25}$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. Решите неравенство $\frac{\log_2 32x}{\log_2 x - 5} + \frac{\log_2 x - 5}{\log_2 32x} \geq \frac{\log_2 x^{16} + 18}{(\log_2 x)^2 - 25}$.</div>
          <button class="show-answer-btn"
                  data-answer="$0&lt;x&lt;\frac{1}{32}, x=16, x&gt;32$"
                  onclick="showAnswer(9, this.dataset.answer)">
@@ -627,7 +686,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 11</div>
          
-         <div class="problem-text">Дайте развернутый ответ. Решите неравенство $\frac{8^{x + \frac{2}{3}} - 9 \cdot 4^{x + \frac{1}{2}} + 13 \cdot 2^x - 13}{4^{x + \frac{1}{2}} - 9 \cdot 2^x + 4} \leq 2^{x + 1} - \frac{1}{2^x - 2} + \frac{3}{2^{x + 1} - 1}$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. Решите неравенство $\frac{8^{x + \frac{2}{3}} - 9 \cdot 4^{x + \frac{1}{2}} + 13 \cdot 2^x - 13}{4^{x + \frac{1}{2}} - 9 \cdot 2^x + 4} \leq 2^{x + 1} - \frac{1}{2^x - 2} + \frac{3}{2^{x + 1} - 1}$.</div>
          <button class="show-answer-btn"
                  data-answer="$(-\infty,1)\setminus\{-1\}\cup[\log_2 3,2)$"
                  onclick="showAnswer(10, this.dataset.answer)">
@@ -642,7 +701,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 12</div>
          
-         <div class="problem-text">Дайте развернутый ответ. Решите неравенство $11^x - 6 - \frac{24 \cdot 11^x - 244}{121^x - 16 \cdot 11^x + 60} \leq \frac{1}{11^x - 10}$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. Решите неравенство $11^x - 6 - \frac{24 \cdot 11^x - 244}{121^x - 16 \cdot 11^x + 60} \leq \frac{1}{11^x - 10}$.</div>
          <button class="show-answer-btn"
                  data-answer="$x\in(-\infty,0]\cup(\log_{11}6,1],\ x\neq \log_{11}10$"
                  onclick="showAnswer(11, this.dataset.answer)">
@@ -657,7 +716,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 13</div>
          
-         <div class="problem-text">Дайте развернутый ответ. Решите неравенство $\frac{\log_3(9x) \cdot \log_4(64x)}{5x^2 - |x|} \leq 0$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. Решите неравенство $\frac{\log_3(9x) \cdot \log_4(64x)}{5x^2 - |x|} \leq 0$.</div>
          <button class="show-answer-btn"
                  data-answer="$x\in(0,0.015625]\cup[0.\overline{1},0.2)$"
                  onclick="showAnswer(12, this.dataset.answer)">
@@ -672,7 +731,8 @@
        <div class="question-item">
          <div class="question-number">Вопрос 14</div>
          
-         <div class="problem-text">Дайте развернутый ответ. Решите неравенство \( x^2 \log_{512} (4 - x) \geq \log_2 (x^2 - 8x + 16) \).<br></div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. Решите неравенство \( x^2 \log_{512} (4 - x) \geq \log_2 (x^2 - 8x + 16) \).
+</div>
          <button class="show-answer-btn"
                  data-answer="$x\in(-\infty,-3\sqrt{2}]\cup[3,4)$"
                  onclick="showAnswer(13, this.dataset.answer)">
@@ -687,7 +747,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 15</div>
          
-         <div class="problem-text">Дайте развернутый ответ. Решите неравенство \( x^2 \log_{243} (4 - x) \leq \log_3 (x^2 - 8x + 16) \).</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. Решите неравенство \( x^2 \log_{243} (4 - x) \leq \log_3 (x^2 - 8x + 16) \).</div>
          <button class="show-answer-btn"
                  data-answer="$x \in [-\sqrt{10},3] \cup [\sqrt{10},4)$"
                  onclick="showAnswer(14, this.dataset.answer)">
@@ -702,7 +762,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 16</div>
          
-         <div class="problem-text">Дайте развернутый ответ. Решите неравенство $\frac{15^x - 3^{x+1} - 5^{x+1} + 15}{-x^2 + 2x} \geq 0$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. Решите неравенство $\frac{15^x - 3^{x+1} - 5^{x+1} + 15}{-x^2 + 2x} \geq 0$.</div>
          <button class="show-answer-btn"
                  data-answer="$x\in(0;\frac{\ln3}{\ln5}]\cup[\frac{\ln5}{\ln3};2)$"
                  onclick="showAnswer(15, this.dataset.answer)">

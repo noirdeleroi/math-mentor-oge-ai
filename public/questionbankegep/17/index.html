@@ -395,6 +395,54 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
+    /* Table styling for problem text */
+    .problem-text table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .problem-text table td {
+      padding: 0.75rem 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+    }
+
+    .problem-text table tr:first-child td {
+      background: rgba(251, 191, 36, 0.1);
+      font-weight: 600;
+      color: #fbbf24;
+    }
+
+    /* Back Button */
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: rgba(209, 213, 219, 1);
+      text-decoration: none;
+      margin-bottom: 2rem;
+      transition: color 0.3s ease;
+      font-size: 1rem;
+    }
+
+    .back-button:hover {
+      color: #ffffff;
+    }
+
+    .back-button svg {
+      width: 1rem;
+      height: 1rem;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
     /* Mobile Responsiveness */
     @media (max-width: 768px) {
       .header h1 {
@@ -465,6 +513,12 @@
   <div class="flying-math" id="flyingMath"></div>
 
   <div class="container">
+    <a href="/questionbankegep" class="back-button">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      Назад
+    </a>
     <div class="header">
       <h1>Задание 17</h1>
       <p>Банк заданий ЕГЭ профиль по математике</p>
@@ -475,7 +529,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 1</div>
          
-         <div class="problem-text">Дайте развернутый ответ. В равнобедренной трапеции $ABCD$ основание $AD$ в три раза больше основания $BC$.<br>а) Докажите, что высота $CH$ трапеции разбивает основание $AD$ на отрезки, один из которых вдвое больше другого.<br>б) Найдите расстояние от вершины $C$ до середины диагонали $BD$, если $AD=15$ и $AC=2\sqrt{61}$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. В равнобедренной трапеции $ABCD$ основание $AD$ в три раза больше основания $BC$.
+а) Докажите, что высота $CH$ трапеции разбивает основание $AD$ на отрезки, один из которых вдвое больше другого.
+б) Найдите расстояние от вершины $C$ до середины диагонали $BD$, если $AD=15$ и $AC=2\sqrt{61}$.</div>
          <button class="show-answer-btn"
                  data-answer="6"
                  onclick="showAnswer(0, this.dataset.answer)">
@@ -490,7 +546,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 2</div>
          
-         <div class="problem-text">Дайте развернутый ответ. В треугольнике $ABC$ точки $A_1$, $B_1$ и $C_1$ — середины сторон $BC$, $AC$ и $AB$ соответственно, $AH$ — высота, $\angle BAC = 120^\circ$, $\angle BCA = 45^\circ$.<br>а) Докажите, что точки $A_1$, $B_1$, $C_1$ и $H$ лежат на одной окружности.<br>б) Найдите $A_1H$, если $BC = 6\sqrt{3}$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. В треугольнике $ABC$ точки $A_1$, $B_1$ и $C_1$ — середины сторон $BC$, $AC$ и $AB$ соответственно, $AH$ — высота, $\angle BAC = 120^\circ$, $\angle BCA = 45^\circ$.
+а) Докажите, что точки $A_1$, $B_1$, $C_1$ и $H$ лежат на одной окружности.
+б) Найдите $A_1H$, если $BC = 6\sqrt{3}$.</div>
          <button class="show-answer-btn"
                  data-answer="3"
                  onclick="showAnswer(1, this.dataset.answer)">
@@ -505,7 +563,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 3</div>
          
-         <div class="problem-text">Дайте развернутый ответ. В параллелограмме $ABCD$ угол $BAC$ вдвое больше угла $CAD$. Биссектриса угла $BAC$ пересекает отрезок $BC$ в точке $L$. На продолжении стороны $CD$ за точку $D$ выбрана такая точка $E$, что $AE=CE$.<br>а) Докажите, что $AL \cdot BC = AB \cdot AC$.<br>б) Найдите $EL$, если $AC=8$, $\operatorname{tg} \angle BCA = \frac{1}{2}$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. В параллелограмме $ABCD$ угол $BAC$ вдвое больше угла $CAD$. Биссектриса угла $BAC$ пересекает отрезок $BC$ в точке $L$. На продолжении стороны $CD$ за точку $D$ выбрана такая точка $E$, что $AE=CE$.
+а) Докажите, что $AL \cdot BC = AB \cdot AC$.
+б) Найдите $EL$, если $AC=8$, $\operatorname{tg} \angle BCA = \frac{1}{2}$.</div>
          <button class="show-answer-btn"
                  data-answer="22/3"
                  onclick="showAnswer(2, this.dataset.answer)">
@@ -520,7 +580,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 4</div>
          
-         <div class="problem-text">Дайте развернутый ответ. Четырёхугольник $ABCD$ вписан в окружность радиуса $R=8$. Известно, что $AB=BC=CD=12$.<br>а) Докажите, что прямые $BC$ и $AD$ параллельны.<br>б) Найдите $AD$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. Четырёхугольник $ABCD$ вписан в окружность радиуса $R=8$. Известно, что $AB=BC=CD=12$.
+а) Докажите, что прямые $BC$ и $AD$ параллельны.
+б) Найдите $AD$.</div>
          <button class="show-answer-btn"
                  data-answer="9"
                  onclick="showAnswer(3, this.dataset.answer)">
@@ -535,7 +597,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 5</div>
          
-         <div class="problem-text">Дайте развернутый ответ. На стороне равностороннего треугольника $ABC$ отмечена точка $M$. Серединный перпендикуляр к отрезку $BM$ пересекает стороны $AB$ и $BC$ в точках $E$ и $K$ соответственно.<br>а) Докажите, что $\angle AEM = \angle CMK$.<br>б) Найдите отношение площадей треугольников $AEM$ и $CMK$, если $AM:MC=1:4$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. На стороне равностороннего треугольника $ABC$ отмечена точка $M$. Серединный перпендикуляр к отрезку $BM$ пересекает стороны $AB$ и $BC$ в точках $E$ и $K$ соответственно.
+а) Докажите, что $\angle AEM = \angle CMK$.
+б) Найдите отношение площадей треугольников $AEM$ и $CMK$, если $AM:MC=1:4$.</div>
          <button class="show-answer-btn"
                  data-answer="4/9"
                  onclick="showAnswer(4, this.dataset.answer)">
@@ -550,7 +614,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 6</div>
          
-         <div class="problem-text">Дайте развернутый ответ. В треугольнике $ABC$ точки $A_1$, $B_1$ и $C_1$ — середины сторон $BC$, $AC$ и $AB$ соответственно, $AH$ — высота, $\angle BAC = 120^\circ$, $\angle BCA = 15^\circ$.<br>а) Докажите, что точки $A_1$, $B_1$, $C_1$ и $H$ лежат на одной окружности.<br>б) Найдите $A_1H$, если $BC = 4\sqrt{3}$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. В треугольнике $ABC$ точки $A_1$, $B_1$ и $C_1$ — середины сторон $BC$, $AC$ и $AB$ соответственно, $AH$ — высота, $\angle BAC = 120^\circ$, $\angle BCA = 15^\circ$.
+а) Докажите, что точки $A_1$, $B_1$, $C_1$ и $H$ лежат на одной окружности.
+б) Найдите $A_1H$, если $BC = 4\sqrt{3}$.</div>
          <button class="show-answer-btn"
                  data-answer="2"
                  onclick="showAnswer(5, this.dataset.answer)">
@@ -565,7 +631,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 7</div>
          
-         <div class="problem-text">Дайте развернутый ответ. Окружность с центром в точке $O$ касается сторон угла с вершиной $N$ в точках $A$ и $B$. Отрезок $BC$ — диаметр этой окружности.<br>а) Докажите, что $\angle ANB = 2\angle ABC$.<br>б) Найдите расстояние от точки $N$ до прямой $AB$, если известно, что $AC = 14$ и $AB = 36$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. Окружность с центром в точке $O$ касается сторон угла с вершиной $N$ в точках $A$ и $B$. Отрезок $BC$ — диаметр этой окружности.
+а) Докажите, что $\angle ANB = 2\angle ABC$.
+б) Найдите расстояние от точки $N$ до прямой $AB$, если известно, что $AC = 14$ и $AB = 36$.</div>
          <button class="show-answer-btn"
                  data-answer="а) $\angle ANB = 2\angle ABC$
 б) $\frac{324}{7}$"
@@ -581,7 +649,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 8</div>
          
-         <div class="problem-text">Дайте развернутый ответ. На сторонах $AB$, $BC$ и $AC$ треугольника $ABC$ отмечены точки $C_1$, $A_1$ и $B_1$ соответственно, причём $AC_1:C_1B=21:10$, $BA_1:A_1C=2:3$, $AB_1:B_1C=2:5$. Отрезки $BB_1$ и $CC_1$ пересекаются в точке $D$.<br>а) Докажите, что четырёхугольник $ADA_1B_1$ — параллелограмм.<br>б) Найдите $CD$, если отрезки $AD$ и $BC$ перпендикулярны, $AC=63$, $BC=25$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. На сторонах $AB$, $BC$ и $AC$ треугольника $ABC$ отмечены точки $C_1$, $A_1$ и $B_1$ соответственно, причём $AC_1:C_1B=21:10$, $BA_1:A_1C=2:3$, $AB_1:B_1C=2:5$. Отрезки $BB_1$ и $CC_1$ пересекаются в точке $D$.
+а) Докажите, что четырёхугольник $ADA_1B_1$ — параллелограмм.
+б) Найдите $CD$, если отрезки $AD$ и $BC$ перпендикулярны, $AC=63$, $BC=25$.</div>
          <button class="show-answer-btn"
                  data-answer="27"
                  onclick="showAnswer(7, this.dataset.answer)">
@@ -596,7 +666,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 9</div>
          
-         <div class="problem-text">Дайте развернутый ответ. Высоты $BB_1$ и $CC_1$ остроугольного треугольника $ABC$ пересекаются в точке $H$.<br>а) Докажите, что $\angle BB_1C_1 = \angle BAH$.<br>б) Найдите расстояние от центра окружности, описанной около треугольника $ABC$, до стороны $BC$, если $B_1C_1 = 18$ и $\angle BAC = 30^\circ$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. Высоты $BB_1$ и $CC_1$ остроугольного треугольника $ABC$ пересекаются в точке $H$.
+а) Докажите, что $\angle BB_1C_1 = \angle BAH$.
+б) Найдите расстояние от центра окружности, описанной около треугольника $ABC$, до стороны $BC$, если $B_1C_1 = 18$ и $\angle BAC = 30^\circ$.</div>
          <button class="show-answer-btn"
                  data-answer="18"
                  onclick="showAnswer(8, this.dataset.answer)">
@@ -611,7 +683,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 10</div>
          
-         <div class="problem-text">Дайте развернутый ответ. Пятиугольник $ABCDE$ вписан в окружность. Диагонали $AD$ и $BE$ пересекаются в точке $M$. Известно, что $BCDM$ — параллелограмм.<br>а) Докажите, что $BC=DE$.<br>б) Найдите длину стороны $AB$, если известно, что $DE=4$, $AD=7$, $BE=8$ и $AB&gt;BC$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. Пятиугольник $ABCDE$ вписан в окружность. Диагонали $AD$ и $BE$ пересекаются в точке $M$. Известно, что $BCDM$ — параллелограмм.
+а) Докажите, что $BC=DE$.
+б) Найдите длину стороны $AB$, если известно, что $DE=4$, $AD=7$, $BE=8$ и $AB>BC$.</div>
          <button class="show-answer-btn"
                  data-answer="9"
                  onclick="showAnswer(9, this.dataset.answer)">
@@ -626,7 +700,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 11</div>
          
-         <div class="problem-text">Дайте развернутый ответ. Точки $P$, $Q$, $W$ делят стороны выпуклого четырёхугольника $ABCD$ в отношении $AP:PB=CQ:QB=CW:WD=3:4$, радиус окружности, описанной около треугольника $PQW$, равен 10, $PQ=16$, $QW=12$, угол $PWQ$ — острый.<br>а) Докажите, что треугольник $PQW$ — прямоугольный.<br>б) Найдите площадь четырёхугольника $ABCD$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. Точки $P$, $Q$, $W$ делят стороны выпуклого четырёхугольника $ABCD$ в отношении $AP:PB=CQ:QB=CW:WD=3:4$, радиус окружности, описанной около треугольника $PQW$, равен 10, $PQ=16$, $QW=12$, угол $PWQ$ — острый.
+а) Докажите, что треугольник $PQW$ — прямоугольный.
+б) Найдите площадь четырёхугольника $ABCD$.</div>
          <button class="show-answer-btn"
                  data-answer="а) 90°
 б) 392"
@@ -642,7 +718,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 12</div>
          
-         <div class="problem-text">Дайте развернутый ответ. Диагонали равнобедренной трапеции $ABCD$ с основаниями $BC$ и $AD$ перпендикулярны. Окружность с диаметром $AD$ пересекает боковую сторону $CD$ в точке $M$, а окружность с диаметром $CD$ пересекает основание $AD$ в точке $N$. Отрезки $AM$ и $CN$ пересекаются в точке $P$. а) Докажите, что в четырёхугольник $ABCP$ можно вписать окружность. б) Найдите радиус этой окружности, если $BC=7$, $AD=17$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. Диагонали равнобедренной трапеции $ABCD$ с основаниями $BC$ и $AD$ перпендикулярны. Окружность с диаметром $AD$ пересекает боковую сторону $CD$ в точке $M$, а окружность с диаметром $CD$ пересекает основание $AD$ в точке $N$. Отрезки $AM$ и $CN$ пересекаются в точке $P$. а) Докажите, что в четырёхугольник $ABCP$ можно вписать окружность. б) Найдите радиус этой окружности, если $BC=7$, $AD=17$.</div>
          <button class="show-answer-btn"
                  data-answer="4.2"
                  onclick="showAnswer(11, this.dataset.answer)">
@@ -657,7 +733,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 13</div>
          
-         <div class="problem-text">Дайте развернутый ответ. В трапеции $ABCD$ угол $BAD$ прямой. Окружность, построенная на большем основании $AD$ как на диаметре, пересекает меньшее основание $BC$ в точках $C$ и $M$.<br>а) Докажите, что $\angle BAM = \angle CAD$.<br>б) Диагонали трапеции $ABCD$ пересекаются в точке $O$. Найдите площадь треугольника $AOB$, если $AB = \sqrt{10}$, а $BC = 2BM$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. В трапеции $ABCD$ угол $BAD$ прямой. Окружность, построенная на большем основании $AD$ как на диаметре, пересекает меньшее основание $BC$ в точках $C$ и $M$.
+а) Докажите, что $\angle BAM = \angle CAD$.
+б) Диагонали трапеции $ABCD$ пересекаются в точке $O$. Найдите площадь треугольника $AOB$, если $AB = \sqrt{10}$, а $BC = 2BM$.</div>
          <button class="show-answer-btn"
                  data-answer="$3\sqrt{2}$"
                  onclick="showAnswer(12, this.dataset.answer)">
@@ -672,7 +750,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 14</div>
          
-         <div class="problem-text">Дайте развернутый ответ. Диагонали равнобедренной трапеции $ABCD$ с основаниями $BC$ и $AD$ перпендикулярны. Окружность с диаметром $AD$ пересекает боковую сторону $CD$ в точке $M$, а окружность с диаметром $CD$ пересекает основание $AD$ в точке $N$. Отрезки $AM$ и $CN$ пересекаются в точке $P$.<br>а) Докажите, что в четырёхугольник $ABCP$ можно вписать окружность.<br>б) Найдите радиус этой окружности, если $BC=7$, $AD=23$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. Диагонали равнобедренной трапеции $ABCD$ с основаниями $BC$ и $AD$ перпендикулярны. Окружность с диаметром $AD$ пересекает боковую сторону $CD$ в точке $M$, а окружность с диаметром $CD$ пересекает основание $AD$ в точке $N$. Отрезки $AM$ и $CN$ пересекаются в точке $P$.
+а) Докажите, что в четырёхугольник $ABCP$ можно вписать окружность.
+б) Найдите радиус этой окружности, если $BC=7$, $AD=23$.</div>
          <button class="show-answer-btn"
                  data-answer="4.375"
                  onclick="showAnswer(13, this.dataset.answer)">
@@ -687,7 +767,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 15</div>
          
-         <div class="problem-text">Дайте развернутый ответ. Прямая, перпендикулярная стороне $BC$ ромба $ABCD$, пересекает его диагональ $AC$ в точке $M$, а диагональ $BD$ в точке $N$, причём $AM:MC=1:2$, $BN:ND=1:3$.<br>а) Докажите, что прямая $MN$ делит сторону ромба $BC$ в отношении $1:4$.<br>б) Найдите сторону ромба, если $MN=\sqrt{6}$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. Прямая, перпендикулярная стороне $BC$ ромба $ABCD$, пересекает его диагональ $AC$ в точке $M$, а диагональ $BD$ в точке $N$, причём $AM:MC=1:2$, $BN:ND=1:3$.
+а) Докажите, что прямая $MN$ делит сторону ромба $BC$ в отношении $1:4$.
+б) Найдите сторону ромба, если $MN=\sqrt{6}$.</div>
          <button class="show-answer-btn"
                  data-answer="6"
                  onclick="showAnswer(14, this.dataset.answer)">
@@ -702,7 +784,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 16</div>
          
-         <div class="problem-text">Дайте развернутый ответ. В треугольнике $ABC$ точки $A_1$, $B_1$ и $C_1$ — середины сторон $BC$, $AC$ и $AB$ соответственно, $AH$ — высота, $\angle BAC = 30^\circ$, $\angle BCA = 45^\circ$.<br>а) Докажите, что точки $A_1$, $B_1$, $C_1$ и $H$ лежат на одной окружности.<br>б) Найдите $A_1H$, если $BC = 4\sqrt{3}$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. В треугольнике $ABC$ точки $A_1$, $B_1$ и $C_1$ — середины сторон $BC$, $AC$ и $AB$ соответственно, $AH$ — высота, $\angle BAC = 30^\circ$, $\angle BCA = 45^\circ$.
+а) Докажите, что точки $A_1$, $B_1$, $C_1$ и $H$ лежат на одной окружности.
+б) Найдите $A_1H$, если $BC = 4\sqrt{3}$.</div>
          <button class="show-answer-btn"
                  data-answer="6"
                  onclick="showAnswer(15, this.dataset.answer)">
@@ -717,7 +801,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 17</div>
          
-         <div class="problem-text">Дайте развернутый ответ. Окружность проходит через вершины $B$ и $C$ треугольника $ABC$ и пересекает $AB$ и $AC$ в точках $C_1$ и $B_1$ соответственно.<br>а) Докажите, что треугольник $ABC$ подобен треугольнику $AB_1C_1$.<br>б) Вычислите длину стороны $BC$ и радиус данной окружности, если $\angle A = 45^\circ$, $B_1C_1 = 6$ и площадь треугольника $AB_1C_1$ в восемь раз меньше площади четырёхугольника $BCB_1C_1$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. Окружность проходит через вершины $B$ и $C$ треугольника $ABC$ и пересекает $AB$ и $AC$ в точках $C_1$ и $B_1$ соответственно.
+а) Докажите, что треугольник $ABC$ подобен треугольнику $AB_1C_1$.
+б) Вычислите длину стороны $BC$ и радиус данной окружности, если $\angle A = 45^\circ$, $B_1C_1 = 6$ и площадь треугольника $AB_1C_1$ в восемь раз меньше площади четырёхугольника $BCB_1C_1$.</div>
          <button class="show-answer-btn"
                  data-answer="$BC = 18$, $R = 9\sqrt2$"
                  onclick="showAnswer(16, this.dataset.answer)">
@@ -732,7 +818,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 18</div>
          
-         <div class="problem-text">Дайте развернутый ответ. Биссектрисы углов $BAD$ и $BCD$ равнобедренной трапеции $ABCD$ пересекаются в точке $O$. На боковых сторонах $AB$ и $CD$ отмечены точки $M$ и $N$ соответственно так, что $AM=MO$, $CN=NO$.<br>а) Докажите, что точки $M$, $O$ и $N$ лежат на одной прямой.<br>б) Найдите отношение $AM:MB$, если $AO=CO$ и $BC:AD=17:31$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. Биссектрисы углов $BAD$ и $BCD$ равнобедренной трапеции $ABCD$ пересекаются в точке $O$. На боковых сторонах $AB$ и $CD$ отмечены точки $M$ и $N$ соответственно так, что $AM=MO$, $CN=NO$.
+а) Докажите, что точки $M$, $O$ и $N$ лежат на одной прямой.
+б) Найдите отношение $AM:MB$, если $AO=CO$ и $BC:AD=17:31$.</div>
          <button class="show-answer-btn"
                  data-answer="31:45"
                  onclick="showAnswer(17, this.dataset.answer)">
@@ -747,7 +835,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 19</div>
          
-         <div class="problem-text">Дайте развернутый ответ. В трапеции $ABCD$ основание $AD$ в два раза больше основания $BC$. Внутри трапеции взяли точку $M$ так, что углы $ABM$ и $DCM$ прямые.<br>а) Докажите, что $AM=DM$.<br>б) Найдите угол $BAD$, если угол $ADC$ равен $70^\circ$, а расстояние от точки $M$ до прямой $AD$ равно стороне $BC$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. В трапеции $ABCD$ основание $AD$ в два раза больше основания $BC$. Внутри трапеции взяли точку $M$ так, что углы $ABM$ и $DCM$ прямые.
+а) Докажите, что $AM=DM$.
+б) Найдите угол $BAD$, если угол $ADC$ равен $70^\circ$, а расстояние от точки $M$ до прямой $AD$ равно стороне $BC$.</div>
          <button class="show-answer-btn"
                  data-answer="$AM=DM$
 $65^\circ$"
@@ -763,7 +853,9 @@ $65^\circ$"
        <div class="question-item">
          <div class="question-number">Вопрос 20</div>
          
-         <div class="problem-text">Дайте развернутый ответ. На стороне $BC$ параллелограмма $ABCD$ выбрана точка $M$ такая, что $AM=MC$.<br>а) Докажите, что центр вписанной в треугольник $AMD$ окружности лежит на диагонали $AC$.<br>б) Найдите радиус вписанной в треугольник $AMD$ окружности, если $AB=5$, $BC=10$, $\angle BAD=60^\circ$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. На стороне $BC$ параллелограмма $ABCD$ выбрана точка $M$ такая, что $AM=MC$.
+а) Докажите, что центр вписанной в треугольник $AMD$ окружности лежит на диагонали $AC$.
+б) Найдите радиус вписанной в треугольник $AMD$ окружности, если $AB=5$, $BC=10$, $\angle BAD=60^\circ$.</div>
          <button class="show-answer-btn"
                  data-answer="а) Центр вписанной в треугольник $AMD$ окружности лежит на диагонали $AC$.
 б) $r=\frac{50\sqrt3}{2(17+\sqrt{39})}$"
@@ -779,7 +871,9 @@ $65^\circ$"
        <div class="question-item">
          <div class="question-number">Вопрос 21</div>
          
-         <div class="problem-text">Дайте развернутый ответ. Точка $E$ — середина боковой стороны $CD$ трапеции $ABCD$. На стороне $AB$ взяли точку $K$ так, что прямые $CK$ и $AE$ параллельны. Отрезки $CK$ и $BE$ пересекаются в точке $O$.<br>а) Докажите, что $CO=KO$.<br>б) Найдите отношение оснований трапеции $BC$ и $AD$, если площадь треугольника $BCK$ составляет $\frac{9}{100}$ площади трапеции $ABCD$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. Точка $E$ — середина боковой стороны $CD$ трапеции $ABCD$. На стороне $AB$ взяли точку $K$ так, что прямые $CK$ и $AE$ параллельны. Отрезки $CK$ и $BE$ пересекаются в точке $O$.
+а) Докажите, что $CO=KO$.
+б) Найдите отношение оснований трапеции $BC$ и $AD$, если площадь треугольника $BCK$ составляет $\frac{9}{100}$ площади трапеции $ABCD$.</div>
          <button class="show-answer-btn"
                  data-answer="3/7"
                  onclick="showAnswer(20, this.dataset.answer)">
@@ -794,7 +888,9 @@ $65^\circ$"
        <div class="question-item">
          <div class="question-number">Вопрос 22</div>
          
-         <div class="problem-text">Дайте развернутый ответ. Окружность с центром $O_1$ касается оснований $BC$ и $AD$ и боковой стороны $AB$ трапеции $ABCD$. Окружность с центром $O_2$ касается сторон $BC$, $CD$ и $AD$. Известно, что $AB=10$, $BC=9$, $CD=30$, $AD=39$.<br>а) Докажите, что прямая $O_1O_2$ параллельна основаниям трапеции $ABCD$.<br>б) Найдите $O_1O_2$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. Окружность с центром $O_1$ касается оснований $BC$ и $AD$ и боковой стороны $AB$ трапеции $ABCD$. Окружность с центром $O_2$ касается сторон $BC$, $CD$ и $AD$. Известно, что $AB=10$, $BC=9$, $CD=30$, $AD=39$.
+а) Докажите, что прямая $O_1O_2$ параллельна основаниям трапеции $ABCD$.
+б) Найдите $O_1O_2$.</div>
          <button class="show-answer-btn"
                  data-answer="4"
                  onclick="showAnswer(21, this.dataset.answer)">
@@ -809,7 +905,9 @@ $65^\circ$"
        <div class="question-item">
          <div class="question-number">Вопрос 23</div>
          
-         <div class="problem-text">Дайте развернутый ответ. В равнобедренной трапеции $ABCD$ основание $AD$ в два раза больше основания $BC$.<br>а) Докажите, что высота $CH$ трапеции разбивает основание $AD$ на отрезки, один из которых втрое больше другого.<br>б) Пусть $O$ — точка пересечения диагоналей трапеции $ABCD$. Найдите расстояние от вершины $C$ до середины отрезка $OD$, если $BC=16$ и $AB=10$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. В равнобедренной трапеции $ABCD$ основание $AD$ в два раза больше основания $BC$.
+а) Докажите, что высота $CH$ трапеции разбивает основание $AD$ на отрезки, один из которых втрое больше другого.
+б) Пусть $O$ — точка пересечения диагоналей трапеции $ABCD$. Найдите расстояние от вершины $C$ до середины отрезка $OD$, если $BC=16$ и $AB=10$.</div>
          <button class="show-answer-btn"
                  data-answer="4"
                  onclick="showAnswer(22, this.dataset.answer)">
@@ -824,7 +922,9 @@ $65^\circ$"
        <div class="question-item">
          <div class="question-number">Вопрос 24</div>
          
-         <div class="problem-text">Дайте развернутый ответ. В прямоугольном треугольнике $ABC$ точка $M$ лежит на катете $AC$, а точка $N$ лежит на продолжении катета $BC$ за точку $C$, причём $CM=BC$ и $CN=AC$.<br>а) Отрезки $CP$ и $CQ$ — медианы треугольников $ABC$ и $NCM$ соответственно. Докажите, что прямые $CP$ и $CQ$ перпендикулярны.<br>б) Прямые $MN$ и $AB$ пересекаются в точке $K$, а прямые $BM$ и $AN$ — в точке $L$. Найдите $KL$, если $BC=1$, а $AC=5$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. В прямоугольном треугольнике $ABC$ точка $M$ лежит на катете $AC$, а точка $N$ лежит на продолжении катета $BC$ за точку $C$, причём $CM=BC$ и $CN=AC$.
+а) Отрезки $CP$ и $CQ$ — медианы треугольников $ABC$ и $NCM$ соответственно. Докажите, что прямые $CP$ и $CQ$ перпендикулярны.
+б) Прямые $MN$ и $AB$ пересекаются в точке $K$, а прямые $BM$ и $AN$ — в точке $L$. Найдите $KL$, если $BC=1$, а $AC=5$.</div>
          <button class="show-answer-btn"
                  data-answer="$KL=\frac{12}{\sqrt{13}}$"
                  onclick="showAnswer(23, this.dataset.answer)">
@@ -839,7 +939,9 @@ $65^\circ$"
        <div class="question-item">
          <div class="question-number">Вопрос 25</div>
          
-         <div class="problem-text">Дайте развернутый ответ. В треугольнике $ABC$ угол $A$ равен $120^\circ$. Прямые, содержащие высоты $BM$ и $CN$ треугольника $ABC$, пересекаются в точке $H$. Точка $O$ — центр окружности, описанной около треугольника $ABC$.<br>а) Докажите, что $AH=AO$.<br>б) Найдите площадь треугольника $AHO$, если $BC=3$, $\angle ABC=15^\circ$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. В треугольнике $ABC$ угол $A$ равен $120^\circ$. Прямые, содержащие высоты $BM$ и $CN$ треугольника $ABC$, пересекаются в точке $H$. Точка $O$ — центр окружности, описанной около треугольника $ABC$.
+а) Докажите, что $AH=AO$.
+б) Найдите площадь треугольника $AHO$, если $BC=3$, $\angle ABC=15^\circ$.</div>
          <button class="show-answer-btn"
                  data-answer="0.75"
                  onclick="showAnswer(24, this.dataset.answer)">
@@ -854,7 +956,9 @@ $65^\circ$"
        <div class="question-item">
          <div class="question-number">Вопрос 26</div>
          
-         <div class="problem-text">Дайте развернутый ответ. В треугольнике $ABC$ точки $A_1$, $B_1$ и $C_1$ — середины сторон $BC$, $AC$ и $AB$ соответственно, $AH$ — высота, $\angle BAC=60^\circ$, $\angle BCA=45^\circ$.<br>а) Докажите, что точки $A_1$, $B_1$, $C_1$ и $H$ лежат на одной окружности.<br>б) Найдите $A_1H$, если $BC=2\sqrt{3}$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. В треугольнике $ABC$ точки $A_1$, $B_1$ и $C_1$ — середины сторон $BC$, $AC$ и $AB$ соответственно, $AH$ — высота, $\angle BAC=60^\circ$, $\angle BCA=45^\circ$.
+а) Докажите, что точки $A_1$, $B_1$, $C_1$ и $H$ лежат на одной окружности.
+б) Найдите $A_1H$, если $BC=2\sqrt{3}$.</div>
          <button class="show-answer-btn"
                  data-answer="1"
                  onclick="showAnswer(25, this.dataset.answer)">
@@ -869,7 +973,9 @@ $65^\circ$"
        <div class="question-item">
          <div class="question-number">Вопрос 27</div>
          
-         <div class="problem-text">Дайте развернутый ответ. Окружность с центром в точке $O$ касается сторон угла с вершиной $N$ в точках $A$ и $B$. Отрезок $BC$ — диаметр этой окружности.<br>а) Докажите, что прямая $AC$ параллельна биссектрисе угла $ANB$.<br>б) Найдите длину отрезка $NO$, если известно, что $AC=10$ и $AB=24$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. Окружность с центром в точке $O$ касается сторон угла с вершиной $N$ в точках $A$ и $B$. Отрезок $BC$ — диаметр этой окружности.
+а) Докажите, что прямая $AC$ параллельна биссектрисе угла $ANB$.
+б) Найдите длину отрезка $NO$, если известно, что $AC=10$ и $AB=24$.</div>
          <button class="show-answer-btn"
                  data-answer="33,8"
                  onclick="showAnswer(26, this.dataset.answer)">
@@ -884,7 +990,9 @@ $65^\circ$"
        <div class="question-item">
          <div class="question-number">Вопрос 28</div>
          
-         <div class="problem-text">Дайте развернутый ответ. Две окружности касаются внутренним образом в точке $A$, причём меньшая проходит через центр большей. Хорда $BC$ большей окружности касается меньшей в точке $P$. Хорды $AB$ и $AC$ пересекают меньшую окружность в точках $K$ и $M$ соответственно.<br>а) Докажите, что прямые $KM$ и $BC$ параллельны.<br>б) Пусть $L$ — точка пересечения отрезков $KM$ и $AP$. Найдите длину отрезка $AL$, если радиус большей окружности равен 34, а $BC=32$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. Две окружности касаются внутренним образом в точке $A$, причём меньшая проходит через центр большей. Хорда $BC$ большей окружности касается меньшей в точке $P$. Хорды $AB$ и $AC$ пересекают меньшую окружность в точках $K$ и $M$ соответственно.
+а) Докажите, что прямые $KM$ и $BC$ параллельны.
+б) Пусть $L$ — точка пересечения отрезков $KM$ и $AP$. Найдите длину отрезка $AL$, если радиус большей окружности равен 34, а $BC=32$.</div>
          <button class="show-answer-btn"
                  data-answer="8.5"
                  onclick="showAnswer(27, this.dataset.answer)">
@@ -899,7 +1007,9 @@ $65^\circ$"
        <div class="question-item">
          <div class="question-number">Вопрос 29</div>
          
-         <div class="problem-text">Дайте развернутый ответ. Сумма оснований трапеции равна 10, а её диагонали равны 6 и 8.<br>а) Докажите, что диагонали трапеции перпендикулярны.<br>б) Найдите высоту трапеции.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. Сумма оснований трапеции равна 10, а её диагонали равны 6 и 8.
+а) Докажите, что диагонали трапеции перпендикулярны.
+б) Найдите высоту трапеции.</div>
          <button class="show-answer-btn"
                  data-answer="а) $AC \perp BD$
 б) $h=4.8$"
@@ -915,7 +1025,9 @@ $65^\circ$"
        <div class="question-item">
          <div class="question-number">Вопрос 30</div>
          
-         <div class="problem-text">Дайте развернутый ответ. Биссектрисы углов $BAD$ и $BCD$ равнобедренной трапеции $ABCD$ пересекаются в точке $O$. Через точку $O$ провели прямую, параллельную основаниям $BC$ и $AD$.<br>а) Докажите, что отрезок этой прямой внутри трапеции равен её боковой стороне.<br>б) Найдите отношение длин оснований трапеции, если $AO=CO$ и данная прямая делит сторону $AB$ в отношении $AM:MB=1:2$.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ. Биссектрисы углов $BAD$ и $BCD$ равнобедренной трапеции $ABCD$ пересекаются в точке $O$. Через точку $O$ провели прямую, параллельную основаниям $BC$ и $AD$.
+а) Докажите, что отрезок этой прямой внутри трапеции равен её боковой стороне.
+б) Найдите отношение длин оснований трапеции, если $AO=CO$ и данная прямая делит сторону $AB$ в отношении $AM:MB=1:2$.</div>
          <button class="show-answer-btn"
                  data-answer="7.0:1.0"
                  onclick="showAnswer(29, this.dataset.answer)">

@@ -395,6 +395,54 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
+    /* Table styling for problem text */
+    .problem-text table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .problem-text table td {
+      padding: 0.75rem 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+    }
+
+    .problem-text table tr:first-child td {
+      background: rgba(251, 191, 36, 0.1);
+      font-weight: 600;
+      color: #fbbf24;
+    }
+
+    /* Back Button */
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: rgba(209, 213, 219, 1);
+      text-decoration: none;
+      margin-bottom: 2rem;
+      transition: color 0.3s ease;
+      font-size: 1rem;
+    }
+
+    .back-button:hover {
+      color: #ffffff;
+    }
+
+    .back-button svg {
+      width: 1rem;
+      height: 1rem;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
     /* Mobile Responsiveness */
     @media (max-width: 768px) {
       .header h1 {
@@ -465,6 +513,12 @@
   <div class="flying-math" id="flyingMath"></div>
 
   <div class="container">
+    <a href="/questionbankegep" class="back-button">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      Назад
+    </a>
     <div class="header">
       <h1>Задание 11</h1>
       <p>Банк заданий ЕГЭ профиль по математике</p>
@@ -475,7 +529,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 1</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/196238.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На рисунке изображён график функции вида $f(x) = \log_a x$. Найдите значение $f(16)$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На рисунке изображён график функции вида $f(x) = \log_a x$. Найдите значение $f(16)$.</div>
          <button class="show-answer-btn"
                  data-answer="-4"
                  onclick="showAnswer(0, this.dataset.answer)">
@@ -490,7 +544,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 2</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/8ADFCC.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На рисунке изображены графики функций видов $f(x) = ax^2 + bx + c$ и $g(x) = kx$, пересекающиеся в точках $A$ и $B$. Найдите абсциссу точки $B$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На рисунке изображены графики функций видов $f(x) = ax^2 + bx + c$ и $g(x) = kx$, пересекающиеся в точках $A$ и $B$. Найдите абсциссу точки $B$.</div>
          <button class="show-answer-btn"
                  data-answer="4"
                  onclick="showAnswer(1, this.dataset.answer)">
@@ -505,7 +559,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 3</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/82DA5C.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На рисунке изображены графики функций видов $f(x) = ax^2 + bx + c$ и $g(x) = kx$, пересекающиеся в точках $A$ и $B$. Найдите абсциссу точки $B$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На рисунке изображены графики функций видов $f(x) = ax^2 + bx + c$ и $g(x) = kx$, пересекающиеся в точках $A$ и $B$. Найдите абсциссу точки $B$.</div>
          <button class="show-answer-btn"
                  data-answer="4"
                  onclick="showAnswer(2, this.dataset.answer)">
@@ -520,7 +574,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 4</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/5BF069.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На рисунке изображён график функции вида $f(x)=kx+b$. Найдите значение $f(6)$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На рисунке изображён график функции вида $f(x)=kx+b$. Найдите значение $f(6)$.</div>
          <button class="show-answer-btn"
                  data-answer="11"
                  onclick="showAnswer(3, this.dataset.answer)">
@@ -535,7 +589,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 5</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/D6A2A2.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На рисунке изображён график функции вида $f(x) = \frac{k}{x}$. Найдите $f(10)$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На рисунке изображён график функции вида $f(x) = \frac{k}{x}$. Найдите $f(10)$.</div>
          <button class="show-answer-btn"
                  data-answer="-0.2"
                  onclick="showAnswer(4, this.dataset.answer)">
@@ -550,7 +604,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 6</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/8BF7C8.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На рисунке изображён график функции вида $f(x) = a^x$. Найдите $f(3)$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На рисунке изображён график функции вида $f(x) = a^x$. Найдите $f(3)$.</div>
          <button class="show-answer-btn"
                  data-answer="27"
                  onclick="showAnswer(5, this.dataset.answer)">
@@ -565,7 +619,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 7</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/08C3D9.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На рисунке изображён график функции вида $f(x) = \frac{k}{x}$. Найдите значение $f(10)$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На рисунке изображён график функции вида $f(x) = \frac{k}{x}$. Найдите значение $f(10)$.</div>
          <button class="show-answer-btn"
                  data-answer="0.1"
                  onclick="showAnswer(6, this.dataset.answer)">
@@ -580,7 +634,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 8</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/91C2AD.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На рисунке изображён график функции вида $f(x) = a^x$. Найдите $f(-3)$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На рисунке изображён график функции вида $f(x) = a^x$. Найдите $f(-3)$.</div>
          <button class="show-answer-btn"
                  data-answer="27"
                  onclick="showAnswer(7, this.dataset.answer)">
@@ -595,7 +649,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 9</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/31336D.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На рисунке изображён график функции вида $f(x) = \frac{k}{x}$. Найдите значение $f(10)$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На рисунке изображён график функции вида $f(x) = \frac{k}{x}$. Найдите значение $f(10)$.</div>
          <button class="show-answer-btn"
                  data-answer="0.1"
                  onclick="showAnswer(8, this.dataset.answer)">
@@ -610,7 +664,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 10</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/0B896F.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На рисунке изображены графики функций видов $f(x) = a\sqrt{x}$ и $g(x) = kx$, пересекающиеся в точках $A$ и $B$. Найдите абсциссу точки $B$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На рисунке изображены графики функций видов $f(x) = a\sqrt{x}$ и $g(x) = kx$, пересекающиеся в точках $A$ и $B$. Найдите абсциссу точки $B$.</div>
          <button class="show-answer-btn"
                  data-answer="36"
                  onclick="showAnswer(9, this.dataset.answer)">
@@ -625,7 +679,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 11</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/656B14.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На рисунке изображены графики функций видов $f(x) = a\sqrt{x}$ и $g(x) = kx$, пересекающиеся в точках $A$ и $B$. Найдите абсциссу точки $B$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На рисунке изображены графики функций видов $f(x) = a\sqrt{x}$ и $g(x) = kx$, пересекающиеся в точках $A$ и $B$. Найдите абсциссу точки $B$.</div>
          <button class="show-answer-btn"
                  data-answer="100/3"
                  onclick="showAnswer(10, this.dataset.answer)">
@@ -640,7 +694,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 12</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/7C4A3A.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На рисунке изображён график функции вида $f(x) = a^x$. Найдите $f(-4)$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На рисунке изображён график функции вида $f(x) = a^x$. Найдите $f(-4)$.</div>
          <button class="show-answer-btn"
                  data-answer="16"
                  onclick="showAnswer(11, this.dataset.answer)">
@@ -655,7 +709,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 13</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/87FAA1.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На рисунке изображены графики функций видов $f(x) = \frac{k}{x}$ и $g(x) = ax+b$, пересекающиеся в точках $A$ и $B$. Найдите абсциссу точки $B$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На рисунке изображены графики функций видов $f(x) = \frac{k}{x}$ и $g(x) = ax+b$, пересекающиеся в точках $A$ и $B$. Найдите абсциссу точки $B$.</div>
          <button class="show-answer-btn"
                  data-answer="12"
                  onclick="showAnswer(12, this.dataset.answer)">
@@ -670,7 +724,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 14</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/CFEAE8.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На рисунке изображён график функции вида $f(x) = kx + b$. Найдите значение $f(4)$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На рисунке изображён график функции вида $f(x) = kx + b$. Найдите значение $f(4)$.</div>
          <button class="show-answer-btn"
                  data-answer="9"
                  onclick="showAnswer(13, this.dataset.answer)">
@@ -685,7 +739,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 15</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/97C4EA.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На рисунке изображён график функции вида $f(x) = \log_a x$. Найдите $f(16)$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На рисунке изображён график функции вида $f(x) = \log_a x$. Найдите $f(16)$.</div>
          <button class="show-answer-btn"
                  data-answer="4"
                  onclick="showAnswer(14, this.dataset.answer)">
@@ -700,7 +754,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 16</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/1DC3CC.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На рисунке изображены графики двух линейных функций, пересекающиеся в точке $A$. Найдите абсциссу точки $A$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На рисунке изображены графики двух линейных функций, пересекающиеся в точке $A$. Найдите абсциссу точки $A$.</div>
          <button class="show-answer-btn"
                  data-answer="4"
                  onclick="showAnswer(15, this.dataset.answer)">
@@ -715,7 +769,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 17</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/783DBA.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На рисунке изображён график функции вида $f(x) = a^x$. Найдите $f(-3)$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На рисунке изображён график функции вида $f(x) = a^x$. Найдите $f(-3)$.</div>
          <button class="show-answer-btn"
                  data-answer="8"
                  onclick="showAnswer(16, this.dataset.answer)">
@@ -730,7 +784,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 18</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/38A32C.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На рисунке изображён график функции вида $f(x) = a^x$. Найдите значение $f(4)$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На рисунке изображён график функции вида $f(x) = a^x$. Найдите значение $f(4)$.</div>
          <button class="show-answer-btn"
                  data-answer="4"
                  onclick="showAnswer(17, this.dataset.answer)">
@@ -745,7 +799,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 19</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/87429D.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На рисунке изображён график функции вида $f(x) = kx + b$. Найдите значение $f(5)$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На рисунке изображён график функции вида $f(x) = kx + b$. Найдите значение $f(5)$.</div>
          <button class="show-answer-btn"
                  data-answer="11"
                  onclick="showAnswer(18, this.dataset.answer)">
@@ -760,7 +814,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 20</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/448E90.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На рисунке изображены графики функций видов $f(x) = a\sqrt{x}$ и $g(x) = kx$, пересекающиеся в точках $A$ и $B$. Найдите абсциссу точки $B$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На рисунке изображены графики функций видов $f(x) = a\sqrt{x}$ и $g(x) = kx$, пересекающиеся в точках $A$ и $B$. Найдите абсциссу точки $B$.</div>
          <button class="show-answer-btn"
                  data-answer="16"
                  onclick="showAnswer(19, this.dataset.answer)">
@@ -775,7 +829,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 21</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/30F054.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На рисунке изображён график функции вида $f(x) = \frac{k}{x}$. Найдите $f(20)$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На рисунке изображён график функции вида $f(x) = \frac{k}{x}$. Найдите $f(20)$.</div>
          <button class="show-answer-btn"
                  data-answer="0.1"
                  onclick="showAnswer(20, this.dataset.answer)">
@@ -790,7 +844,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 22</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/12736C.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На рисунке изображён график функции вида $f(x) = ax^2 + bx + c$. Найдите $f(-3)$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На рисунке изображён график функции вида $f(x) = ax^2 + bx + c$. Найдите $f(-3)$.</div>
          <button class="show-answer-btn"
                  data-answer="20"
                  onclick="showAnswer(21, this.dataset.answer)">
@@ -805,7 +859,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 23</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/8BE0C0.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На рисунке изображены графики функций $f(x) = a\sqrt{x}$ и $g(x) = kx$, пересекающиеся в точках $A$ и $B$. Найдите абсциссу точки $B$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На рисунке изображены графики функций $f(x) = a\sqrt{x}$ и $g(x) = kx$, пересекающиеся в точках $A$ и $B$. Найдите абсциссу точки $B$.</div>
          <button class="show-answer-btn"
                  data-answer="4"
                  onclick="showAnswer(22, this.dataset.answer)">
@@ -820,7 +874,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 24</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/6F2D5E.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На рисунке изображены графики функций видов $f(x) = \frac{k}{x}$ и $g(x) = ax+b$, пересекающиеся в точках $A$ и $B$. Найдите абсциссу точки $B$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На рисунке изображены графики функций видов $f(x) = \frac{k}{x}$ и $g(x) = ax+b$, пересекающиеся в точках $A$ и $B$. Найдите абсциссу точки $B$.</div>
          <button class="show-answer-btn"
                  data-answer="12"
                  onclick="showAnswer(23, this.dataset.answer)">
@@ -835,7 +889,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 25</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/EC397F.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На рисунке изображён график функции вида $f(x) = a^x$. Найдите значение $f(5)$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На рисунке изображён график функции вида $f(x) = a^x$. Найдите значение $f(5)$.</div>
          <button class="show-answer-btn"
                  data-answer="32"
                  onclick="showAnswer(24, this.dataset.answer)">
@@ -850,7 +904,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 26</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/62A335.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На рисунке изображён график функции вида $f(x) = a^x$. Найдите значение $f(-2)$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На рисунке изображён график функции вида $f(x) = a^x$. Найдите значение $f(-2)$.</div>
          <button class="show-answer-btn"
                  data-answer="16"
                  onclick="showAnswer(25, this.dataset.answer)">
@@ -865,7 +919,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 27</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/06DEEE.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На рисунке изображён график функции вида $f(x) = \frac{k}{x}$. Найдите значение $f(10)$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На рисунке изображён график функции вида $f(x) = \frac{k}{x}$. Найдите значение $f(10)$.</div>
          <button class="show-answer-btn"
                  data-answer="0.3"
                  onclick="showAnswer(26, this.dataset.answer)">
@@ -880,7 +934,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 28</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/9CC815.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На рисунке изображён график функции вида $f(x) = kx + b$. Найдите значение $f(7)$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На рисунке изображён график функции вида $f(x) = kx + b$. Найдите значение $f(7)$.</div>
          <button class="show-answer-btn"
                  data-answer="13"
                  onclick="showAnswer(27, this.dataset.answer)">
@@ -895,7 +949,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 29</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/AFF75F.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На рисунке изображён график функции вида $f(x) = \frac{k}{x}$. Найдите $f(10)$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На рисунке изображён график функции вида $f(x) = \frac{k}{x}$. Найдите $f(10)$.</div>
          <button class="show-answer-btn"
                  data-answer="-0,4"
                  onclick="showAnswer(28, this.dataset.answer)">
@@ -910,7 +964,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 30</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/ABB360.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Впишите правильный ответ. На рисунке изображён график функции вида $f(x) = \log_a x$. Найдите $f(32)$.</div>
+         <div class="problem-text tex2jax_process">Впишите правильный ответ. На рисунке изображён график функции вида $f(x) = \log_a x$. Найдите $f(32)$.</div>
          <button class="show-answer-btn"
                  data-answer="5"
                  onclick="showAnswer(29, this.dataset.answer)">
