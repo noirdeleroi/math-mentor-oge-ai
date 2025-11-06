@@ -33,7 +33,7 @@ export default function MathematicsSection() {
                 playsInline
                 disablePictureInPicture
               >
-                <source src="https://kbaazksvkvnafrwtmkcw.supabase.co/storage/v1/object/public/videos/vid2.mp4" type="video/mp4" />
+                <source src="https://kbaazksvkvnafrwtmkcw.supabase.co/storage/v1/object/public/videos/math1.mp4" type="video/mp4" />
                 Ваш браузер не поддерживает видео.
               </video>
             </div>
