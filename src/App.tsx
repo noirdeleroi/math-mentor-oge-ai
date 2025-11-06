@@ -104,8 +104,6 @@ const App = () => (
           
               {/* pages WITH the layout (shared gradient + flying symbols) */}
               <Route element={<LearningLayout />}>
-                <Route path="/module/:moduleSlug" element={<ModulePage />} />
-                <Route path="/module/:moduleSlug/topic/:topicId" element={<TopicPage />} />
                 <Route path="/cellard-lp2" element={<CellardLp2 />} />
                 <Route path="/platformogeb" element={<PlatformOgeb />} />
                 <Route path="/platformogep" element={<PlatformOgep />} />
@@ -143,6 +141,8 @@ const App = () => (
               <Route element={<PrivateRoute />}>
               {/* With layout */}
               <Route element={<LearningLayout />}>
+                <Route path="/module/:moduleSlug" element={<ModulePage />} />
+                <Route path="/module/:moduleSlug/topic/:topicId" element={<TopicPage />} />
                 <Route path="/mydb3" element={<MyDb3 />} />
                 <Route path="/topics" element={<TopicsIndex />} />
                 <Route path="/topic/:topicNumber" element={<TopicPage />} />
