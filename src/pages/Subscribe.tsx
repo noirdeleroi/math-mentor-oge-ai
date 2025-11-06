@@ -85,7 +85,7 @@ export default function Subscribe() {
                   <Sparkles className="w-5 h-5 ml-2 text-yellow-400" />
                 </CardTitle>
                 <div className="mt-4">
-                  <span className="text-4xl font-bold text-white">990 ₽</span>
+                  <span className="text-4xl font-bold text-white">999 ₽</span>
                   <span className="text-gray-300 ml-2">/месяц</span>
                 </div>
               </CardHeader>
