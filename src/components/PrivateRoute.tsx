@@ -1,18 +1,30 @@
 
-import { Navigate, Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 
 const PrivateRoute = () => {
   const { user, isLoading } = useAuth();
+  const navigate = useNavigate();
   
-  // If still loading authentication state, show nothing
+  // If still loading authentication state, show loading
   if (isLoading) {
-    return <div className="flex justify-center items-center min-h-screen">Загрузка...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center text-foreground">
+        Загрузка...
+      </div>
+    );
   }
   
-  // If not authenticated, redirect to home page
+  // If not authenticated, show login message
   if (!user) {
-    return <Navigate to="/" />;
+    return (
+      <div 
+        className="min-h-screen flex items-center justify-center text-foreground cursor-pointer hover:underline text-xl"
+        onClick={() => navigate('/register')}
+      >
+        Войдите в систему
+      </div>
+    );
   }
   
   // If authenticated, render the route
