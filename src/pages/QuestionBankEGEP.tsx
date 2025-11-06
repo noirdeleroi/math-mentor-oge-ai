@@ -1,8 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { ArrowLeft } from 'lucide-react';
-import LandingHeader from '@/components/landing/LandingHeader';
-import FlyingMathBackground from '@/components/FlyingMathBackground';
 
 export default function QuestionBankEGEP() {
   const questionTypes = Array.from({ length: 19 }, (_, i) => ({ 
@@ -11,16 +9,11 @@ export default function QuestionBankEGEP() {
   }));
 
   return (
-    <div className="min-h-screen relative" style={{ background: "linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)" }}>
-      <FlyingMathBackground />
-      
-      <LandingHeader />
-      
-      <div className="container mx-auto px-4 py-8 relative z-10">
-        <Link to="/" className="inline-flex items-center gap-2 text-gray-300 hover:text-white mb-8 transition-colors">
-          <ArrowLeft className="w-4 h-4" />
-          Назад
-        </Link>
+    <div className="container mx-auto px-4 py-8 relative z-10">
+      <Link to="/" className="inline-flex items-center gap-2 text-gray-300 hover:text-white mb-8 transition-colors">
+        <ArrowLeft className="w-4 h-4" />
+        Назад
+      </Link>
 
         <div className="text-center mb-12">
           <h1 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent mb-4">
@@ -52,6 +45,5 @@ export default function QuestionBankEGEP() {
           ))}
         </div>
       </div>
-    </div>
   );
 }
