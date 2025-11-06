@@ -1248,15 +1248,7 @@ const PracticeByNumberEgeProfMath = () => {
 
                   {/* Answer Input */}
                   <div className="space-y-4">
-                    <div className="flex flex-col sm:flex-row gap-2">
-                      <Input
-                        value={userAnswer}
-                        onChange={(e) => setUserAnswer(e.target.value)}
-                        placeholder="Введите ваш ответ"
-                        disabled={isAnswered}
-                        onKeyPress={(e) => e.key === 'Enter' && !isAnswered && checkAnswer()}
-                        className="flex-1 w-full bg-white border-gray-300 text-[#1a1f36] placeholder:text-gray-500"
-                      />
+                    <div className="flex flex-col sm:flex-row gap-2 justify-center">
                     <Button
                       onClick={async () => {
                         if (uploadedImages.length > 0 && currentQuestion.problem_number_type && currentQuestion.problem_number_type >= 13 && currentQuestion.problem_number_type <= 19) {
