@@ -548,21 +548,9 @@ ${updated.feedback_message}
           Прогресс
         </Button>
         
-        <Button 
-          onClick={() => { handleCreateTask(); if (isMobile) setIsSidebarOpen(false); }} 
-          variant="ghost" 
-          className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-        >
-          Создать задание
-        </Button>
+
         
-        <Button 
-          onClick={() => { navigate('/practice-test'); if (isMobile) setIsSidebarOpen(false); }} 
-          variant="ghost" 
-          className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-        >
-          TEST
-        </Button>
+
       </div>
 
       <div className="px-4 mt-[144px] flex-1 overflow-y-auto">
