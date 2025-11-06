@@ -395,6 +395,28 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
+    /* Table styling for problem text */
+    .problem-text table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .problem-text table td {
+      padding: 0.75rem 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+    }
+
+    .problem-text table tr:first-child td {
+      background: rgba(251, 191, 36, 0.1);
+      font-weight: 600;
+      color: #fbbf24;
+    }
+
     /* Mobile Responsiveness */
     @media (max-width: 768px) {
       .header h1 {
@@ -475,9 +497,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 1</div>
          
-         <div class="problem-text">\[ \text{У бабушки } 20 \text{ чашек: } 6 \text{ с красными цветами,} \]<br>\[ \text{остальные с синими. Бабушка наливает чай} \]<br>\[ \text{в случайно выбранную чашку. Найдите вероятность} \]<br>\[ \text{того, что это будет чашка с синими цветами.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Родительский комитет закупил \(25\) пазлов для подарков детям в связи с окончанием учебного года, из них \(21\) с машинами и \(4\) с видами городов. Подарки распределяются случайным образом между \(25\) детьми, среди которых есть Саша. Найдите вероятность того, что Саше достанется пазл с машиной.</p></div>
          <button class="show-answer-btn"
-                 data-answer="0,7"
+                 data-answer="0,84"
                  onclick="showAnswer(0, this.dataset.answer)">
            Показать ответ
          </button>
@@ -490,9 +512,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 2</div>
          
-         <div class="problem-text">\[ \text{В фирме такси в данный момент свободно } 12 \text{ машин: } 3 \text{ чёрных, } 6 \text{ жёлтых и } 3 \text{ зелёных.} \]  <br>\[ \text{По вызову выехала одна из машин, случайно оказавшаяся ближе всего к заказчику.} \]  <br>\[ \text{Найдите вероятность того, что к нему приедет жёлтое такси.} \]</div>
+         <div class="problem-text tex2jax_process"><p>У бабушки \(25\) чашек: \(3\) с красными цветами, остальные с синими. Бабушка наливает чай в случайно выбранную чашку. Найдите вероятность того, что это будет чашка с синими цветами.</p></div>
          <button class="show-answer-btn"
-                 data-answer="0.5"
+                 data-answer="0,88"
                  onclick="showAnswer(1, this.dataset.answer)">
            Показать ответ
          </button>
@@ -505,9 +527,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 3</div>
          
-         <div class="problem-text">\[ \text{У бабушки } 10 \text{ чашек: } 4 \text{ с красными цветами,} \]<br>\[ \text{остальные с синими. Бабушка наливает чай} \]<br>\[ \text{в случайно выбранную чашку. Найдите вероятность} \]<br>\[ \text{того, что это будет чашка с синими цветами.} \]</div>
+         <div class="problem-text tex2jax_process"><p>У бабушки \(15\) чашек: \(6\) с красными цветами, остальные с синими. Бабушка наливает чай в случайно выбранную чашку. Найдите вероятность того, что это будет чашка с синими цветами.</p></div>
          <button class="show-answer-btn"
-                 data-answer="0.6"
+                 data-answer="0,6"
                  onclick="showAnswer(2, this.dataset.answer)">
            Показать ответ
          </button>
@@ -520,9 +542,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 4</div>
          
-         <div class="problem-text">\[ \text{В среднем из } 100 \text{ карманных фонариков, поступивших в продажу,} \]<br>\[ \text{четыре неисправных. Найдите вероятность того, что выбранный} \]<br>\[ \text{наудачу в магазине фонарик окажется исправен.} \]</div>
+         <div class="problem-text tex2jax_process"><p>У бабушки \(20\) чашек: \(12\) с красными цветами, остальные с синими. Бабушка наливает чай в случайно выбранную чашку. Найдите вероятность того, что это будет чашка с синими цветами.</p></div>
          <button class="show-answer-btn"
-                 data-answer="0,96"
+                 data-answer="0,4"
                  onclick="showAnswer(3, this.dataset.answer)">
            Показать ответ
          </button>
@@ -535,9 +557,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 5</div>
          
-         <div class="problem-text">\[ \text{В среднем из } 150 \text{ карманных фонариков, поступивших в продажу,} \]<br>\[ \text{три неисправных. Найдите вероятность того, что выбранный наудачу} \]<br>\[ \text{в магазине фонарик окажется исправен.} \]</div>
+         <div class="problem-text tex2jax_process"><p>В среднем из \(50\) карманных фонариков, поступивших в продажу, шесть неисправных. Найдите вероятность того, что выбранный наудачу в магазине фонарик окажется исправен.</p></div>
          <button class="show-answer-btn"
-                 data-answer="0.98"
+                 data-answer="0,88"
                  onclick="showAnswer(4, this.dataset.answer)">
            Показать ответ
          </button>
@@ -550,9 +572,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 6</div>
          
-         <div class="problem-text">\[ \text{В среднем из } 80 \text{ карманных фонариков, поступивших в продажу,} \]<br>\[ \text{двенадцать неисправных. Найдите вероятность того, что} \]<br>\[ \text{выбранный наудачу в магазине фонарик окажется исправен.} \]</div>
+         <div class="problem-text tex2jax_process"><p>В магазине канцтоваров продаётся \(132\) ручки: \(34\) красных, \(39\) зелёных, \(5\) фиолетовых, остальные синие и чёрные, их поровну.</p><p>Найдите вероятность того, что случайно выбранная в этом магазине ручка будет зелёной или чёрной.</p></div>
          <button class="show-answer-btn"
-                 data-answer="0.85"
+                 data-answer="0.5"
                  onclick="showAnswer(5, this.dataset.answer)">
            Показать ответ
          </button>
@@ -565,9 +587,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 7</div>
          
-         <div class="problem-text">На экзамене 30 билетов, Серёжа \textbf{не выучил} 9 из них. Найдите вероятность того, что ему попадётся выученный билет.</div>
+         <div class="problem-text tex2jax_process"><p>Родительский комитет закупил \(10\) пазлов для подарков детям в связи с окончанием учебного года, из них \(5\) с машинами и \(5\) с видами городов. Подарки распределяются случайным образом между \(10\) детьми, среди которых есть Витя. Найдите вероятность того, что Вите достанется пазл с машиной.</p></div>
          <button class="show-answer-btn"
-                 data-answer="0.7"
+                 data-answer="0.5"
                  onclick="showAnswer(6, this.dataset.answer)">
            Показать ответ
          </button>
@@ -580,9 +602,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 8</div>
          
-         <div class="problem-text">В фирме такси в данный момент свободно 10 машин: 5 чёрных, 3 жёлтых и 2 зелёных. По вызову выехала одна из машин, случайно оказавшаяся ближе всего к заказчику. Найдите вероятность того, что к нему приедет жёлтое такси.</div>
+         <div class="problem-text tex2jax_process"><p>В среднем из \(150\) карманных фонариков, поступивших в продажу, шесть неисправных. Найдите вероятность того, что выбранный наудачу в магазине фонарик окажется исправным.</p></div>
          <button class="show-answer-btn"
-                 data-answer="0,3"
+                 data-answer="0,96"
                  onclick="showAnswer(7, this.dataset.answer)">
            Показать ответ
          </button>
@@ -595,9 +617,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 9</div>
          
-         <div class="problem-text">\[ \text{У бабушки } 25 \text{ чашек: } 2 \text{ с красными цветами,} \]<br>\[ \text{остальные с синими. Бабушка наливает чай} \]<br>\[ \text{в случайно выбранную чашку. Найдите вероятность} \]<br>\[ \text{того, что это будет чашка с синими цветами.} \]</div>
+         <div class="problem-text tex2jax_process"><p>В среднем из \(100\) карманных фонариков, поступивших в продажу, \(5\) неисправны. Найдите вероятность того, что случайно выбранный в магазине фонарик окажется исправен.</p></div>
          <button class="show-answer-btn"
-                 data-answer="0.92"
+                 data-answer="0,95"
                  onclick="showAnswer(8, this.dataset.answer)">
            Показать ответ
          </button>
@@ -610,9 +632,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 10</div>
          
-         <div class="problem-text">\[ \text{В фирме такси в данный момент свободно } 30 \text{ машин: } 6 \text{ чёрных, } 3 \text{ жёлтых и } 21 \text{ зелёная.} \]<br>\[ \text{По вызову выехала одна из машин, случайно оказавшаяся ближе всего к заказчику.} \]<br>\[ \text{Найдите вероятность того, что к нему приедет жёлтое такси.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Родительский комитет закупил \(20\) пазлов для подарков детям в связи с окончанием учебного года, из них \(10\) с машинами и \(10\) с видами городов. Подарки распределяются случайным образом между \(20\) детьми, среди которых есть Коля. Найдите вероятность того, что Коле достанется пазл с машиной.</p></div>
          <button class="show-answer-btn"
-                 data-answer="0.1"
+                 data-answer="0.5"
                  onclick="showAnswer(9, this.dataset.answer)">
            Показать ответ
          </button>
@@ -625,9 +647,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 11</div>
          
-         <div class="problem-text">Родительский комитет закупил \(25\) пазлов для подарков детям в связи с окончанием учебного года, из них \(21\) с машинами и \(4\) с видами городов. Подарки распределяются случайным образом между \(25\) детьми, среди которых есть Саша. Найдите вероятность того, что Саше достанется пазл с машиной.</div>
+         <div class="problem-text tex2jax_process"><p>У бабушки \(25\) чашек: \(5\) с красными цветами, остальные с синими. Бабушка наливает чай в случайно выбранную чашку. Найдите вероятность того, что это будет чашка с синими цветами.</p></div>
          <button class="show-answer-btn"
-                 data-answer="0,84"
+                 data-answer="0,8"
                  onclick="showAnswer(10, this.dataset.answer)">
            Показать ответ
          </button>
@@ -640,9 +662,11 @@
        <div class="question-item">
          <div class="question-number">Вопрос 12</div>
          
-         <div class="problem-text">\[ \text{В среднем из } 80 \text{ карманных фонариков, поступивших в продажу,} \]<br>\[ \text{четыре неисправных. Найдите вероятность того, что выбранный} \]<br>\[ \text{наудачу в магазине фонарик окажется исправен.} \]</div>
+         <div class="problem-text tex2jax_process"><p>В фирме такси в данный момент свободно \(10\) машин: \(5\) чёрных, \(3\) жёлтых и \(2\) зелёных.</p>
+<p>По вызову выехала одна из машин, случайно оказавшаяся ближе всего к заказчику.</p>
+<p>Найдите вероятность того, что к нему приедет жёлтое такси.</p></div>
          <button class="show-answer-btn"
-                 data-answer="0.95"
+                 data-answer="0,3"
                  onclick="showAnswer(11, this.dataset.answer)">
            Показать ответ
          </button>
@@ -655,9 +679,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 13</div>
          
-         <div class="problem-text">\[ \text{В фирме такси в данный момент свободно } 15 \text{ машин:} \]<br>\[ \text{4 чёрных, 3 жёлтых и 8 зелёных.} \]<br>\[ \text{По вызову выехала одна из машин,} \]<br>\[ \text{случайно оказавшаяся ближе всего к заказчику.} \]<br>\[ \text{Найдите вероятность того, что к нему приедет жёлтое такси.} \]</div>
+         <div class="problem-text tex2jax_process"><p>В магазине канцтоваров продаётся \(100\) ручек: \(37\) красных, \(8\) зелёных, \(17\) фиолетовых, остальные синие и чёрные, их поровну.</p><p>Найдите вероятность того, что случайно выбранная в этом магазине ручка окажется красной или чёрной.</p></div>
          <button class="show-answer-btn"
-                 data-answer="0.2"
+                 data-answer="0.56"
                  onclick="showAnswer(12, this.dataset.answer)">
            Показать ответ
          </button>
@@ -670,9 +694,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 14</div>
          
-         <div class="problem-text">На экзамене 50 билетов, Оскар \textbf{не выучил} 7 из них. Найдите вероятность того, что ему попадётся выученный билет.</div>
+         <div class="problem-text tex2jax_process"><p>В магазине канцтоваров продаётся \(120\) ручек: \(32\) красных, \(32\) зелёных, \(46\) фиолетовых, остальные синие и чёрные, их поровну.</p><p>Найдите вероятность того, что случайно выбранная в этом магазине ручка будет красной или фиолетовой.</p></div>
          <button class="show-answer-btn"
-                 data-answer="0.86"
+                 data-answer="0.65"
                  onclick="showAnswer(13, this.dataset.answer)">
            Показать ответ
          </button>
@@ -685,9 +709,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 15</div>
          
-         <div class="problem-text">\[ \text{Родительский комитет закупил } 10 \text{ пазлов для подарков детям} \]<br>\[ \text{в связи с окончанием учебного года,} \]<br>\[ \text{из них } 2 \text{ с машинами и } 8 \text{ с видами городов.} \]<br>\[ \text{Подарки распределяются случайным образом между } 10 \text{ детьми,} \]<br>\[ \text{среди которых есть Андрюша.} \]<br>\[ \text{Найдите вероятность того, что} \]<br>\[ \text{Андрюше достанется пазл с машиной.} \]</div>
+         <div class="problem-text tex2jax_process"><p>В магазине канцтоваров продаётся \(138\) ручек: \(34\) красных, \(23\) зелёных, \(11\) фиолетовых, остальные синие и чёрные, их поровну.</p><p>Найдите вероятность того, что случайно выбранная в этом магазине ручка будет красной или чёрной.</p></div>
          <button class="show-answer-btn"
-                 data-answer="Невозможно дать численный ответ, так как условие задачи неполное."
+                 data-answer="0,5"
                  onclick="showAnswer(14, this.dataset.answer)">
            Показать ответ
          </button>
@@ -700,9 +724,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 16</div>
          
-         <div class="problem-text">\[ \text{Вероятность того, что новая шариковая ручка пишет плохо (или не пишет), равна } 0{,}06. \]<br>\[ \text{Покупатель в магазине выбирает одну шариковую ручку.} \]<br>\[ \text{Найдите вероятность того, что эта ручка пишет хорошо.} \]</div>
+         <div class="problem-text tex2jax_process"><p>На экзамене 20 билетов, Андрей \textbf{не выучил} 1 из них. Найдите вероятность того, что ему попадётся выученный билет.</p></div>
          <button class="show-answer-btn"
-                 data-answer="0,94"
+                 data-answer="0.95"
                  onclick="showAnswer(15, this.dataset.answer)">
            Показать ответ
          </button>
@@ -715,9 +739,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 17</div>
          
-         <div class="problem-text">\[ \text{Родительский комитет закупил } 20 \text{ пазлов для подарков детям} \]<br>\[ \text{в связи с окончанием учебного года, из них } 14 \text{ с машинами} \]<br>\[ \text{и } 6 \text{ с видами городов. Подарки распределяются случайным образом} \]<br>\[ \text{между } 20 \text{ детьми, среди которых есть Володя.} \]<br>\[ \text{Найдите вероятность того, что Володе достанется пазл с машиной.} \]</div>
+         <div class="problem-text tex2jax_process"><p>В среднем из \(100\) карманных фонариков, поступивших в продажу, восемь неисправных. Найдите вероятность того, что выбранный наудачу в магазине фонарик окажется исправен.</p></div>
          <button class="show-answer-btn"
-                 data-answer="0,7"
+                 data-answer="0,92"
                  onclick="showAnswer(16, this.dataset.answer)">
            Показать ответ
          </button>
@@ -730,9 +754,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 18</div>
          
-         <div class="problem-text">\[ \text{Родительский комитет закупил } 10 \text{ пазлов для подарков детям в связи с окончанием} \]<br>\[ \text{учебного года, из них } 4 \text{ с машинами и } 6 \text{ с видами городов. Подарки} \]<br>\[ \text{распределяются случайным образом между } 10 \text{ детьми, среди которых есть Володя.} \]<br>\[ \text{Найдите вероятность того, что Володе достанется пазл с машиной.} \]</div>
+         <div class="problem-text tex2jax_process"><p>В фирме такси в данный момент свободно \(30\) машин: \(1\) чёрная, \(9\) жёлтых и \(20\) зелёных.</p><p>По вызову выехала одна из машин, случайно оказавшаяся ближе всего к заказчику.</p><p>Найдите вероятность того, что к нему приедет жёлтое такси.</p></div>
          <button class="show-answer-btn"
-                 data-answer="0,4"
+                 data-answer="0.3"
                  onclick="showAnswer(17, this.dataset.answer)">
            Показать ответ
          </button>
@@ -745,9 +769,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 19</div>
          
-         <div class="problem-text">\[ \text{В магазине канцтоваров продаётся } 132 \text{ ручки: } 34 \text{ красных, } 39 \text{ зелёных, } 5 \text{ фиолетовых,} \]<br>\[ \text{остальные синие и чёрные, их поровну.} \]<br>\[ \text{Найдите вероятность того, что случайно выбранная} \]<br>\[ \text{в этом магазине ручка будет зелёной или чёрной.} \]</div>
+         <div class="problem-text tex2jax_process"><p>На экзамене 40 билетов, Оскар \textbf{не выучил} 12 из них. Найдите вероятность того, что ему попадётся выученный билет.</p></div>
          <button class="show-answer-btn"
-                 data-answer="0.5"
+                 data-answer="0,7"
                  onclick="showAnswer(18, this.dataset.answer)">
            Показать ответ
          </button>
@@ -760,9 +784,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 20</div>
          
-         <div class="problem-text">\[ \text{Родительский комитет закупил } 25 \text{ пазлов для подарков детям} \]<br>\[ \text{в связи с окончанием учебного года, из них } 18 \text{ с машинами} \]<br>\[ \text{и } 7 \text{ с видами городов. Подарки распределяются случайным образом} \]<br>\[ \text{между } 25 \text{ детьми, среди которых есть Володя.} \]<br>\[ \text{Найдите вероятность того, что Володе достанется пазл с машиной.} \]</div>
+         <div class="problem-text tex2jax_process"><p>У бабушки \(25\) чашек: \(5\) с красными цветами, остальные с синими. Бабушка наливает чай в случайно выбранную чашку. Найдите вероятность того, что это будет чашка с синими цветами.</p></div>
          <button class="show-answer-btn"
-                 data-answer="Невозможно дать конкретный числовой ответ, так как в условии задачи отсутствует вопрос."
+                 data-answer="0.8"
                  onclick="showAnswer(19, this.dataset.answer)">
            Показать ответ
          </button>
@@ -775,9 +799,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 21</div>
          
-         <div class="problem-text">\[ \text{В среднем из } 150 \text{ карманных фонариков, поступивших в продажу,} \]<br>\[ \text{восемнадцать неисправных. Найдите вероятность того, что} \]<br>\[ \text{выбранный наудачу в магазине фонарик окажется исправен.} \]</div>
+         <div class="problem-text tex2jax_process"><p>В магазине канцтоваров продаётся \(206\) ручек: \(20\) красных, \(8\) зелёных, \(12\) фиолетовых, остальные синие и чёрные, их поровну.</p><p>Найдите вероятность того, что случайно выбранная в этом магазине ручка будет красной или синей.</p></div>
          <button class="show-answer-btn"
-                 data-answer="0.88"
+                 data-answer="0.5"
                  onclick="showAnswer(20, this.dataset.answer)">
            Показать ответ
          </button>
@@ -790,9 +814,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 22</div>
          
-         <div class="problem-text">\[ \text{Вероятность того, что новая шариковая ручка пишет плохо (или не пишет), равна } 0{,}14. \]<br>\[ \text{Покупатель в магазине выбирает одну шариковую ручку.} \]<br>\[ \text{Найдите вероятность того, что эта ручка пишет хорошо.} \]</div>
+         <div class="problem-text tex2jax_process"><p>В среднем из \(150\) карманных фонариков, поступивших в продажу, восемнадцать неисправных. Найдите вероятность того, что выбранный наудачу в магазине фонарик окажется исправен.</p></div>
          <button class="show-answer-btn"
-                 data-answer="0,86"
+                 data-answer="0.88"
                  onclick="showAnswer(21, this.dataset.answer)">
            Показать ответ
          </button>
@@ -805,9 +829,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 23</div>
          
-         <div class="problem-text">На экзамене 25 билетов, Костя \textbf{не выучил} 4 из них. Найдите вероятность того, что ему попадётся выученный билет.</div>
+         <div class="problem-text tex2jax_process"><p>В среднем из \(150\) карманных фонариков, поступивших в продажу, три неисправных. Найдите вероятность того, что выбранный наудачу в магазине фонарик окажется исправен.</p></div>
          <button class="show-answer-btn"
-                 data-answer="0,84"
+                 data-answer="0.98"
                  onclick="showAnswer(22, this.dataset.answer)">
            Показать ответ
          </button>
@@ -820,9 +844,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 24</div>
          
-         <div class="problem-text">На экзамене 60 билетов, Олег \textbf{не выучил} 12 из них. Найдите вероятность того, что ему попадётся выученный билет.</div>
+         <div class="problem-text tex2jax_process"><p>У бабушки \(20\) чашек: \(15\) с красными цветами, остальные с синими. Бабушка наливает чай в случайно выбранную чашку. Найдите вероятность того, что это будет чашка с синими цветами.</p></div>
          <button class="show-answer-btn"
-                 data-answer="0,8"
+                 data-answer="0.25"
                  onclick="showAnswer(23, this.dataset.answer)">
            Показать ответ
          </button>
@@ -835,9 +859,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 25</div>
          
-         <div class="problem-text">\[ \text{В магазине канцтоваров продаётся } 264 \text{ ручки: } 38 \text{ красных, } 30 \text{ зелёных, } 8 \text{ фиолетовых,} \]<br>\[ \text{остальные синие и чёрные, их поровну.} \]<br>\[ \text{Найдите вероятность того, что случайно выбранная} \]<br>\[ \text{в этом магазине ручка будет красной или чёрной.} \]</div>
+         <div class="problem-text tex2jax_process"><p>В среднем из \(75\) карманных фонариков, поступивших в продажу, пятнадцать неисправных. Найдите вероятность того, что выбранный наудачу в магазине фонарик окажется исправен.</p></div>
          <button class="show-answer-btn"
-                 data-answer="0,5"
+                 data-answer="0.8"
                  onclick="showAnswer(24, this.dataset.answer)">
            Показать ответ
          </button>
@@ -850,9 +874,13 @@
        <div class="question-item">
          <div class="question-number">Вопрос 26</div>
          
-         <div class="problem-text">\[ \text{Родительский комитет закупил } 20 \text{ пазлов для подарков детям} \]<br>\[ \text{в связи с окончанием учебного года, из них } 9 \text{ с машинами} \]<br>\[ \text{и } 11 \text{ с видами городов. Подарки распределяются случайным образом} \]<br>\[ \text{между } 20 \text{ детьми, среди которых есть Саша.} \]<br>\[ \text{Найдите вероятность того, что Саше достанется пазл с машиной.} \]</div>
+         <div class="problem-text tex2jax_process">\[ \text{В магазине канцтоваров продаётся } 84 \text{ ручки,} \]
+\[ \text{из них } 22 \text{ красных, } 9 \text{ зелёных, } 41 \text{ фиолетовая,} \]
+\[ \text{остальные синие и чёрные, их поровну.} \]
+\[ \text{Найдите вероятность того, что случайно выбранная} \]
+\[ \text{в этом магазине ручка будет красной или фиолетовой.} \]</div>
          <button class="show-answer-btn"
-                 data-answer="0.45"
+                 data-answer="0,75"
                  onclick="showAnswer(25, this.dataset.answer)">
            Показать ответ
          </button>
@@ -865,9 +893,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 27</div>
          
-         <div class="problem-text">\[ \text{В магазине канцтоваров продаётся } 206 \text{ ручек: } 20 \text{ красных, } 8 \text{ зелёных, } 12 \text{ фиолетовых,} \]<br>\[ \text{остальные синие и чёрные, их поровну.} \]<br>\[ \text{Найдите вероятность того, что случайно выбранная} \]<br>\[ \text{в этом магазине ручка будет красной или синей.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Родительский комитет закупил \(20\) пазлов для подарков детям в связи с окончанием учебного года, из них \(9\) с машинами и \(11\) с видами городов. Подарки распределяются случайным образом между \(20\) детьми, среди которых есть Саша. Найдите вероятность того, что Саше достанется пазл с машиной.</p></div>
          <button class="show-answer-btn"
-                 data-answer="0.5"
+                 data-answer="0.45"
                  onclick="showAnswer(26, this.dataset.answer)">
            Показать ответ
          </button>
@@ -880,9 +908,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 28</div>
          
-         <div class="problem-text">На экзамене \(30\) билетов, Серёжа не выучил \(9\) из них. Найдите вероятность того, что ему попадётся выученный билет.</div>
+         <div class="problem-text tex2jax_process"><p>В лыжных гонках участвуют $11$ спортсменов из России, $6$ спортсменов из Норвегии и $3$ спортсмена из Швеции. Порядок, в котором спортсмены стартуют, определяется жребием. Найдите вероятность того, что первым будет стартовать спортсмен не из России.</p></div>
          <button class="show-answer-btn"
-                 data-answer="0,7"
+                 data-answer="0,45"
                  onclick="showAnswer(27, this.dataset.answer)">
            Показать ответ
          </button>
@@ -895,9 +923,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 29</div>
          
-         <div class="problem-text">\[ \text{В фирме такси в данный момент свободно } 20 \text{ машин: } 2 \text{ чёрных, } 5 \text{ жёлтых и } 13 \text{ зелёных.} \]<br>\[ \text{По вызову выехала одна из машин, случайно оказавшаяся ближе всего к заказчику.} \]<br>\[ \text{Найдите вероятность того, что к нему приедет жёлтое такси.} \]</div>
+         <div class="problem-text tex2jax_process"><p>На экзамене 40 билетов, Саша \textbf{не выучил} 2 из них. Найдите вероятность того, что ему попадётся выученный билет.</p></div>
          <button class="show-answer-btn"
-                 data-answer="0,25"
+                 data-answer="0,95"
                  onclick="showAnswer(28, this.dataset.answer)">
            Показать ответ
          </button>
@@ -910,9 +938,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 30</div>
          
-         <div class="problem-text">Вероятность того, что новая шариковая ручка пишет плохо (или не пишет), равна $0{,}26$. Покупатель в магазине выбирает одну шариковую ручку. Найдите вероятность того, что эта ручка пишет хорошо.</div>
+         <div class="problem-text tex2jax_process"><p>Родительский комитет закупил \(25\) пазлов для подарков детям в связи с окончанием учебного года, из них \(21\) с машинами и \(4\) с видами городов. Подарки распределяются случайным образом между \(25\) детьми, среди которых есть Саша. Найдите вероятность того, что Саше достанется пазл с машиной.</p></div>
          <button class="show-answer-btn"
-                 data-answer="0,74"
+                 data-answer="0,84"
                  onclick="showAnswer(29, this.dataset.answer)">
            Показать ответ
          </button>
@@ -931,7 +959,7 @@
       <h2>Хотите посмотреть решение?</h2>
       <p>Создайте аккаунт или войдите, чтобы получить доступ к подробным решениям всех задач.</p>
       <div class="modal-buttons">
-        <a href="/auth" class="modal-button primary">Войти / Создать аккаунт</a>
+        <a href="/register" class="modal-button primary">Войти / Создать аккаунт</a>
         <button class="modal-button secondary" onclick="closeSolutionModal()">Закрыть</button>
       </div>
     </div>

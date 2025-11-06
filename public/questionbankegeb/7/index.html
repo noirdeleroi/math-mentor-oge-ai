@@ -1,0 +1,1600 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Задание 7 - Банк заданий ЕГЭ базовый</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true,
+        processEnvironments: true,
+        packages: {'[+]': ['ams', 'newcommand', 'configmacros']}
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        ignoreHtmlClass: 'tex2jax_ignore',
+        processHtmlClass: 'tex2jax_process'
+      },
+      startup: {
+        ready: () => {
+          MathJax.startup.defaultReady();
+          MathJax.startup.defaultDocument();
+        }
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%);
+      min-height: 100vh;
+      color: #ffffff;
+      overflow-x: hidden;
+    }
+
+    /* Flying Math Background Animation */
+    .flying-math {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .math-symbol {
+      position: absolute;
+      color: rgba(255, 255, 255, 0.1);
+      font-size: 2rem;
+      animation: float 20s infinite linear;
+      user-select: none;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100px) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding: 2rem 0;
+    }
+
+    .header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 3rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #fbbf24 0%, #10b981 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    .header p {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 1.25rem;
+      font-weight: 500;
+    }
+
+    .header .subtitle {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .question-item {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .question-item:hover {
+      border-color: rgba(251, 191, 36, 0.4);
+      box-shadow: 0 20px 40px rgba(251, 191, 36, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .question-number {
+      font-size: 0.875rem;
+      color: #fbbf24;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .problem-image {
+      max-width: 100%;
+      width: 100%;
+      max-width: 600px;
+      height: auto;
+      border-radius: 12px;
+      margin: 0 auto 1.5rem auto;
+      display: block;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      object-fit: contain;
+    }
+
+    .problem-text {
+      font-size: 1.125rem;
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+      color: #ffffff;
+      font-weight: 400;
+    }
+
+    .answer-section {
+      margin-bottom: 1.5rem;
+    }
+
+    .answer-input {
+      width: 100%;
+      padding: 1rem 1.25rem;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      color: #ffffff;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(8px);
+    }
+
+    .answer-input:focus {
+      outline: none;
+      border-color: #fbbf24;
+      box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .answer-input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .show-answer-btn,
+    .show-solution-btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .show-answer-btn {
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      color: #1a1f36;
+      margin-right: 0.75rem;
+      box-shadow: 0 4px 16px rgba(251, 191, 36, 0.3);
+    }
+
+    .show-answer-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(251, 191, 36, 0.4);
+    }
+
+    .show-solution-btn {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
+    }
+
+    .show-solution-btn:hover {
+      border-color: #fbbf24;
+      background: rgba(251, 191, 36, 0.1);
+      transform: translateY(-1px);
+    }
+
+    .answer-display {
+      margin-top: 1rem;
+      padding: 1rem 1.25rem;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 12px;
+      color: #10b981;
+      font-weight: 600;
+      display: none;
+      backdrop-filter: blur(8px);
+    }
+
+    .answer-display.visible {
+      display: block;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      backdrop-filter: blur(8px);
+    }
+
+    .modal.visible {
+      display: flex;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .modal-content {
+      background: rgba(26, 31, 54, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 2.5rem;
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-content h2 {
+      font-family: 'Playfair Display', serif;
+      margin-bottom: 1rem;
+      color: #ffffff;
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .modal-content p {
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+      font-size: 1rem;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .modal-button {
+      padding: 0.875rem 1.75rem;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .modal-button.primary {
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      color: #1a1f36;
+      box-shadow: 0 4px 16px rgba(251, 191, 36, 0.3);
+    }
+
+    .modal-button.primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(251, 191, 36, 0.4);
+    }
+
+    .modal-button.secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
+    }
+
+    .modal-button.secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-1px);
+    }
+
+    /* MathJax styling to match the app */
+    mjx-container {
+      user-select: text;
+    }
+    
+    mjx-container * {
+      user-select: none;
+    }
+    
+    /* MathJax selection and display styling */
+    mjx-container {
+      user-select: text;
+    }
+    
+    /* Selection highlighting for regular text and MathJax fallback */
+    ::selection {
+      background: rgba(251, 191, 36, 0.3);
+    }
+    
+    /* MathJax selection overlay */
+    .mjx-selection-highlight {
+      background: rgba(251, 191, 36, 0.3) !important;
+    }
+    
+    /* Force selection visibility on MathJax elements */
+    mjx-container.mjx-selected {
+      background: rgba(251, 191, 36, 0.3);
+    }
+
+    /* General image styling for any images in the content */
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto 1rem auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Table styling for problem text */
+    .problem-text table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .problem-text table td {
+      padding: 0.75rem 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+    }
+
+    .problem-text table tr:first-child td {
+      background: rgba(251, 191, 36, 0.1);
+      font-weight: 600;
+      color: #fbbf24;
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2.5rem;
+      }
+
+      .header p {
+        font-size: 1.125rem;
+      }
+
+      .question-item {
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .show-answer-btn {
+        margin-bottom: 0.75rem;
+        margin-right: 0;
+        width: 100%;
+      }
+
+      .show-solution-btn {
+        width: 100%;
+      }
+
+      .problem-image {
+        max-width: 100%;
+        margin: 0 auto 1rem auto;
+      }
+
+      .modal-content {
+        padding: 2rem;
+        margin: 1rem;
+      }
+
+      .modal-buttons {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .modal-button {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 1rem 0.75rem;
+      }
+
+      .header h1 {
+        font-size: 2rem;
+      }
+
+      .question-item {
+        padding: 1.25rem;
+      }
+
+      .problem-text {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Flying Math Background -->
+  <div class="flying-math" id="flyingMath"></div>
+
+  <div class="container">
+    <div class="header">
+      <h1>Задание 7</h1>
+      <p>Банк заданий ЕГЭ базовый по математике</p>
+    </div>
+
+    <div id="questions">
+      
+       <div class="question-item">
+         <div class="question-number">Вопрос 1</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/C8C8E1.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Установите соответствие и впишите ответ.</p>
+<p>На рисунке изображён график функции \( y = f(x) \). Числа \( a, b, c, d \) и \( e \) задают на оси \( Ox \) интервалы. Пользуясь графиком, поставьте в соответствие каждому интервалу характеристику функции.</p>
+<p>ИНТЕРВАЛЫ \quad ХАРАКТЕРИСТИКИ</p>
+<ul>
+    <li>А) \( (a; b) \) \quad 1) функция возрастает на интервале</li>
+    <li>Б) \( (b; c) \) \quad 2) функция убывает на интервале</li>
+    <li>В) \( (c; d) \) \quad 3) значение функции положительно в каждой точке интервала</li>
+    <li>Г) \( (d; e) \) \quad 4) значение функции отрицательно в каждой точке интервала</li>
+</ul>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+<p>А \quad Б \quad В \quad Г</p></div>
+         <button class="show-answer-btn"
+                 data-answer="2112"
+                 onclick="showAnswer(0, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-0" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 2</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/F818C2.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Установите соответствие и впишите ответ.</p>
+<p>На рисунке точками показано атмосферное давление в некотором городе на протяжении трёх суток с 4 по 6 апреля 2013 года. В течение суток давление измеряется 4 раза: в 0:00, в 6:00, в 12:00 и в 18:00. По горизонтали указывается время и дата, по вертикали — давление в миллиметрах ртутного столба. Для наглядности точки соединены линиями. Пользуясь рисунком, поставьте в соответствие каждому из указанных периодов времени характеристику атмосферного давления в этом городе в течение этого периода.</p>
+<p>ПЕРИОДЫ ВРЕМЕНИ</p>
+<ul>
+    <li>А) день 4 апреля (с 12 до 18 часов)</li>
+    <li>Б) ночь 5 апреля (с 0 до 6 часов)</li>
+    <li>В) день 5 апреля (с 12 до 18 часов)</li>
+    <li>Г) день 6 апреля (с 12 до 18 часов)</li>
+</ul>
+<p>ХАРАКТЕРИСТИКИ</p>
+<ol>
+    <li>давление упало, но оставалось больше 761 мм рт. ст.</li>
+    <li>давление не превышало 756 мм рт. ст.</li>
+    <li>наименьший рост давления</li>
+    <li>наименьшее падение давления</li>
+</ol>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+<p>А Б В Г</p></div>
+         <button class="show-answer-btn"
+                 data-answer="A-4
+Б-2
+B-3
+Г-1"
+                 onclick="showAnswer(1, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-1" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 3</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/C91A64.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На рисунках изображены графики функций вида \( y = kx + b \).</p>
+<p>Установите соответствие между графиками функций и знаками коэффициентов \( k \) и \( b \).</p>
+<p>ГРАФИКИ</p>
+<p>А)</p>
+<p>Б)</p>
+<p>В)</p>
+<p>Г)</p>
+<p>КОЭФФИЦИЕНТЫ</p>
+<ol>
+<li>\( k < 0, \, b > 0 \)</li>
+<li>\( k > 0, \, b < 0 \)</li>
+<li>\( k > 0, \, b > 0 \)</li>
+<li>\( k < 0, \, b < 0 \)</li>
+</ol>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+<table>
+<tr><td>А</td><td>Б</td><td>В</td><td>Г</td></tr>
+</table></div>
+         <button class="show-answer-btn"
+                 data-answer="A-3, Б-2, B-1, Г-4"
+                 onclick="showAnswer(2, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-2" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 4</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/CD6E10.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Установите соответствие и впишите ответ.</p>
+<p>На рисунке показано изменение цены акций компании на момент закрытия биржевых торгов во все рабочие дни в период с 1 по 18 сентября 2012 года. По горизонтали указываются числа месяца, по вертикали — цена акции в рублях за штуку. Для наглядности точки соединены линией. Пользуясь рисунком, поставьте в соответствие каждому из указанных интервалов времени характеристику изменения цены акций.</p>
+<p>ПЕРИОДЫ ВРЕМЕНИ \quad ХАРАКТЕРИСТИКИ</p>
+<ul>
+    <li>А) 1–5 сентября \quad 1) наибольшее изменение цены за весь период</li>
+    <li>Б) 6–8 сентября \quad 2) цена акций ежедневно снижалась</li>
+    <li>В) 11–13 сентября \quad 3) цена акций ежедневно росла</li>
+    <li>Г) 14–18 сентября \quad 4) минимальное колебание цены акций</li>
+</ul>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+<p>А \quad Б \quad В \quad Г</p></div>
+         <button class="show-answer-btn"
+                 data-answer="4312"
+                 onclick="showAnswer(3, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-3" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 5</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/F0443D.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На рисунке изображены график функции и касательные, проведённые к нему в точках с абсциссами \( A, B, C \) и \( D \). В правом столбце указаны значения производной функции в точках \( A, B, C \) и \( D \). Пользуясь графиком, поставьте в соответствие каждой точке значение производной функции в ней. В таблице для каждой точки укажите номер соответствующего значения производной.</p>
+<table>
+    <tr>
+        <td>ТОЧКИ</td>
+        <td>ЗНАЧЕНИЯ ПРОИЗВОДНОЙ</td>
+    </tr>
+    <tr>
+        <td>\( A \)</td>
+        <td>1) \(-0{,}7\)</td>
+    </tr>
+    <tr>
+        <td>\( B \)</td>
+        <td>2) \(1{,}4\)</td>
+    </tr>
+    <tr>
+        <td>\( C \)</td>
+        <td>3) \(-1{,}8\)</td>
+    </tr>
+    <tr>
+        <td>\( D \)</td>
+        <td>4) \(0{,}5\)</td>
+    </tr>
+</table>
+<p>\( A \quad B \quad C \quad D \)</p></div>
+         <button class="show-answer-btn"
+                 data-answer="A: 1
+B: 4
+C: -
+D: 3"
+                 onclick="showAnswer(4, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-4" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 6</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/BF609E.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Установите соответствие и впишите ответ.</p>
+<p>На рисунках изображены графики функций вида \( y = kx + b \).</p>
+<p>Установите соответствие между графиками функций и значениями их производной в точке \( x = 1 \).</p>
+<p>ГРАФИКИ</p>
+<p>А)</p>
+<p>Б)</p>
+<p>В)</p>
+<p>Г)</p>
+<p>ЗНАЧЕНИЯ ПРОИЗВОДНОЙ</p>
+<p>1) \( \frac{1}{3} \)</p>
+<p>2) \( 1 \)</p>
+<p>3) \( -0{,}6 \)</p>
+<p>4) \( -3 \)</p>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+<table><tr><td>А</td><td>Б</td><td>В</td><td>Г</td></tr></table></div>
+         <button class="show-answer-btn"
+                 data-answer="A - 3
+Б - 4
+B - 2
+Г - 1"
+                 onclick="showAnswer(5, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-5" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 7</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/74ABBB.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Установите соответствие и впишите ответ.</p>
+<p>На рисунке точками изображён среднемесячный курс евро в период с октября 2013 года по сентябрь 2014 года. По горизонтали указываются месяц и год, по вертикали — курс евро в рублях. Для наглядности точки соединены линиями. Пользуясь рисунком, поставьте в соответствие каждому из указанных периодов времени характеристику курса евро.</p>
+<p>ПЕРИОДЫ ВРЕМЕНИ</p>
+<ul>
+<li>А) октябрь – декабрь 2013 г.</li>
+<li>Б) январь – март 2014 г.</li>
+<li>В) апрель – июнь 2014 г.</li>
+<li>Г) июль – сентябрь 2014 г.</li>
+</ul>
+<p>ХАРАКТЕРИСТИКИ</p>
+<ol>
+<li>курс евро падал</li>
+<li>курс евро медленно рос, но был не больше 46 рублей за евро</li>
+<li>курс евро рос и был больше 46 рублей за евро</li>
+<li>курс евро достиг максимума за период с октября 2013 года по сентябрь 2014 года</li>
+</ol>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+<table>
+<tr>
+<td>А</td>
+<td>Б</td>
+<td>В</td>
+<td>Г</td>
+</tr>
+</table></div>
+         <button class="show-answer-btn"
+                 data-answer=""
+                 onclick="showAnswer(6, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-6" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 8</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/088584.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На рисунке изображён график функции \( y = f(x) \).</p>
+<p>Числа \( a, b, c, d \) и \( e \) задают на оси \( Ox \) интервалы.</p>
+<p>Пользуясь графиком, поставьте в соответствие каждому интервалу характеристику функции или её производной.</p>
+<p>ИНТЕРВАЛЫ \quad ХАРАКТЕРИСТИКИ</p>
+<ul>
+    <li>А) \( (a; b) \) \quad 1) значение производной функции положительно в каждой точке интервала</li>
+    <li>Б) \( (b; c) \) \quad 2) значение функции отрицательно в каждой точке интервала</li>
+    <li>В) \( (c; d) \) \quad 3) значение производной функции отрицательно в каждой точке интервала</li>
+    <li>Г) \( (d; e) \) \quad 4) значение функции положительно в каждой точке интервала</li>
+</ul>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+<table>
+    <tr>
+        <td>А</td>
+        <td>Б</td>
+        <td>В</td>
+        <td>Г</td>
+    </tr>
+</table></div>
+         <button class="show-answer-btn"
+                 data-answer="A-1, Б-4, В-3, Г-2"
+                 onclick="showAnswer(7, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-7" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 9</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/C77447.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Установите соответствие между графиками функций и характеристиками этих функций на отрезке \( [-1; 1] \).</p>
+<p>ГРАФИКИ</p>
+<p>А)</p>
+<p>Б)</p>
+<p>В)</p>
+<p>Г)</p>
+<p>ХАРАКТЕРИСТИКИ</p>
+<ul>
+<li>функция принимает отрицательное значение в каждой точке отрезка \( [-1; 1] \)</li>
+<li>функция возрастает на отрезке \( [-1; 1] \)</li>
+<li>функция принимает положительное значение в каждой точке отрезка \( [-1; 1] \)</li>
+<li>функция убывает на отрезке \( [-1; 1] \)</li>
+</ul>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+<p>А \quad Б \quad В \quad Г</p>
+<table>
+<tr><td><select><option>1</option><option>2</option><option>3</option><option>4</option></select></td><td><select><option>1</option><option>2</option><option>3</option><option>4</option></select></td><td><select><option>1</option><option>2</option><option>3</option><option>4</option></select></td><td><select><option>1</option><option>2</option><option>3</option><option>4</option></select></td></tr>
+</table></div>
+         <button class="show-answer-btn"
+                 data-answer="A-3, Б-4, B-1, Г-2"
+                 onclick="showAnswer(8, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-8" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 10</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/903584.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На рисунках изображены графики функций вида \( y = kx + b \).</p>
+<p>Установите соответствие между графиками функций и угловыми коэффициентами прямых.</p>
+<p>ГРАФИКИ</p>
+<ul>
+<li>А)</li>
+<li>Б)</li>
+<li>В)</li>
+<li>Г)</li>
+</ul>
+<p>УГЛОВЫЕ КОЭФФИЦИЕНТЫ</p>
+<ol>
+<li>\( -1 \)</li>
+<li>\( -1{,}25 \)</li>
+<li>\( 3 \)</li>
+<li>\( 0{,}8 \)</li>
+</ol>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+<table>
+<tr>
+<td>А</td>
+<td>Б</td>
+<td>В</td>
+<td>Г</td>
+</tr>
+</table></div>
+         <button class="show-answer-btn"
+                 data-answer="A-4, Б-2, В-3, Г-1"
+                 onclick="showAnswer(9, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-9" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 11</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/579261.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На рисунке точками показано атмосферное давление в некотором городе на протяжении трёх суток, с 4 по 6 апреля 2013 года. В течение суток давление измеряется 4 раза: в 0:00, в 6:00, в 12:00 и в 18:00. По горизонтали указаны время и дата, по вертикали — давление в миллиметрах ртутного столба. Для наглядности точки соединены линиями. Пользуясь рисунком, поставьте в соответствие каждому из указанных периодов времени характеристику атмосферного давления в этом городе в течение этого периода.</p>
+<table>
+<tr>
+<td>\textbf{ПЕРИОДЫ ВРЕМЕНИ}</td>
+<td>\textbf{ХАРАКТЕРИСТИКИ}</td>
+</tr>
+<tr>
+<td>А) вечер 4 апреля (с 18 до 0 часов)</td>
+<td>1) давление не изменилось</td>
+</tr>
+<tr>
+<td>Б) день 5 апреля (с 12 до 18 часов)</td>
+<td>2) наибольший рост давления</td>
+</tr>
+<tr>
+<td>В) ночь 6 апреля (с 0 до 6 часов)</td>
+<td>3) давление росло, но не превышало 760 мм рт. ст.</td>
+</tr>
+<tr>
+<td>Г) утро 6 апреля (с 6 до 12 часов)</td>
+<td>4) давление падало</td>
+</tr>
+</table>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="А1Б2В3Г4"
+                 onclick="showAnswer(10, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-10" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 12</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/B03486.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Установите соответствие и впишите ответ.</p>
+<p>На рисунке изображён график функции \( y = f(x) \). Числа \( a, b, c, d \) и \( e \) задают на оси \( Ox \) интервалы. Пользуясь графиком, поставьте в соответствие каждому интервалу характеристику функции или её производной.</p>
+<p>ИНТЕРВАЛЫ \quad ХАРАКТЕРИСТИКИ</p>
+<ul>
+<li>А) \( (a; b) \) \quad 1) значение функции положительно в каждой точке интервала</li>
+<li>Б) \( (b; c) \) \quad 2) значение производной функции отрицательно в каждой точке интервала</li>
+<li>В) \( (c; d) \) \quad 3) значение производной функции положительно в каждой точке интервала</li>
+<li>Г) \( (d; e) \) \quad 4) значение функции отрицательно в каждой точке интервала</li>
+</ul>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+<table>
+<tr><td>А</td><td>Б</td><td>В</td><td>Г</td></tr>
+<tr><td>1</td><td>2</td><td>3</td><td>4</td></tr>
+</table></div>
+         <button class="show-answer-btn"
+                 data-answer="4123"
+                 onclick="showAnswer(11, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-11" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 13</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/3691D0.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На рисунках изображены графики функций и касательные, проведённые к ним в точках с абсциссой \( x_0 \). Установите соответствие между графиками функций и значениями производной этих функций в точке \( x_0 \).</p>
+<p>ГРАФИКИ</p>
+<p>А) \quad Б) \quad В) \quad Г)</p>
+<p>ЗНАЧЕНИЯ ПРОИЗВОДНОЙ</p>
+<ul>
+<li>\( 1) \; -1 \)</li>
+<li>\( 2) \; -1{,}5 \)</li>
+<li>\( 3) \; 0{,}5 \)</li>
+<li>\( 4) \; \frac{4}{3} \)</li>
+</ul>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+<table>
+<tr>
+<td>А</td>
+<td>Б</td>
+<td>В</td>
+<td>Г</td>
+</tr>
+<tr>
+<td>1</td>
+<td>2</td>
+<td>3</td>
+<td>4</td>
+</tr>
+</table></div>
+         <button class="show-answer-btn"
+                 data-answer="A - 4
+Б - 3
+B - 2
+Г - 1"
+                 onclick="showAnswer(12, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-12" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 14</div>
+         
+         <div class="problem-text tex2jax_process"><p>Установите соответствие между функциями и характеристиками этих функций.</p>
+<table>
+    <tr>
+        <td><b>ФУНКЦИИ</b></td>
+        <td><b>ХАРАКТЕРИСТИКИ</b></td>
+    </tr>
+    <tr>
+        <td><b>А)</b> \(y = 8x + 10\)</td>
+        <td><b>1)</b> функция имеет точку максимума</td>
+    </tr>
+    <tr>
+        <td><b>Б)</b> \(y = x^2 - 12x + 5\)</td>
+        <td><b>2)</b> функция убывающая</td>
+    </tr>
+    <tr>
+        <td><b>В)</b> \(y = 4x - x^2\)</td>
+        <td><b>3)</b> функция имеет точку минимума</td>
+    </tr>
+    <tr>
+        <td><b>Г)</b> \(y = 17 - 3x\)</td>
+        <td><b>4)</b> функция возрастающая</td>
+    </tr>
+</table>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="2"
+                 onclick="showAnswer(13, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-13" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 15</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/B75439.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Установите соответствие и впишите ответ.</p>
+<p>На рисунке точками показан прирост населения Китая в период с 2004 по 2013 год. По горизонтали указан год, по вертикали — прирост населения в процентах (увеличение численности населения относительно прошлого года). Для наглядности точки соединены линиями. Пользуясь рисунком, поставьте в соответствие каждому из указанных периодов времени характеристику прироста населения Китая в этот период. В таблице под каждой буквой укажите соответствующий номер.</p>
+<p>ПЕРИОДЫ ВРЕМЕНИ</p>
+<ul>
+    <li>А) 2004–2006 гг.</li>
+    <li>Б) 2006–2007 гг.</li>
+    <li>В) 2008–2011 гг.</li>
+    <li>Г) 2012–2013 гг.</li>
+</ul>
+<p>ХАРАКТЕРИСТИКИ</p>
+<ol>
+    <li>прирост населения оставался выше 0,55 \%</li>
+    <li>прирост населения достиг минимума</li>
+    <li>прирост населения увеличился</li>
+    <li>наибольшее падение прироста населения за один год</li>
+</ol>
+<table>
+    <tr>
+        <td>А</td>
+        <td>Б</td>
+        <td>В</td>
+        <td>Г</td>
+    </tr>
+</table></div>
+         <button class="show-answer-btn"
+                 data-answer="A-4, Б-2, B-1, Г-3"
+                 onclick="showAnswer(14, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-14" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 16</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/3643B8.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На рисунках изображены графики функций и касательные, проведённые к ним в точках с абсциссой \( x_0 \). Установите соответствие между графиками функций и значениями производной этих функций в точке \( x_0 \).</p>
+<p>ГРАФИКИ</p>
+<ul>
+    <li>А)</li>
+    <li>Б)</li>
+    <li>В)</li>
+    <li>Г)</li>
+</ul>
+<p>ЗНАЧЕНИЯ ПРОИЗВОДНОЙ</p>
+<ol>
+    <li>\( \frac{5}{3} \)</li>
+    <li>\( -0{,}4 \)</li>
+    <li>\( -2 \)</li>
+    <li>\( 1 \)</li>
+</ol>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="A - 1
+Б - 4
+В - 3
+Г - 2"
+                 onclick="showAnswer(15, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-15" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 17</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/2658C4.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На рисунках изображены графики функций вида \( y = kx + b \).</p>
+<p>Установите соответствие между графиками функций и угловыми коэффициентами прямых.</p>
+<p>ГРАФИКИ</p>
+<p>А)</p>
+<p>Б)</p>
+<p>В)</p>
+<p>Г)</p>
+<p>УГЛОВЫЕ КОЭФФИЦИЕНТЫ</p>
+<ul>
+<li>\( 1) \ 0{,}75 \)</li>
+<li>\( 2) \ -\frac{1}{3} \)</li>
+<li>\( 3) \ -1 \)</li>
+<li>\( 4) \ 2{,}5 \)</li>
+</ul>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+<p>А \quad Б \quad В \quad Г</p></div>
+         <button class="show-answer-btn"
+                 data-answer="A-2, Б-4, B-1, Г-3"
+                 onclick="showAnswer(16, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-16" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 18</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/A08731.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Установите соответствие и впишите ответ.</p>
+<p>На рисунке изображён график функции \( y = f(x) \). Числа \( a, b, c, d \) и \( e \) задают на оси \( Ox \) интервалы. Пользуясь графиком, поставьте в соответствие каждому интервалу характеристику функции.</p>
+<table>
+    <tr>
+        <td>ИНТЕРВАЛЫ</td>
+        <td>ХАРАКТЕРИСТИКИ</td>
+    </tr>
+    <tr>
+        <td>А) \( (a; b) \)</td>
+        <td>1) функция убывает на интервале</td>
+    </tr>
+    <tr>
+        <td>Б) \( (b; c) \)</td>
+        <td>2) функция возрастает на интервале</td>
+    </tr>
+    <tr>
+        <td>В) \( (c; d) \)</td>
+        <td>3) значение функции отрицательно в каждой точке интервала</td>
+    </tr>
+    <tr>
+        <td>Г) \( (d; e) \)</td>
+        <td>4) значение функции положительно в каждой точке интервала</td>
+    </tr>
+</table>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+<table>
+    <tr>
+        <td>А</td>
+        <td>Б</td>
+        <td>В</td>
+        <td>Г</td>
+    </tr>
+    <tr>
+        <td>1</td>
+        <td>2</td>
+        <td>3</td>
+        <td>4</td>
+    </tr>
+</table></div>
+         <button class="show-answer-btn"
+                 data-answer="1212"
+                 onclick="showAnswer(17, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-17" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 19</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/0FC521.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Установите соответствие и впишите ответ.</p>
+<p>На рисунках изображены графики функций вида \( y = kx + b \).</p>
+<p>Установите соответствие между графиками функций и значениями их производной в точке \( x = 1 \).</p>
+<p>ГРАФИКИ</p>
+<p>А) <img src="docs/E040A72A1A3DABA14C90C97E0B6EE7DC/questions/625A1844360489944B693EBCA994F026/xs3qvrsrc499460E50E2FA05C4EEBAEB6AE49D6D2_1_1499103305.png" alt="График А" style="width:0.2\textwidth;"></p>
+<p>Б) <img src="docs/E040A72A1A3DABA14C90C97E0B6EE7DC/questions/625A1844360489944B693EBCA994F026/xs3qvrsrc5C7D22ACD5BA966A45D5FB0A562ED7C4_1_1499103309.png" alt="График Б" style="width:0.2\textwidth;"></p>
+<p>В) <img src="docs/E040A72A1A3DABA14C90C97E0B6EE7DC/questions/625A1844360489944B693EBCA994F026/xs3qvrsrcEC6DE276434D9A294BAD9C978C9AADCC_1_1499103313.png" alt="График В" style="width:0.2\textwidth;"></p>
+<p>Г) <img src="docs/E040A72A1A3DABA14C90C97E0B6EE7DC/questions/625A1844360489944B693EBCA994F026/xs3qvrsrcD66DCE00DED1A8CF45EBA438983590B4_1_1499103317.png" alt="График Г" style="width:0.2\textwidth;"></p>
+<p>ЗНАЧЕНИЯ ПРОИЗВОДНОЙ</p>
+<ul>
+<li>1) \(-5\)</li>
+<li>2) \(3\)</li>
+<li>3) \(-0{,}2\)</li>
+<li>4) \(0{,}75\)</li>
+</ul>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+<table>
+<tr>
+<td>А</td>
+<td>Б</td>
+<td>В</td>
+<td>Г</td>
+</tr>
+<tr>
+<td>1</td>
+<td>2</td>
+<td>3</td>
+<td>4</td>
+</tr>
+</table></div>
+         <button class="show-answer-btn"
+                 data-answer="A-1, Б-3, B-2, Г-4"
+                 onclick="showAnswer(18, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-18" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 20</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/7582EB.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Установите соответствие и впишите ответ.</p>
+<p>На рисунке изображён график функции \( y = f(x) \).</p>
+<p>Числа \( a, b, c, d \) и \( e \) задают на оси \( Ox \) интервалы.</p>
+<p>Пользуясь графиком, поставьте в соответствие каждому интервалу характеристику функции.</p>
+<p>ИНТЕРВАЛЫ \quad ХАРАКТЕРИСТИКИ</p>
+<ul>
+    <li>А) \( (a; b) \) \quad 1) значение функции отрицательно в каждой точке интервала</li>
+    <li>Б) \( (b; c) \) \quad 2) функция возрастает на интервале</li>
+    <li>В) \( (c; d) \) \quad 3) функция убывает на интервале</li>
+    <li>Г) \( (d; e) \) \quad 4) значение функции положительно в каждой точке интервала</li>
+</ul>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+<table>
+    <tr>
+        <td>А</td>
+        <td>Б</td>
+        <td>В</td>
+        <td>Г</td>
+    </tr>
+</table></div>
+         <button class="show-answer-btn"
+                 data-answer=""
+                 onclick="showAnswer(19, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-19" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 21</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/00D449.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На рисунках изображены графики функций и касательные, проведённые к ним в точках с абсциссой \( x_0 \). Установите соответствие между графиками функций и значениями производной этих функций в точке \( x_0 \).</p>
+<p>ГРАФИКИ</p>
+<p>А) <img src="docs/E040A72A1A3DABA14C90C97E0B6EE7DC/questions/02B7208AA1E9AA314DA27D749AEF5191(copy2)/xs3qvrsrc0CD15E1F3593A56C464302BEF7971BCE_1_1511269799.png" alt="">
+Б) <img src="docs/E040A72A1A3DABA14C90C97E0B6EE7DC/questions/02B7208AA1E9AA314DA27D749AEF5191(copy2)/xs3qvrsrc14DE623C32749F5A4731BBE990C8D242_1_1511269803.png" alt="">
+В) <img src="docs/E040A72A1A3DABA14C90C97E0B6EE7DC/questions/02B7208AA1E9AA314DA27D749AEF5191(copy2)/xs3qvrsrc3647A322ADE6A9F5419A528DF54F3362_1_1511269801.png" alt="">
+Г) <img src="docs/E040A72A1A3DABA14C90C97E0B6EE7DC/questions/02B7208AA1E9AA314DA27D749AEF5191(copy2)/xs3qvrsrc66D97B722406A6F741E757930F5F383E_1_1511269805.png" alt=""></p>
+<p>ЗНАЧЕНИЯ ПРОИЗВОДНОЙ</p>
+<ul>
+<li>1) \( 1{,}25 \)</li>
+<li>2) \( -0{,}25 \)</li>
+<li>3) \( 0{,}4 \)</li>
+<li>4) \( -5 \)</li>
+</ul>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+<table>
+<tr>
+<td>А</td>
+<td>Б</td>
+<td>В</td>
+<td>Г</td>
+</tr>
+<tr>
+<td>1</td>
+<td>2</td>
+<td>3</td>
+<td>4</td>
+</tr>
+</table></div>
+         <button class="show-answer-btn"
+                 data-answer="A - 3
+Б - 2
+B - 4
+Г - 1"
+                 onclick="showAnswer(20, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-20" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 22</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/7BA4BF.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Установите соответствие и впишите ответ.</p>
+<p>На рисунке изображён график функции \( y = f(x) \). Числа \( a, b, c, d \) и \( e \) задают на оси \( Ox \) интервалы.</p>
+<p>Пользуясь графиком, поставьте в соответствие каждому интервалу характеристику функции или её производной.</p>
+<p>ИНТЕРВАЛЫ \quad ХАРАКТЕРИСТИКИ</p>
+<table><tr><td>А) \( (a; b) \)</td><td>1) значение функции положительно в каждой точке интервала</td></tr><tr><td>Б) \( (b; c) \)</td><td>2) значение производной функции отрицательно в каждой точке интервала</td></tr><tr><td>В) \( (c; d) \)</td><td>3) значение производной функции положительно в каждой точке интервала</td></tr><tr><td>Г) \( (d; e) \)</td><td>4) значение функции отрицательно в каждой точке интервала</td></tr></table>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+<p>А Б В Г</p></div>
+         <button class="show-answer-btn"
+                 data-answer="4 1 2 3"
+                 onclick="showAnswer(21, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-21" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 23</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/FAE5B7.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Установите соответствие и впишите ответ.</p><p>На рисунке изображён график функции \( y = f(x) \) и отмечены точки \( A, B, C \) и \( D \) на оси \( Ox \).</p><p>Пользуясь графиком, поставьте в соответствие каждой точке характеристики функции и её производной.</p><table><tr><td>ТОЧКИ</td><td>ХАРАКТЕРИСТИКИ</td></tr><tr><td>A</td><td>1) значение функции в точке положительно, а значение производной функции в точке отрицательно</td></tr><tr><td>B</td><td>2) значение функции в точке отрицательно и значение производной функции в точке отрицательно</td></tr><tr><td>C</td><td>3) значение функции в точке отрицательно, а значение производной функции в точке положительно</td></tr><tr><td>D</td><td>4) значение функции в точке положительно и значение производной функции в точке положительно</td></tr></table><p>В таблице для каждой точки укажите номер соответствующей характеристики.</p><table><tr><td>A</td><td>B</td><td>C</td><td>D</td></tr><tr><td><table><tr><td>\(\text{select}\{0,1,2,3,4\}\)</td></tr></table></td><td><table><tr><td>\(\text{select}\{0,1,2,3,4\}\)</td></tr></table></td><td><table><tr><td>\(\text{select}\{0,1,2,3,4\}\)</td></tr></table></td><td><table><tr><td>\(\text{select}\{0,1,2,3,4\}\)</td></tr></table></td></tr></table></div>
+         <button class="show-answer-btn"
+                 data-answer="A-1, B-2, C-3, D-4"
+                 onclick="showAnswer(22, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-22" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 24</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/005EAF.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На рисунке точками показано потребление воды городской ТЭЦ на протяжении суток. По горизонтали указывается время, по вертикали — объём воды в кубометрах в час. Для наглядности точки соединены линией.</p>
+<p>Пользуясь рисунком, поставьте в соответствие каждому из указанных периодов времени характеристику потребления воды данной ТЭЦ в течение этого периода.</p>
+<table>
+<tr><td><b>ПЕРИОДЫ ВРЕМЕНИ</b></td><td><b>ХАРАКТЕРИСТИКИ</b></td></tr>
+<tr><td><b>А)</b> ночь (с 0 до 6 часов)</td><td><b>1)</b> потребление воды достигло максимума за сутки</td></tr>
+<tr><td><b>Б)</b> утро (с 6 до 12 часов)</td><td><b>2)</b> потребление воды падало в течение всего периода</td></tr>
+<tr><td><b>В)</b> день (с 12 до 18 часов)</td><td><b>3)</b> потребление воды сначала падало, а потом росло</td></tr>
+<tr><td><b>Г)</b> вечер (с 18 до 24 часов)</td><td><b>4)</b> наибольший рост потребления воды за сутки</td></tr>
+</table>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+<table>
+<tr><td>А</td><td>Б</td><td>В</td><td>Г</td></tr>
+<tr><td></td><td></td><td></td><td></td></tr>
+</table></div>
+         <button class="show-answer-btn"
+                 data-answer="2413"
+                 onclick="showAnswer(23, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-23" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 25</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/6D4FB8.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Установите соответствие и впишите ответ.</p><p>На рисунке изображены график функции и касательные, проведённые к нему в точках с абсциссами \( A, B, C \) и \( D \). В правом столбце указаны значения производной функции в точках \( A, B, C \) и \( D \). Пользуясь графиком, поставьте в соответствие каждой точке значение производной функции в ней.</p><p>ТОЧКИ \quad ЗНАЧЕНИЯ ПРОИЗВОДНОЙ</p><p>
+\( A \quad -\frac{2}{15} \)
+</p><p>
+\( B \quad 2 \)
+</p><p>
+\( C \quad \frac{5}{13} \)
+</p><p>
+\( D \quad -1\frac{2}{15} \)
+</p><p>В таблице для каждой точки укажите номер соответствующего значения производной.</p><table><tr><td>A</td><td>B</td><td>C</td><td>D</td></tr><tr><td>1</td><td>2</td><td>3</td><td>4</td></tr></table></div>
+         <button class="show-answer-btn"
+                 data-answer="A - 1
+B - 3
+C - 2
+D - 4"
+                 onclick="showAnswer(24, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-24" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 26</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/4ABD23.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На рисунке изображён график функции \( y = f(x) \).</p>
+<p>Числа \( a, b, c, d \) и \( e \) задают на оси \( Ox \) интервалы.</p>
+<p>Пользуясь графиком, поставьте в соответствие каждому интервалу характеристику функции.</p>
+<p>ИНТЕРВАЛЫ \quad ХАРАКТЕРИСТИКИ</p>
+<ul>
+<li>А) \( (a; b) \) \quad 1) функция убывает на интервале</li>
+<li>Б) \( (b; c) \) \quad 2) функция возрастает на интервале</li>
+<li>В) \( (c; d) \) \quad 3) значение функции отрицательно в каждой точке интервала</li>
+<li>Г) \( (d; e) \) \quad 4) значение функции положительно в каждой точке интервале</li>
+</ul>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+<p>\( \text{А} \quad \text{Б} \quad \text{В} \quad \text{Г} \)</p></div>
+         <button class="show-answer-btn"
+                 data-answer="A-1
+Б-2
+В-3
+Г-4"
+                 onclick="showAnswer(25, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-25" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 27</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/977AEF.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Установите соответствие и впишите ответ.</p>
+<p>На рисунке изображён график функции \( y = f(x) \) и отмечены точки \( A, B, C \) и \( D \) на оси \( Ox \).</p>
+<p>Пользуясь графиком, поставьте в соответствие каждой точке характеристики функции и её производной.</p>
+<table>
+<tr><td>Точки</td><td>Характеристики функции и производной</td></tr>
+<tr><td>\( A \)</td><td>1) значение функции в точке отрицательно, и значение производной функции в точке отрицательно</td></tr>
+<tr><td>\( B \)</td><td>2) значение функции в точке положительно, и значение производной функции в точке положительно</td></tr>
+<tr><td>\( C \)</td><td>3) значение функции в точке отрицательно, а значение производной функции в точке положительно</td></tr>
+<tr><td>\( D \)</td><td>4) значение функции в точке положительно, а значение производной функции в точке отрицательно</td></tr>
+</table>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+<table>
+<tr><td>A</td><td>B</td><td>C</td><td>D</td></tr>
+<tr><td>\(\text{select}\{0,1,2,3,4\}\)</td><td>\(\text{select}\{0,1,2,3,4\}\)</td><td>\(\text{select}\{0,1,2,3,4\}\)</td><td>\(\text{select}\{0,1,2,3,4\}\)</td></tr>
+</table></div>
+         <button class="show-answer-btn"
+                 data-answer="A-1
+B-2
+C-3
+D-4"
+                 onclick="showAnswer(26, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-26" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 28</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/89DAD7.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На рисунках изображены графики функций вида \( y = kx + b \).</p>
+<p>Установите соответствие между графиками функций и значениями их производной в точке \( x = 1 \).</p>
+<p>ГРАФИКИ</p>
+<p>А)</p>
+<p>Б)</p>
+<p>В)</p>
+<p>Г)</p>
+<p>ЗНАЧЕНИЯ ПРОИЗВОДНОЙ</p>
+<ul>
+<li>1) \( -\frac{5}{3} \)</li>
+<li>2) \( 0{,}4 \)</li>
+<li>3) \( 1{,}5 \)</li>
+<li>4) \( -\frac{1}{3} \)</li>
+</ul>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+<table>
+<tr><td>А</td><td>Б</td><td>В</td><td>Г</td></tr>
+<tr><td>1</td><td>2</td><td>3</td><td>4</td></tr>
+</table></div>
+         <button class="show-answer-btn"
+                 data-answer="A-3, Б-1, B-4, Г-2"
+                 onclick="showAnswer(27, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-27" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 29</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/95E19C.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На рисунках изображены графики функций вида \( y = kx + b \).</p>
+<p>Установите соответствие между графиками функций и значениями их производной в точке \( x = 1 \).</p>
+<p>ГРАФИКИ</p>
+<p>А)</p>
+<p>Б)</p>
+<p>В)</p>
+<p>Г)</p>
+<p>ЗНАЧЕНИЯ ПРОИЗВОДНОЙ</p>
+<ul>
+    <li>1) \( -5 \)</li>
+    <li>2) \( 3 \)</li>
+    <li>3) \( -0,2 \)</li>
+    <li>4) \( 0,75 \)</li>
+</ul>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+<table>
+    <tr>
+        <td>А</td>
+        <td>Б</td>
+        <td>В</td>
+        <td>Г</td>
+    </tr>
+</table></div>
+         <button class="show-answer-btn"
+                 data-answer="A - 2
+Б - 1
+В - 4
+Г - 3"
+                 onclick="showAnswer(28, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-28" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 30</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/5FA766.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На рисунке изображён график функции \( y = f(x) \) и отмечены точки \( A, B, C \) и \( D \) на оси \( Ox \).</p>
+<p>Пользуясь графиком, поставьте в соответствие каждой точке характеристики функции и её производной.</p>
+<p>В таблице для каждой точки укажите номер соответствующей характеристики.</p>
+<p>ТОЧКИ \quad ХАРАКТЕРИСТИКИ</p>
+<ul>
+    <li>\( A \quad 1) \) значение функции в точке отрицательно, а значение производной функции в точке равно \( 0 \)</li>
+    <li>\( B \quad 2) \) значение функции в точке положительно, а значение производной функции в точке равно \( 0 \)</li>
+    <li>\( C \quad 3) \) значение производной функции в точке отрицательно, а значение функции в точке равно \( 0 \)</li>
+    <li>\( D \quad 4) \) значение производной функции в точке положительно, а значение функции в точке отрицательно</li>
+</ul>
+<p>\( A \quad B \quad C \quad D \)</p></div>
+         <button class="show-answer-btn"
+                 data-answer="A 1
+B 3
+C 4
+D 2"
+                 onclick="showAnswer(29, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-29" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="solutionModal" class="modal">
+    <div class="modal-content">
+      <h2>Хотите посмотреть решение?</h2>
+      <p>Создайте аккаунт или войдите, чтобы получить доступ к подробным решениям всех задач.</p>
+      <div class="modal-buttons">
+        <a href="/register" class="modal-button primary">Войти / Создать аккаунт</a>
+        <button class="modal-button secondary" onclick="closeSolutionModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Flying Math Background Animation
+    function createFlyingMath() {
+      const mathSymbols = ['π', '∑', '∫', '√', '∞', 'α', 'β', 'γ', 'δ', 'ε', 'θ', 'λ', 'μ', 'σ', 'φ', 'ψ', 'ω', 'Δ', 'Ω', '±', '×', '÷', '=', '≠', '≤', '≥', '∈', '∉', '∪', '∩', '⊂', '⊃'];
+      const container = document.getElementById('flyingMath');
+      
+      function addMathSymbol() {
+        const symbol = document.createElement('div');
+        symbol.className = 'math-symbol';
+        symbol.textContent = mathSymbols[Math.floor(Math.random() * mathSymbols.length)];
+        symbol.style.left = Math.random() * 100 + '%';
+        symbol.style.animationDuration = (Math.random() * 10 + 15) + 's';
+        symbol.style.animationDelay = Math.random() * 5 + 's';
+        container.appendChild(symbol);
+        
+        // Remove symbol after animation
+        setTimeout(() => {
+          if (symbol.parentNode) {
+            symbol.parentNode.removeChild(symbol);
+          }
+        }, 25000);
+      }
+      
+      // Add symbols periodically
+      setInterval(addMathSymbol, 2000);
+      
+      // Add initial symbols
+      for (let i = 0; i < 5; i++) {
+        setTimeout(addMathSymbol, i * 1000);
+      }
+    }
+
+    function showAnswer(index, answer) {
+      const answerDiv = document.getElementById(`answer-${index}`);
+      answerDiv.textContent = `Ответ: ${answer}`;
+      answerDiv.classList.add('visible');
+      
+      // Re-render MathJax for the newly shown content
+      if (window.MathJax) {
+        MathJax.typesetPromise([answerDiv]);
+      }
+    }
+
+    function showSolutionModal() {
+      document.getElementById('solutionModal').classList.add('visible');
+    }
+
+    function closeSolutionModal() {
+      document.getElementById('solutionModal').classList.remove('visible');
+    }
+
+    // Close modal on outside click
+    document.getElementById('solutionModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeSolutionModal();
+      }
+    });
+
+    // Initialize flying math animation
+    document.addEventListener('DOMContentLoaded', createFlyingMath);
+    
+    // Initialize MathJax rendering
+    function initializeMathJax() {
+      if (window.MathJax) {
+        MathJax.typesetPromise();
+      }
+    }
+    
+    // Re-render MathJax when content changes
+    function reRenderMathJax(element) {
+      if (window.MathJax && element) {
+        MathJax.typesetPromise([element]);
+      }
+    }
+    
+    // Initialize MathJax on page load
+    document.addEventListener('DOMContentLoaded', initializeMathJax);
+  </script>
+</body>
+</html>
+

@@ -395,6 +395,28 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
+    /* Table styling for problem text */
+    .problem-text table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .problem-text table td {
+      padding: 0.75rem 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+    }
+
+    .problem-text table tr:first-child td {
+      background: rgba(251, 191, 36, 0.1);
+      font-weight: 600;
+      color: #fbbf24;
+    }
+
     /* Mobile Responsiveness */
     @media (max-width: 768px) {
       .header h1 {
@@ -474,8 +496,12 @@
       
        <div class="question-item">
          <div class="question-number">Вопрос 1</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//7_11_pr_pic.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Одно из чисел \( \sqrt{29}, \sqrt{34}, \sqrt{39}, \sqrt{45} \) отмечено на прямой точкой \( A \). Какое это число?  <br>1) \( \sqrt{29} \)  <br>2) \( \sqrt{34} \)  <br>3) \( \sqrt{39} \)  <br>4) \( \sqrt{45} \)</div>
+         
+         <div class="problem-text tex2jax_process"><p>Выберите правильный ответ. Какому из данных промежутков принадлежит число \(\frac{2}{7}\)?</p>
+<p>1) \([0.1 ; 0.2]\)</p>
+<p>2) \([0.2 ; 0.3]\)</p>
+<p>3) \([0.3 ; 0.4]\)</p>
+<p>4) \([0.4 ; 0.5]\)</p></div>
          <button class="show-answer-btn"
                  data-answer="2"
                  onclick="showAnswer(0, this.dataset.answer)">
@@ -490,7 +516,11 @@
        <div class="question-item">
          <div class="question-number">Вопрос 2</div>
          
-         <div class="problem-text">\[ \text{Выберите правильный ответ. Какому из данных промежутков} \]<br>\[ \text{принадлежит число } \frac{2}{9}? \]<br>\[ \text{1) } [0.1 ; 0.2] \]<br>\[ \text{2) } [0.2 ; 0.3] \]<br>\[ \text{3) } [0.3 ; 0.4] \]<br>\[ \text{4) } [0.4 ; 0.5] \]</div>
+         <div class="problem-text tex2jax_process"><p>Выберите правильный ответ. Какое из следующих чисел заключено между числами \(\frac{5}{17}\) и \(\frac{7}{19}\)?</p>
+<p>1) \(0{,}2\)</p>
+<p>2) \(0{,}3\)</p>
+<p>3) \(0{,}4\)</p>
+<p>4) \(0{,}5\)</p></div>
          <button class="show-answer-btn"
                  data-answer="2"
                  onclick="showAnswer(1, this.dataset.answer)">
@@ -504,8 +534,8 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 3</div>
-         
-         <div class="problem-text">\[ \text{Выберите правильный ответ. Какое из чисел } \sqrt{7}, \sqrt{8}, \sqrt{45} \text{ и } \sqrt{60} \text{ принадлежит промежутку } [7; 8]? \]<br>\[ \text{1) } \sqrt{7} \]<br>\[ \text{2) } \sqrt{8} \]<br>\[ \text{3) } \sqrt{45} \]<br>\[ \text{4) } \sqrt{60} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//7_27_pr_pic.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На координатной прямой отмечены числа \(x\) и \(y\).   Какое из приведённых утверждений для этих чисел неверно?</p><p>1) \(xy<0\)</p><p>2) \(x^2y>0\)</p><p>3) \(x+y<0\)</p><p>4) \(x-y>0\)</p></div>
          <button class="show-answer-btn"
                  data-answer="4"
                  onclick="showAnswer(2, this.dataset.answer)">
@@ -520,9 +550,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 4</div>
          
-         <div class="problem-text">\[ \text{Выберите правильный ответ. Между какими целыми числами заключено число } \frac{124}{15}? \]<br>\[ \text{8 и 9} \]<br>\[ \text{9 и 10} \]<br>\[ \text{10 и 11} \]<br>\[ \text{11 и 12} \]</div>
+         <div class="problem-text tex2jax_process"><p>Между какими числами заключено число \( \sqrt{58} \)?</p><p>1) \(19\) и \(21\)</p><p>2) \(57\) и \(59\)</p><p>3) \(3\) и \(4\)</p><p>4) \(7\) и \(8\)</p></div>
          <button class="show-answer-btn"
-                 data-answer="1"
+                 data-answer="4"
                  onclick="showAnswer(3, this.dataset.answer)">
            Показать ответ
          </button>
@@ -534,10 +564,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 5</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//224.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{Выберите правильный ответ. Одно из чисел } \frac{29}{9}, \frac{34}{9}, \frac{38}{9} \text{ и } \frac{43}{9} \text{ отмечено на числовой прямой точкой } A. \text{ Какое это число?} \]<br>\[ \text{1) } \frac{29}{9} \]<br>\[ \text{2) } \frac{34}{9} \]<br>\[ \text{3) } \frac{38}{9} \]<br>\[ \text{4) } \frac{43}{9} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//426.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Выберите правильный ответ.</p><p>Одно из чисел \(\frac{4}{11}\), \(\frac{8}{11}\), \(\frac{9}{11}\) и \(\frac{13}{11}\) отмечено на числовой прямой точкой \(A\). Какое это число?</p><p>1) \(\frac{4}{11}\)</p><p>2) \(\frac{8}{11}\)</p><p>3) \(\frac{9}{11}\)</p><p>4) \(\frac{13}{11}\)</p></div>
          <button class="show-answer-btn"
-                 data-answer="$\frac{29}{9}$"
+                 data-answer="3"
                  onclick="showAnswer(4, this.dataset.answer)">
            Показать ответ
          </button>
@@ -549,10 +579,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 6</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//894.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{Выберите правильный ответ. На координатной прямой отмечены числа } x, y \text{ и } z. \]<br>\[ \text{Какая из разностей } y - x, x - z, z - y \text{ отрицательна?} \]<br>\[ \text{1) } y - x \]<br>\[ \text{2) } x - z \]<br>\[ \text{3) } z - y \]<br>\[ \text{4) ни одна из них} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2027.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На координатной прямой точки \( A, B, C \) и \( D \) соответствуют числам \( 0{,}1032; -0{,}031; -0{,}01; -0{,}104 \).</p><p>Какой точке соответствует число \( -0{,}031? \)</p><ul><li>1) \( A \)</li><li>2) \( B \)</li><li>3) \( C \)</li><li>4) \( D \)</li></ul></div>
          <button class="show-answer-btn"
-                 data-answer="2"
+                 data-answer="2) \( B \)"
                  onclick="showAnswer(5, this.dataset.answer)">
            Показать ответ
          </button>
@@ -564,10 +594,12 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 7</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1033.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{На координатной прямой отмечены числа } a, b \text{ и } c. \]<br>\[ \text{Какая из разностей } a - b, c - a, b - c \text{ положительна?} \]<br>\[ \text{1) } a - b \]<br>\[ \text{2) } c - a \]<br>\[ \text{3) } b - c \]<br>\[ \text{4) ни одна из них} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//919.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Выберите правильный ответ. На координатной прямой отмечено число \( a \).</p>
+<p>Какое из утверждений для этого числа является верным?</p>
+<p>1) \( 7-a>0 \) \quad 2) \( a-5<0 \) \quad 3) \( a-8>0 \) \quad 4) \( 6-a<0 \)</p></div>
          <button class="show-answer-btn"
-                 data-answer="2"
+                 data-answer="4"
                  onclick="showAnswer(6, this.dataset.answer)">
            Показать ответ
          </button>
@@ -579,10 +611,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 8</div>
-         
-         <div class="problem-text">Какому из данных промежутков принадлежит число \( \frac{3}{11}?\)  <br>\[<br>\]<br>1) \( [0,1 ; 0,2]\) <br>\[<br>\]<br>2) \( [0,2 ; 0,3]\)  <br>\[<br>\]<br>3) \( [0,3 ; 0,4]\)  <br>\[<br>\]<br>4) \( [0,4 ; 0,5]\)  <br>\[<br>\]<br>В ответ запишите номер выбранного варианта.</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1816.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Выберите правильный ответ.</p><p>Одно из чисел \(\frac{2}{13}, \frac{7}{13}, \frac{9}{13}\) и \(\frac{11}{13}\) отмечено на числовой прямой точкой \(A\). Какое это число?</p><ul><li>1) \(\frac{2}{13}\)</li><li>2) \(\frac{7}{13}\)</li><li>3) \(\frac{9}{13}\)</li><li>4) \(\frac{11}{13}\)</li></ul></div>
          <button class="show-answer-btn"
-                 data-answer="2"
+                 data-answer="\(\frac{2}{13}\)"
                  onclick="showAnswer(7, this.dataset.answer)">
            Показать ответ
          </button>
@@ -594,10 +626,16 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 9</div>
-         
-         <div class="problem-text">\[ \text{Выберите правильный ответ. Какое из следующих чисел заключено} \]<br>\[ \text{между числами } \frac{8}{13} \text{ и } \frac{12}{17}? \]<br>\[ \text{1) } 0{,}6 \]<br>\[ \text{2) } 0{,}7 \]<br>\[ \text{3) } 0{,}8 \]<br>\[ \text{4) } 0{,}9 \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2104.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Выберите правильный ответ.</p>
+<p>На координатной прямой отмечены числа \(x\), \(y\) и \(z\).</p>
+<p>Какая из разностей \(z-x\), \(x-y\), \(z-y\) положительна?</p>
+<p>1) \(z-x\)</p>
+<p>2) \(x-y\)</p>
+<p>3) \(z-y\)</p>
+<p>4) ни одна из них</p></div>
          <button class="show-answer-btn"
-                 data-answer="2"
+                 data-answer="x-y"
                  onclick="showAnswer(8, this.dataset.answer)">
            Показать ответ
          </button>
@@ -609,10 +647,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 10</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1548.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{Выберите правильный ответ.} \]<br>\[ \text{На координатной прямой отмечено число } a. \]<br>\[ \text{Какое из утверждений для этого числа является верным?} \]<br>\[ 1) \text{ } a-4&lt;0 \]<br>\[ 2) \text{ } 7-a&lt;0 \]<br>\[ 3) \text{ } a-3&gt;0 \]<br>\[ 4) \text{ } 2-a&gt;0 \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//7_22_pr_pic.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На координатной прямой отмечены точки \(A, B, C, D\). Одна из них соответствует числу \(\displaystyle \frac{132}{17}\). Какая это точка?</p><p>1) \(A\)</p><p>2) \(B\)</p><p>3) \(C\)</p><p>4) \(D\)</p></div>
          <button class="show-answer-btn"
-                 data-answer="3"
+                 data-answer="4"
                  onclick="showAnswer(9, this.dataset.answer)">
            Показать ответ
          </button>
@@ -624,10 +662,14 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 11</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//795.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{Выберите правильный ответ. На координатной прямой отмечены числа } x, y \text{ и } z. \text{ Какая из разностей } z-x, z-y, y-x \text{ отрицательна?} \]<br>\[ \text{1) } z-x \]<br>\[ \text{2) } z-y \]<br>\[ \text{3) } y-x \]<br>\[ \text{4) ни одна из них} \]</div>
+         
+         <div class="problem-text tex2jax_process"><p>Выберите правильный ответ. Между какими целыми числами заключено число \(\frac{110}{13}\)?</p>
+<p>\(8\) и \(9\)</p>
+<p>\(9\) и \(10\)</p>
+<p>\(10\) и \(11\)</p>
+<p>\(11\) и \(12\)</p></div>
          <button class="show-answer-btn"
-                 data-answer="4"
+                 data-answer="1"
                  onclick="showAnswer(10, this.dataset.answer)">
            Показать ответ
          </button>
@@ -639,8 +681,8 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 12</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1442.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{На координатной прямой точки } A, B, C \text{ и } D \]<br>\[ \text{соответствуют числам } -0{,}39; -0{,}09; -0{,}93; 0{,}03. \]<br>\[ \text{Какой точке соответствует число } -0{,}09? \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//7_29_pr_pic.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На координатной прямой точки \(A, B, C, D\) соответствуют числам  \[ -0,74;\;-0,047;\;0,07;\;-0,407. \] Какой точке соответствует число \( -0,047 \)?</p></div>
          <button class="show-answer-btn"
                  data-answer="3"
                  onclick="showAnswer(11, this.dataset.answer)">
@@ -655,9 +697,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 13</div>
          
-         <div class="problem-text">\[ \text{Выберите правильный ответ. Какое из следующих чисел заключено} \]<br>\[ \text{между числами } \frac{8}{15} \text{ и } \frac{12}{19} \text{?} \]<br>\[ \text{1) } 0{,}4 \quad \text{2) } 0{,}5 \quad \text{3) } 0{,}6 \quad \text{4) } 0{,}7 \]</div>
+         <div class="problem-text tex2jax_process"><p>Какое из данных чисел принадлежит промежутку \( [7;8] \)? \[ \begin{aligned} &1)\ \sqrt{7},\\ &2)\ \sqrt{8},\\ &3)\ \sqrt{48},\\ &4)\ \sqrt{56}. \end{aligned} \]</p></div>
          <button class="show-answer-btn"
-                 data-answer="3"
+                 data-answer="4"
                  onclick="showAnswer(12, this.dataset.answer)">
            Показать ответ
          </button>
@@ -669,10 +711,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 14</div>
-         
-         <div class="problem-text">\[ \text{Выберите правильный ответ. Между какими числами заключено число } \sqrt{98}? \]<br>\[ \text{1) 4 и 5} \]<br>\[ \text{2) 9 и 10} \]<br>\[ \text{3) 31 и 33} \]<br>\[ \text{4) 97 и 99} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//386.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Выберите правильный ответ. На координатной прямой точки \( A, B, C \) и \( D \) соответствуют числам \( 0{,}098; -0{,}02; 0{,}09; 0{,}11 \). Какой точке соответствует число \( 0{,}09 \)?</p></div>
          <button class="show-answer-btn"
-                 data-answer="2) 9 и 10"
+                 data-answer="2"
                  onclick="showAnswer(13, this.dataset.answer)">
            Показать ответ
          </button>
@@ -684,10 +726,14 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 15</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2165.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{Выберите правильный ответ.} \]<br>\[ \text{Одно из чисел } \frac{3}{13}, \frac{9}{13}, \frac{10}{13} \text{ и } \frac{12}{13} \text{ отмечено на числовой прямой точкой } A. \]<br>\[ \text{Какое это число?} \]<br>\[ 1) \frac{3}{13} \]<br>\[ 2) \frac{9}{13} \]<br>\[ 3) \frac{10}{13} \]<br>\[ 4) \frac{12}{13} \]</div>
+         
+         <div class="problem-text tex2jax_process"><p>Выберите правильный ответ. Какое из следующих чисел заключено между числами \(\frac{19}{8}\) и \(\frac{17}{7}\)?</p>
+<p>1) \(2{,}3\)</p>
+<p>2) \(2{,}4\)</p>
+<p>3) \(2{,}5\)</p>
+<p>4) \(2{,}6\)</p></div>
          <button class="show-answer-btn"
-                 data-answer="4"
+                 data-answer="2,4"
                  onclick="showAnswer(14, this.dataset.answer)">
            Показать ответ
          </button>
@@ -699,10 +745,14 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 16</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//7_35_pr_pic.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">На координатной прямой отмечены числа \(a\) и \(b\). В ответе укажите номер правильного варианта.  <br>Какое из следующих утверждений относительно этих чисел является верным? <br>\[<br>\] <br>1) \(a^{3}&gt;0\)  <br>\[<br>\]<br>2) \(a-b&gt;0\)  <br>\[<br>\]<br>3) \(ab&lt;1\)  <br>\[<br>\]<br>4) \(a+b&gt;1\)</div>
+         
+         <div class="problem-text tex2jax_process"><p>Выберите правильный ответ. Между какими числами заключено число \(\sqrt{98}\)?</p>
+<p>1) 4 и 5</p>
+<p>2) 9 и 10</p>
+<p>3) 31 и 33</p>
+<p>4) 97 и 99</p></div>
          <button class="show-answer-btn"
-                 data-answer="3"
+                 data-answer="2) 9 и 10"
                  onclick="showAnswer(15, this.dataset.answer)">
            Показать ответ
          </button>
@@ -715,7 +765,8 @@
        <div class="question-item">
          <div class="question-number">Вопрос 17</div>
          
-         <div class="problem-text">\[ \text{Выберите правильный ответ. Какое из следующих чисел заключено} \]<br>\[ \text{между числами } \frac{4}{11} \text{ и } \frac{7}{17}? \]<br>\[ \text{1) } 0{,}1 \quad \text{2) } 0{,}2 \quad \text{3) } 0{,}3 \quad \text{4) } 0{,}4 \]</div>
+         <div class="problem-text tex2jax_process"><p>Выберите правильный ответ. Какое из следующих чисел заключено между числами \(\frac{9}{19}\) и \(\frac{5}{9}\)?</p>
+<p>1) \(0{,}2\) \quad 2) \(0{,}3\) \quad 3) \(0{,}4\) \quad 4) \(0{,}5\)</p></div>
          <button class="show-answer-btn"
                  data-answer="4"
                  onclick="showAnswer(16, this.dataset.answer)">
@@ -729,10 +780,15 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 18</div>
-         
-         <div class="problem-text">\[ \text{Выберите правильный ответ. Какое из следующих чисел} \]<br>\[ \text{заключено между числами } \frac{8}{3} \text{ и } \frac{11}{4} \text{?} \]<br>\[ \text{1) } 2{,}7 \quad \text{2) } 2{,}8 \quad \text{3) } 2{,}9 \quad \text{4) } 3 \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1184.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Выберите правильный ответ.</p>
+<p>На координатной прямой точки \( A, B, C \) и \( D \) соответствуют числам \( -0.502; 0.25; 0.205; 0.52 \). Какой точке соответствует число \( 0.25 \)?</p>
+<p>1) \( A \)</p>
+<p>2) \( B \)</p>
+<p>3) \( C \)</p>
+<p>4) \( D \)</p></div>
          <button class="show-answer-btn"
-                 data-answer="1"
+                 data-answer="3"
                  onclick="showAnswer(17, this.dataset.answer)">
            Показать ответ
          </button>
@@ -744,10 +800,14 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 19</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1915.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{Выберите правильный ответ. Одно из чисел } \frac{75}{23}, \frac{85}{23}, \frac{97}{23} \text{ и } \frac{110}{23} \text{ отмечено на числовой прямой точкой } A. \text{ Какое это число?} \]<br>\[ \text{1) } \frac{75}{23} \]<br>\[ \text{2) } \frac{85}{23} \]<br>\[ \text{3) } \frac{97}{23} \]<br>\[ \text{4) } \frac{110}{23} \]</div>
+         
+         <div class="problem-text tex2jax_process"><p>Выберите правильный ответ. Какое из чисел \(\frac{68}{13}, \frac{79}{13}, \frac{82}{13}\) и \(\frac{89}{13}\) принадлежит отрезку \([5; 6]?\)</p>
+<p>1) \(\frac{68}{13}\)</p>
+<p>2) \(\frac{79}{13}\)</p>
+<p>3) \(\frac{82}{13}\)</p>
+<p>4) \(\frac{89}{13}\)</p></div>
          <button class="show-answer-btn"
-                 data-answer="$\frac{85}{23}$"
+                 data-answer="1"
                  onclick="showAnswer(18, this.dataset.answer)">
            Показать ответ
          </button>
@@ -759,10 +819,14 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 20</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1849.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{Выберите правильный ответ. На координатной прямой отмечены точки } A, B, C, D. \]<br>\[ \text{Одна из них соответствует числу } \sqrt{76}. \text{ Какая это точка?} \]<br>\[ \text{1) точка } A \]<br>\[ \text{2) точка } B \]<br>\[ \text{3) точка } C \]<br>\[ \text{4) точка } D \]</div>
+         
+         <div class="problem-text tex2jax_process"><p>Выберите правильный ответ. Между какими числами заключено число \(\sqrt{72}\)?</p>
+<p>1) 24 и 26</p>
+<p>2) 8 и 9</p>
+<p>3) 71 и 73</p>
+<p>4) 4 и 5</p></div>
          <button class="show-answer-btn"
-                 data-answer="точка B"
+                 data-answer="2"
                  onclick="showAnswer(19, this.dataset.answer)">
            Показать ответ
          </button>
@@ -775,7 +839,11 @@
        <div class="question-item">
          <div class="question-number">Вопрос 21</div>
          
-         <div class="problem-text">\[ \text{Выберите правильный ответ. Какое из чисел } \sqrt{6}, \sqrt{7}, \sqrt{46} \text{ и } \sqrt{55} \text{ принадлежит промежутку } [6; 7]? \]<br>\[ \text{1) } \sqrt{6} \]<br>\[ \text{2) } \sqrt{7} \]<br>\[ \text{3) } \sqrt{46} \]<br>\[ \text{4) } \sqrt{55} \]</div>
+         <div class="problem-text tex2jax_process"><p>Выберите правильный ответ. Какое из чисел \(\frac{45}{19}, \frac{52}{19}, \frac{68}{19}\) и \(\frac{77}{19}\) принадлежит отрезку \([3; 4]?\)</p>
+<p>1) \(\frac{45}{19}\)</p>
+<p>2) \(\frac{52}{19}\)</p>
+<p>3) \(\frac{68}{19}\)</p>
+<p>4) \(\frac{77}{19}\)</p></div>
          <button class="show-answer-btn"
                  data-answer="3"
                  onclick="showAnswer(20, this.dataset.answer)">
@@ -789,10 +857,14 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 22</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//29.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{Выберите правильный ответ. Одно из чисел } \frac{58}{13}, \frac{69}{13}, \frac{76}{13} \text{ и } \frac{83}{13} \text{ отмечено на числовой прямой точкой } A. \text{ Какое это число?} \]</div>
+         
+         <div class="problem-text tex2jax_process"><p>Выберите правильный ответ. Какое из чисел \(\sqrt{5}, \sqrt{6}, \sqrt{24}\) и \(\sqrt{32}\) принадлежит промежутку \([5; 6]?\)</p>
+<p>1) \(\sqrt{5}\)</p>
+<p>2) \(\sqrt{6}\)</p>
+<p>3) \(\sqrt{24}\)</p>
+<p>4) \(\sqrt{32}\)</p></div>
          <button class="show-answer-btn"
-                 data-answer="3"
+                 data-answer="$\sqrt{32}$"
                  onclick="showAnswer(21, this.dataset.answer)">
            Показать ответ
          </button>
@@ -805,9 +877,13 @@
        <div class="question-item">
          <div class="question-number">Вопрос 23</div>
          
-         <div class="problem-text">\[ \text{Выберите правильный ответ. Какое из чисел } \frac{68}{13}, \frac{79}{13}, \frac{82}{13} \text{ и } \frac{89}{13} \text{ принадлежит отрезку } [5; 6]? \]<br>\[ \text{1) } \frac{68}{13} \]<br>\[ \text{2) } \frac{79}{13} \]<br>\[ \text{3) } \frac{82}{13} \]<br>\[ \text{4) } \frac{89}{13} \]</div>
+         <div class="problem-text tex2jax_process"><p>Выберите правильный ответ. Какое из чисел \(\frac{49}{15}, \frac{52}{15}, \frac{58}{15}\) и \(\frac{71}{15}\) принадлежит отрезку \([4; 5]?\)</p>
+<p>1) \(\frac{49}{15}\)</p>
+<p>2) \(\frac{52}{15}\)</p>
+<p>3) \(\frac{58}{15}\)</p>
+<p>4) \(\frac{71}{15}\)</p></div>
          <button class="show-answer-btn"
-                 data-answer="1"
+                 data-answer="4"
                  onclick="showAnswer(22, this.dataset.answer)">
            Показать ответ
          </button>
@@ -819,10 +895,14 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 24</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//144.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{Выберите правильный ответ. Одно из чисел } \frac{10}{23}, \frac{11}{23}, \frac{13}{23} \text{ и } \frac{14}{23} \text{ отмечено на числовой прямой точкой } A. \text{ Какое это число?} \]<br>\[ \text{1) } \frac{10}{23} \quad \text{2) } \frac{11}{23} \quad \text{3) } \frac{13}{23} \quad \text{4) } \frac{14}{23} \]</div>
+         
+         <div class="problem-text tex2jax_process"><p>Выберите правильный ответ. Между какими числами заключено число \(\sqrt{73}\)?</p>
+<p>1) 8 и 9</p>
+<p>2) 72 и 74</p>
+<p>3) 24 и 26</p>
+<p>4) 4 и 5</p></div>
          <button class="show-answer-btn"
-                 data-answer="3"
+                 data-answer="1"
                  onclick="showAnswer(23, this.dataset.answer)">
            Показать ответ
          </button>
@@ -834,8 +914,9 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 25</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//999.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Выберите правильный ответ.<br>\[\]<br>На координатной прямой отмечены точки \( A \), \( B \), \( C \) и \( D \).<br>\[\]<br>Одна из них соответствует числу \( \frac{58}{7} \). Какая это точка?<br>1) точка \( A \)<br>2) точка \( B \)<br>3) точка \( C \)<br>4) точка \( D \)</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//893.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Выберите правильный ответ. На координатной прямой отмечены числа \( x \) и \( y \).</p>
+<p>Какое из следующих неравенств верно? 1) \( x y>0 \) 2) \( x^{2} y<0 \) 3) \( x+y<0 \) 4) \( x-y \geq 0 \)</p></div>
          <button class="show-answer-btn"
                  data-answer="3"
                  onclick="showAnswer(24, this.dataset.answer)">
@@ -849,8 +930,8 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 26</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//517.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{Выберите правильный ответ.} \]<br>\[ \text{На координатной прямой отмечено число } a. \]<br>\[ \text{Какое из утверждений для этого числа является верным?} \]<br>\[ 1) \ 4-a&lt;0 \]<br>\[ 2) \ a-7&gt;0 \]<br>\[ 3) \ a-5&lt;0 \]<br>\[ 4) \ 6-a&gt;0 \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//7_30_pr_pic.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На координатной прямой точки \(A, B, C\) и \(D\) соответствуют числам \(-0,201;\,-0,012;\,-0,304;\,0,021\).   Какой точке соответствует число \(-0,304\)?   1) \(A\)   2) \(B\)   3) \(C\)   4) \(D\)</p></div>
          <button class="show-answer-btn"
                  data-answer="1"
                  onclick="showAnswer(25, this.dataset.answer)">
@@ -864,8 +945,12 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 27</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//7_7_pr_pic.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">На координатной прямой отмечено число \(a\). Какое из утверждений относительно этого числа является верным?<br>\[<br>\]<br>1) \(a-8&gt;0\)  <br>\[<br>\]<br>2) \(7-a&lt;0\)  <br>\[<br>\]<br>3) \(a-3&gt;0\)<br>\[<br>\]  <br>4) \(2-a&gt;0\)</div>
+         
+         <div class="problem-text tex2jax_process"><p>Выберите правильный ответ. Какое из чисел \(\sqrt{5}, \sqrt{6}, \sqrt{27}\) и \(\sqrt{37}\) принадлежит промежутку \([5; 6]?\)</p>
+<p>1) \(\sqrt{5}\)</p>
+<p>2) \(\sqrt{6}\)</p>
+<p>3) \(\sqrt{27}\)</p>
+<p>4) \(\sqrt{37}\)</p></div>
          <button class="show-answer-btn"
                  data-answer="3"
                  onclick="showAnswer(26, this.dataset.answer)">
@@ -879,10 +964,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 28</div>
-         
-         <div class="problem-text">\[ \text{Выберите правильный ответ. Какому из данных промежутков} \]<br>\[ \text{принадлежит число } \frac{5}{11}? \]<br>\[ \text{1) } [0{,}2 \, ; \, 0{,}3] \]<br>\[ \text{2) } [0{,}3 \, ; \, 0{,}4] \]<br>\[ \text{3) } [0{,}4 \, ; \, 0{,}5] \]<br>\[ \text{4) } [0{,}5 \, ; \, 0{,}6] \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//7_25_pr_pic.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На координатной прямой отмечены числа \(p\), \(q\) и \(r\). Какая из разностей \(q-p\), \(q-r\), \(r-p\) отрицательна?</p><p>1) \(q-p\)</p><p>2) \(q-r\)</p><p>3) \(r-p\)</p><p>4) ни одна из них</p></div>
          <button class="show-answer-btn"
-                 data-answer="3"
+                 data-answer="2"
                  onclick="showAnswer(27, this.dataset.answer)">
            Показать ответ
          </button>
@@ -894,10 +979,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 29</div>
-         
-         <div class="problem-text">\[ \text{Выберите правильный ответ. Между какими числами заключено число } \sqrt{30} \text{?} \]<br>\[ \text{1) 11 и 13} \]<br>\[ \text{2) 5 и 6} \]<br>\[ \text{3) 2 и 3} \]<br>\[ \text{4) 29 и 31} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1539.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Выберите правильный ответ.</p><p>На координатной прямой отмечены числа \( x \) и \( y \). Какое из следующих неравенств верно?</p><ul><li>\( 1) \; xy > 0 \)</li><li>\( 2) \; x^2y < 0 \)</li><li>\( 3) \; x+y > 0 \)</li><li>\( 4) \; x-y < 0 \)</li></ul></div>
          <button class="show-answer-btn"
-                 data-answer="2) 5 и 6"
+                 data-answer="4"
                  onclick="showAnswer(28, this.dataset.answer)">
            Показать ответ
          </button>
@@ -910,9 +995,13 @@
        <div class="question-item">
          <div class="question-number">Вопрос 30</div>
          
-         <div class="problem-text">\[ \text{Выберите правильный ответ. Какое из чисел } \frac{49}{15}, \frac{52}{15}, \frac{58}{15} \text{ и } \frac{71}{15} \text{ принадлежит отрезку } [4; 5]? \]<br>\[ \text{1) } \frac{49}{15} \]<br>\[ \text{2) } \frac{52}{15} \]<br>\[ \text{3) } \frac{58}{15} \]<br>\[ \text{4) } \frac{71}{15} \]</div>
+         <div class="problem-text tex2jax_process"><p>Выберите правильный ответ. Какое из чисел \(\frac{58}{17}, \frac{72}{17}, \frac{87}{17}\) и \(\frac{91}{17}\) принадлежит отрезку \([4; 5]?\)</p>
+<p>1) \(\frac{58}{17}\)</p>
+<p>2) \(\frac{72}{17}\)</p>
+<p>3) \(\frac{87}{17}\)</p>
+<p>4) \(\frac{91}{17}\)</p></div>
          <button class="show-answer-btn"
-                 data-answer="4"
+                 data-answer="2"
                  onclick="showAnswer(29, this.dataset.answer)">
            Показать ответ
          </button>
@@ -931,7 +1020,7 @@
       <h2>Хотите посмотреть решение?</h2>
       <p>Создайте аккаунт или войдите, чтобы получить доступ к подробным решениям всех задач.</p>
       <div class="modal-buttons">
-        <a href="/auth" class="modal-button primary">Войти / Создать аккаунт</a>
+        <a href="/register" class="modal-button primary">Войти / Создать аккаунт</a>
         <button class="modal-button secondary" onclick="closeSolutionModal()">Закрыть</button>
       </div>
     </div>

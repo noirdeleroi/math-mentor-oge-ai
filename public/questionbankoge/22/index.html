@@ -395,6 +395,28 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
+    /* Table styling for problem text */
+    .problem-text table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .problem-text table td {
+      padding: 0.75rem 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+    }
+
+    .problem-text table tr:first-child td {
+      background: rgba(251, 191, 36, 0.1);
+      font-weight: 600;
+      color: #fbbf24;
+    }
+
     /* Mobile Responsiveness */
     @media (max-width: 768px) {
       .header h1 {
@@ -475,11 +497,10 @@
        <div class="question-item">
          <div class="question-number">Вопрос 1</div>
          
-         <div class="problem-text">Постройте график функции  <br>\[<br>y = |x|\,(x - 1) - 3x<br>\]<br>Определите, при каких значениях \(m\) прямая \(y = m\) имеет с графиком ровно две общие точки.</div>
+         <div class="problem-text tex2jax_process"><p>Постройте график функции \( y=\frac{x-3}{x^2-3x} \).</p>
+<p>Определите, при каких значениях \( k \) прямая \( y=kx \) имеет с графиком ровно одну общую точку.</p></div>
          <button class="show-answer-btn"
-                 data-answer="\[
-m \in \{-4; 1\}
-\]"
+                 data-answer="$k = \frac{1}{9}$"
                  onclick="showAnswer(0, this.dataset.answer)">
            Показать ответ
          </button>
@@ -492,9 +513,9 @@ m \in \{-4; 1\}
        <div class="question-item">
          <div class="question-number">Вопрос 2</div>
          
-         <div class="problem-text">Постройте график функции $y=\begin{cases} -x^2 - 2x + 3 &amp; \text{при } x \geq -2, \\ -x - 1 &amp; \text{при } x &lt; -2. \end{cases}$ Определите, при каких значениях $m$ прямая $y=m$ имеет с графиком ровно две общие точки.</div>
+         <div class="problem-text tex2jax_process"><p>Постройте график функции \(y=\begin{cases} x-4 & \text{при } x<3, \\ -1{,}5x+4{,}5 & \text{при } 3\leq x\leq 4, \\ 1{,}5x-7{,}5 & \text{при } x>4. \end{cases}\).</p><p>Определите, при каких значениях \(m\) прямая \(y=m\) имеет с графиком ровно две общие точки.</p></div>
          <button class="show-answer-btn"
-                 data-answer="$1 &lt; m &lt; 3, m = 4$"
+                 data-answer="$m = -1.5$ и $-1 \leq m \leq 0$"
                  onclick="showAnswer(1, this.dataset.answer)">
            Показать ответ
          </button>
@@ -507,9 +528,10 @@ m \in \{-4; 1\}
        <div class="question-item">
          <div class="question-number">Вопрос 3</div>
          
-         <div class="problem-text">Постройте график функции $y=\begin{cases} x^2+1 &amp; \text{при } x\ge -1, \\ -\frac{4}{x} &amp; \text{при } x&lt;-1. \end{cases}$ Определите, при каких значениях $m$ прямая $y=m$ имеет с графиком ровно одну общую точку.</div>
+         <div class="problem-text tex2jax_process"><p>Постройте график функции \( y=\frac{(x^2+4)(x+1)}{-1-x}. \)</p>
+<p>Определите, при каких значениях \( k \) прямая \( y=kx \) имеет с графиком ровно одну общую точку.</p></div>
          <button class="show-answer-btn"
-                 data-answer="$0 &lt; m &lt; 1$ и $m \geq 4$"
+                 data-answer="$k \in \{-4, 4, 5\}$"
                  onclick="showAnswer(2, this.dataset.answer)">
            Показать ответ
          </button>
@@ -522,9 +544,11 @@ m \in \{-4; 1\}
        <div class="question-item">
          <div class="question-number">Вопрос 4</div>
          
-         <div class="problem-text">\[ \text{Постройте график функции } y = 5|x-3| - x^2 + 7x - 12. \]<br>\[ \text{Определите, при каких значениях } m \text{ прямая } y = m \text{ имеет с графиком} \]<br>\[ \text{ровно три общие точки.} \]</div>
+         <div class="problem-text tex2jax_process">\[ \text{Постройте график функции } y = -1 - \frac{x-4}{x^2 - 4x}. \]
+\[ \text{Определите, при каких значениях } m \text{ прямая } y = m \text{ не имеет} \]
+\[ \text{с графиком общих точек.} \]</div>
          <button class="show-answer-btn"
-                 data-answer="$m = 0, 4$"
+                 data-answer="$m = -1, m = -1.25$"
                  onclick="showAnswer(3, this.dataset.answer)">
            Показать ответ
          </button>
@@ -537,9 +561,10 @@ m \in \{-4; 1\}
        <div class="question-item">
          <div class="question-number">Вопрос 5</div>
          
-         <div class="problem-text">\[ \text{Постройте график функции } y = \frac{(0{,}75x^2 - 1{,}5x) \cdot |x|}{x - 2}. \]<br>\[ \text{Определите, при каких значениях } m \text{ прямая } y = m \]<br>\[ \text{не имеет с графиком ни одной общей точки.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Постройте график функции \( y = 4|x + 2| - x^2 - 3x - 2 \).</p>
+<p>Определите, при каких значениях \( m \) прямая \( y = m \) имеет с графиком ровно три общие точки.</p></div>
          <button class="show-answer-btn"
-                 data-answer="m=3"
+                 data-answer="m=0, m=9/4"
                  onclick="showAnswer(4, this.dataset.answer)">
            Показать ответ
          </button>
@@ -552,9 +577,12 @@ m \in \{-4; 1\}
        <div class="question-item">
          <div class="question-number">Вопрос 6</div>
          
-         <div class="problem-text">\[ \text{Постройте график функции } y = |x| \cdot (x+3) - 5x. \]<br>\[ \text{Определите, при каких значениях } m \text{ прямая } y = m \text{ имеет с графиком} \]<br>\[ \text{ровно две общие точки.} \]</div>
+         <div class="problem-text tex2jax_process">\[ \text{Постройте график функции } y = |x^2 - x - 2|. \]
+\[ \text{Какое наибольшее число общих точек может иметь} \]
+\[ \text{график данной функции с прямой,} \]
+\[ \text{параллельной оси абсцисс?} \]</div>
          <button class="show-answer-btn"
-                 data-answer="$m=-1$, $m=16$"
+                 data-answer="4"
                  onclick="showAnswer(5, this.dataset.answer)">
            Показать ответ
          </button>
@@ -567,9 +595,10 @@ m \in \{-4; 1\}
        <div class="question-item">
          <div class="question-number">Вопрос 7</div>
          
-         <div class="problem-text">\[ \text{Постройте график функции } y = \frac{1}{2}\left( \left| \frac{x}{4{,}5} - \frac{4{,}5}{x} \right| + \frac{x}{4{,}5} + \frac{4{,}5}{x} \right). \]<br>\[ \text{Определите, при каких значениях } m \text{ прямая } y = m \]<br>\[ \text{имеет с графиком ровно одну общую точку.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Постройте график функции \( y = 5|x-2| - x^2 + 5x - 6 \).</p>
+<p>Определите, при каких значениях \( m \) прямая \( y = m \) имеет с графиком ровно три общие точки.</p></div>
          <button class="show-answer-btn"
-                 data-answer="$m=1, m=-1$"
+                 data-answer="$m=0, m=4$"
                  onclick="showAnswer(6, this.dataset.answer)">
            Показать ответ
          </button>
@@ -582,9 +611,11 @@ m \in \{-4; 1\}
        <div class="question-item">
          <div class="question-number">Вопрос 8</div>
          
-         <div class="problem-text">\[ \text{Постройте график функции } y = -2 - \frac{x+4}{x^2 + 4x}. \]<br>\[ \text{Определите, при каких значениях } m \text{ прямая } y = m \text{ не имеет с графиком общих точек.} \]</div>
+         <div class="problem-text tex2jax_process">\[ \text{Постройте график функции } y = \frac{7x - 6}{7x^2 - 6x}. \]
+\[ \text{Определите, при каких значениях } k \text{ прямая } y = kx \]
+\[ \text{имеет с графиком ровно одну общую точку.} \]</div>
          <button class="show-answer-btn"
-                 data-answer="$m = -2$ или $m = -1.75$"
+                 data-answer="1.36"
                  onclick="showAnswer(7, this.dataset.answer)">
            Показать ответ
          </button>
@@ -597,9 +628,9 @@ m \in \{-4; 1\}
        <div class="question-item">
          <div class="question-number">Вопрос 9</div>
          
-         <div class="problem-text">\[ \text{Постройте график функции } y = \frac{2{,}5|x| - 1}{|x| - 2{,}5x^2}. \]<br>\[ \text{Определите, при каких значениях } k \text{ прямая } y = kx \]<br>\[ \text{не имеет с графиком общих точек.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Постройте график функции \( y=\frac{|x|-1}{|x|-x^2} \). Определите, при каких значениях \( k \) прямая \( y=kx \) не имеет с графиком общих точек.</p></div>
          <button class="show-answer-btn"
-                 data-answer="$k \in \{-6.25, 0, 6.25\}$"
+                 data-answer="$k = -1, 0, 1$"
                  onclick="showAnswer(8, this.dataset.answer)">
            Показать ответ
          </button>
@@ -612,9 +643,10 @@ m \in \{-4; 1\}
        <div class="question-item">
          <div class="question-number">Вопрос 10</div>
          
-         <div class="problem-text">\[ \text{Дайте развернутый ответ.} \]<br>\[ \text{Постройте график функции } y = \frac{1}{2}\left( \left| \frac{x}{6} - \frac{6}{x} \right| + \frac{x}{6} + \frac{6}{x} \right). \]<br>\[ \text{Определите, при каких значениях } m \text{ прямая } y = m \text{ имеет с графиком} \]<br>\[ \text{ровно одну общую точку.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Постройте график функции \( y = x|x| + 3|x| - 5x \).</p>
+<p>Определите, при каких значениях \( m \) прямая \( y = m \) имеет с графиком ровно две общие точки.</p></div>
          <button class="show-answer-btn"
-                 data-answer="$m=1, m=-1$"
+                 data-answer="$m = -1, 16$"
                  onclick="showAnswer(9, this.dataset.answer)">
            Показать ответ
          </button>
@@ -627,9 +659,11 @@ m \in \{-4; 1\}
        <div class="question-item">
          <div class="question-number">Вопрос 11</div>
          
-         <div class="problem-text">Постройте график функции  <br>\[<br>y=\begin{cases}<br> -x^{2}-2x+2, &amp; x\ge -3,\\<br> -x-2,        &amp; x&lt; -3,<br>\end{cases}<br>\]<br>и определите, при каких значениях \(m\) прямая \(y=m\) имеет с графиком ровно две общие точки.</div>
+         <div class="problem-text tex2jax_process"><p>Постройте график функции \[ y = |x|(x - 1) - 6x \] Определите, при каких значениях \(m\) прямая \(y = m\) имеет с графиком ровно две общие точки.</p></div>
          <button class="show-answer-btn"
-                 data-answer="\( m \in[-1 ; 1] \cup\{3\} \)"
+                 data-answer="\[
+m \in \{-12{,}25; 6{,}25\}
+\]"
                  onclick="showAnswer(10, this.dataset.answer)">
            Показать ответ
          </button>
@@ -642,9 +676,9 @@ m \in \{-4; 1\}
        <div class="question-item">
          <div class="question-number">Вопрос 12</div>
          
-         <div class="problem-text">\[ \text{Постройте график функции } y = 2|x - 5| - x^2 + 11x - 30. \]<br>\[ \text{Определите, при каких значениях } m \text{ прямая } y = m \text{ имеет с графиком} \]<br>\[ \text{ровно три общие точки.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Постройте график функции \(y=\begin{cases} x^2 - 6x + 6 & \text{при } x \geq 2, \\ x - 3 & \text{при } x < 2. \end{cases}\)</p><p>Определите, при каких значениях \(m\) прямая \(y=m\) имеет с графиком ровно две общие точки.</p></div>
          <button class="show-answer-btn"
-                 data-answer="m=0, m=0,25"
+                 data-answer="m = -3 или -2 &lt; m &lt; -1"
                  onclick="showAnswer(11, this.dataset.answer)">
            Показать ответ
          </button>
@@ -657,11 +691,9 @@ m \in \{-4; 1\}
        <div class="question-item">
          <div class="question-number">Вопрос 13</div>
          
-         <div class="problem-text">Постройте график функции  <br>\[<br>y = \frac{1{,}5|x| - 1}{|x| - 1{,}5x^2}<br>\]<br>Определите, при каких значениях \(k\) прямая \(y = kx\) не имеет с графиком общих точек.</div>
+         <div class="problem-text tex2jax_process">Постройте график функции $y=\begin{cases} x^2+2x+1 \quad \text{при} \quad x \ge -2, \\ -\frac{2}{x} \quad \text{при} \quad x < -2. \end{cases}$ и определите, при каких значениях $m$ прямая $y=m$ имеет с графиком одну или две общие точки.</div>
          <button class="show-answer-btn"
-                 data-answer="\[
-k \in \left\{-\tfrac{9}{4},\;0,\;\tfrac{9}{4}\right\}.
-\]"
+                 data-answer="$m=0$ или $m&gt;1$"
                  onclick="showAnswer(12, this.dataset.answer)">
            Показать ответ
          </button>
@@ -674,9 +706,10 @@ k \in \left\{-\tfrac{9}{4},\;0,\;\tfrac{9}{4}\right\}.
        <div class="question-item">
          <div class="question-number">Вопрос 14</div>
          
-         <div class="problem-text">\[ \text{Постройте график функции } y = x^2 + 13x - 3|x + 7| + 42 \]<br>\[ \text{и определите, при каких значениях } m \]<br>\[ \text{прямая } y = m \text{ имеет с графиком ровно три общие точки.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Постройте график функции \( y = x|x| + 2|x| - 5x \).</p>
+<p>Определите, при каких значениях \( m \) прямая \( y = m \) имеет с графиком ровно две общие точки.</p></div>
          <button class="show-answer-btn"
-                 data-answer="$m = -1, 0$"
+                 data-answer="$m &lt; -2.25$ или $m = 12.25$"
                  onclick="showAnswer(13, this.dataset.answer)">
            Показать ответ
          </button>
@@ -689,9 +722,9 @@ k \in \left\{-\tfrac{9}{4},\;0,\;\tfrac{9}{4}\right\}.
        <div class="question-item">
          <div class="question-number">Вопрос 15</div>
          
-         <div class="problem-text">\[ \text{Постройте график функции } y = x|x| + |x| - 5x. \]<br>\[ \text{Определите, при каких значениях } m \text{ прямая } y = m \text{ имеет с графиком ровно две общие точки.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Постройте график функции \[ y=\bigl|x^{2}+4x-5\bigr| \] Какое наибольшее число общих точек может иметь график данной функции с прямой, параллельной оси абсцисс?</p></div>
          <button class="show-answer-btn"
-                 data-answer="m = -4, 9"
+                 data-answer="4"
                  onclick="showAnswer(14, this.dataset.answer)">
            Показать ответ
          </button>
@@ -704,9 +737,10 @@ k \in \left\{-\tfrac{9}{4},\;0,\;\tfrac{9}{4}\right\}.
        <div class="question-item">
          <div class="question-number">Вопрос 16</div>
          
-         <div class="problem-text">\[ \text{Постройте график функции } y = \frac{(x^2 + x) \cdot |x|}{x + 1}. \]<br>\[ \text{Определите, при каких значениях } m \text{ прямая } y = m \]<br>\[ \text{не имеет с графиком ни одной общей точки.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Постройте график функции \( y = \frac{(0{,}75x^2 + 0{,}75x) \cdot |x|}{x + 1}. \)</p>
+<p>Определите, при каких значениях \( m \) прямая \( y = m \) не имеет с графиком ни одной общей точки.</p></div>
          <button class="show-answer-btn"
-                 data-answer="m = -1"
+                 data-answer="m = -0,75"
                  onclick="showAnswer(15, this.dataset.answer)">
            Показать ответ
          </button>
@@ -719,9 +753,11 @@ k \in \left\{-\tfrac{9}{4},\;0,\;\tfrac{9}{4}\right\}.
        <div class="question-item">
          <div class="question-number">Вопрос 17</div>
          
-         <div class="problem-text">\[ \text{Дайте развернутый ответ. Постройте график функции } y = x^2 - 9x - 2|x - 4| + 20 \]<br>\[ \text{и определите, при каких значениях } m \text{ прямая } y = m \]<br>\[ \text{имеет с графиком ровно три общие точки.} \]</div>
+         <div class="problem-text tex2jax_process">\[ \text{Постройте график функции } y = \frac{(x^2 + 2.25)(x + 1)}{-1 - x}. \]
+\[ \text{Определите, при каких значениях } k \text{ прямая } y = kx \]
+\[ \text{имеет с графиком ровно одну общую точку.} \]</div>
          <button class="show-answer-btn"
-                 data-answer="m = -0,25; 0"
+                 data-answer="$k \in \{-3, 3, 3.25\}$"
                  onclick="showAnswer(16, this.dataset.answer)">
            Показать ответ
          </button>
@@ -734,9 +770,9 @@ k \in \left\{-\tfrac{9}{4},\;0,\;\tfrac{9}{4}\right\}.
        <div class="question-item">
          <div class="question-number">Вопрос 18</div>
          
-         <div class="problem-text">Постройте график функции $y=\begin{cases} x^2 - 6x + 10 &amp; \text{при } x \geq 1, \\ x + 2 &amp; \text{при } x &lt; 1. \end{cases}$ Определите, при каких значениях $m$ прямая $y=m$ имеет с графиком ровно две общие точки.</div>
+         <div class="problem-text tex2jax_process"><p>Постройте график функции \[ y = x^{2} + 11x - 4\bigl|x+6\bigr| + 30 \] и определите, при каких значениях \(m\) прямая \[ y = m \] имеет с графиком этой функции ровно три общие точки.</p></div>
          <button class="show-answer-btn"
-                 data-answer="$m=1$ или $m \geq 3$."
+                 data-answer="\( m \in\{-2{,}25;0\} \)"
                  onclick="showAnswer(17, this.dataset.answer)">
            Показать ответ
          </button>
@@ -749,9 +785,10 @@ k \in \left\{-\tfrac{9}{4},\;0,\;\tfrac{9}{4}\right\}.
        <div class="question-item">
          <div class="question-number">Вопрос 19</div>
          
-         <div class="problem-text">\[ \text{Дайте развернутый ответ.} \]<br>\[ \text{Постройте график функции } y = |x^2 + 3x + 2|. \]<br>\[ \text{Какое наибольшее число общих точек может иметь} \]<br>\[ \text{график данной функции с прямой,} \]<br>\[ \text{параллельной оси абсцисс?} \]</div>
+         <div class="problem-text tex2jax_process"><p>Постройте график функции \( y = |x| \cdot (x - 1) - 2x \).</p>
+<p>Определите, при каких значениях \( m \) прямая \( y = m \) имеет с графиком ровно две общие точки.</p></div>
          <button class="show-answer-btn"
-                 data-answer="4"
+                 data-answer="$m \in \left\{ -\dfrac{9}{4}, \dfrac{1}{4} \right\}$"
                  onclick="showAnswer(18, this.dataset.answer)">
            Показать ответ
          </button>
@@ -764,11 +801,11 @@ k \in \left\{-\tfrac{9}{4},\;0,\;\tfrac{9}{4}\right\}.
        <div class="question-item">
          <div class="question-number">Вопрос 20</div>
          
-         <div class="problem-text">Постройте график функции<br>\[<br>y=\frac12\Bigl(\Bigl|\frac{x}{4.5}-\frac{4.5}{x}\Bigr|+\frac{x}{4.5}+\frac{4.5}{x}\Bigr)<br>\]<br>Определите, при каких значениях \(m\) прямая \(y=m\) имеет с графиком ровно одну общую точку.</div>
+         <div class="problem-text tex2jax_process">\[ \text{Постройте график функции } y = \frac{1{,}5|x| - 1}{|x| - 1{,}5x^2}. \]
+\[ \text{Определите, при каких значениях } k \text{ прямая } y = kx \]
+\[ \text{не имеет с графиком общих точек.} \]</div>
          <button class="show-answer-btn"
-                 data-answer="\[
-m \in\{-1 ; 1\}
-\]"
+                 data-answer="$k \in \{-2,25; 0; 2,25\}$"
                  onclick="showAnswer(19, this.dataset.answer)">
            Показать ответ
          </button>
@@ -781,9 +818,9 @@ m \in\{-1 ; 1\}
        <div class="question-item">
          <div class="question-number">Вопрос 21</div>
          
-         <div class="problem-text">\[ \text{Дайте развернутый ответ.} \]<br>\[ \text{Постройте график функции } x^{4}-13 x^{2}+36 \]<br>\[ \text{и определите, при каких значениях } \mathfrak{e} \]<br>\[ \text{прямая } \mathfrak{v}=\mathfrak{e} \text{ имеет с графиком} \]<br>\[ \text{ровно одну общую точку.} \]</div>
+         <div class="problem-text tex2jax_process">Постройте график функции $y=\begin{cases} x^2 - 10x + 27 & \text{при } x \geq 4, \\ x & \text{при } x < 4. \end{cases}$ Определите, при каких значениях $m$ прямая $y=m$ имеет с графиком ровно две общие точки.</div>
          <button class="show-answer-btn"
-                 data-answer="\( -\frac{25}{4},-4,6 \)"
+                 data-answer="$m=2$ и $3 &lt; m &lt; 4$"
                  onclick="showAnswer(20, this.dataset.answer)">
            Показать ответ
          </button>
@@ -796,9 +833,10 @@ m \in\{-1 ; 1\}
        <div class="question-item">
          <div class="question-number">Вопрос 22</div>
          
-         <div class="problem-text">\[ \text{Постройте график функции } y = 2 - \frac{x - 5}{x^2 - 5x}. \]<br>\[ \text{Определите, при каких значениях } m \text{ прямая } y = m \]<br>\[ \text{не имеет с графиком общих точек.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Постройте график функции \( y = \frac{2x + 5}{2x^2 + 5x} \).</p>
+<p>Определите, при каких значениях \( k \) прямая \( y = kx \) имеет с графиком ровно одну общую точку.</p></div>
          <button class="show-answer-btn"
-                 data-answer="$m=2$ или $m=1.8$"
+                 data-answer="0.16"
                  onclick="showAnswer(21, this.dataset.answer)">
            Показать ответ
          </button>
@@ -811,9 +849,9 @@ m \in\{-1 ; 1\}
        <div class="question-item">
          <div class="question-number">Вопрос 23</div>
          
-         <div class="problem-text">\[ \text{Постройте график функции } y = \frac{(x^2 - 3x) \cdot |x|}{x - 3}. \]<br>\[ \text{Определите, при каких значениях } m \text{ прямая } y = m \text{ не имеет с графиком} \]<br>\[ \text{ни одной общей точки.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Постройте график функции \( y = x^2 - 7x - 5|x - 3| + 12 \) и определите, при каких значениях \( m \) прямая \( y = m \) имеет с графиком ровно три общие точки.</p></div>
          <button class="show-answer-btn"
-                 data-answer="9"
+                 data-answer="m = -4 или m = 0"
                  onclick="showAnswer(22, this.dataset.answer)">
            Показать ответ
          </button>
@@ -826,11 +864,10 @@ m \in\{-1 ; 1\}
        <div class="question-item">
          <div class="question-number">Вопрос 24</div>
          
-         <div class="problem-text">Постройте график функции<br>\[<br>y=\frac{x^{4}-13x^{2}+36}{(x-3)(x+2)}<br>\]<br>Определите, при каких значениях \(c\) прямая \(y=c\) имеет с графиком ровно одну общую точку.</div>
+         <div class="problem-text tex2jax_process"><p>Постройте график функции \( y = \frac{(0{,}5x^2 + 2x) \cdot |x|}{x + 4}. \)</p>
+<p>Определите, при каких значениях \( m \) прямая \( y = m \) не имеет с графиком ни одной общей точки.</p></div>
          <button class="show-answer-btn"
-                 data-answer="\[
-c \in\{-6,25\;;\,-4\;;\;6\}
-\]"
+                 data-answer="-8"
                  onclick="showAnswer(23, this.dataset.answer)">
            Показать ответ
          </button>
@@ -843,9 +880,12 @@ c \in\{-6,25\;;\,-4\;;\;6\}
        <div class="question-item">
          <div class="question-number">Вопрос 25</div>
          
-         <div class="problem-text">\[ \text{Постройте график функции } y=\frac{2|x|-1}{|x|-2x^2}. \]<br>\[ \text{Определите, при каких значениях } k \text{ прямая } y=kx \text{ не имеет с графиком общих точек.} \]</div>
+         <div class="problem-text tex2jax_process">\[ \text{Дайте развернутый ответ.} \]
+\[ \text{Постройте график функции } y = \frac{1}{2}\left( \left| \frac{x}{6} - \frac{6}{x} \right| + \frac{x}{6} + \frac{6}{x} \right). \]
+\[ \text{Определите, при каких значениях } m \text{ прямая } y = m \text{ имеет с графиком} \]
+\[ \text{ровно одну общую точку.} \]</div>
          <button class="show-answer-btn"
-                 data-answer="$k = -4, \, k = 0, \, k = 4$"
+                 data-answer="$m=1, m=-1$"
                  onclick="showAnswer(24, this.dataset.answer)">
            Показать ответ
          </button>
@@ -858,9 +898,26 @@ c \in\{-6,25\;;\,-4\;;\;6\}
        <div class="question-item">
          <div class="question-number">Вопрос 26</div>
          
-         <div class="problem-text">Постройте график функции<br>$<br>y = \begin{cases} x^2 + 4x + 4 \quad \text{при} \quad x \geq -3, \\ -\frac{3}{x} \quad \text{при} \quad x &lt; -3. \end{cases}<br>$<br>и определите, при каких значениях $m$ прямая $y=m$ имеет с графиком одну или две общие точки.</div>
+         <div class="problem-text tex2jax_process">Дайте развернутый ответ.
+Постройте график функции
+$y=\begin{array}{c|c|c}
+\begin{array}{l}
+1,5x-1 \\
+- \, 1,5x+3 \\
+3x-10,5
+\end{array} & \begin{array}{l}
+\text{при} \\
+\text{при} \\
+\text{при}
+\end{array} & \begin{array}{l}
+x<2, \\
+2\leq x \leq 3, \\
+x>3.
+\end{array}
+\end{array}$
+Определите, при каких значениях $m$ прямая $y=m$ имеет с графиком ровно две общие точки.</div>
          <button class="show-answer-btn"
-                 data-answer="$m=0$ или $m&gt;1$ (одна точка), $m=1$ (две точки)."
+                 data-answer="$m = -1,5$ и $0 &lt; m &lt; 2$."
                  onclick="showAnswer(25, this.dataset.answer)">
            Показать ответ
          </button>
@@ -873,7 +930,8 @@ c \in\{-6,25\;;\,-4\;;\;6\}
        <div class="question-item">
          <div class="question-number">Вопрос 27</div>
          
-         <div class="problem-text">Постройте график функции<br>$y=\begin{cases} 2x-2 &amp; \text{при } x&lt;3, \\ -3x+13 &amp; \text{при } 3\leq x\leq 4, \\ 1,5x-7 &amp; \text{при } x&gt;4. \end{cases}$<br>Определите, при каких значениях $m$ прямая $y=m$ имеет с графиком ровно две общие точки.</div>
+         <div class="problem-text tex2jax_process"><p>Постройте график функции \( y=\begin{cases} 2x-2 & \text{при } x<3, \\ -3x+13 & \text{при } 3\leq x\leq 4, \\ 1{,}5x-7 & \text{при } x>4. \end{cases}\).</p>
+<p>Определите, при каких значениях \( m \) прямая \( y=m \) имеет с графиком ровно две общие точки.</p></div>
          <button class="show-answer-btn"
                  data-answer="$m \in (-1; 1) \cup \{4\}$"
                  onclick="showAnswer(26, this.dataset.answer)">
@@ -888,9 +946,12 @@ c \in\{-6,25\;;\,-4\;;\;6\}
        <div class="question-item">
          <div class="question-number">Вопрос 28</div>
          
-         <div class="problem-text">\[ \text{Постройте график функции } y = |x^2 + 5x + 4|. \]<br>\[ \text{Какое наибольшее число общих точек может иметь} \]<br>\[ \text{график данной функции с прямой,} \]<br>\[ \text{параллельной оси абсцисс?} \]</div>
+         <div class="problem-text tex2jax_process">\[ \text{Дайте развернутый ответ.} \]
+\[ \text{Постройте график функции } y = \frac{(x^2 + 0{,}25)(x + 1)}{-1 - x}. \]
+\[ \text{Определите, при каких значениях } k \text{ прямая } y = kx \]
+\[ \text{имеет с графиком ровно одну общую точку.} \]</div>
          <button class="show-answer-btn"
-                 data-answer="4"
+                 data-answer="$k \in \{-1, 1, 1.25\}$"
                  onclick="showAnswer(27, this.dataset.answer)">
            Показать ответ
          </button>
@@ -903,9 +964,11 @@ c \in\{-6,25\;;\,-4\;;\;6\}
        <div class="question-item">
          <div class="question-number">Вопрос 29</div>
          
-         <div class="problem-text">\[ \text{Постройте график функции } y = \frac{3{,}5|x| - 1}{|x| - 3{,}5x^2}. \]<br>\[ \text{Определите, при каких значениях } k \text{ прямая } y = kx \]<br>\[ \text{не имеет с графиком общих точек.} \]</div>
+         <div class="problem-text tex2jax_process">\[ \text{Постройте график функции } y = |x| \cdot (x - 1) - 5x. \]
+\[ \text{Определите, при каких значениях } m \text{ прямая } y = m \text{ имеет с графиком} \]
+\[ \text{ровно две общие точки.} \]</div>
          <button class="show-answer-btn"
-                 data-answer="$k = -12,25, 0, 12,25$"
+                 data-answer="$m = 4, m = -9$"
                  onclick="showAnswer(28, this.dataset.answer)">
            Показать ответ
          </button>
@@ -918,9 +981,11 @@ c \in\{-6,25\;;\,-4\;;\;6\}
        <div class="question-item">
          <div class="question-number">Вопрос 30</div>
          
-         <div class="problem-text">\[ \text{Дайте развернутый ответ.} \]<br>\[ \text{Постройте график функции } y=\frac{4|x|-1}{|x|-4x^2}. \]<br>\[ \text{Определите, при каких значениях } k \text{ прямая } y=kx \text{ не имеет с графиком общих точек.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Постройте график функции  \[ y = \frac{2{,}5\,|x| - 1}{|x| - 2{,}5\,x^2} \] и определите, при каких значениях \(k\) прямая  \[ y = kx \] не имеет с этим графиком общих точек.</p></div>
          <button class="show-answer-btn"
-                 data-answer="$k \in \{-16, 0, 16\}$"
+                 data-answer="\[
+k \in\left\{-\frac{25}{4} ; 0 ; \frac{25}{4}\right\}
+\]"
                  onclick="showAnswer(29, this.dataset.answer)">
            Показать ответ
          </button>
@@ -939,7 +1004,7 @@ c \in\{-6,25\;;\,-4\;;\;6\}
       <h2>Хотите посмотреть решение?</h2>
       <p>Создайте аккаунт или войдите, чтобы получить доступ к подробным решениям всех задач.</p>
       <div class="modal-buttons">
-        <a href="/auth" class="modal-button primary">Войти / Создать аккаунт</a>
+        <a href="/register" class="modal-button primary">Войти / Создать аккаунт</a>
         <button class="modal-button secondary" onclick="closeSolutionModal()">Закрыть</button>
       </div>
     </div>

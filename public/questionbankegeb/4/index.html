@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Задание 4 - Банк заданий ЕГЭ базовый</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true,
+        processEnvironments: true,
+        packages: {'[+]': ['ams', 'newcommand', 'configmacros']}
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        ignoreHtmlClass: 'tex2jax_ignore',
+        processHtmlClass: 'tex2jax_process'
+      },
+      startup: {
+        ready: () => {
+          MathJax.startup.defaultReady();
+          MathJax.startup.defaultDocument();
+        }
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%);
+      min-height: 100vh;
+      color: #ffffff;
+      overflow-x: hidden;
+    }
+
+    /* Flying Math Background Animation */
+    .flying-math {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .math-symbol {
+      position: absolute;
+      color: rgba(255, 255, 255, 0.1);
+      font-size: 2rem;
+      animation: float 20s infinite linear;
+      user-select: none;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100px) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding: 2rem 0;
+    }
+
+    .header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 3rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #fbbf24 0%, #10b981 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    .header p {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 1.25rem;
+      font-weight: 500;
+    }
+
+    .header .subtitle {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .question-item {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .question-item:hover {
+      border-color: rgba(251, 191, 36, 0.4);
+      box-shadow: 0 20px 40px rgba(251, 191, 36, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .question-number {
+      font-size: 0.875rem;
+      color: #fbbf24;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .problem-image {
+      max-width: 100%;
+      width: 100%;
+      max-width: 600px;
+      height: auto;
+      border-radius: 12px;
+      margin: 0 auto 1.5rem auto;
+      display: block;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      object-fit: contain;
+    }
+
+    .problem-text {
+      font-size: 1.125rem;
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+      color: #ffffff;
+      font-weight: 400;
+    }
+
+    .answer-section {
+      margin-bottom: 1.5rem;
+    }
+
+    .answer-input {
+      width: 100%;
+      padding: 1rem 1.25rem;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      color: #ffffff;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(8px);
+    }
+
+    .answer-input:focus {
+      outline: none;
+      border-color: #fbbf24;
+      box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .answer-input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .show-answer-btn,
+    .show-solution-btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .show-answer-btn {
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      color: #1a1f36;
+      margin-right: 0.75rem;
+      box-shadow: 0 4px 16px rgba(251, 191, 36, 0.3);
+    }
+
+    .show-answer-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(251, 191, 36, 0.4);
+    }
+
+    .show-solution-btn {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
+    }
+
+    .show-solution-btn:hover {
+      border-color: #fbbf24;
+      background: rgba(251, 191, 36, 0.1);
+      transform: translateY(-1px);
+    }
+
+    .answer-display {
+      margin-top: 1rem;
+      padding: 1rem 1.25rem;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 12px;
+      color: #10b981;
+      font-weight: 600;
+      display: none;
+      backdrop-filter: blur(8px);
+    }
+
+    .answer-display.visible {
+      display: block;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      backdrop-filter: blur(8px);
+    }
+
+    .modal.visible {
+      display: flex;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .modal-content {
+      background: rgba(26, 31, 54, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 2.5rem;
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-content h2 {
+      font-family: 'Playfair Display', serif;
+      margin-bottom: 1rem;
+      color: #ffffff;
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .modal-content p {
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+      font-size: 1rem;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .modal-button {
+      padding: 0.875rem 1.75rem;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .modal-button.primary {
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      color: #1a1f36;
+      box-shadow: 0 4px 16px rgba(251, 191, 36, 0.3);
+    }
+
+    .modal-button.primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(251, 191, 36, 0.4);
+    }
+
+    .modal-button.secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
+    }
+
+    .modal-button.secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-1px);
+    }
+
+    /* MathJax styling to match the app */
+    mjx-container {
+      user-select: text;
+    }
+    
+    mjx-container * {
+      user-select: none;
+    }
+    
+    /* MathJax selection and display styling */
+    mjx-container {
+      user-select: text;
+    }
+    
+    /* Selection highlighting for regular text and MathJax fallback */
+    ::selection {
+      background: rgba(251, 191, 36, 0.3);
+    }
+    
+    /* MathJax selection overlay */
+    .mjx-selection-highlight {
+      background: rgba(251, 191, 36, 0.3) !important;
+    }
+    
+    /* Force selection visibility on MathJax elements */
+    mjx-container.mjx-selected {
+      background: rgba(251, 191, 36, 0.3);
+    }
+
+    /* General image styling for any images in the content */
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto 1rem auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Table styling for problem text */
+    .problem-text table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .problem-text table td {
+      padding: 0.75rem 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+    }
+
+    .problem-text table tr:first-child td {
+      background: rgba(251, 191, 36, 0.1);
+      font-weight: 600;
+      color: #fbbf24;
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2.5rem;
+      }
+
+      .header p {
+        font-size: 1.125rem;
+      }
+
+      .question-item {
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .show-answer-btn {
+        margin-bottom: 0.75rem;
+        margin-right: 0;
+        width: 100%;
+      }
+
+      .show-solution-btn {
+        width: 100%;
+      }
+
+      .problem-image {
+        max-width: 100%;
+        margin: 0 auto 1rem auto;
+      }
+
+      .modal-content {
+        padding: 2rem;
+        margin: 1rem;
+      }
+
+      .modal-buttons {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .modal-button {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 1rem 0.75rem;
+      }
+
+      .header h1 {
+        font-size: 2rem;
+      }
+
+      .question-item {
+        padding: 1.25rem;
+      }
+
+      .problem-text {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Flying Math Background -->
+  <div class="flying-math" id="flyingMath"></div>
+
+  <div class="container">
+    <div class="header">
+      <h1>Задание 4</h1>
+      <p>Банк заданий ЕГЭ базовый по математике</p>
+    </div>
+
+    <div id="questions">
+      
+       <div class="question-item">
+         <div class="question-number">Вопрос 1</div>
+         
+         <div class="problem-text tex2jax_process"><p>Чтобы перевести температуру из шкалы Цельсия в шкалу Фаренгейта, пользуются формулой \( t_{\text{F}} = 1{,}8 t_{\text{C}} + 32 \), где \( t_{\text{C}} \) — температура в градусах по шкале Цельсия, \( t_{\text{F}} \) — температура в градусах по шкале Фаренгейта.</p>
+<p>Скольким градусам по шкале Фаренгейта соответствует 20 градусов по шкале Цельсия?</p></div>
+         <button class="show-answer-btn"
+                 data-answer="68"
+                 onclick="showAnswer(0, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-0" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 2</div>
+         
+         <div class="problem-text tex2jax_process"><p>В прямоугольнике одна из сторон равна \(16\), а диагональ равна \(34\). Найдите площадь этого прямоугольника.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="480"
+                 onclick="showAnswer(1, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-1" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 3</div>
+         
+         <div class="problem-text tex2jax_process"><p>Найдите площадь ромба, если его высота равна \( 20 \), а острый угол равен \( 30^\circ \).</p></div>
+         <button class="show-answer-btn"
+                 data-answer="800"
+                 onclick="showAnswer(2, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-2" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 4</div>
+         
+         <div class="problem-text tex2jax_process"><p>Основания трапеции равны \(9\) и \(15\), боковая сторона, равная \(4\), образует с одним из оснований трапеции угол \(150^\circ\).</p><p>Найдите площадь трапеции.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="24"
+                 onclick="showAnswer(3, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-3" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 5</div>
+         
+         <div class="problem-text tex2jax_process"><p>Площадь треугольника можно вычислить по формуле \( S = \frac{abc}{4R} \), где \( a \), \( b \) и \( c \) — стороны треугольника, а \( R \) — радиус окружности, описанной около этого треугольника.</p><p>Пользуясь этой формулой, найдите \( b \), если \( a = 13 \), \( c = 20 \), \( S = 66 \) и \( R = \frac{65}{6} \).</p></div>
+         <button class="show-answer-btn"
+                 data-answer="11"
+                 onclick="showAnswer(4, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-4" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 6</div>
+         
+         <div class="problem-text tex2jax_process"><p>Перевести температуру из шкалы Фаренгейта в шкалу Цельсия позволяет формула \( t_C = \frac{5}{9}(t_F - 32) \), где \( t_C \) — температура в градусах по шкале Цельсия, \( t_F \) — температура в градусах по шкале Фаренгейта.</p><p>Скольким градусам по шкале Цельсия соответствует 109 градусов по шкале Фаренгейта?</p></div>
+         <button class="show-answer-btn"
+                 data-answer="42.78"
+                 onclick="showAnswer(5, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-5" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 7</div>
+         
+         <div class="problem-text tex2jax_process"><p>Энергия заряженного конденсатора \( W \) (в Дж) вычисляется по формуле</p>
+<p>\( W=\frac{q^2}{2C}, \)</p>
+<p>где \( C \) — ёмкость конденсатора (в Ф), а \( q \) — заряд на одной обкладке конденсатора (в Кл). Найдите \( W \) (в Дж), если \( C=5 \cdot 10^{-4} \) Ф и \( q=0{,}03 \) Кл.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="0,9"
+                 onclick="showAnswer(6, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-6" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 8</div>
+         
+         <div class="problem-text tex2jax_process"><p>Обе диагонали параллелограмма равны \(13\).</p>
+<p>Одна из сторон параллелограмма равна \(12\).</p>
+<p>Найдите другую сторону параллелограмма.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="5"
+                 onclick="showAnswer(7, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-7" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 9</div>
+         
+         <div class="problem-text tex2jax_process"><p>Чтобы перевести температуру из шкалы Цельсия в шкалу Фаренгейта, пользуются формулой \( t_{\text{F}} = 1{,}8 t_{\text{C}} + 32 \), где \( t_{\text{C}} \) — температура в градусах по шкале Цельсия, \( t_{\text{F}} \) — температура в градусах по шкале Фаренгейта.</p><p>Скольким градусам по шкале Фаренгейта соответствует 29 градусов по шкале Цельсия?</p></div>
+         <button class="show-answer-btn"
+                 data-answer="84,2"
+                 onclick="showAnswer(8, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-8" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 10</div>
+         
+         <div class="problem-text tex2jax_process"><p>Площадь четырёхугольника можно вычислить по формуле \( S = \frac{1}{2} d_1 d_2 \sin \alpha \), где \( d_1 \) и \( d_2 \) — длины диагоналей четырёхугольника, а \( \alpha \) — угол между диагоналями.</p><p>Пользуясь этой формулой, найдите длину диагонали \( d_2 \), если \( d_1 = 6 \), \( \sin \alpha = \frac{1}{11} \), а \( S = 3 \).</p></div>
+         <button class="show-answer-btn"
+                 data-answer="11"
+                 onclick="showAnswer(9, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-9" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 11</div>
+         
+         <div class="problem-text tex2jax_process"><p>На окружности с центром \( O \) и диаметром \( AB \) отмечена точка \( C \) так, что угол \( COB \) равен \( 120^\circ \), \( AC = 27 \).</p>
+<p>Найдите диаметр окружности.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="54"
+                 onclick="showAnswer(10, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-10" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 12</div>
+         
+         <div class="problem-text tex2jax_process"><p>Впишите правильный ответ. Мощность постоянного тока (в ваттах) вычисляется по формуле \( P = \frac{U^2}{R} \), где \( U \) — напряжение (в вольтах), \( R \) — сопротивление (в омах).</p><p>Пользуясь этой формулой, найдите \( P \) (в ваттах), если \( R = 8 \) Ом и \( U = 16 \) В.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="32"
+                 onclick="showAnswer(11, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-11" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 13</div>
+         
+         <div class="problem-text tex2jax_process"><p>Радиус основания цилиндра равен \( 20 \), а его образующая равна \( 8 \).</p><p>Сечение, параллельное оси цилиндра, удалено от неё на расстояние, равное \( 12 \).</p><p>Найдите площадь этого сечения.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="256"
+                 onclick="showAnswer(12, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-12" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 14</div>
+         
+         <div class="problem-text tex2jax_process"><p>Площадь треугольника со сторонами \( a, b, c \) можно найти по формуле Герона:</p>
+<p>\[ S = \sqrt{p(p - a)(p - b)(p - c)}, \text{ где } p = \frac{a + b + c}{2}. \]</p>
+<p>Найдите площадь треугольника, если длины его сторон равны 11, 13, 20.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="66"
+                 onclick="showAnswer(13, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-13" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 15</div>
+         
+         <div class="problem-text tex2jax_process"><p>На окружности с центром \( O \) отмечены точки \( A \) и \( B \) так, что \( \angle AOB = 140^\circ \).</p>
+<p>Длина меньшей дуги \( AB \) равна \( 28 \).</p>
+<p>Найдите длину большей дуги.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="44"
+                 onclick="showAnswer(14, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-14" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 16</div>
+         
+         <div class="problem-text tex2jax_process"><p>Площадь треугольника вычисляется по формуле \( S = \frac{1}{2}bc\sin\alpha \), где \( b \) и \( c \) — две стороны треугольника, а \( \alpha \) — угол между ними.</p><p>Пользуясь этой формулой, найдите площадь \( S \), если \( b = 18, \, c = 16 \) и \( \sin\alpha = \frac{1}{3} \).</p></div>
+         <button class="show-answer-btn"
+                 data-answer="48"
+                 onclick="showAnswer(15, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-15" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 17</div>
+         
+         <div class="problem-text tex2jax_process"><p>Объём прямоугольного параллелепипеда вычисляется по формуле \( V = abc \), где \( a \), \( b \) и \( c \) — длины трёх его рёбер, выходящих из одной вершины.</p><p>Пользуясь этой формулой, найдите \( a \), если \( V = 27 \), \( b = 3 \) и \( c = 4.5 \).</p></div>
+         <button class="show-answer-btn"
+                 data-answer="2"
+                 onclick="showAnswer(16, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-16" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 18</div>
+         
+         <div class="problem-text tex2jax_process"><p>Плоскость, проходящая через точки \(A, B\) и \(C\) (см. рис.), разбивает правильную треугольную призму на два многогранника. Сколько вершин у получившегося многогранника с меньшим числом граней?</p></div>
+         <button class="show-answer-btn"
+                 data-answer="5"
+                 onclick="showAnswer(17, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-17" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 19</div>
+         
+         <div class="problem-text tex2jax_process"><p>Сумма двух углов ромба равна \(240^\circ\), а его меньшая диагональ равна \(27\). Найдите периметр ромба.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="108"
+                 onclick="showAnswer(18, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-18" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 20</div>
+         
+         <div class="problem-text tex2jax_process"><p>Пол комнаты, имеющей форму прямоугольника со сторонами \(9\,\text{м}\) и \(10\,\text{м}\), требуется покрыть паркетом из прямоугольных дощечек со сторонами \(10\,\text{см}\) и \(20\,\text{см}\). Сколько потребуется таких дощечек?</p></div>
+         <button class="show-answer-btn"
+                 data-answer="4500"
+                 onclick="showAnswer(19, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-19" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 21</div>
+         
+         <div class="problem-text tex2jax_process"><p>В трапеции известно, что основания \( a \) и \( b \), а её площадь равна \( 30 \). Найдите площадь треугольника \( S \).</p></div>
+         <button class="show-answer-btn"
+                 data-answer="12"
+                 onclick="showAnswer(20, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-20" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 22</div>
+         
+         <div class="problem-text tex2jax_process"><p>Работа постоянного тока (в джоулях) вычисляется по формуле \( A = I^2 R t \), где \( I \) — сила тока (в амперах), \( R \) — сопротивление (в омах), \( t \) — время (в секундах).</p>
+<p>Пользуясь этой формулой, найдите \( A \) (в джоулях), если \( t = 4 \) с, \( I = 7 \) А и \( R = 5 \) Ом.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="980"
+                 onclick="showAnswer(21, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-21" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 23</div>
+         
+         <div class="problem-text tex2jax_process"><p>Впишите правильный ответ. Площадь треугольника можно вычислить по формуле \( S=\frac{(a+b+c)r}{2}, \) где \( a, b \) и \( c \) — стороны треугольника, а \( r \) — радиус окружности, вписанной в этот треугольник. Пользуясь этой формулой, найдите \( b \), если \( a=8, c=12, S=15\sqrt{7} \) и \( r=\sqrt{7}. \)</p></div>
+         <button class="show-answer-btn"
+                 data-answer="10"
+                 onclick="showAnswer(22, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-22" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 24</div>
+         
+         <div class="problem-text tex2jax_process"><p>Найдите площадь ромба, если его высота равна \( 6 \), а острый угол равен \( 30^\circ \).</p></div>
+         <button class="show-answer-btn"
+                 data-answer="72"
+                 onclick="showAnswer(23, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-23" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 25</div>
+         
+         <div class="problem-text tex2jax_process"><p>Ромб и квадрат имеют равные стороны. Найдите площадь ромба, если его острый угол равен \(30^\circ\), а площадь квадрата равна \(64\).</p></div>
+         <button class="show-answer-btn"
+                 data-answer="32"
+                 onclick="showAnswer(24, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-24" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 26</div>
+         
+         <div class="problem-text tex2jax_process"><p>Среднее геометрическое трёх чисел \( a, b \) и \( c \) вычисляется по формуле</p>
+<p>\( g = \sqrt[3]{abc} \)</p>
+<p>Вычислите среднее геометрическое чисел \( 2, 27, 32 \).</p></div>
+         <button class="show-answer-btn"
+                 data-answer="12"
+                 onclick="showAnswer(25, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-25" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 27</div>
+         
+         <div class="problem-text tex2jax_process"><p>Впишите правильный ответ.</p>
+<p>Перевести температуру из шкалы Фаренгейта в шкалу Цельсия позволяет формула \( t_C = \frac{5}{9}(t_F - 32) \), где \( t_C \) — температура в градусах по шкале Цельсия, \( t_F \) — температура в градусах по шкале Фаренгейта.</p>
+<p>Скольким градусам по шкале Цельсия соответствует 60 градусов по шкале Фаренгейта?</p></div>
+         <button class="show-answer-btn"
+                 data-answer="15.56"
+                 onclick="showAnswer(26, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-26" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 28</div>
+         
+         <div class="problem-text tex2jax_process"><p>Найдите площадь ромба, если его высота равна \(22\), а острый угол равен \(30^\circ\).</p></div>
+         <button class="show-answer-btn"
+                 data-answer="968"
+                 onclick="showAnswer(27, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-27" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 29</div>
+         
+         <div class="problem-text tex2jax_process"><p>В параллелограмме \( ABCD \) известно, что \( AB = 9, AC = BD = 41 \). Найдите площадь параллелограмма.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="360"
+                 onclick="showAnswer(28, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-28" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 30</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/C41404.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Дачный участок имеет форму прямоугольника со сторонами 25 метров и 30 метров. Хозяин отгородил на участке квадратный вольер со стороной 15 метров (см. рисунок). Найдите площадь оставшейся части участка. Ответ дайте в квадратных метрах.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="525"
+                 onclick="showAnswer(29, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-29" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="solutionModal" class="modal">
+    <div class="modal-content">
+      <h2>Хотите посмотреть решение?</h2>
+      <p>Создайте аккаунт или войдите, чтобы получить доступ к подробным решениям всех задач.</p>
+      <div class="modal-buttons">
+        <a href="/register" class="modal-button primary">Войти / Создать аккаунт</a>
+        <button class="modal-button secondary" onclick="closeSolutionModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Flying Math Background Animation
+    function createFlyingMath() {
+      const mathSymbols = ['π', '∑', '∫', '√', '∞', 'α', 'β', 'γ', 'δ', 'ε', 'θ', 'λ', 'μ', 'σ', 'φ', 'ψ', 'ω', 'Δ', 'Ω', '±', '×', '÷', '=', '≠', '≤', '≥', '∈', '∉', '∪', '∩', '⊂', '⊃'];
+      const container = document.getElementById('flyingMath');
+      
+      function addMathSymbol() {
+        const symbol = document.createElement('div');
+        symbol.className = 'math-symbol';
+        symbol.textContent = mathSymbols[Math.floor(Math.random() * mathSymbols.length)];
+        symbol.style.left = Math.random() * 100 + '%';
+        symbol.style.animationDuration = (Math.random() * 10 + 15) + 's';
+        symbol.style.animationDelay = Math.random() * 5 + 's';
+        container.appendChild(symbol);
+        
+        // Remove symbol after animation
+        setTimeout(() => {
+          if (symbol.parentNode) {
+            symbol.parentNode.removeChild(symbol);
+          }
+        }, 25000);
+      }
+      
+      // Add symbols periodically
+      setInterval(addMathSymbol, 2000);
+      
+      // Add initial symbols
+      for (let i = 0; i < 5; i++) {
+        setTimeout(addMathSymbol, i * 1000);
+      }
+    }
+
+    function showAnswer(index, answer) {
+      const answerDiv = document.getElementById(`answer-${index}`);
+      answerDiv.textContent = `Ответ: ${answer}`;
+      answerDiv.classList.add('visible');
+      
+      // Re-render MathJax for the newly shown content
+      if (window.MathJax) {
+        MathJax.typesetPromise([answerDiv]);
+      }
+    }
+
+    function showSolutionModal() {
+      document.getElementById('solutionModal').classList.add('visible');
+    }
+
+    function closeSolutionModal() {
+      document.getElementById('solutionModal').classList.remove('visible');
+    }
+
+    // Close modal on outside click
+    document.getElementById('solutionModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeSolutionModal();
+      }
+    });
+
+    // Initialize flying math animation
+    document.addEventListener('DOMContentLoaded', createFlyingMath);
+    
+    // Initialize MathJax rendering
+    function initializeMathJax() {
+      if (window.MathJax) {
+        MathJax.typesetPromise();
+      }
+    }
+    
+    // Re-render MathJax when content changes
+    function reRenderMathJax(element) {
+      if (window.MathJax && element) {
+        MathJax.typesetPromise([element]);
+      }
+    }
+    
+    // Initialize MathJax on page load
+    document.addEventListener('DOMContentLoaded', initializeMathJax);
+  </script>
+</body>
+</html>
+

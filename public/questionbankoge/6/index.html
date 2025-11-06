@@ -395,6 +395,28 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
+    /* Table styling for problem text */
+    .problem-text table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .problem-text table td {
+      padding: 0.75rem 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+    }
+
+    .problem-text table tr:first-child td {
+      background: rgba(251, 191, 36, 0.1);
+      font-weight: 600;
+      color: #fbbf24;
+    }
+
     /* Mobile Responsiveness */
     @media (max-width: 768px) {
       .header h1 {
@@ -475,9 +497,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 1</div>
          
-         <div class="problem-text">\[ \text{Найдите значение выражения } \frac{1}{5} + \frac{19}{20} \]</div>
+         <div class="problem-text tex2jax_process"><p>Найдите значение выражения \(0,4 \cdot(-10)^{3}-7 \cdot(-10)^{2}+64\).</p></div>
          <button class="show-answer-btn"
-                 data-answer="1.15"
+                 data-answer="-1036"
                  onclick="showAnswer(0, this.dataset.answer)">
            Показать ответ
          </button>
@@ -490,7 +512,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 2</div>
          
-         <div class="problem-text">\[ \text{Найдите значение выражения } \frac{6,8}{1,7}. \]</div>
+         <div class="problem-text tex2jax_process"><p>Найдите значение выражения \( \frac{6}{35} + \frac{2}{21} \). Представьте результат в виде несократимой обыкновенной дроби. В ответ запишите числитель этой дроби.</p></div>
          <button class="show-answer-btn"
                  data-answer="4"
                  onclick="showAnswer(1, this.dataset.answer)">
@@ -505,9 +527,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 3</div>
          
-         <div class="problem-text">\[ \text{Найдите значение выражения } \frac{7}{6} \cdot \frac{9}{5}. \]</div>
+         <div class="problem-text tex2jax_process"><p>Найдите значение выражения \(8,9 \cdot 4,3\).</p></div>
          <button class="show-answer-btn"
-                 data-answer="2,1"
+                 data-answer="38,27"
                  onclick="showAnswer(2, this.dataset.answer)">
            Показать ответ
          </button>
@@ -520,9 +542,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 4</div>
          
-         <div class="problem-text">\[ \text{Найдите значение выражения } \sqrt{a^2 + 8ab + 16b^2} \text{ при } a = 3\frac{2}{3} \text{ и } b = \frac{1}{3}. \]</div>
+         <div class="problem-text tex2jax_process"><p>Найдите значение выражения \( \frac{5}{12} + \frac{4}{15} + \frac{1}{6} \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="5"
+                 data-answer="0,85"
                  onclick="showAnswer(3, this.dataset.answer)">
            Показать ответ
          </button>
@@ -535,9 +557,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 5</div>
          
-         <div class="problem-text">\[ \text{Найдите значение выражения } \frac{96}{(4\sqrt{2})^2} \]</div>
+         <div class="problem-text tex2jax_process"><p>Найдите значение выражения \( \frac{2}{\frac{1}{24}+\frac{1}{56}} \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="3"
+                 data-answer="33,6"
                  onclick="showAnswer(4, this.dataset.answer)">
            Показать ответ
          </button>
@@ -550,9 +572,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 6</div>
          
-         <div class="problem-text">\[ \text{Найдите значение выражения } \frac{(3\sqrt{2})^2}{180}. \]</div>
+         <div class="problem-text tex2jax_process"><p>Найдите значение выражения \( \frac{21}{5} \cdot \frac{3}{7} \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="0,1"
+                 data-answer="1,8"
                  onclick="showAnswer(5, this.dataset.answer)">
            Показать ответ
          </button>
@@ -565,9 +587,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 7</div>
          
-         <div class="problem-text">\[ \text{Найдите значение выражения } \frac{1}{2} - \frac{13}{50}. \]</div>
+         <div class="problem-text tex2jax_process"><p>Найдите значение выражения \( 9{,}9 \cdot 7{,}1 \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="0.24"
+                 data-answer="70,29"
                  onclick="showAnswer(6, this.dataset.answer)">
            Показать ответ
          </button>
@@ -580,9 +602,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 8</div>
          
-         <div class="problem-text">\[ \text{Найдите значение выражения } \frac{5^5}{25}. \]</div>
+         <div class="problem-text tex2jax_process"><p>Найдите значение выражения \(1\frac{2}{21}-\frac{8}{35}\). Представьте полученный результат в виде несократимой обыкновенной дроби. В ответ запишите числитель этой дроби.</p></div>
          <button class="show-answer-btn"
-                 data-answer="125"
+                 data-answer="13"
                  onclick="showAnswer(7, this.dataset.answer)">
            Показать ответ
          </button>
@@ -595,9 +617,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 9</div>
          
-         <div class="problem-text">\[ \text{Найдите значение выражения } 5{,}7 - 7{,}6. \]</div>
+         <div class="problem-text tex2jax_process"><p>Найдите значение выражения \( \left(\frac{4}{15}\right)^{2} - \frac{13}{36} \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="-1,9"
+                 data-answer="-0,29"
                  onclick="showAnswer(8, this.dataset.answer)">
            Показать ответ
          </button>
@@ -610,9 +632,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 10</div>
          
-         <div class="problem-text">\[ \text{Найдите значение выражения } \frac{48}{(2\sqrt{6})^2} \]</div>
+         <div class="problem-text tex2jax_process"><p>Найдите значение выражения \( 4{,}7 - 8{,}2 \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="2"
+                 data-answer="-3,5"
                  onclick="showAnswer(9, this.dataset.answer)">
            Показать ответ
          </button>
@@ -625,9 +647,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 11</div>
          
-         <div class="problem-text">\[ \text{Найдите значение выражения } \frac{9,6}{1,6}. \]</div>
+         <div class="problem-text tex2jax_process"><p>Найдите значение выражения \(\sqrt{a^2 + 12ab + 36b^2}\) при \(a = 7\frac{2}{5}\) и \(b = \frac{3}{5}\).</p></div>
          <button class="show-answer-btn"
-                 data-answer="6"
+                 data-answer="11"
                  onclick="showAnswer(10, this.dataset.answer)">
            Показать ответ
          </button>
@@ -640,9 +662,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 12</div>
          
-         <div class="problem-text">\[ \text{Найдите значение выражения } 9,3 + 7,8 \]</div>
+         <div class="problem-text tex2jax_process"><p>Найдите значение выражения \(9,9\cdot7,1\).</p></div>
          <button class="show-answer-btn"
-                 data-answer="17,1"
+                 data-answer="70,29"
                  onclick="showAnswer(11, this.dataset.answer)">
            Показать ответ
          </button>
@@ -655,9 +677,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 13</div>
          
-         <div class="problem-text">\[ \text{Найдите значение выражения } 3,6-4,1. \]</div>
+         <div class="problem-text tex2jax_process"><p>Найдите значение выражения \(\frac{2^7}{32}\).</p></div>
          <button class="show-answer-btn"
-                 data-answer="$-0,5$"
+                 data-answer="4"
                  onclick="showAnswer(12, this.dataset.answer)">
            Показать ответ
          </button>
@@ -670,9 +692,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 14</div>
          
-         <div class="problem-text">\[ \text{Найдите значение выражения } 5{,}2 \cdot 3{,}1. \]</div>
+         <div class="problem-text tex2jax_process"><p>Найдите значение выражения \( \frac{13}{30} + \frac{23}{45} \). Представьте полученный результат в виде дроби со знаменателем 36. В ответ запишите числитель этой дроби.</p></div>
          <button class="show-answer-btn"
-                 data-answer="16,12"
+                 data-answer="34"
                  onclick="showAnswer(13, this.dataset.answer)">
            Показать ответ
          </button>
@@ -685,9 +707,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 15</div>
          
-         <div class="problem-text">\[ \text{Найдите значение выражения } \frac{(2\sqrt{3})^2}{120}. \]</div>
+         <div class="problem-text tex2jax_process"><p>Найдите значение выражения \( \displaystyle \frac{0,8}{1 - \frac{1}{9}} \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="0.1"
+                 data-answer="0,9"
                  onclick="showAnswer(14, this.dataset.answer)">
            Показать ответ
          </button>
@@ -700,9 +722,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 16</div>
          
-         <div class="problem-text">\[ \text{Найдите значение выражения } 4{,}4 - 1{,}7. \]</div>
+         <div class="problem-text tex2jax_process"><p>Найдите значение выражения \( \frac{7}{6} \cdot \frac{9}{5} \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="2,7"
+                 data-answer="2,1"
                  onclick="showAnswer(15, this.dataset.answer)">
            Показать ответ
          </button>
@@ -715,9 +737,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 17</div>
          
-         <div class="problem-text">\[ \text{Найдите значение выражения } \frac{15}{2} \cdot \frac{7}{5}. \]</div>
+         <div class="problem-text tex2jax_process"><p>Найдите значение выражения \(\frac{5^5}{25}\).</p></div>
          <button class="show-answer-btn"
-                 data-answer="10.5"
+                 data-answer="125"
                  onclick="showAnswer(16, this.dataset.answer)">
            Показать ответ
          </button>
@@ -730,9 +752,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 18</div>
          
-         <div class="problem-text">\[ \text{Найдите значение выражения } \frac{12}{5} : \frac{15}{2}. \]</div>
+         <div class="problem-text tex2jax_process"><p>Найдите значение выражения \( \displaystyle \frac{1}{5} + \frac{53}{50} \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="0,32"
+                 data-answer="1,26"
                  onclick="showAnswer(17, this.dataset.answer)">
            Показать ответ
          </button>
@@ -745,9 +767,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 19</div>
          
-         <div class="problem-text">\[ \text{Найдите значение выражения } \frac{2^9}{16}. \]</div>
+         <div class="problem-text tex2jax_process"><p>Найдите значение выражения \( \frac{11}{4} + \frac{6}{5} \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="32"
+                 data-answer="3,95"
                  onclick="showAnswer(18, this.dataset.answer)">
            Показать ответ
          </button>
@@ -760,9 +782,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 20</div>
          
-         <div class="problem-text">Найдите значение выражения \(8,9 \cdot 4,3\).</div>
+         <div class="problem-text tex2jax_process"><p>Найдите значение выражения \(\frac{3^7}{81}\).</p></div>
          <button class="show-answer-btn"
-                 data-answer="38,27"
+                 data-answer="27"
                  onclick="showAnswer(19, this.dataset.answer)">
            Показать ответ
          </button>
@@ -775,9 +797,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 21</div>
          
-         <div class="problem-text">Представьте выражение \( \frac{2}{11} + \frac{5}{3} \) в виде дроби со знаменателем \(66\). В ответ запишите числитель полученной дроби.</div>
+         <div class="problem-text tex2jax_process"><p>Найдите значение выражения \(\frac{6,8}{1,7}\).</p></div>
          <button class="show-answer-btn"
-                 data-answer="122"
+                 data-answer="4"
                  onclick="showAnswer(20, this.dataset.answer)">
            Показать ответ
          </button>
@@ -790,9 +812,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 22</div>
          
-         <div class="problem-text">\[ \text{Найдите значение выражения } 3{,}2 \cdot 6{,}2. \]</div>
+         <div class="problem-text tex2jax_process"><p>Найдите значение выражения \(\frac{(3\sqrt{5})^2}{75}\).</p></div>
          <button class="show-answer-btn"
-                 data-answer="19,84"
+                 data-answer="0,6"
                  onclick="showAnswer(21, this.dataset.answer)">
            Показать ответ
          </button>
@@ -805,9 +827,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 23</div>
          
-         <div class="problem-text">Найдите значение выражения \( \frac{3}{5}: \frac{4}{35} \).</div>
+         <div class="problem-text tex2jax_process"><p>Найдите значение выражения \( 3,6-4,1 \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="5,25"
+                 data-answer="$-0,5$"
                  onclick="showAnswer(22, this.dataset.answer)">
            Показать ответ
          </button>
@@ -820,9 +842,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 24</div>
          
-         <div class="problem-text">Найдите значение выражения \( \frac{2}{\frac{1}{24}+\frac{1}{56}} \).</div>
+         <div class="problem-text tex2jax_process"><p>Найдите значение выражения \(\frac{6^5}{2^3 \cdot 3^4}\).</p></div>
          <button class="show-answer-btn"
-                 data-answer="33,6"
+                 data-answer="12"
                  onclick="showAnswer(23, this.dataset.answer)">
            Показать ответ
          </button>
@@ -835,9 +857,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 25</div>
          
-         <div class="problem-text">\[ \text{Найдите значение выражения } \frac{(3\sqrt{5})^2}{75} \]</div>
+         <div class="problem-text tex2jax_process"><p>Найдите значение выражения \(\frac{(2\sqrt{6})^2}{48}\).</p></div>
          <button class="show-answer-btn"
-                 data-answer="0,6"
+                 data-answer="0,5"
                  onclick="showAnswer(24, this.dataset.answer)">
            Показать ответ
          </button>
@@ -850,9 +872,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 26</div>
          
-         <div class="problem-text">\[ \text{В фирме «Родник» стоимость (в рублях) колодца из железобетонных колец} \]<br>\[ \text{рассчитывается по формуле } C = 6000 + 4100n, \text{ где } n \text{ — число колец,} \]<br>\[ \text{установленных в колодце. Пользуясь этой формулой, рассчитайте} \]<br>\[ \text{стоимость колодца из 9 колец. Ответ дайте в рублях.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Найдите значение выражения \(6,9+7,4\).</p></div>
          <button class="show-answer-btn"
-                 data-answer="42900"
+                 data-answer="14,3"
                  onclick="showAnswer(25, this.dataset.answer)">
            Показать ответ
          </button>
@@ -865,9 +887,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 27</div>
          
-         <div class="problem-text">\[ \text{Найдите значение выражения } \frac{1}{5} - \frac{27}{20}. \]</div>
+         <div class="problem-text tex2jax_process"><p>Найдите значение выражения \( \displaystyle \frac{1,2}{1-\frac{1}{3}} \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="-1.15"
+                 data-answer="1,8"
                  onclick="showAnswer(26, this.dataset.answer)">
            Показать ответ
          </button>
@@ -880,9 +902,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 28</div>
          
-         <div class="problem-text">\[ \text{Найдите значение выражения } \frac{5}{3} \cdot \frac{9}{2} \]</div>
+         <div class="problem-text tex2jax_process"><p>Найдите значение выражения \(\frac{96}{(4\sqrt{2})^2}\).</p></div>
          <button class="show-answer-btn"
-                 data-answer="7,5"
+                 data-answer="3"
                  onclick="showAnswer(27, this.dataset.answer)">
            Показать ответ
          </button>
@@ -895,9 +917,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 29</div>
          
-         <div class="problem-text">Найдите значение выражения \(1\frac{2}{21}-\frac{8}{35}\). Представьте полученный результат в виде несократимой обыкновенной дроби. В ответ запишите числитель этой дроби.</div>
+         <div class="problem-text tex2jax_process"><p>Найдите значение выражения \(\frac{1}{10} + \frac{21}{50}\).</p></div>
          <button class="show-answer-btn"
-                 data-answer="13"
+                 data-answer="0.52"
                  onclick="showAnswer(28, this.dataset.answer)">
            Показать ответ
          </button>
@@ -910,9 +932,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 30</div>
          
-         <div class="problem-text">Найдите значение выражения \( \frac{1}{4}+\frac{37}{20} \).</div>
+         <div class="problem-text tex2jax_process"><p>Найдите значение выражения \(\frac{1}{4}+\frac{37}{20}\).</p></div>
          <button class="show-answer-btn"
-                 data-answer="2,1"
+                 data-answer="2.1"
                  onclick="showAnswer(29, this.dataset.answer)">
            Показать ответ
          </button>
@@ -931,7 +953,7 @@
       <h2>Хотите посмотреть решение?</h2>
       <p>Создайте аккаунт или войдите, чтобы получить доступ к подробным решениям всех задач.</p>
       <div class="modal-buttons">
-        <a href="/auth" class="modal-button primary">Войти / Создать аккаунт</a>
+        <a href="/register" class="modal-button primary">Войти / Создать аккаунт</a>
         <button class="modal-button secondary" onclick="closeSolutionModal()">Закрыть</button>
       </div>
     </div>

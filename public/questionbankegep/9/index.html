@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Задание 9 - Банк заданий ЕГЭ профиль</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true,
+        processEnvironments: true,
+        packages: {'[+]': ['ams', 'newcommand', 'configmacros']}
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        ignoreHtmlClass: 'tex2jax_ignore',
+        processHtmlClass: 'tex2jax_process'
+      },
+      startup: {
+        ready: () => {
+          MathJax.startup.defaultReady();
+          MathJax.startup.defaultDocument();
+        }
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%);
+      min-height: 100vh;
+      color: #ffffff;
+      overflow-x: hidden;
+    }
+
+    /* Flying Math Background Animation */
+    .flying-math {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .math-symbol {
+      position: absolute;
+      color: rgba(255, 255, 255, 0.1);
+      font-size: 2rem;
+      animation: float 20s infinite linear;
+      user-select: none;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100px) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding: 2rem 0;
+    }
+
+    .header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 3rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #fbbf24 0%, #10b981 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    .header p {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 1.25rem;
+      font-weight: 500;
+    }
+
+    .header .subtitle {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .question-item {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .question-item:hover {
+      border-color: rgba(251, 191, 36, 0.4);
+      box-shadow: 0 20px 40px rgba(251, 191, 36, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .question-number {
+      font-size: 0.875rem;
+      color: #fbbf24;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .problem-image {
+      max-width: 100%;
+      width: 100%;
+      max-width: 600px;
+      height: auto;
+      border-radius: 12px;
+      margin: 0 auto 1.5rem auto;
+      display: block;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      object-fit: contain;
+    }
+
+    .problem-text {
+      font-size: 1.125rem;
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+      color: #ffffff;
+      font-weight: 400;
+    }
+
+    .answer-section {
+      margin-bottom: 1.5rem;
+    }
+
+    .answer-input {
+      width: 100%;
+      padding: 1rem 1.25rem;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      color: #ffffff;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(8px);
+    }
+
+    .answer-input:focus {
+      outline: none;
+      border-color: #fbbf24;
+      box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .answer-input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .show-answer-btn,
+    .show-solution-btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .show-answer-btn {
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      color: #1a1f36;
+      margin-right: 0.75rem;
+      box-shadow: 0 4px 16px rgba(251, 191, 36, 0.3);
+    }
+
+    .show-answer-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(251, 191, 36, 0.4);
+    }
+
+    .show-solution-btn {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
+    }
+
+    .show-solution-btn:hover {
+      border-color: #fbbf24;
+      background: rgba(251, 191, 36, 0.1);
+      transform: translateY(-1px);
+    }
+
+    .answer-display {
+      margin-top: 1rem;
+      padding: 1rem 1.25rem;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 12px;
+      color: #10b981;
+      font-weight: 600;
+      display: none;
+      backdrop-filter: blur(8px);
+    }
+
+    .answer-display.visible {
+      display: block;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      backdrop-filter: blur(8px);
+    }
+
+    .modal.visible {
+      display: flex;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .modal-content {
+      background: rgba(26, 31, 54, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 2.5rem;
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-content h2 {
+      font-family: 'Playfair Display', serif;
+      margin-bottom: 1rem;
+      color: #ffffff;
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .modal-content p {
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+      font-size: 1rem;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .modal-button {
+      padding: 0.875rem 1.75rem;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .modal-button.primary {
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      color: #1a1f36;
+      box-shadow: 0 4px 16px rgba(251, 191, 36, 0.3);
+    }
+
+    .modal-button.primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(251, 191, 36, 0.4);
+    }
+
+    .modal-button.secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
+    }
+
+    .modal-button.secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-1px);
+    }
+
+    /* MathJax styling to match the app */
+    mjx-container {
+      user-select: text;
+    }
+    
+    mjx-container * {
+      user-select: none;
+    }
+    
+    /* MathJax selection and display styling */
+    mjx-container {
+      user-select: text;
+    }
+    
+    /* Selection highlighting for regular text and MathJax fallback */
+    ::selection {
+      background: rgba(251, 191, 36, 0.3);
+    }
+    
+    /* MathJax selection overlay */
+    .mjx-selection-highlight {
+      background: rgba(251, 191, 36, 0.3) !important;
+    }
+    
+    /* Force selection visibility on MathJax elements */
+    mjx-container.mjx-selected {
+      background: rgba(251, 191, 36, 0.3);
+    }
+
+    /* General image styling for any images in the content */
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto 1rem auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2.5rem;
+      }
+
+      .header p {
+        font-size: 1.125rem;
+      }
+
+      .question-item {
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .show-answer-btn {
+        margin-bottom: 0.75rem;
+        margin-right: 0;
+        width: 100%;
+      }
+
+      .show-solution-btn {
+        width: 100%;
+      }
+
+      .problem-image {
+        max-width: 100%;
+        margin: 0 auto 1rem auto;
+      }
+
+      .modal-content {
+        padding: 2rem;
+        margin: 1rem;
+      }
+
+      .modal-buttons {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .modal-button {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 1rem 0.75rem;
+      }
+
+      .header h1 {
+        font-size: 2rem;
+      }
+
+      .question-item {
+        padding: 1.25rem;
+      }
+
+      .problem-text {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Flying Math Background -->
+  <div class="flying-math" id="flyingMath"></div>
+
+  <div class="container">
+    <div class="header">
+      <h1>Задание 9</h1>
+      <p>Банк заданий ЕГЭ профиль по математике</p>
+    </div>
+
+    <div id="questions">
+      
+       <div class="question-item">
+         <div class="question-number">Вопрос 1</div>
+         
+         <div class="problem-text">Впишите правильный ответ. В ходе распада радиоактивного изотопа его масса $m$ (в мг) уменьшается по закону $m=m_0 \cdot 2^{-\frac{\tau}{T}}$, где $m_0$ — начальная масса изотопа (в мг), $\tau$ — время (в минутах), прошедшее от начального момента, $T$ — период полураспада (в минутах). В начальный момент времени масса изотопа равна 196 мг. Период его полураспада составляет 4 минуты. Найдите, через сколько минут масса изотопа будет равна 49 мг.</div>
+         <button class="show-answer-btn"
+                 data-answer="8"
+                 onclick="showAnswer(0, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-0" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 2</div>
+         
+         <div class="problem-text">Впишите правильный ответ. Для сматывания кабеля на заводе используют лебёдку, которая равноускоренно наматывает кабель на катушку. Угол, на который поворачивается катушка, изменяется со временем по закону $\varphi = \omega t + \frac{\beta t^2}{2}$, где $t$ — время в минутах, прошедшее после начала работы лебёдки, $\omega = 50 \, \text{град. / мин}$ — начальная угловая скорость вращения катушки, а $\beta = 4 \, \text{град. / мин}^2$ — угловое ускорение, с которым наматывается кабель. Определите время, прошедшее после начала работы лебёдки, если известно, что за это время угол намотки $\varphi$ достиг $2500^\circ$. Ответ дайте в минутах.</div>
+         <button class="show-answer-btn"
+                 data-answer="25"
+                 onclick="showAnswer(1, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-1" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 3</div>
+         
+         <div class="problem-text">Впишите правильный ответ. В розетку электросети подключена электрическая духовка, сопротивление которой составляет $R_1 = 36$ Ом. Параллельно с ней в розетку предполагается подключить электрообогреватель, сопротивление которого $R_2$ (в Ом). При параллельном соединении двух электроприборов с сопротивлениями $R_1$ и $R_2$ их общее сопротивление $R$ вычисляется по формуле $R = \frac{R_1 R_2}{R_1 + R_2}$. Для нормального функционирования электросети общее сопротивление в ней должно быть не меньше 20 Ом. Определите наименьшее возможное сопротивление электрообогревателя. Ответ дайте в омах.</div>
+         <button class="show-answer-btn"
+                 data-answer="45"
+                 onclick="showAnswer(2, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-2" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 4</div>
+         
+         <div class="problem-text">Впишите правильный ответ. К источнику с ЭДС $\varepsilon=130\, \text{В}$ и внутренним сопротивлением $r=1\, \text{Ом}$ хотят подключить нагрузку с сопротивлением $R$ (в Ом). Напряжение (в В) на этой нагрузке вычисляется по формуле $U=\frac{\varepsilon R}{R+r}$. При каком значении сопротивления нагрузки напряжение на ней будет равно $120\, \text{В}$? Ответ дайте в омах.</div>
+         <button class="show-answer-btn"
+                 data-answer="12"
+                 onclick="showAnswer(3, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-3" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 5</div>
+         
+         <div class="problem-text">Впишите правильный ответ. Автомобиль разгоняется на прямолинейном участке шоссе с постоянным ускорением $a=4500 \, \text{км} / \text{ч}^2$. Скорость $v$ (в км/ч) вычисляется по формуле $v=\sqrt{2la}$, где $l$ — пройденный автомобилем путь (в км). Найдите, сколько километров проедет автомобиль к моменту, когда он разгонится до скорости 90 км/ч.</div>
+         <button class="show-answer-btn"
+                 data-answer="0.9"
+                 onclick="showAnswer(4, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-4" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 6</div>
+         
+         <div class="problem-text">Впишите правильный ответ. Два тела, массой $m=6$ кг каждое, движутся с одинаковой скоростью $v=9$ м/с под углом $2\alpha$ друг к другу. Энергия (в Дж), выделяющаяся при их абсолютно неупругом соударении, вычисляется по формуле $Q=mv^2 \sin^2 \alpha$, где $m$ — масса (в кг), $v$ — скорость (в м/с). Найдите, под каким углом $2\alpha$ должны двигаться тела, чтобы в результате соударения выделилась энергия, равная 243 Дж. Ответ дайте в градусах.</div>
+         <button class="show-answer-btn"
+                 data-answer="90"
+                 onclick="showAnswer(5, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-5" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 7</div>
+         
+         <div class="problem-text">Впишите правильный ответ. Для нагревательного элемента некоторого прибора экспериментально была получена зависимость температуры (в К) от времени работы: $T(t) = T_0 + bt + at^2$, где $t$ — время (в мин.), $T_0 = 1600 \, \text{К}$, $a = -5 \, \text{К} / \text{мин}^2$, $b = 105 \, \text{К} / \text{мин}$. Известно, что при температуре нагревательного элемента свыше 1870 К прибор может испортиться, поэтому его нужно отключить. Найдите, через какое наибольшее время после начала работы нужно отключить прибор. Ответ дайте в минутах.</div>
+         <button class="show-answer-btn"
+                 data-answer="3"
+                 onclick="showAnswer(6, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-6" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 8</div>
+         
+         <div class="problem-text">Впишите правильный ответ. Локатор батискафа, равномерно погружающегося вертикально вниз, испускает ультразвуковые импульсы частотой 299 МГц. Скорость погружения батискафа $v$ (в м/с) вычисляется по формуле $v = c \cdot \frac{f - f_0}{f + f_0}$, где $c = 1500 \, \text{м} / \text{с}$ — скорость звука в воде, $f$ — частота испускаемых импульсов (в МГц), $f_0$ — частота отражённого от дна сигнала (в МГц), регистрируемая приёмником. Определите частоту отражённого сигнала, если скорость погружения батискафа равна 5 м/с. Ответ дайте в МГц.</div>
+         <button class="show-answer-btn"
+                 data-answer="297.0133"
+                 onclick="showAnswer(7, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-7" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 9</div>
+         
+         <div class="problem-text">Впишите правильный ответ. В розетку электросети подключена электрическая духовка, сопротивление которой составляет $R_1 = 21$ Ом. Параллельно с ней в розетку предполагается подключить тостер, сопротивление которого $R_2$ (в Ом). При параллельном соединении двух электроприборов с сопротивлениями $R_1$ и $R_2$ их общее сопротивление $R$ вычисляется по формуле $R = \frac{R_1 R_2}{R_1 + R_2}$. Для нормального функционирования электросети общее сопротивление в ней должно быть не меньше 18 Ом. Определите наименьшее возможное сопротивление тостера. Ответ дайте в омах.</div>
+         <button class="show-answer-btn"
+                 data-answer="126"
+                 onclick="showAnswer(8, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-8" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 10</div>
+         
+         <div class="problem-text">Впишите правильный ответ. Перед отправкой тепловоз издал гудок с частотой $f_0=295 \, \text{Гц}$. Чуть позже гудок издал подъезжающий к платформе такой же тепловоз. Из-за эффекта Доплера частота второго гудка $f$ (в Гц) больше первого: она зависит от скорости тепловоза $v$ (в м/с) и изменяется по закону $f(v)=\frac{f_0}{1-\frac{v}{c}}$ (Гц), где $c$ — скорость звука (в м/с). Человек, стоящий на платформе, различает сигналы по тону, если они отличаются не менее чем на 5 Гц. Определите, с какой минимальной скоростью приближался к платформе тепловоз, если человек смог различить сигналы, а $c=300 \, \text{м/с}$. Ответ дайте в м/с.</div>
+         <button class="show-answer-btn"
+                 data-answer="5"
+                 onclick="showAnswer(9, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-9" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 11</div>
+         
+         <div class="problem-text">Впишите правильный ответ. В боковой стенке высокого цилиндрического бака у самого дна закреплён кран. После его открытия вода начинает вытекать из бака, при этом высота столба воды в нём меняется по закону $H(t) = a t^2 + b t + H_0$, где $H$ — высота столба воды в метрах, $H_0 = 8$ м — начальный уровень воды, $a = \frac{1}{72}$ м/мин$^2$ и $b = -\frac{2}{3}$ м/мин — постоянные, $t$ — время в минутах, прошедшее с момента открытия крана. Сколько минут вода будет вытекать из бака?</div>
+         <button class="show-answer-btn"
+                 data-answer="24"
+                 onclick="showAnswer(10, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-10" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 12</div>
+         
+         <div class="problem-text">Впишите правильный ответ. Для получения на экране увеличенного изображения лампочки в лаборатории используется собирающая линза с фокусным расстоянием $f = 36$см. Расстояние $d_1$ от линзы до лампочки может изменяться в пределах от 30 см до 50 см, а расстояние $d_2$ от линзы до экрана — в пределах от 160 см до 180 см. Изображение на экране будет чётким, если выполнено соотношение $\frac{1}{d_1} + \frac{1}{d_2} = \frac{1}{f}$. На каком наименьшем расстоянии от линзы нужно поместить лампочку, чтобы её изображение на экране было чётким? Ответ дайте в сантиметрах.</div>
+         <button class="show-answer-btn"
+                 data-answer="45"
+                 onclick="showAnswer(11, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-11" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 13</div>
+         
+         <div class="problem-text">Дайте развернутый ответ. Вадим является владельцем двух заводов в разных городах. На заводах производятся абсолютно одинаковые товары при использовании одинаковых технологий. Если рабочие на одном из заводов трудятся суммарно $t^2$ часов в неделю, то за эту неделю они производят $t$ единиц товара. За каждый час работы на заводе, расположенном в первом городе, Вадим платит рабочему 200 рублей, а на заводе, расположенном во втором городе, — 300 рублей. Вадим готов выделять 1 200 000 рублей в неделю на оплату труда рабочих. Какое наибольшее количество единиц товара можно произвести за неделю на этих двух заводах?</div>
+         <button class="show-answer-btn"
+                 data-answer="100"
+                 onclick="showAnswer(12, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-12" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 14</div>
+         
+         <div class="problem-text">Впишите правильный ответ. Автомобиль, движущийся со скоростью $v_0 = 23 \, \text{м/с}$, начал торможение с постоянным ускорением $a = 2 \, \text{м/с}^2$. За $t$ секунд после начала торможения он прошёл путь $S = v_0 t - \frac{a t^2}{2}$ (м). Определите время, прошедшее с момента начала торможения, если известно, что за это время автомобиль проехал 132 метра. Ответ дайте в секундах.</div>
+         <button class="show-answer-btn"
+                 data-answer="11 с или 12 с"
+                 onclick="showAnswer(13, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-13" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 15</div>
+         
+         <div class="problem-text">Впишите правильный ответ. Для получения на экране увеличенного изображения лампочки в лаборатории используется собирающая линза с фокусным расстоянием $f = 30$ см. Расстояние $d_1$ от линзы до лампочки может изменяться в пределах от 20 см до 40 см, а расстояние $d_2$ от линзы до экрана — в пределах от 160 см до 180 см. Изображение на экране будет чётким, если выполнено соотношение $\frac{1}{d_1} + \frac{1}{d_2} = \frac{1}{f}$. На каком наименьшем расстоянии от линзы нужно разместить лампочку, чтобы её изображение на экране было чётким? Ответ дайте в сантиметрах.</div>
+         <button class="show-answer-btn"
+                 data-answer="36"
+                 onclick="showAnswer(14, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-14" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 16</div>
+         
+         <div class="problem-text">Впишите правильный ответ. Сила тока $I$ (в А) в электросети вычисляется по закону Ома: $I=\frac{U}{R}$, где $U$ — напряжение электросети (в В), $R$ — сопротивление подключаемого электроприбора (в Ом). Электросеть прекращает работать, если сила тока превышает 5 А. Определите, какое наименьшее сопротивление может быть у электроприбора, подключаемого к электросети с напряжением 220 В, чтобы электросеть продолжала работать. Ответ дайте в омах.</div>
+         <button class="show-answer-btn"
+                 data-answer="44"
+                 onclick="showAnswer(15, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-15" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 17</div>
+         
+         <div class="problem-text">Впишите правильный ответ. В ходе распада радиоактивного изотопа его масса $m$ (в мг) уменьшается по закону $m=m_0 \cdot 2^{-\frac{\tau}{T}}$, где $m_0$ — начальная масса изотопа (в мг), $\tau$ — время (в минутах), прошедшее от начального момента, $T$ — период полураспада (в минутах). В начальный момент времени масса изотопа равна 20 мг. Период его полураспада составляет 10 минут. Найдите, через сколько минут масса изотопа будет равна 5 мг.</div>
+         <button class="show-answer-btn"
+                 data-answer="20"
+                 onclick="showAnswer(16, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-16" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 18</div>
+         
+         <div class="problem-text">Впишите правильный ответ. Два тела, массой $m=9$ кг каждое, движутся с одинаковой скоростью $v=6$ м/с под углом $2\alpha$ друг к другу. Энергия (в Дж), выделяющаяся при их абсолютно неупругом соударении, вычисляется по формуле $Q=mv^2 \sin^2 \alpha$, где $m$ — масса (в кг), $v$ — скорость (в м/с). Найдите, под каким углом $2\alpha$ должны двигаться тела, чтобы в результате соударения выделилась энергия, равная 81 Дж. Ответ дайте в градусах.</div>
+         <button class="show-answer-btn"
+                 data-answer="60"
+                 onclick="showAnswer(17, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-17" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 19</div>
+         
+         <div class="problem-text">Впишите правильный ответ. Автомобиль разгоняется на прямолинейном участке шоссе с постоянным ускорением $a$ (в км/ч$^2$). Скорость $v$ (в км/ч) вычисляется по формуле $v=\sqrt{2la}$, где $l$ — пройденный автомобилем путь (в км). Найдите ускорение, с которым должен двигаться автомобиль, чтобы, проехав 1 км, приобрести скорость 120 км/ч. Ответ дайте в км/ч$^2$.</div>
+         <button class="show-answer-btn"
+                 data-answer="7200"
+                 onclick="showAnswer(18, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-18" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 20</div>
+         
+         <div class="problem-text">Впишите правильный ответ. Мотоциклист, движущийся по городу со скоростью $v_0 = 60$ км/ч, выезжает из него и сразу после выезда начинает разгоняться с постоянным ускорением $a = 32$ км/ч$^2$. Расстояние (в км) от мотоциклиста до города вычисляется по формуле $S = v_0 t + \frac{at^2}{2}$, где $t$ — время (в часах), прошедшее после выезда из города. Определите время, прошедшее после выезда мотоциклиста из города, если известно, что за это время он удалился от города на 154 км. Ответ дайте в минутах.</div>
+         <button class="show-answer-btn"
+                 data-answer="105 мин"
+                 onclick="showAnswer(19, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-19" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 21</div>
+         
+         <div class="problem-text">Впишите правильный ответ. Перед отправкой тепловоз издал гудок с частотой $f_0=192\, \text{Гц}$. Чуть позже гудок издал подъезжающий к платформе тепловоз. Из-за эффекта Доплера частота второго гудка $f$ (в Гц) больше первого: она зависит от скорости тепловоза $v$ (в м/с) по закону $f(v)=\frac{f_0}{1-\frac{v}{c}}$ (Гц), где $c$ — скорость звука (в м/с). Человек, стоящий на платформе, различает сигналы по тону, если они отличаются не менее чем на 8 Гц. Определите, с какой минимальной скоростью приближался к платформе тепловоз, если человек смог различить сигналы, а $c=300\, \text{м/с}$. Ответ дайте в м/с.</div>
+         <button class="show-answer-btn"
+                 data-answer="12"
+                 onclick="showAnswer(20, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-20" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 22</div>
+         
+         <div class="problem-text">Впишите правильный ответ. Для нагревательного элемента некоторого прибора экспериментально была получена зависимость температуры (в К) от времени работы: $T(t) = T_0 + b t + a t^2$, где $t$ — время (в мин.), $T_0 = 1380$ К, $a = -15$ К/мин$^2$, $b = 165$ К/мин. Известно, что при температуре нагревательного элемента свыше 1800 К прибор может испортиться, поэтому его нужно отключить. Найдите, через какое наибольшее время после начала работы нужно отключить прибор. Ответ дайте в минутах.</div>
+         <button class="show-answer-btn"
+                 data-answer="4"
+                 onclick="showAnswer(21, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-21" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 23</div>
+         
+         <div class="problem-text">Впишите правильный ответ. При сближении источника и приёмника звуковых сигналов, движущихся в некоторой среде по прямой навстречу друг другу со скоростями $u$ и $v$ (в м/с) соответственно, частота звукового сигнала $f$ (в Гц), регистрируемого приёмником, вычисляется по формуле $f = f_0 \cdot \frac{c+u}{c-v}$, где $f_0 = 140$ Гц — частота исходного сигнала, $c$ — ско��ость распространения сигнала в среде (в м/с), а $u=15$ м/с и $v=14$ м/с — скорости источника и приёмника относительно среды. При какой скорости распространения сигнала в среде частота сигнала в приёмнике будет равна 150 Гц? Ответ дайте в м/с.</div>
+         <button class="show-answer-btn"
+                 data-answer="420"
+                 onclick="showAnswer(22, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-22" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 24</div>
+         
+         <div class="problem-text">Впишите правильный ответ. Автомобиль, движущийся со скоростью $v_0 = 24 \, \text{м/с}$, начал торможение с постоянным ускорением $a = 3 \, \text{м/с}^2$. За $t$ секунд после начала торможения он прошёл путь $S = v_0 t - \frac{at^2}{2}$ (м). Определите время, прошедшее с момента начала торможения, если известно, что за это время автомобиль проехал 90 метров. Ответ дайте в секундах.</div>
+         <button class="show-answer-btn"
+                 data-answer="6"
+                 onclick="showAnswer(23, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-23" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 25</div>
+         
+         <div class="problem-text">Впишите правильный ответ. В ходе распада радиоактивного изотопа его масса уменьшается по закону $m=m_0 \cdot 2^{-\frac{t}{T}}$, где $m_0$ — начальная масса изотопа, $t$ — время, прошедшее от начального момента, $T$ — период полураспада. В начальный момент времени масса изотопа 100 мг. Период его полураспада составляет 2 мин. Найдите, через сколько минут масса изотопа будет равна 12,5 мг.</div>
+         <button class="show-answer-btn"
+                 data-answer="6"
+                 onclick="showAnswer(24, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-24" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 26</div>
+         
+         <div class="problem-text">Впишите правильный ответ. Автомобиль разгоняется на прямолинейном участке шоссе с постоянным ускорением $a$ (в $\text{км}/\text{ч}^2$ ). Скорость $v$ (в км/ч) вычисляется по формуле $v=\sqrt{2la}$, где $l$ — пройденный автомобилем путь (в км). Найдите ускорение, с которым должен двигаться автомобиль, чтобы, проехав 0,4 км, развить скорость 80 км/ч. Ответ дайте в $\text{км}/\text{ч}^2$.</div>
+         <button class="show-answer-btn"
+                 data-answer="8000"
+                 onclick="showAnswer(25, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-25" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 27</div>
+         
+         <div class="problem-text">Впишите правильный ответ. Для сматывания кабеля на заводе используют лебёдку, которая равноускоренно наматывает кабель на катушку. Угол, на который поворачивается катушка, изменяется со временем по закону $\varphi = \omega t + \frac{\beta t^2}{2}$, где $t$ — время в минутах, прошедшее после начала работы лебёдки, $\omega = 15 \, \text{град. / мин}$ — начальная угловая скорость вращения катушки, а $\beta = 6 \, \text{град. / мин}^2$ — угловое ускорение, с которым наматывается кабель. Определите время, прошедшее после начала работы лебёдки, если известно, что за это время угол намотки $\varphi$ достиг $2250^\circ$. Ответ дайте в минутах.</div>
+         <button class="show-answer-btn"
+                 data-answer="25"
+                 onclick="showAnswer(26, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-26" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 28</div>
+         
+         <div class="problem-text">Впишите правильный ответ. В ходе распада радиоактивного изотопа его масса $m$ (в мг) уменьшается по закону $m=m_0 \cdot 2^{-\frac{\tau}{T}}$, где $m_0$ — начальная масса изотопа (в мг), $\tau$ — время, прошедшее от начального момента, в минутах, $T$ — период полураспада в минутах. В начальный момент времени масса изотопа 156 мг. Период его полураспада составляет 8 минут. Найдите, через сколько минут масса изотопа будет равна 39 мг.</div>
+         <button class="show-answer-btn"
+                 data-answer="16"
+                 onclick="showAnswer(27, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-27" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 29</div>
+         
+         <div class="problem-text">Впишите правильный ответ. Водолазный колокол, содержащий $\upsilon=3$ моль воздуха при давлении $p_1=1,4$ атмосферы, медленно опускают на дно водоёма. При этом происходит изотермическое сжатие воздуха до конечного давления $p_2$ (в атмосферах). Работа $A$ (в Дж), совершаемая водой при сжатии воздуха, вычисляется по формуле $A=\alpha\upsilon T\log_{2}\frac{p_2}{p_1}$, где $\alpha=10,9$ $\frac{\text{Дж}}{\text{моль}\cdot\text{K}}$ — постоянная, $T=300$ K — температура воздуха. Найдите давление $p_2$ воздуха в колоколе, если при сжатии воздуха была совершена работа 29 430 Дж. Ответ дайте в атмосферах.</div>
+         <button class="show-answer-btn"
+                 data-answer="11,2"
+                 onclick="showAnswer(28, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-28" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 30</div>
+         
+         <div class="problem-text">Впишите правильный ответ. Водолазный колокол, содержащий $\upsilon=3$ моль воздуха объёмом $V_1=16$ л, медленно опускают на дно водоёма. При этом происходит изотермическое сжатие воздуха до конечного объёма $V_2$ (в л). Работа (в Дж), совершаемая водой при сжатии воздуха, вычисляется по формуле $A=\alpha\upsilon T\log_{2}\frac{V_1}{V_2}$, где $\alpha=9,9$ $\frac{\text{Дж}}{\text{моль}\cdot\text{К}}$ — постоянная, $T=300$ К — температура воздуха. Найдите, какой объём $V_2$ будет занимать воздух в колоколе, если при сжатии воздуха была совершена работа 26 730 Дж. Ответ дайте в литрах.</div>
+         <button class="show-answer-btn"
+                 data-answer="2"
+                 onclick="showAnswer(29, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-29" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="solutionModal" class="modal">
+    <div class="modal-content">
+      <h2>Хотите посмотреть решение?</h2>
+      <p>Создайте аккаунт или войдите, чтобы получить доступ к подробным решениям всех задач.</p>
+      <div class="modal-buttons">
+        <a href="/register" class="modal-button primary">Войти / Создать аккаунт</a>
+        <button class="modal-button secondary" onclick="closeSolutionModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Flying Math Background Animation
+    function createFlyingMath() {
+      const mathSymbols = ['π', '∑', '∫', '√', '∞', 'α', 'β', 'γ', 'δ', 'ε', 'θ', 'λ', 'μ', 'σ', 'φ', 'ψ', 'ω', 'Δ', 'Ω', '±', '×', '÷', '=', '≠', '≤', '≥', '∈', '∉', '∪', '∩', '⊂', '⊃'];
+      const container = document.getElementById('flyingMath');
+      
+      function addMathSymbol() {
+        const symbol = document.createElement('div');
+        symbol.className = 'math-symbol';
+        symbol.textContent = mathSymbols[Math.floor(Math.random() * mathSymbols.length)];
+        symbol.style.left = Math.random() * 100 + '%';
+        symbol.style.animationDuration = (Math.random() * 10 + 15) + 's';
+        symbol.style.animationDelay = Math.random() * 5 + 's';
+        container.appendChild(symbol);
+        
+        // Remove symbol after animation
+        setTimeout(() => {
+          if (symbol.parentNode) {
+            symbol.parentNode.removeChild(symbol);
+          }
+        }, 25000);
+      }
+      
+      // Add symbols periodically
+      setInterval(addMathSymbol, 2000);
+      
+      // Add initial symbols
+      for (let i = 0; i < 5; i++) {
+        setTimeout(addMathSymbol, i * 1000);
+      }
+    }
+
+    function showAnswer(index, answer) {
+      const answerDiv = document.getElementById(`answer-${index}`);
+      answerDiv.textContent = `Ответ: ${answer}`;
+      answerDiv.classList.add('visible');
+      
+      // Re-render MathJax for the newly shown content
+      if (window.MathJax) {
+        MathJax.typesetPromise([answerDiv]);
+      }
+    }
+
+    function showSolutionModal() {
+      document.getElementById('solutionModal').classList.add('visible');
+    }
+
+    function closeSolutionModal() {
+      document.getElementById('solutionModal').classList.remove('visible');
+    }
+
+    // Close modal on outside click
+    document.getElementById('solutionModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeSolutionModal();
+      }
+    });
+
+    // Initialize flying math animation
+    document.addEventListener('DOMContentLoaded', createFlyingMath);
+    
+    // Initialize MathJax rendering
+    function initializeMathJax() {
+      if (window.MathJax) {
+        MathJax.typesetPromise();
+      }
+    }
+    
+    // Re-render MathJax when content changes
+    function reRenderMathJax(element) {
+      if (window.MathJax && element) {
+        MathJax.typesetPromise([element]);
+      }
+    }
+    
+    // Initialize MathJax on page load
+    document.addEventListener('DOMContentLoaded', initializeMathJax);
+  </script>
+</body>
+</html>
+

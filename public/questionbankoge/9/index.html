@@ -395,6 +395,28 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
+    /* Table styling for problem text */
+    .problem-text table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .problem-text table td {
+      padding: 0.75rem 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+    }
+
+    .problem-text table tr:first-child td {
+      background: rgba(251, 191, 36, 0.1);
+      font-weight: 600;
+      color: #fbbf24;
+    }
+
     /* Mobile Responsiveness */
     @media (max-width: 768px) {
       .header h1 {
@@ -475,9 +497,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 1</div>
          
-         <div class="problem-text">Решите уравнение \(x + \frac{5}{x} = 6\). В ответе укажите меньший из корней.</div>
+         <div class="problem-text tex2jax_process"><p>Решите уравнение \( 2x^2 = 8x \). Если уравнение имеет более одного корня, в ответ запишите меньший из корней.</p></div>
          <button class="show-answer-btn"
-                 data-answer="1"
+                 data-answer="0"
                  onclick="showAnswer(0, this.dataset.answer)">
            Показать ответ
          </button>
@@ -490,9 +512,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 2</div>
          
-         <div class="problem-text">Найдите корень уравнения \(x+3=-9x\).</div>
+         <div class="problem-text tex2jax_process"><p>Найдите корень уравнения \( 4(x+1)=9 \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="-0,3"
+                 data-answer="1.25"
                  onclick="showAnswer(1, this.dataset.answer)">
            Показать ответ
          </button>
@@ -505,9 +527,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 3</div>
          
-         <div class="problem-text">\[ \text{Первая труба пропускает на } 3 \text{ литра воды в минуту меньше,} \]<br>\[ \text{чем вторая труба. Сколько литров воды в минуту пропускает} \]<br>\[ \text{вторая труба, если резервуар объёмом } 260 \text{ литров она заполняет} \]<br>\[ \text{на } 6 \text{ минут быстрее, чем первая труба?} \]</div>
+         <div class="problem-text tex2jax_process"><p>Найдите корень уравнения \( x + 3 = -9x \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="13 литров в минуту"
+                 data-answer="-0.3"
                  onclick="showAnswer(2, this.dataset.answer)">
            Показать ответ
          </button>
@@ -520,9 +542,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 4</div>
          
-         <div class="problem-text">Найдите корень уравнения \(4(x+10)=-1\).</div>
+         <div class="problem-text tex2jax_process"><p>Решите уравнение \(5x^2 + 4x - 1 = 0\). Если уравнение имеет более одного корня, в ответ запишите больший из корней.</p></div>
          <button class="show-answer-btn"
-                 data-answer="-10,25"
+                 data-answer="0,2"
                  onclick="showAnswer(3, this.dataset.answer)">
            Показать ответ
          </button>
@@ -535,9 +557,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 5</div>
          
-         <div class="problem-text">\[ \text{Решите уравнение } x^2 - 7x + 10 = 0 \]<br>\[ \text{Если уравнение имеет более одного корня,} \]<br>\[ \text{в ответ запишите меньший из корней.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Найдите корень уравнения \(8x - 5 = x - 40\).</p></div>
          <button class="show-answer-btn"
-                 data-answer="2"
+                 data-answer="-5"
                  onclick="showAnswer(4, this.dataset.answer)">
            Показать ответ
          </button>
@@ -550,9 +572,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 6</div>
          
-         <div class="problem-text">Решите уравнение \(3x^2 = 12x\). Если оно имеет более одного корня, в ответ запишите меньший из них.</div>
+         <div class="problem-text tex2jax_process"><p>Найдите корень уравнения \(-8x - 3 = -6x\).</p></div>
          <button class="show-answer-btn"
-                 data-answer="0"
+                 data-answer="-1.5"
                  onclick="showAnswer(5, this.dataset.answer)">
            Показать ответ
          </button>
@@ -565,9 +587,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 7</div>
          
-         <div class="problem-text">\[ \text{Решите уравнение } x^2 - 81 = 0. \text{ Если уравнение имеет} \]<br>\[ \text{более одного корня, в ответ запишите} \]<br>\[ \text{меньший из корней.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Найдите корень уравнения \( 7 + 8x = -2x - 5 \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="-9"
+                 data-answer="-1,2"
                  onclick="showAnswer(6, this.dataset.answer)">
            Показать ответ
          </button>
@@ -580,9 +602,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 8</div>
          
-         <div class="problem-text">\[ \text{Решите уравнение } x^2 - 144 = 0. \]<br>\[ \text{Если уравнение имеет более одного корня,} \]<br>\[ \text{в ответ запишите меньший из корней.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Найдите корень уравнения \(-2x-7=-4x\).</p></div>
          <button class="show-answer-btn"
-                 data-answer="-12"
+                 data-answer="3.5"
                  onclick="showAnswer(7, this.dataset.answer)">
            Показать ответ
          </button>
@@ -595,9 +617,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 9</div>
          
-         <div class="problem-text">\[ \text{Решите уравнение } x^2 - 25 = 0. \]<br>\[ \text{Если уравнение имеет более одного корня,} \]<br>\[ \text{в ответ запишите больший из корней.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Найдите корень уравнения \( \displaystyle \frac{6}{x+5} = -5 \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="5"
+                 data-answer="-6,2"
                  onclick="showAnswer(8, this.dataset.answer)">
            Показать ответ
          </button>
@@ -610,9 +632,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 10</div>
          
-         <div class="problem-text">\[ \text{Решите уравнение } x^2 - 25 = 0. \]<br>\[ \text{Если уравнение имеет более одного корня,} \]<br>\[ \text{в ответ запишите меньший из корней.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Найдите корень уравнения \(4x - 7 = 2x\).</p></div>
          <button class="show-answer-btn"
-                 data-answer="-5"
+                 data-answer="3,5"
                  onclick="showAnswer(9, this.dataset.answer)">
            Показать ответ
          </button>
@@ -625,9 +647,10 @@
        <div class="question-item">
          <div class="question-number">Вопрос 11</div>
          
-         <div class="problem-text">\[ \text{Решите уравнение } x^2 - 64 = 0. \text{ Если уравнение имеет} \]<br>\[ \text{более одного корня, в ответ запишите} \]<br>\[ \text{меньший из корней.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Решите уравнение \( x^2 - 121 = 0 \).</p>
+<p>Если уравнение имеет более одного корня, в ответ запишите меньший из корней.</p></div>
          <button class="show-answer-btn"
-                 data-answer="-8"
+                 data-answer="-11"
                  onclick="showAnswer(10, this.dataset.answer)">
            Показать ответ
          </button>
@@ -640,9 +663,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 12</div>
          
-         <div class="problem-text">\[ \text{Впишите правильный ответ.} \]<br>\[ \text{Решите уравнение} \]<br>\[ \text{Если уравнение имеет более одного корня,} \]<br>\[ \text{в ответ запишите меньший из корней.} \]<br>\[ 2 x^{2}-3 x \div 1=0 \]</div>
+         <div class="problem-text tex2jax_process"><p>Решите уравнение \( x^2 - 36 = 0 \).</p><p>Если уравнение имеет более одного корня, в ответ запишите меньший из корней.</p></div>
          <button class="show-answer-btn"
-                 data-answer="0"
+                 data-answer="-6"
                  onclick="showAnswer(11, this.dataset.answer)">
            Показать ответ
          </button>
@@ -655,9 +678,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 13</div>
          
-         <div class="problem-text">\[ \text{Решите уравнение } x^2 - 121 = 0. \text{ Если уравнение имеет} \]<br>\[ \text{более одного корня, в ответ запишите} \]<br>\[ \text{больший из корней.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Найдите корень уравнения \( 4(x-6)=5 \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="11"
+                 data-answer="7,25"
                  onclick="showAnswer(12, this.dataset.answer)">
            Показать ответ
          </button>
@@ -670,9 +693,10 @@
        <div class="question-item">
          <div class="question-number">Вопрос 14</div>
          
-         <div class="problem-text">\[ \text{Решите уравнение } x^2 - 16 = 0. \text{ Если уравнение имеет более одного корня,} \]<br>\[ \text{в ответ запишите меньший из корней.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Решите уравнение \( x^2 - 11x + 18 = 0 \).</p>
+<p>Если уравнение имеет более одного корня, в ответ запишите больший из корней.</p></div>
          <button class="show-answer-btn"
-                 data-answer="-4"
+                 data-answer="9"
                  onclick="showAnswer(13, this.dataset.answer)">
            Показать ответ
          </button>
@@ -685,9 +709,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 15</div>
          
-         <div class="problem-text">Решите уравнение \(x^{2}-64=0\). Если уравнение имеет более одного корня, в ответ запишите меньший из корней.</div>
+         <div class="problem-text tex2jax_process"><p>Решите уравнение \(x^{2}-144=0\). Если уравнение имеет более одного корня, в ответ запишите больший из корней.</p></div>
          <button class="show-answer-btn"
-                 data-answer="-8"
+                 data-answer="12"
                  onclick="showAnswer(14, this.dataset.answer)">
            Показать ответ
          </button>
@@ -700,9 +724,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 16</div>
          
-         <div class="problem-text">\[ \text{Решите уравнение } x^2 - 36 = 0. \]<br>\[ \text{Если уравнение имеет более одного корня,} \]<br>\[ \text{в ответ запишите меньший из корней.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Найдите корень уравнения \(-5 + 2x = -2x - 3\).</p></div>
          <button class="show-answer-btn"
-                 data-answer="-6"
+                 data-answer="0,5"
                  onclick="showAnswer(15, this.dataset.answer)">
            Показать ответ
          </button>
@@ -715,7 +739,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 17</div>
          
-         <div class="problem-text">Решите уравнение \(3x^2 = 9x\). Если уравнение имеет более одного корня, в ответ запишите меньший из корней.</div>
+         <div class="problem-text tex2jax_process"><p>Решите уравнение \( 10x^2 = 80x \).</p><p>Если уравнение имеет более одного корня, в ответ запишите меньший из корней.</p></div>
          <button class="show-answer-btn"
                  data-answer="0"
                  onclick="showAnswer(16, this.dataset.answer)">
@@ -730,9 +754,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 18</div>
          
-         <div class="problem-text">\[ \text{Найдите корень уравнения } x + 3 = -9x. \]</div>
+         <div class="problem-text tex2jax_process"><p>Решите уравнение \( x^2 - 10x + 21 = 0 \). Если уравнение имеет более одного корня, в ответ запишите больший из корней.</p></div>
          <button class="show-answer-btn"
-                 data-answer="-0.3"
+                 data-answer="7"
                  onclick="showAnswer(17, this.dataset.answer)">
            Показать ответ
          </button>
@@ -745,9 +769,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 19</div>
          
-         <div class="problem-text">\[ \text{Найдите корень уравнения } 4(x-6)=5. \]</div>
+         <div class="problem-text tex2jax_process"><p>Найдите корень уравнения \( 10(x+2) = -7 \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="7,25"
+                 data-answer="$-2,7$"
                  onclick="showAnswer(18, this.dataset.answer)">
            Показать ответ
          </button>
@@ -760,7 +784,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 20</div>
          
-         <div class="problem-text">Найдите корень уравнения \(2x^2 = 9x\). Если уравнение имеет более одного корня, в ответ запиш��те меньший из корней.</div>
+         <div class="problem-text tex2jax_process"><p>Решите уравнение \( 4x^2 = 20x \). Если уравнение имеет более одного корня, в ответ запишите меньший из корней.</p></div>
          <button class="show-answer-btn"
                  data-answer="0"
                  onclick="showAnswer(19, this.dataset.answer)">
@@ -775,9 +799,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 21</div>
          
-         <div class="problem-text">\[ \text{Найдите корень уравнения } -5 + 2x = -2x - 3. \]</div>
+         <div class="problem-text tex2jax_process"><p>Решите уравнение \( 8x^2 = 72x \).</p><p>Если уравнение имеет более одного корня, в ответ запишите меньший из корней.</p></div>
          <button class="show-answer-btn"
-                 data-answer="0,5"
+                 data-answer="0"
                  onclick="showAnswer(20, this.dataset.answer)">
            Показать ответ
          </button>
@@ -790,9 +814,10 @@
        <div class="question-item">
          <div class="question-number">Вопрос 22</div>
          
-         <div class="problem-text">\[ \text{Решите уравнение } 7x^2 = 42x. \]<br>\[ \text{Если уравнение имеет более одного корня,} \]<br>\[ \text{в ответ запишите меньший из корней.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Решите уравнение \( x^2 - 49 = 0 \).</p>
+<p>Если уравнение имеет более одного корня, в ответ запишите больший из корней.</p></div>
          <button class="show-answer-btn"
-                 data-answer="0"
+                 data-answer="7"
                  onclick="showAnswer(21, this.dataset.answer)">
            Показать ответ
          </button>
@@ -805,9 +830,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 23</div>
          
-         <div class="problem-text">\[ \text{Решите уравнение } x^2 - 16 = 0. \text{ Если уравнение имеет более одного корня,} \]<br>\[ \text{в ответ запишите больший из корней.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Решите уравнение \( x^2 - 81 = 0 \). Если уравнение имеет более одного корня, в ответ запишите меньший из корней.</p></div>
          <button class="show-answer-btn"
-                 data-answer="4"
+                 data-answer="-9"
                  onclick="showAnswer(22, this.dataset.answer)">
            Показать ответ
          </button>
@@ -820,9 +845,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 24</div>
          
-         <div class="problem-text">\[<br>\text{Найдите корень уравнения } -8x - 3 = -6x.<br>\]</div>
+         <div class="problem-text tex2jax_process"><p>Решите уравнение \(5x^2 = 3x\). Если оно имеет более одного корня, в ответ запишите больший из корней.</p></div>
          <button class="show-answer-btn"
-                 data-answer="-1.5"
+                 data-answer="0,6"
                  onclick="showAnswer(23, this.dataset.answer)">
            Показать ответ
          </button>
@@ -835,9 +860,10 @@
        <div class="question-item">
          <div class="question-number">Вопрос 25</div>
          
-         <div class="problem-text">\[ \text{Найдите корень уравнения } 4(x-8) = -5. \]</div>
+         <div class="problem-text tex2jax_process"><p>Решите уравнение \( x^2 - 10x + 24 = 0 \).</p>
+<p>Если уравнение имеет более одного корня, в ответ запишите меньший из корней.</p></div>
          <button class="show-answer-btn"
-                 data-answer="6,75"
+                 data-answer="4"
                  onclick="showAnswer(24, this.dataset.answer)">
            Показать ответ
          </button>
@@ -850,9 +876,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 26</div>
          
-         <div class="problem-text">\[ \text{Найдите корень уравнения } -1-3x=2x+1. \]</div>
+         <div class="problem-text tex2jax_process"><p>Решите уравнение \( x^2 - 36 = 0 \). Если уравнение имеет более одного корня, в ответ запишите больший из корней.</p></div>
          <button class="show-answer-btn"
-                 data-answer="-0.4"
+                 data-answer="6"
                  onclick="showAnswer(25, this.dataset.answer)">
            Показать ответ
          </button>
@@ -865,9 +891,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 27</div>
          
-         <div class="problem-text">Найдите корень уравнения \(10(x+2)=-7\).</div>
+         <div class="problem-text tex2jax_process"><p>Решите уравнение $\displaystyle \frac{13}{x-5}=\frac{5}{x-13}$.</p></div>
          <button class="show-answer-btn"
-                 data-answer="-2,7"
+                 data-answer="18"
                  onclick="showAnswer(26, this.dataset.answer)">
            Показать ответ
          </button>
@@ -880,9 +906,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 28</div>
          
-         <div class="problem-text">\[ \text{Решите уравнение } x^2 - 10x + 24 = 0. \]<br>\[ \text{Если уравнение имеет более одного корня,} \]<br>\[ \text{в ответ запишите меньший из корней.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Решите уравнение \( x^2 - 4 = 0 \).</p><p>Если уравнение имеет более одного корня, в ответ запишите меньший из корней.</p></div>
          <button class="show-answer-btn"
-                 data-answer="4"
+                 data-answer="$-2$"
                  onclick="showAnswer(27, this.dataset.answer)">
            Показать ответ
          </button>
@@ -895,9 +921,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 29</div>
          
-         <div class="problem-text">Найдите корень уравнения \(4x - 7 = 2x\).</div>
+         <div class="problem-text tex2jax_process"><p>Найдите корень уравнения \( 3x + 3 = 5x \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="3,5"
+                 data-answer="1,5"
                  onclick="showAnswer(28, this.dataset.answer)">
            Показать ответ
          </button>
@@ -910,9 +936,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 30</div>
          
-         <div class="problem-text">\[ \text{Решите уравнение } x^2 - 121 = 0. \]<br>\[ \text{Если уравнение имеет более одного корня,} \]<br>\[ \text{в ответ запишите меньший из корней.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Найдите корень уравнения \( 4(x-2) = -1 \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="-11"
+                 data-answer="1,75"
                  onclick="showAnswer(29, this.dataset.answer)">
            Показать ответ
          </button>
@@ -931,7 +957,7 @@
       <h2>Хотите посмотреть решение?</h2>
       <p>Создайте аккаунт или войдите, чтобы получить доступ к подробным решениям всех задач.</p>
       <div class="modal-buttons">
-        <a href="/auth" class="modal-button primary">Войти / Создать аккаунт</a>
+        <a href="/register" class="modal-button primary">Войти / Создать аккаунт</a>
         <button class="modal-button secondary" onclick="closeSolutionModal()">Закрыть</button>
       </div>
     </div>

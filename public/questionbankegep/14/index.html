@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Задание 14 - Банк заданий ЕГЭ профиль</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true,
+        processEnvironments: true,
+        packages: {'[+]': ['ams', 'newcommand', 'configmacros']}
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        ignoreHtmlClass: 'tex2jax_ignore',
+        processHtmlClass: 'tex2jax_process'
+      },
+      startup: {
+        ready: () => {
+          MathJax.startup.defaultReady();
+          MathJax.startup.defaultDocument();
+        }
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%);
+      min-height: 100vh;
+      color: #ffffff;
+      overflow-x: hidden;
+    }
+
+    /* Flying Math Background Animation */
+    .flying-math {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .math-symbol {
+      position: absolute;
+      color: rgba(255, 255, 255, 0.1);
+      font-size: 2rem;
+      animation: float 20s infinite linear;
+      user-select: none;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100px) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding: 2rem 0;
+    }
+
+    .header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 3rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #fbbf24 0%, #10b981 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    .header p {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 1.25rem;
+      font-weight: 500;
+    }
+
+    .header .subtitle {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .question-item {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .question-item:hover {
+      border-color: rgba(251, 191, 36, 0.4);
+      box-shadow: 0 20px 40px rgba(251, 191, 36, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .question-number {
+      font-size: 0.875rem;
+      color: #fbbf24;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .problem-image {
+      max-width: 100%;
+      width: 100%;
+      max-width: 600px;
+      height: auto;
+      border-radius: 12px;
+      margin: 0 auto 1.5rem auto;
+      display: block;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      object-fit: contain;
+    }
+
+    .problem-text {
+      font-size: 1.125rem;
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+      color: #ffffff;
+      font-weight: 400;
+    }
+
+    .answer-section {
+      margin-bottom: 1.5rem;
+    }
+
+    .answer-input {
+      width: 100%;
+      padding: 1rem 1.25rem;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      color: #ffffff;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(8px);
+    }
+
+    .answer-input:focus {
+      outline: none;
+      border-color: #fbbf24;
+      box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .answer-input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .show-answer-btn,
+    .show-solution-btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .show-answer-btn {
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      color: #1a1f36;
+      margin-right: 0.75rem;
+      box-shadow: 0 4px 16px rgba(251, 191, 36, 0.3);
+    }
+
+    .show-answer-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(251, 191, 36, 0.4);
+    }
+
+    .show-solution-btn {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
+    }
+
+    .show-solution-btn:hover {
+      border-color: #fbbf24;
+      background: rgba(251, 191, 36, 0.1);
+      transform: translateY(-1px);
+    }
+
+    .answer-display {
+      margin-top: 1rem;
+      padding: 1rem 1.25rem;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 12px;
+      color: #10b981;
+      font-weight: 600;
+      display: none;
+      backdrop-filter: blur(8px);
+    }
+
+    .answer-display.visible {
+      display: block;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      backdrop-filter: blur(8px);
+    }
+
+    .modal.visible {
+      display: flex;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .modal-content {
+      background: rgba(26, 31, 54, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 2.5rem;
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-content h2 {
+      font-family: 'Playfair Display', serif;
+      margin-bottom: 1rem;
+      color: #ffffff;
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .modal-content p {
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+      font-size: 1rem;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .modal-button {
+      padding: 0.875rem 1.75rem;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .modal-button.primary {
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      color: #1a1f36;
+      box-shadow: 0 4px 16px rgba(251, 191, 36, 0.3);
+    }
+
+    .modal-button.primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(251, 191, 36, 0.4);
+    }
+
+    .modal-button.secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
+    }
+
+    .modal-button.secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-1px);
+    }
+
+    /* MathJax styling to match the app */
+    mjx-container {
+      user-select: text;
+    }
+    
+    mjx-container * {
+      user-select: none;
+    }
+    
+    /* MathJax selection and display styling */
+    mjx-container {
+      user-select: text;
+    }
+    
+    /* Selection highlighting for regular text and MathJax fallback */
+    ::selection {
+      background: rgba(251, 191, 36, 0.3);
+    }
+    
+    /* MathJax selection overlay */
+    .mjx-selection-highlight {
+      background: rgba(251, 191, 36, 0.3) !important;
+    }
+    
+    /* Force selection visibility on MathJax elements */
+    mjx-container.mjx-selected {
+      background: rgba(251, 191, 36, 0.3);
+    }
+
+    /* General image styling for any images in the content */
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto 1rem auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2.5rem;
+      }
+
+      .header p {
+        font-size: 1.125rem;
+      }
+
+      .question-item {
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .show-answer-btn {
+        margin-bottom: 0.75rem;
+        margin-right: 0;
+        width: 100%;
+      }
+
+      .show-solution-btn {
+        width: 100%;
+      }
+
+      .problem-image {
+        max-width: 100%;
+        margin: 0 auto 1rem auto;
+      }
+
+      .modal-content {
+        padding: 2rem;
+        margin: 1rem;
+      }
+
+      .modal-buttons {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .modal-button {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 1rem 0.75rem;
+      }
+
+      .header h1 {
+        font-size: 2rem;
+      }
+
+      .question-item {
+        padding: 1.25rem;
+      }
+
+      .problem-text {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Flying Math Background -->
+  <div class="flying-math" id="flyingMath"></div>
+
+  <div class="container">
+    <div class="header">
+      <h1>Задание 14</h1>
+      <p>Банк заданий ЕГЭ профиль по математике</p>
+    </div>
+
+    <div id="questions">
+      
+       <div class="question-item">
+         <div class="question-number">Вопрос 1</div>
+         
+         <div class="problem-text">Дайте развернутый ответ. В цилиндре образующая перпендикулярна плоскости основания. На окружности одного из оснований цилиндра выбраны точки $A$ и $B$, а на окружности другого основания — точки $B_1$ и $C_1$, причём $BB_1$ — образующая цилиндра, а отрезок $AC_1$ пересекает ось цилиндра.<br>а) Докажите, что угол $ABC_1$ прямой.<br>б) Найдите угол между прямыми $BB_1$ и $AC_1$, если $AB=6$, $BB_1=15$, $B_1C_1=8$.</div>
+         <button class="show-answer-btn"
+                 data-answer="33.7"
+                 onclick="showAnswer(0, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-0" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 2</div>
+         
+         <div class="problem-text">Дайте развернутый ответ. В основании пирамиды $SABCD$ лежит прямоугольник $ABCD$ со стороной $AB=5$ и диагональю $BD=9$. Все боковые рёбра пирамиды равны 5.<br>На диагонали $BD$ основания $ABCD$ отмечена точка $E$, а на ребре $AS$ — точка $F$ так, что $SF=BE=4$.<br>а) Докажите, что плоскость $CEF$ параллельна ребру $SB$.<br>б) Плоскость $CEF$ пересекает ребро $SD$ в точке $Q$. Найдите расстояние от точки $Q$ до плоскости $ABC$.</div>
+         <button class="show-answer-btn"
+                 data-answer="а) $SB\parallel\text{ пл. }CEF$.
+б) $\frac{5\sqrt{19}}{18}$"
+                 onclick="showAnswer(1, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-1" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 3</div>
+         
+         <div class="problem-text">Дайте развернутый ответ. В основании прямой призмы $ABCDA_1B_1C_1D_1$ лежит параллелограмм $ABCD$ с углом $60^\circ$ при вершине $A$. На рёбрах $A_1B_1$, $B_1C_1$ и $BC$ отмечены точки $M$, $K$ и $N$ соответственно так, что четырёхугольник $AMKN$ — равнобедренная трапеция с основаниями 1 и 2.<br>а) Докажите, что точка $M$ — середина ребра $A_1B_1$.<br>б) Найдите высоту призмы, если её объём равен 5 и известно, что точка $K$ делит ребро $B_1C_1$ в отношении $B_1K:KC_1=2:3$.</div>
+         <button class="show-answer-btn"
+                 data-answer="$h=2\sqrt3$"
+                 onclick="showAnswer(2, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-2" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 4</div>
+         
+         <div class="problem-text">Впишите правильный ответ. Через среднюю линию основания треугольной призмы проведена плоскость, параллельная боковому ребру. Найдите объём этой призмы, если объём отсечённой треугольной призмы равен 7.</div>
+         <button class="show-answer-btn"
+                 data-answer="28"
+                 onclick="showAnswer(3, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-3" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 5</div>
+         
+         <div class="problem-text">Дайте развернутый ответ. На рёбрах $AC$, $AD$, $BD$ и $BC$ тетраэдра $ABCD$ отмечены точки $K$, $L$, $M$ и $N$ соответственно, причём $AK:KC=2:3$. Четырёхугольник $KLMN$ — квадрат со стороной 2.<br>а) Докажите, что прямые $AB$ и $CD$ перпендикулярны.<br>б) Найдите расстояние от вершины $B$ до плоскости $KLM$, если объём тетраэдра $ABCD$ равен 25.</div>
+         <button class="show-answer-btn"
+                 data-answer="6"
+                 onclick="showAnswer(4, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-4" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 6</div>
+         
+         <div class="problem-text">Дайте развернутый ответ. В кубе $ABCDA_1B_1C_1D_1$ точки $M$ и $N$ — середины рёбер $AB$ и $AD$ соответственно.<br>а) Докажите, что прямые $B_1N$ и $CM$ перпендикулярны.<br>б) Плоскость $\alpha$ проходит через точки $N$ и $B_1$ параллельно прямой $CM$. Найдите расстояние от точки $C$ до плоскости $\alpha$, если $B_1N=6$.</div>
+         <button class="show-answer-btn"
+                 data-answer="4/sqrt(5)"
+                 onclick="showAnswer(5, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-5" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 7</div>
+         
+         <div class="problem-text">Дайте развернутый ответ. В цилиндре образующая перпендикулярна плоскости основания. На окружности одного из оснований цилиндра выбраны точки $A$ и $B$, а на окружности другого основания — точки $B_1$ и $C_1$, причём $BB_1$ — образующая цилиндра, а отрезок $AC_1$ пересекает ось цилиндра.<br>а) Докажите, что угол $ABC_1$ прямой.<br>б) Найдите расстояние от точки $B$ до прямой $AC_1$, если $AB=21$, $BB_1=12$, $B_1C_1=16$.</div>
+         <button class="show-answer-btn"
+                 data-answer="29"
+                 onclick="showAnswer(6, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-6" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 8</div>
+         
+         <div class="problem-text">Дайте развернутый ответ. Дана правильная четырёхугольная призма $A B C D A_{1} B_{1} C_{1} D_{1}$. Плоскость $\alpha$ проходит через вершины $B_{1}$ и $D$ и пересекает рёбра $A A_{1}$ и $C C_{1}$ в точках $M$ и $K$ соответственно. Известно, что четырёхугольник $M B_{1} K D$ — ромб.<br>а) Докажите, что точка $M$ — середина ребра $A A_{1}$.<br>б) Найдите высоту призмы $A B C D A_{1} B_{1} C_{1} D_{1}$, если площадь её основания $A B C D$ равна 3, а площадь ромба $M B_{1} K D$ равна 6.</div>
+         <button class="show-answer-btn"
+                 data-answer="$h=3\sqrt2$"
+                 onclick="showAnswer(7, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-7" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 9</div>
+         
+         <div class="problem-text">Дайте развернутый ответ. В основании прямой призмы $A B C D A_{1} B_{1} C_{1} D_{1}$ лежит параллелограмм $A B C D$. На рёбрах $A_{1} B_{1}$, $B_{1} C_{1}$ и $B C$ отмечены точки $M$, $K$ и $N$ соответственно, причём $B_{1} K: K C_{1}=1: 2$. Четырёхугольник $A M K N$ — равнобедренная трапеция с основаниями 2 и 3.<br>а) Докажите, что точка $N$ — середина ребра $B C$.<br>б) Найдите площадь трапеции $A M K N$, если объём призмы равен 12, а высота призмы равна 2.</div>
+         <button class="show-answer-btn"
+                 data-answer="5.0"
+                 onclick="showAnswer(8, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-8" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 10</div>
+         
+         <div class="problem-text">Дайте развернутый ответ. В основании правильной треугольной пирамиды $ABCD$ лежит треугольник $ABC$ со стороной, равной 5. Боковое ребро пирамиды равно 9. На ребре $AD$ отмечена точка $T$ так, что $AT:TD=1:2$. Через точку $T$ параллельно прямым $AC$ и $BD$ проведена плоскость.<br>а) Докажите, что сечение пирамиды указанной плоскостью является прямоугольником.<br>б) Найдите площадь сечения.</div>
+         <button class="show-answer-btn"
+                 data-answer="10.0"
+                 onclick="showAnswer(9, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-9" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 11</div>
+         
+         <div class="problem-text">Дайте развернутый ответ. Основанием четырёхугольной пирамиды $PABCD$ является трапеция $ABCD$, причём $\angle BAD + \angle ADC = 90^\circ$. Плоскости $PAB$ и $PCD$ перпендикулярны плоскости основания, $K$ — точка пересечения прямых $AB$ и $CD$.<br>а) Докажите, что плоскости $PAB$ и $PCD$ перпендикулярны.<br>б) Найдите объём пирамиды $KBCP$, если $AB=BC=CD=4$, а высота пирамиды $PABCD$ равна 9.</div>
+         <button class="show-answer-btn"
+                 data-answer="а) Плоскости $PAB$ и $PCD$ перпендикулярны плоскости основания. Это означает, что высота пирамиды, опущенная из вершины $P$ на плоскость основания, лежит в обеих плоскостях $PAB$ и $PCD$. Пусть $K$ — основание этой высоты. Тогда $PK$ перпендикулярна плоскости основания. Поскольку прямые $AB$ и $CD$ лежат в плоскости основания, $PK \perp AB$ и $PK \perp CD$.
+
+Из условия $\angle BAD + \angle ADC = 90^\circ$. Проведем через точку $A$ прямую $l$, параллельную $CD$. Тогда угол между $AB$ и $l$ равен $\angle BAD + \angle ADC = 90^\circ$. Следовательно, $AB \perp l$. Так как $l \parallel CD$, то $AB \perp CD$.
+
+В плоскости $PAB$ есть прямая $AB$, которая перпендикулярна плоскости $PCD$ (так как $AB \perp CD$ и $AB \perp PK$, а $PK$ является линией пересечения плоскостей $PAB$ и $PCD$ с плоскостью основания, и $PK$ перпендикулярна $CD$). Следовательно, плоскость $PAB$ перпендикулярна плоскости $PCD$.
+
+б) Так как $AB=CD=4$ и $AD \parallel BC$, трапеция $ABCD$ является равнобедренной. Ось симметрии равнобедренной трапеции перпендикулярна основаниям. Отражение относительно оси симметрии переводит $A$ в $D$ и $B$ в $C$. Точка $K$ является пересечением прямых $AB$ и $CD$. Поскольку $AB \perp CD$, то $K$ лежит на $AB$ и $CD$. В равнобедренной трапеции, если $AB \parallel CD$, то $K$ будет точкой пересечения продолжений боковых сторон. Однако в условии сказано, что $K$ — точка пересечения прямых $AB$ и $CD$. Из шага 4 следует, что $AB \perp CD$. Это возможно, если $ABCD$ — прямоугольник или квадрат. Но условие про углы говорит о трапеции.
+
+Пересмотрим шаг 2: $K=AB\cap CD$. Если $AB$ и $CD$ параллельны, то они не пересекаются, если не совпадают. Если $AB$ и $CD$ не параллельны, то они пересекаются в одной точке. Из шага 4 следует, что $AB \perp CD$. Это означает, что $K$ является точкой пересечения перпендикулярных прямых $AB$ и $CD$.
+
+Из шага 6: &quot;Значит $BK=CK$.&quot; Это следует из того, что точка $K$ лежит на оси симметрии трапеции. Если $ABCD$ — равнобедренная трапеция и $AB \parallel CD$, то ось симметрии проходит через середины $AD$ и $BC$. Если $AB \perp CD$, то $K$ — точка пересечения этих перпендикулярных прямых.
+
+Рассмотрим случай, когда $ABCD$ — прямоугольник. Тогда $\angle BAD = \angle ADC = 90^\circ$, и их сумма равна $180^\circ$, что противоречит условию $\angle BAD + \angle ADC = 90^\circ$.
+
+Предположим, что $AB$ и $CD$ — это не параллельные стороны трапеции. Пусть $AD \parallel BC$. Тогда $AB$ и $CD$ — боковые стороны. Если $AB \perp CD$, то $K$ — точка пересечения боковых сторон.
+
+Из шага 4: $AB \perp CD$.
+Из шага 6: $ABCD$ — равнобедренная трапеция. $AB=CD=4$.
+Из шага 7: $\angle AKD = 90^\circ$. Это означает, что $K$ — точка пересечения $AB$ и $CD$, и эти прямые перпендикулярны.
+Из шага 8: $\triangle KBC$ — прямоугольный равнобедренный.
+Из шага 9: $BK=CK=a$, $BC=4$. $a\sqrt{2}=4 \implies a=2\sqrt{2}$. $S_{KBC} = \frac{1}{2}a^2 = \frac{1}{2}(2\sqrt{2})^2 = \frac{1}{2}(8) = 4$.
+Из шага 10: $V_{KBCP} = \frac{1}{3}S_{KBC} \cdot PK$. Высота пирамиды $PABCD$ равна 9. Это означает, что расстояние от $P$ до плоскости основания равно 9. Если $K$ — основание перпендикуляра из $P$ на плоскость основания, то $PK=9$.
+$V_{KBCP} = \frac{1}{3} \cdot 4 \cdot 9 = 12$.
+
+Ответ: а) Доказано в решении. б) 12"
+                 onclick="showAnswer(10, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-10" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 12</div>
+         
+         <div class="problem-text">Дайте развернутый ответ. В правильной шестиугольной пирамиде $PABCDEF$ сторона основания $AB$ равна 5, а боковое ребро $PA$ равно 9. Точка $M$ лежит на ребре $PA$, $N$ лежит на ребре $PC$. Известно, что $PM = 3$, $PN = 6$.<br>а) Докажите, что плоскость $BMN$ перпендикулярна плоскости $APC$.<br>б) Найдите площадь треугольника $BMN$.</div>
+         <button class="show-answer-btn"
+                 data-answer="а) $BMN \perp APC$.
+б) $S_{BMN} \approx 12.70$."
+                 onclick="showAnswer(11, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-11" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 13</div>
+         
+         <div class="problem-text">Дайте развернутый ответ.<br>На ребре $SD$ правильной четырёхугольной пирамиды $SABCD$ с основанием $ABCD$ отмечена точка $M$, причём $SM:MD=2:1$. Точки $P$ и $Q$ — середины рёбер $BC$ и $AD$ соответственно.<br>а) Докажите, что сечение пирамиды плоскостью $MPQ$ является равнобедренной трапецией.<br>б) Найдите отношение объёмов многогранников, на которые плоскость $MPQ$ разбивает пирамиду.</div>
+         <button class="show-answer-btn"
+                 data-answer="а) 13:5"
+                 onclick="showAnswer(12, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-12" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 14</div>
+         
+         <div class="problem-text">Дайте развернутый ответ. В правильной треугольной призме $ABC A_1B_1C_1$ сторона основания равна 6, а боковое ребро $AA_1$ равно 4. На рёбрах $AB$ и $AC$ отмечены точки $M$ и $N$ соответственно, причём $AM = AN = 2$.<br>а) Точки $P$ и $Q$ — центры окружностей, описанных около треугольников $A_1B_1C_1$ и $ABC$ соответственно. Докажите, что прямая $MP$ содержит точку пересечения медиан треугольника $A_1BC$.<br>б) Найдите расстояние от точки $M$ до плоскости $A_1BC$.</div>
+         <button class="show-answer-btn"
+                 data-answer="$d=\frac{8\sqrt3}{\sqrt{43}}$"
+                 onclick="showAnswer(13, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-13" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 15</div>
+         
+         <div class="problem-text">Дайте развернутый ответ. В правильной четырёхугольной пирамиде сторона основания $a$ равна 8, а боковое ребро $l$ равно 7. На рёбрах $AB$ и $BC$ отмечены точки $M$ и $N$ соответственно, причём $AM = \frac{1}{4}AB$, $BN = \frac{1}{4}BC$.<br>а) Докажите, что плоскость $DMN$ перпендикулярна плоскости $ABC$.<br>б) Найдите объём пирамиды $DMN$.</div>
+         <button class="show-answer-btn"
+                 data-answer="2√17"
+                 onclick="showAnswer(14, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-14" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 16</div>
+         
+         <div class="problem-text">$\textbf{Дайте развернутый ответ. }$<br><br>В правильной четырёхугольной пирамиде $SABCD$ сторона основания $AB$ равна 8, а боковое ребро $SA$ равно 7. На рёбрах $AB$ и $SB$ отмечены точки $M$ и $K$ соответственно, причём $AM = 2$, $SK = 1$. Плоскость $\alpha$ перпендикулярна плоскости $ABC$ и содержит точки $M$ и $K$.<br><br>a) Докажите, что плоскость $\alpha$ содержит точку $C$.<br><br>b) Найдите площадь сечения пирамиды $SABCD$ плоскостью $\alpha$.</div>
+         <button class="show-answer-btn"
+                 data-answer="$\dfrac{30\sqrt{17}}{7}$"
+                 onclick="showAnswer(15, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-15" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 17</div>
+         
+         <div class="problem-text">Дайте развернутый ответ. В прямоугольном параллелепипеде $ABCDA_1B_1C_1D_1$ через середину $M$ диагонали $AC_1$ проведена плоскость $\alpha$ перпендикулярно этой диагонали, $AB=5$, $BC=3$, $AA_1=4$.<br>а) Докажите, что плоскость $\alpha$ содержит точку $D_1$.<br>б) Найдите отношение, в котором плоскость $\alpha$ делит ребро $A_1B_1$.</div>
+         <button class="show-answer-btn"
+                 data-answer="1.8:3.2"
+                 onclick="showAnswer(16, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-16" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 18</div>
+         
+         <div class="problem-text">Дайте развернутый ответ. В правильном тетраэдре $ABCD$ точки $M$ и $N$ — середины рёбер $AB$ и $CD$ соответственно. Плоскость $\alpha$ перпендикулярна прямой $MN$ и пересекает ребро $BC$ в точке $K$.<br>а) Докажите, что прямая $MN$ перпендикулярна рёбрам $AB$ и $CD$.<br>б) Найдите площадь сечения тетраэдра $ABCD$ плоскостью $\alpha$, если известно, что $BK=1$, $KC=3$.</div>
+         <button class="show-answer-btn"
+                 data-answer="3,0"
+                 onclick="showAnswer(17, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-17" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 19</div>
+         
+         <div class="problem-text">Дайте развернутый ответ. В прямоугольном параллелепипеде $ABCDA_1B_1C_1D_1$ известны длины рёбер: $AB=6\sqrt{2}$, $AD=10$, $AA_1=16$. На рёбрах $AA_1$ и $BB_1$ отмечены точки $E$ и $F$ соответственно, причём $A_1E:EA=5:3$ и $B_1F:FB=5:11$. Точка $T$ — середина ребра $B_1C_1$.<br>а) Докажите, что плоскость $EFT$ проходит через точку $D_1$.<br>б) Найдите площадь сечения параллелепипеда плоскостью $EFT$.</div>
+         <button class="show-answer-btn"
+                 data-answer="130"
+                 onclick="showAnswer(18, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-18" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 20</div>
+         
+         <div class="problem-text">Дайте развернутый ответ. В правильной треугольной призме $ABC A_1 B_1 C_1$ известно, что $AB=2.$ Плоскость $\alpha$ проходит через вершины $A_1$ и $B$ и середину $M$ ребра $CC_1.$<br>а) Докажите, что сечение призмы $ABC A_1 B_1 C_1$ плоскостью $\alpha$ является равнобедренным треугольником.<br>б) Найдите высоту призмы, если площадь сечения плоскостью $\alpha$ равна $6.$</div>
+         <button class="show-answer-btn"
+                 data-answer="$h = 2\sqrt{11}$"
+                 onclick="showAnswer(19, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-19" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 21</div>
+         
+         <div class="problem-text">Дайте развернутый ответ. В основании правильной треугольной пирамиды $ABCD$ лежит треугольник $ABC$ со стороной, равной 6. Боковое ребро пирамиды равно 5. На ребре $AD$ отмечена точка $T$ так, что $AT:TD=2:1$. Через точку $T$ параллельно прямым $AC$ и $BD$ проведена плоскость.<br>а) Докажите, что сечение пирамиды указанной плоскостью является прямоугольником.<br>б) Найдите площадь сечения.</div>
+         <button class="show-answer-btn"
+                 data-answer="20/3"
+                 onclick="showAnswer(20, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-20" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 22</div>
+         
+         <div class="problem-text">Дайте развернутый ответ. Все рёбра правильной четырёхугольной пирамиды $SABCD$ с основанием $ABCD$ равны 4. Точка $O$ — центр основания пирамиды. Плоскость, параллельная прямой $SA$ и проходящая через точку $O$, пересекает рёбра $SC$ и $SD$ в точках $M$ и $N$ соответственно. Точка $N$ делит ребро $SD$ в отношении $SN:ND=1:3$.<br>а) Докажите, что точка $M$ — середина ребра $SC$.<br>б) Найдите длину отрезка, по которому плоскость $OMN$ пересекает грань $SBC$.</div>
+         <button class="show-answer-btn"
+                 data-answer="а) $M$ — середина $SC$.
+б) $\sqrt3$"
+                 onclick="showAnswer(21, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-21" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 23</div>
+         
+         <div class="problem-text">Дайте развернутый ответ. Сечением прямоугольного параллелепипеда $ABCDA_1B_1C_1D_1$ плоскостью $\alpha$, содержащей прямую $BD_1$ и параллельной прямой $AC$, является ромб.<br>а) Докажите, что грань $ABCD$ — квадрат.<br>б) Найдите угол между плоскостями $\alpha$ и $BCC_1$, если $AA_1=6$, $AB=4$.</div>
+         <button class="show-answer-btn"
+                 data-answer="а) $BD_1 \subset \alpha$ и $AC \parallel \alpha$. Так как $AC$ лежит в плоскости $ABCD$, то $AC \parallel \alpha$.
+По условию, сечением параллелепипеда плоскостью $\alpha$ является ромб $PBD_1E$.
+В ромбе диагонали взаимно перпендикулярны. Следовательно, $BD_1 \perp PE$.
+Так как $PE \parallel AC$, то $BD_1 \perp AC$.
+В прямоугольнике диагонали перпендикулярны тогда и только тогда, когда он является квадратом.
+Следовательно, грань $ABCD$ — квадрат.
+
+б) Угол между плоскостями $\alpha$ и $BCC_1$ равен углу между прямой $BD_1$ и её проекцией на плоскость $BCC_1$.
+Проекция точки $D_1$ на плоскость $BCC_1$ есть точка $C_1$.
+Проекция прямой $BD_1$ на плоскость $BCC_1$ есть прямая $BC_1$.
+Искомый угол $\varphi$ — это угол между $BD_1$ и $BC_1$ в треугольнике $BD_1C_1$.
+По теореме косинусов для треугольника $BD_1C_1$:
+$\cos\varphi = \frac{BD_1^2 + BC_1^2 - C_1D_1^2}{2 \cdot BD_1 \cdot BC_1}$
+$AB=BC=4$, $AA_1=6$.
+$BD_1^2 = AB^2 + BC^2 + AA_1^2 = 4^2 + 4^2 + 6^2 = 16 + 16 + 36 = 68$.
+$BC_1^2 = BC^2 + CC_1^2 = 4^2 + 6^2 = 16 + 36 = 52$.
+$C_1D_1 = AB = 4$.
+$\cos\varphi = \frac{68 + 52 - 4^2}{2 \cdot \sqrt{68} \cdot \sqrt{52}} = \frac{68 + 52 - 16}{2 \cdot \sqrt{4 \cdot 17} \cdot \sqrt{4 \cdot 13}} = \frac{104}{2 \cdot 2\sqrt{17} \cdot 2\sqrt{13}} = \frac{104}{8\sqrt{221}} = \frac{13}{\sqrt{221}}$.
+$\varphi = \arccos\left(\frac{13}{\sqrt{221}}\right) \approx 29^\circ$."
+                 onclick="showAnswer(22, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-22" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 24</div>
+         
+         <div class="problem-text">Дайте развернутый ответ. В правильной четырёхугольной пирамиде $SABCD$ с основанием $ABCD$ точка $O$ — центр основания пирамиды, точка $M$ — середина ребра $SC$, точка $K$ делит ребро $BC$ в отношении $BK:KC=3:1$, а $AB=2$ и $SO=\sqrt{14}$.<br>а) Докажите, что плоскость $OMK$ параллельна прямой $SA$.<br>б) Найдите длину отрезка, по которому плоскость $OMK$ пересекает грань $SAD$.</div>
+         <button class="show-answer-btn"
+                 data-answer="3"
+                 onclick="showAnswer(23, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-23" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 25</div>
+         
+         <div class="problem-text">Дайте развернутый ответ. В правильной треугольной пирамиде сторона основания $a$ равна 6, а боковое ребро $l$ равно $5$. На рёбрах $AB$ и $AC$ отмечены точки $M$ и $N$ соответственно, причём $AM = 2$, $AN = 3$.<br>а) Докажите, что плоскость $BMN$ перпендикулярна плоскости $ABC$.<br>б) Найдите объём пирамиды $AMN$.</div>
+         <button class="show-answer-btn"
+                 data-answer="а) Плоскость $BMN$ совпадает с плоскостью $ABC$, так как точки $B, M, N$ лежат в плоскости $ABC$. Следовательно, перпендикулярности нет. Пункт (а) в условии задачи ошибочен.
+
+б) Объём пирамиды $SAMN$ равен $\frac{\sqrt{39}}{2}$."
+                 onclick="showAnswer(24, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-24" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 26</div>
+         
+         <div class="problem-text">Дайте развернутый ответ. В правильной треугольной пирамиде $SABC$ основанием $ABC$ точки $M$ и $K$ — середины рёбер $AB$ и $SC$ соответственно. На продолжении ребра $SB$ за точку $S$ отмечена точка $R$. Прямые $RM$ и $RK$ пересекают рёбра $AS$ и $BC$ в точках $N$ и $L$ соответственно, причём $BL=3LC$.<br>а) Докажите, что отрезки $MK$ и $NL$ пересекаются.<br>б) Найдите отношение $AN:NS$.</div>
+         <button class="show-answer-btn"
+                 data-answer="3.0"
+                 onclick="showAnswer(25, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-25" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 27</div>
+         
+         <div class="problem-text">Дайте развернутый ответ. В правильной четырёхугольной пирамиде $SABCD$ сторона основания $AB$ равна 4, а боковое ребро $SA$ равно 7. На рёбрах $CD$ и $SC$ отмечены точки $N$ и $K$ соответственно, причём $DN:NC = SK:KC = 1:3$. Плоскость $\alpha$ содержит прямую $KN$ и параллельна прямой $BC$.<br>а) Докажите, что плоскость $\alpha$ параллельна прямой $SA$.<br>б) Найдите угол между плоскостями $\alpha$ и $SBC$.</div>
+         <button class="show-answer-btn"
+                 data-answer="а) $SA\parallel\alpha$.
+б) $\angle(\alpha,SBC)\approx34.7^\circ$."
+                 onclick="showAnswer(26, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-26" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 28</div>
+         
+         <div class="problem-text">Дайте развернутый ответ. В правильной четырёхугольной пирамиде $SABCD$ сторона основания $AB$ равна 6, а боковое ребро $SA$ равно 7. На рёбрах $CD$ и $SC$ отмечены точки $N$ и $K$ соответственно, причём $DN:NC = SK:KC = 1:2$. Плоскость $\alpha$ содержит прямую $KN$ и параллельна прямой $BC$.<br>а) Докажите, что плоскость $\alpha$ параллельна прямой $SA$.<br>б) Найдите угол между плоскостями $\alpha$ и $SBC$.</div>
+         <button class="show-answer-btn"
+                 data-answer="а) $\frac{11}{20}$
+б) $\arccos(0.55)$"
+                 onclick="showAnswer(27, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-27" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 29</div>
+         
+         <div class="problem-text">Дайте развернутый ответ. В правильной треугольной пирамиде $SABC$ с основанием $ABC$ точки $M$ и $K$ — середины рёбер $AB$ и $SC$ соответственно, а точки $N$ и $L$ отмечены на рёбрах $SA$ и $BC$ соответственно так, что отрезки $MK$ и $NL$ пересекаются, а $AN=3NS$.<br>а) Докажите, что прямые $MN$, $KL$ и $SB$ пересекаются в одной точке.<br>б) Найдите отношение $BL:LC$.</div>
+         <button class="show-answer-btn"
+                 data-answer="3:1"
+                 onclick="showAnswer(28, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-28" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 30</div>
+         
+         <div class="problem-text">Дайте развернутый ответ. В основании прямой призмы $ABCD A_1 B_1 C_1 D_1$ лежит равнобедренная трапеция $ABCD$ с основаниями $AD=3$ и $BC=2.$ Точка $M$ делит ребро $A_1 D_1$ в отношении $A_1 M:MD_1 = 1:2,$ а точка $K$ — середина ребра $DD_1.$<br>а) Докажите, что плоскость $MKC$ делит отрезок $BB_1$ пополам.<br>б) Найдите площадь сечения призмы плоскостью $MKC,$ если $\angle MKC=90^\circ,$ $\angle ADC=60^\circ.$</div>
+         <button class="show-answer-btn"
+                 data-answer="а) $S = \frac{\sqrt{10}}{2}$
+б) $H=2$"
+                 onclick="showAnswer(29, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-29" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="solutionModal" class="modal">
+    <div class="modal-content">
+      <h2>Хотите посмотреть решение?</h2>
+      <p>Создайте аккаунт или войдите, чтобы получить доступ к подробным решениям всех задач.</p>
+      <div class="modal-buttons">
+        <a href="/register" class="modal-button primary">Войти / Создать аккаунт</a>
+        <button class="modal-button secondary" onclick="closeSolutionModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Flying Math Background Animation
+    function createFlyingMath() {
+      const mathSymbols = ['π', '∑', '∫', '√', '∞', 'α', 'β', 'γ', 'δ', 'ε', 'θ', 'λ', 'μ', 'σ', 'φ', 'ψ', 'ω', 'Δ', 'Ω', '±', '×', '÷', '=', '≠', '≤', '≥', '∈', '∉', '∪', '∩', '⊂', '⊃'];
+      const container = document.getElementById('flyingMath');
+      
+      function addMathSymbol() {
+        const symbol = document.createElement('div');
+        symbol.className = 'math-symbol';
+        symbol.textContent = mathSymbols[Math.floor(Math.random() * mathSymbols.length)];
+        symbol.style.left = Math.random() * 100 + '%';
+        symbol.style.animationDuration = (Math.random() * 10 + 15) + 's';
+        symbol.style.animationDelay = Math.random() * 5 + 's';
+        container.appendChild(symbol);
+        
+        // Remove symbol after animation
+        setTimeout(() => {
+          if (symbol.parentNode) {
+            symbol.parentNode.removeChild(symbol);
+          }
+        }, 25000);
+      }
+      
+      // Add symbols periodically
+      setInterval(addMathSymbol, 2000);
+      
+      // Add initial symbols
+      for (let i = 0; i < 5; i++) {
+        setTimeout(addMathSymbol, i * 1000);
+      }
+    }
+
+    function showAnswer(index, answer) {
+      const answerDiv = document.getElementById(`answer-${index}`);
+      answerDiv.textContent = `Ответ: ${answer}`;
+      answerDiv.classList.add('visible');
+      
+      // Re-render MathJax for the newly shown content
+      if (window.MathJax) {
+        MathJax.typesetPromise([answerDiv]);
+      }
+    }
+
+    function showSolutionModal() {
+      document.getElementById('solutionModal').classList.add('visible');
+    }
+
+    function closeSolutionModal() {
+      document.getElementById('solutionModal').classList.remove('visible');
+    }
+
+    // Close modal on outside click
+    document.getElementById('solutionModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeSolutionModal();
+      }
+    });
+
+    // Initialize flying math animation
+    document.addEventListener('DOMContentLoaded', createFlyingMath);
+    
+    // Initialize MathJax rendering
+    function initializeMathJax() {
+      if (window.MathJax) {
+        MathJax.typesetPromise();
+      }
+    }
+    
+    // Re-render MathJax when content changes
+    function reRenderMathJax(element) {
+      if (window.MathJax && element) {
+        MathJax.typesetPromise([element]);
+      }
+    }
+    
+    // Initialize MathJax on page load
+    document.addEventListener('DOMContentLoaded', initializeMathJax);
+  </script>
+</body>
+</html>
+

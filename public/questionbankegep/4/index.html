@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Задание 4 - Банк заданий ЕГЭ профиль</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true,
+        processEnvironments: true,
+        packages: {'[+]': ['ams', 'newcommand', 'configmacros']}
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        ignoreHtmlClass: 'tex2jax_ignore',
+        processHtmlClass: 'tex2jax_process'
+      },
+      startup: {
+        ready: () => {
+          MathJax.startup.defaultReady();
+          MathJax.startup.defaultDocument();
+        }
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%);
+      min-height: 100vh;
+      color: #ffffff;
+      overflow-x: hidden;
+    }
+
+    /* Flying Math Background Animation */
+    .flying-math {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .math-symbol {
+      position: absolute;
+      color: rgba(255, 255, 255, 0.1);
+      font-size: 2rem;
+      animation: float 20s infinite linear;
+      user-select: none;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100px) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding: 2rem 0;
+    }
+
+    .header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 3rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #fbbf24 0%, #10b981 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    .header p {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 1.25rem;
+      font-weight: 500;
+    }
+
+    .header .subtitle {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .question-item {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .question-item:hover {
+      border-color: rgba(251, 191, 36, 0.4);
+      box-shadow: 0 20px 40px rgba(251, 191, 36, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .question-number {
+      font-size: 0.875rem;
+      color: #fbbf24;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .problem-image {
+      max-width: 100%;
+      width: 100%;
+      max-width: 600px;
+      height: auto;
+      border-radius: 12px;
+      margin: 0 auto 1.5rem auto;
+      display: block;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      object-fit: contain;
+    }
+
+    .problem-text {
+      font-size: 1.125rem;
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+      color: #ffffff;
+      font-weight: 400;
+    }
+
+    .answer-section {
+      margin-bottom: 1.5rem;
+    }
+
+    .answer-input {
+      width: 100%;
+      padding: 1rem 1.25rem;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      color: #ffffff;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(8px);
+    }
+
+    .answer-input:focus {
+      outline: none;
+      border-color: #fbbf24;
+      box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .answer-input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .show-answer-btn,
+    .show-solution-btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .show-answer-btn {
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      color: #1a1f36;
+      margin-right: 0.75rem;
+      box-shadow: 0 4px 16px rgba(251, 191, 36, 0.3);
+    }
+
+    .show-answer-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(251, 191, 36, 0.4);
+    }
+
+    .show-solution-btn {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
+    }
+
+    .show-solution-btn:hover {
+      border-color: #fbbf24;
+      background: rgba(251, 191, 36, 0.1);
+      transform: translateY(-1px);
+    }
+
+    .answer-display {
+      margin-top: 1rem;
+      padding: 1rem 1.25rem;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 12px;
+      color: #10b981;
+      font-weight: 600;
+      display: none;
+      backdrop-filter: blur(8px);
+    }
+
+    .answer-display.visible {
+      display: block;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      backdrop-filter: blur(8px);
+    }
+
+    .modal.visible {
+      display: flex;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .modal-content {
+      background: rgba(26, 31, 54, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 2.5rem;
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-content h2 {
+      font-family: 'Playfair Display', serif;
+      margin-bottom: 1rem;
+      color: #ffffff;
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .modal-content p {
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+      font-size: 1rem;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .modal-button {
+      padding: 0.875rem 1.75rem;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .modal-button.primary {
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      color: #1a1f36;
+      box-shadow: 0 4px 16px rgba(251, 191, 36, 0.3);
+    }
+
+    .modal-button.primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(251, 191, 36, 0.4);
+    }
+
+    .modal-button.secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
+    }
+
+    .modal-button.secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-1px);
+    }
+
+    /* MathJax styling to match the app */
+    mjx-container {
+      user-select: text;
+    }
+    
+    mjx-container * {
+      user-select: none;
+    }
+    
+    /* MathJax selection and display styling */
+    mjx-container {
+      user-select: text;
+    }
+    
+    /* Selection highlighting for regular text and MathJax fallback */
+    ::selection {
+      background: rgba(251, 191, 36, 0.3);
+    }
+    
+    /* MathJax selection overlay */
+    .mjx-selection-highlight {
+      background: rgba(251, 191, 36, 0.3) !important;
+    }
+    
+    /* Force selection visibility on MathJax elements */
+    mjx-container.mjx-selected {
+      background: rgba(251, 191, 36, 0.3);
+    }
+
+    /* General image styling for any images in the content */
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto 1rem auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2.5rem;
+      }
+
+      .header p {
+        font-size: 1.125rem;
+      }
+
+      .question-item {
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .show-answer-btn {
+        margin-bottom: 0.75rem;
+        margin-right: 0;
+        width: 100%;
+      }
+
+      .show-solution-btn {
+        width: 100%;
+      }
+
+      .problem-image {
+        max-width: 100%;
+        margin: 0 auto 1rem auto;
+      }
+
+      .modal-content {
+        padding: 2rem;
+        margin: 1rem;
+      }
+
+      .modal-buttons {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .modal-button {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 1rem 0.75rem;
+      }
+
+      .header h1 {
+        font-size: 2rem;
+      }
+
+      .question-item {
+        padding: 1.25rem;
+      }
+
+      .problem-text {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Flying Math Background -->
+  <div class="flying-math" id="flyingMath"></div>
+
+  <div class="container">
+    <div class="header">
+      <h1>Задание 4</h1>
+      <p>Банк заданий ЕГЭ профиль по математике</p>
+    </div>
+
+    <div id="questions">
+      
+       <div class="question-item">
+         <div class="question-number">Вопрос 1</div>
+         
+         <div class="problem-text">Впишит�� правильный ответ. В группе туристов 30 человек. Их вертолётом доставляют в труднодоступный район, перевозя по 6 человек за рейс. Порядок, в котором вертолёт перевозит туристов, случаен. Найдите вероятность того, что турист В., входящий в состав группы, полетит первым рейсом вертолёта.</div>
+         <button class="show-answer-btn"
+                 data-answer="0.2"
+                 onclick="showAnswer(0, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-0" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 2</div>
+         
+         <div class="problem-text">Впишите правильный ответ. Игральную кость бросили два раза. Известно, что пять очков не выпало ни разу. Найдите при этом условии вероятность события «сумма очков равна 9».</div>
+         <button class="show-answer-btn"
+                 data-answer="0.08"
+                 onclick="showAnswer(1, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-1" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 3</div>
+         
+         <div class="problem-text">Впишите правильный ответ. Перед началом волейбольного матча капитаны команд тянут жребий, чтобы определить, какая из команд начнёт игру с мячом. Команда «Ротор» по очереди играет с командами «Статор», «Стартёр» и «Мотор». Найдите вероятность того, что «Ротор» будет начинать с мячом только вторую игру.</div>
+         <button class="show-answer-btn"
+                 data-answer="0.125"
+                 onclick="showAnswer(2, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-2" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 4</div>
+         
+         <div class="problem-text">Впишите правильный ответ. Вероятность того, что в случайный момент времени температура тела здорового человека окажется ниже чем $36.8^{\circ}~C$, равна 0,83. Найдите вероятность того, что в случайный момент времени у здорового человека температура окажется $36.8^{\circ}~C$} или выше.</div>
+         <button class="show-answer-btn"
+                 data-answer="0.17"
+                 onclick="showAnswer(3, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-3" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 5</div>
+         
+         <div class="problem-text">Впишите правильный ответ. Стрелок в тире стреляет по мишени до тех пор, пока не поразит её. Известно, что он попадает в цель с вероятностью 0,5 при каждом отдельном выстреле. Какое наименьшее количество патронов нужно дать стрелку, чтобы он поразил цель с вероятностью не меньше 0,7?</div>
+         <button class="show-answer-btn"
+                 data-answer="2"
+                 onclick="showAnswer(4, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-4" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 6</div>
+         
+         <div class="problem-text">Впишите правильный ответ. На конференцию приехали учёные из трёх стран: 2 из Румынии, 2 из Дании и 6 из Польши. Каждый из них делает на конференции один доклад. Порядок докладов определяется жеребьёвкой. Найдите вероятность того, что первым окажется доклад учёного из Польши.</div>
+         <button class="show-answer-btn"
+                 data-answer="0.6"
+                 onclick="showAnswer(5, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-5" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 7</div>
+         
+         <div class="problem-text">Впишите правильный ответ. В чемпионате по гимнастике участвуют 25 спортсменок: 6 из Венгрии, 9 из Румынии, остальные — из Болгарии. Порядок, в котором выступают спортсменки, определяется жребием. Найдите вероятность того, что спортсменка, выступающая первой, окажется из Болгарии.</div>
+         <button class="show-answer-btn"
+                 data-answer="0,4"
+                 onclick="showAnswer(6, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-6" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 8</div>
+         
+         <div class="problem-text">Впишите правильный ответ. Вероятность того, что в случайный момент времени температура тела здорового человека окажется ниже чем $P(X &lt; x)$, равна 0,91. Найдите вероятность того, что в случайный момент времени у здорового человека температура окажется $P(X \ge x)$ или выше.</div>
+         <button class="show-answer-btn"
+                 data-answer="0,09"
+                 onclick="showAnswer(7, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-7" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 9</div>
+         
+         <div class="problem-text">Впишите правильный ответ. На чемпионате по прыжкам в воду выступают 40 спортсменов, среди них 3 прыгуна из Голландии и 6 прыгунов из Аргентины. Порядок выступлений определяется жеребьёвкой. Найдите вероятность того, что тринадцатым будет выступать прыгун из Аргентины.</div>
+         <button class="show-answer-btn"
+                 data-answer="0.15"
+                 onclick="showAnswer(8, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-8" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 10</div>
+         
+         <div class="problem-text">Впишите правильный ответ. Фабрика выпускает сумки. В среднем 3 сумки из 50 имеют скрытые дефекты. Найдите вероятность того, что купленная сумка окажется без скрытых дефектов.</div>
+         <button class="show-answer-btn"
+                 data-answer="0.94"
+                 onclick="showAnswer(9, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-9" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 11</div>
+         
+         <div class="problem-text">Впишите правильный ответ. В сборнике билетов по математике всего 48 билетов, в 12 из них встречается вопрос по теме «Логарифмы». Найдите вероятность того, что в случайно выбранном на экзамене билете школьнику \textbf{не достанется} вопрос по теме «Логарифмы».</div>
+         <button class="show-answer-btn"
+                 data-answer="0.75"
+                 onclick="showAnswer(10, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-10" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 12</div>
+         
+         <div class="problem-text">Впишите правильный ответ. В сборнике билетов по географии всего 60 билетов, в девяти из них встречается вопрос по теме «Ресурсообеспеченность». Найдите вероятность того, что в случайно выбранном на экзамене билете школьнику не достанется вопрос по теме «Ресурсообеспеченность».</div>
+         <button class="show-answer-btn"
+                 data-answer="0.85"
+                 onclick="showAnswer(11, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-11" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 13</div>
+         
+         <div class="problem-text">Впишите правильный ответ. В сборнике билетов по истории всего 50 билетов, в пяти из них встречается вопрос по теме «Великая Отечественная война». Найдите вероятность того, что в случайно выбранном на экзамене билете школьнику \textbf{не достанется} вопрос по теме «Великая Отечественная война».</div>
+         <button class="show-answer-btn"
+                 data-answer="0.9"
+                 onclick="showAnswer(12, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-12" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 14</div>
+         
+         <div class="problem-text">Впишите правильный ответ. Помещение освещается тремя лампами. Вероятность перегорания каждой лампы в течение года равна 0,4. Лампы перегорают независимо друг от друга. Найдите вероятность того, что в течение года хотя бы одна лампа \textbf{не перегорит}.</div>
+         <button class="show-answer-btn"
+                 data-answer="0.936"
+                 onclick="showAnswer(13, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-13" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 15</div>
+         
+         <div class="problem-text">Впишите правильный ответ. На чемпионате по прыжкам в воду выступают 25 спортсменов, среди них 10 спортсменов из Испании и 6 спортсменов из Бразилии. Порядок выступлений определяется жеребьёвкой. Найдите вероятность того, что одиннадцатым будет выступать спортсмен из Испании.</div>
+         <button class="show-answer-btn"
+                 data-answer="0,4"
+                 onclick="showAnswer(14, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-14" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 16</div>
+         
+         <div class="problem-text">Впишите правильный ответ. Из районного центра в деревню ежедневно ходит автобус. Вероятность того, что в понедельник в автобусе окажется меньше 23 пассажиров, равна 0,87. Вероятность того, что окажется меньше 14 пассажиров, равна 0,61. Найдите вероятность того, что число пассажиров будет от 14 до 22 включительно.</div>
+         <button class="show-answer-btn"
+                 data-answer="0.26"
+                 onclick="showAnswer(15, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-15" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 17</div>
+         
+         <div class="problem-text">Впишите правильный ответ. При выпечке хлеба производится контрольное взвешивание свежей буханки. Известно, что вероятность того, что масса окажется меньше 810 г, равна 0,98. Вероятность того, что масса окажется больше 790 г, равна 0,83. Найдите вероятность того, что масса буханки больше 790 г, но меньше 810 г.</div>
+         <button class="show-answer-btn"
+                 data-answer="0.81"
+                 onclick="showAnswer(16, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-16" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 18</div>
+         
+         <div class="problem-text">Впишите правильный ответ. Перед началом футбольного матча судья бросает монетку, чтобы определить, какая из команд начнёт игру с мячом. Команда «Биолог» играет три матча с разными командами. Найдите вероятность того, что в этих матчах команда «Биолог» начнёт игру с мячом все три раза.</div>
+         <button class="show-answer-btn"
+                 data-answer="0.125"
+                 onclick="showAnswer(17, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-17" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 19</div>
+         
+         <div class="problem-text">Впишите правильный ответ. В соревнованиях по толканию ядра участвуют спортсмены из четырёх стран: 4 из Аргентины, 7 из Бразилии, 5 из Парагвая и 4 из Уругвая. Порядок, в котором выступают спортсмены, определяется жребием. Найдите вероятность того, что спортсмен, выступающий первым, окажется из Бразилии.</div>
+         <button class="show-answer-btn"
+                 data-answer="0,35"
+                 onclick="showAnswer(18, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-18" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 20</div>
+         
+         <div class="problem-text">Впишите правильный ответ. Помещение освещается тремя лампами. Вероятность перегорания каждой лампы в течение года равна 0,2. Лампы перегорают независимо друг от друга. Найдите вероятность того, что в течение года хотя бы одна лампа &lt;b&gt;не перегорит&lt;/b&gt;.</div>
+         <button class="show-answer-btn"
+                 data-answer="0.992"
+                 onclick="showAnswer(19, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-19" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 21</div>
+         
+         <div class="problem-text">Впишите правильный ответ. Помещение освещается тремя лампами. Вероятность перегорания каждой лампы в течение года равна 0,5. Лампы перегорают независимо друг от друга. Найдите вероятность того, что в течение года хотя бы одна лампа не перегорит.</div>
+         <button class="show-answer-btn"
+                 data-answer="0,875"
+                 onclick="showAnswer(20, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-20" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 22</div>
+         
+         <div class="problem-text">Впишите правильный ответ. Перед началом футбольного матча судья бросает монетку, чтобы определить, какая из команд начнёт игру с мячом. Команда «Изумруд» играет два матча с разными командами. Найдите вероятность того, что в этих матчах команда «Изумруд» начнёт игру с мячом не больше одного раза.</div>
+         <button class="show-answer-btn"
+                 data-answer="0,75"
+                 onclick="showAnswer(21, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-21" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 23</div>
+         
+         <div class="problem-text">Впишите правильный ответ. На конференцию приехали учёные из трёх стран: 9 из Португалии, 7 из Финляндии и 4 из Болгарии. Каждый из них делает на конференции один доклад. Порядок докладов определяется жеребьёвкой. Найдите вероятность того, что седьмым окажется доклад учёного из Португалии.</div>
+         <button class="show-answer-btn"
+                 data-answer="0.45"
+                 onclick="showAnswer(22, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-22" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 24</div>
+         
+         <div class="problem-text">Впишите правильный ответ. На конференцию приехали учёные из трёх стран: 5 из Австрии, 4 из Германии и 6 из Сербии. Каждый из них делает на конференции один доклад. Порядок докладов определяется жеребьёвкой. Найдите вероятность того, что десятым окажется доклад учёного из Сербии.</div>
+         <button class="show-answer-btn"
+                 data-answer="0.4"
+                 onclick="showAnswer(23, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-23" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 25</div>
+         
+         <div class="problem-text">Впишите правильный ответ. На чемпионате по прыжкам в воду выступают 20 спортсменов, среди них 7 спортсменов из Германии и 9 спортсменов из США. Порядок выступлений определяется жеребьёвкой. Найдите вероятность того, что двенадцатым будет выступать спортсмен из Германии.</div>
+         <button class="show-answer-btn"
+                 data-answer="0.35"
+                 onclick="showAnswer(24, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-24" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 26</div>
+         
+         <div class="problem-text">Впишите правильный ответ. В чемпионате по гимнастике участвуют 45 спортсменок: 6 из России, 21 из США, остальные — из Китая. Порядок, в котором выступают гимнастки, определяется жребием. Найдите вероятность того, что спортсменка, выступающая первой, окажется из Китая.</div>
+         <button class="show-answer-btn"
+                 data-answer="0.4"
+                 onclick="showAnswer(25, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-25" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 27</div>
+         
+         <div class="problem-text">Впишите правильный ответ. В чемпионате по гимнастике участвуют 50 спортсменок: 13 из Великобритании, 7 из Франции, остальные — из Германии. Порядок, в котором выступают гимнастки, определяется жребием. Найдите вероятность того, что спортсменка, выступающая первой, окажется из Германии.</div>
+         <button class="show-answer-btn"
+                 data-answer="0.6"
+                 onclick="showAnswer(26, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-26" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 28</div>
+         
+         <div class="problem-text">Впишите правильный ответ. В соревнованиях по толканию ядра участвуют спортсмены из четырёх стран: 6 из Швеции, 5 из Дании, 10 из Норвегии и 4 из Финляндии. Порядок, в котором выступают спортсмены, определяется жребием. Найдите вероятность того, что спортсмен, выступающий первым, окажется из Норвегии.</div>
+         <button class="show-answer-btn"
+                 data-answer="0.4"
+                 onclick="showAnswer(27, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-27" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 29</div>
+         
+         <div class="problem-text">Впишите правильный ответ. В соревнованиях по толканию ядра участвуют спортсмены из четырёх стран: 6 из Эстонии, 9 из Латвии, 7 из Литвы и 8 из Польши. Порядок, в котором выступают спортсмены, определяется жребием. Найдите вероятность того, что спортсмен, выступающий первым, окажется из Латвии.</div>
+         <button class="show-answer-btn"
+                 data-answer="0,3"
+                 onclick="showAnswer(28, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-28" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 30</div>
+         
+         <div class="problem-text">Впишите правильный ответ. В среднем из 2000 садовых насосов, поступивших в продажу, 12 подтекают. Найдите вероятность того, что один случайно выбранный для контроля насос не подтекает.</div>
+         <button class="show-answer-btn"
+                 data-answer="0.994"
+                 onclick="showAnswer(29, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-29" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="solutionModal" class="modal">
+    <div class="modal-content">
+      <h2>Хотите посмотреть решение?</h2>
+      <p>Создайте аккаунт или войдите, чтобы получить доступ к подробным решениям всех задач.</p>
+      <div class="modal-buttons">
+        <a href="/register" class="modal-button primary">Войти / Создать аккаунт</a>
+        <button class="modal-button secondary" onclick="closeSolutionModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Flying Math Background Animation
+    function createFlyingMath() {
+      const mathSymbols = ['π', '∑', '∫', '√', '∞', 'α', 'β', 'γ', 'δ', 'ε', 'θ', 'λ', 'μ', 'σ', 'φ', 'ψ', 'ω', 'Δ', 'Ω', '±', '×', '÷', '=', '≠', '≤', '≥', '∈', '∉', '∪', '∩', '⊂', '⊃'];
+      const container = document.getElementById('flyingMath');
+      
+      function addMathSymbol() {
+        const symbol = document.createElement('div');
+        symbol.className = 'math-symbol';
+        symbol.textContent = mathSymbols[Math.floor(Math.random() * mathSymbols.length)];
+        symbol.style.left = Math.random() * 100 + '%';
+        symbol.style.animationDuration = (Math.random() * 10 + 15) + 's';
+        symbol.style.animationDelay = Math.random() * 5 + 's';
+        container.appendChild(symbol);
+        
+        // Remove symbol after animation
+        setTimeout(() => {
+          if (symbol.parentNode) {
+            symbol.parentNode.removeChild(symbol);
+          }
+        }, 25000);
+      }
+      
+      // Add symbols periodically
+      setInterval(addMathSymbol, 2000);
+      
+      // Add initial symbols
+      for (let i = 0; i < 5; i++) {
+        setTimeout(addMathSymbol, i * 1000);
+      }
+    }
+
+    function showAnswer(index, answer) {
+      const answerDiv = document.getElementById(`answer-${index}`);
+      answerDiv.textContent = `Ответ: ${answer}`;
+      answerDiv.classList.add('visible');
+      
+      // Re-render MathJax for the newly shown content
+      if (window.MathJax) {
+        MathJax.typesetPromise([answerDiv]);
+      }
+    }
+
+    function showSolutionModal() {
+      document.getElementById('solutionModal').classList.add('visible');
+    }
+
+    function closeSolutionModal() {
+      document.getElementById('solutionModal').classList.remove('visible');
+    }
+
+    // Close modal on outside click
+    document.getElementById('solutionModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeSolutionModal();
+      }
+    });
+
+    // Initialize flying math animation
+    document.addEventListener('DOMContentLoaded', createFlyingMath);
+    
+    // Initialize MathJax rendering
+    function initializeMathJax() {
+      if (window.MathJax) {
+        MathJax.typesetPromise();
+      }
+    }
+    
+    // Re-render MathJax when content changes
+    function reRenderMathJax(element) {
+      if (window.MathJax && element) {
+        MathJax.typesetPromise([element]);
+      }
+    }
+    
+    // Initialize MathJax on page load
+    document.addEventListener('DOMContentLoaded', initializeMathJax);
+  </script>
+</body>
+</html>
+

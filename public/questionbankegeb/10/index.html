@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Задание 10 - Банк заданий ЕГЭ базовый</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true,
+        processEnvironments: true,
+        packages: {'[+]': ['ams', 'newcommand', 'configmacros']}
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        ignoreHtmlClass: 'tex2jax_ignore',
+        processHtmlClass: 'tex2jax_process'
+      },
+      startup: {
+        ready: () => {
+          MathJax.startup.defaultReady();
+          MathJax.startup.defaultDocument();
+        }
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%);
+      min-height: 100vh;
+      color: #ffffff;
+      overflow-x: hidden;
+    }
+
+    /* Flying Math Background Animation */
+    .flying-math {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .math-symbol {
+      position: absolute;
+      color: rgba(255, 255, 255, 0.1);
+      font-size: 2rem;
+      animation: float 20s infinite linear;
+      user-select: none;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100px) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding: 2rem 0;
+    }
+
+    .header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 3rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #fbbf24 0%, #10b981 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    .header p {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 1.25rem;
+      font-weight: 500;
+    }
+
+    .header .subtitle {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .question-item {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .question-item:hover {
+      border-color: rgba(251, 191, 36, 0.4);
+      box-shadow: 0 20px 40px rgba(251, 191, 36, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .question-number {
+      font-size: 0.875rem;
+      color: #fbbf24;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .problem-image {
+      max-width: 100%;
+      width: 100%;
+      max-width: 600px;
+      height: auto;
+      border-radius: 12px;
+      margin: 0 auto 1.5rem auto;
+      display: block;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      object-fit: contain;
+    }
+
+    .problem-text {
+      font-size: 1.125rem;
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+      color: #ffffff;
+      font-weight: 400;
+    }
+
+    .answer-section {
+      margin-bottom: 1.5rem;
+    }
+
+    .answer-input {
+      width: 100%;
+      padding: 1rem 1.25rem;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      color: #ffffff;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(8px);
+    }
+
+    .answer-input:focus {
+      outline: none;
+      border-color: #fbbf24;
+      box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .answer-input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .show-answer-btn,
+    .show-solution-btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .show-answer-btn {
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      color: #1a1f36;
+      margin-right: 0.75rem;
+      box-shadow: 0 4px 16px rgba(251, 191, 36, 0.3);
+    }
+
+    .show-answer-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(251, 191, 36, 0.4);
+    }
+
+    .show-solution-btn {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
+    }
+
+    .show-solution-btn:hover {
+      border-color: #fbbf24;
+      background: rgba(251, 191, 36, 0.1);
+      transform: translateY(-1px);
+    }
+
+    .answer-display {
+      margin-top: 1rem;
+      padding: 1rem 1.25rem;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 12px;
+      color: #10b981;
+      font-weight: 600;
+      display: none;
+      backdrop-filter: blur(8px);
+    }
+
+    .answer-display.visible {
+      display: block;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      backdrop-filter: blur(8px);
+    }
+
+    .modal.visible {
+      display: flex;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .modal-content {
+      background: rgba(26, 31, 54, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 2.5rem;
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-content h2 {
+      font-family: 'Playfair Display', serif;
+      margin-bottom: 1rem;
+      color: #ffffff;
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .modal-content p {
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+      font-size: 1rem;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .modal-button {
+      padding: 0.875rem 1.75rem;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .modal-button.primary {
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      color: #1a1f36;
+      box-shadow: 0 4px 16px rgba(251, 191, 36, 0.3);
+    }
+
+    .modal-button.primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(251, 191, 36, 0.4);
+    }
+
+    .modal-button.secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
+    }
+
+    .modal-button.secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-1px);
+    }
+
+    /* MathJax styling to match the app */
+    mjx-container {
+      user-select: text;
+    }
+    
+    mjx-container * {
+      user-select: none;
+    }
+    
+    /* MathJax selection and display styling */
+    mjx-container {
+      user-select: text;
+    }
+    
+    /* Selection highlighting for regular text and MathJax fallback */
+    ::selection {
+      background: rgba(251, 191, 36, 0.3);
+    }
+    
+    /* MathJax selection overlay */
+    .mjx-selection-highlight {
+      background: rgba(251, 191, 36, 0.3) !important;
+    }
+    
+    /* Force selection visibility on MathJax elements */
+    mjx-container.mjx-selected {
+      background: rgba(251, 191, 36, 0.3);
+    }
+
+    /* General image styling for any images in the content */
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto 1rem auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Table styling for problem text */
+    .problem-text table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .problem-text table td {
+      padding: 0.75rem 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+    }
+
+    .problem-text table tr:first-child td {
+      background: rgba(251, 191, 36, 0.1);
+      font-weight: 600;
+      color: #fbbf24;
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2.5rem;
+      }
+
+      .header p {
+        font-size: 1.125rem;
+      }
+
+      .question-item {
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .show-answer-btn {
+        margin-bottom: 0.75rem;
+        margin-right: 0;
+        width: 100%;
+      }
+
+      .show-solution-btn {
+        width: 100%;
+      }
+
+      .problem-image {
+        max-width: 100%;
+        margin: 0 auto 1rem auto;
+      }
+
+      .modal-content {
+        padding: 2rem;
+        margin: 1rem;
+      }
+
+      .modal-buttons {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .modal-button {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 1rem 0.75rem;
+      }
+
+      .header h1 {
+        font-size: 2rem;
+      }
+
+      .question-item {
+        padding: 1.25rem;
+      }
+
+      .problem-text {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Flying Math Background -->
+  <div class="flying-math" id="flyingMath"></div>
+
+  <div class="container">
+    <div class="header">
+      <h1>Задание 10</h1>
+      <p>Банк заданий ЕГЭ базовый по математике</p>
+    </div>
+
+    <div id="questions">
+      
+       <div class="question-item">
+         <div class="question-number">Вопрос 1</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/0A69BE.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На рисунке изображён колодец с «журавлём».</p>
+<p>Короткое плечо имеет длину \( 2 \) м, а длинное плечо — \( 7 \) м.</p>
+<p>На сколько метров опустится конец длинного плеча, когда конец короткого поднимется на \( 1 \) м?</p></div>
+         <button class="show-answer-btn"
+                 data-answer="0.29"
+                 onclick="showAnswer(0, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-0" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 2</div>
+         
+         <div class="problem-text tex2jax_process"><p>Стороны параллелограмма равны \(10\) и \(12\).</p>
+<p>Высота, опущенная на меньшую сторону, равна \(6\).</p>
+<p>Найдите высоту, опущенную на большую сторону параллелограмма.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="5"
+                 onclick="showAnswer(1, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-1" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 3</div>
+         
+         <div class="problem-text tex2jax_process"><p>В выпуклом четырехугольнике \( ABCD \) известно, что \( AB=BC \), \( AD=CD \), \( \angle B=100^\circ \), \( \angle D=120^\circ \). Найдите угол \( A \). Ответ дайте в градусах.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="70"
+                 onclick="showAnswer(2, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-2" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 4</div>
+         
+         <div class="problem-text tex2jax_process"><p>Пять ступеней лестницы покрасили в тёмный цвет, как показано на рисунке (штриховкой). Найдите площадь окрашенной поверхности, если глубина каждой ступеньки равна \( 30 \) см, высота — \( 15 \) см, а ширина — \( 95 \) см. Ответ дайте в квадратных сантиметрах.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="21375"
+                 onclick="showAnswer(3, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-3" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 5</div>
+         
+         <div class="problem-text tex2jax_process"><p>Дачный участок имеет форму прямоугольника со сторонами 35 метров и 20 метров. Хозяин отгородил на участке квадратный вольер со стороной 10 метров (см. рис.). Найдите площадь оставшейся части участка. Ответ дайте в квадратных метрах.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="600"
+                 onclick="showAnswer(4, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-4" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 6</div>
+         
+         <div class="problem-text tex2jax_process"><p>Диагональ прямоугольного экрана телевизора равна \( 74 \) см, а ширина экрана \( - 70 \) см. Найдите высоту экрана. Ответ дайте в сантиметрах.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="24"
+                 onclick="showAnswer(5, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-5" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 7</div>
+         
+         <div class="problem-text tex2jax_process"><p>На ленте по разные стороны от середины отмечены две тонкие поперечные полоски: синяя и красная. Если разрезать ленту по красной полоске, то одна часть будет на \(35\) см длиннее другой. Если разрезать ленту по синей полоске, то одна часть будет на \(5\) см длиннее другой. Найдите расстояние (в сантиметрах) между красной и синей полосками.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="20"
+                 onclick="showAnswer(6, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-6" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 8</div>
+         
+         <div class="problem-text tex2jax_process"><p>Участок земли имеет прямоугольную форму. Стороны прямоугольника равны \(30\) м и \(75\) м. Найдите длину забора (в метрах), которым нужно огородить участок, предусмотрев проезд шириной \(3\) м.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="207"
+                 onclick="showAnswer(7, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-7" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 9</div>
+         
+         <div class="problem-text tex2jax_process"><p>В выпуклом четырехугольнике \( ABCD \) известно, что \( AB=BC \), угол \( B \) равен \( 17^\circ \), угол \( D \) равен \( 101^\circ \).</p><p>Так как \( AB = BC \), то треугольник \( ABC \) — равнобедренный, значит, углы при основании равны. Обозначим угол \( A \) как \( \alpha \). Следовательно, угол \( C \) также равен \( \alpha \).</p><p>Сумма углов треугольника \( ABC \) равна \( 180^\circ \):</p>
+\[ \angle A + \angle B + \angle C = 180^\circ \]
+\[ \alpha + 17^\circ + \alpha = 180^\circ \]
+\[ 2\alpha = 163^\circ \]
+\[ \alpha = 81.5^\circ \]
+<p>Теперь рассмотрим треугольник \( ACD \).</p><p>Так как \( AD = CD \), то треугольник \( ACD \) — равнобедренный. Обозначим угол \( A \) в этом треугольнике как \( \beta \). Тогда угол \( C \) также равен \( \beta \).</p><p>Сумма углов треугольника \( ACD \) равна \( 180^\circ \):</p>
+\[ \beta + 101^\circ + \beta = 180^\circ \]
+\[ 2\beta = 79^\circ \]
+\[ \beta = 39.5^\circ \]
+<p>Таким образом, угол \( A \) четырехугольника \( ABCD \) равен сумме углов \( \alpha \) и \( \beta \):</p>
+\[ \angle A = \alpha + \beta = 81.5^\circ + 39.5^\circ = 121^\circ \]</div>
+         <button class="show-answer-btn"
+                 data-answer="121"
+                 onclick="showAnswer(8, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-8" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 10</div>
+         
+         <div class="problem-text tex2jax_process"><p>Основания равнобедренной трапеции равны \(12\) и \(28\), боковая сторона равна \(17\). Найдите длину диагонали трапеции.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="25"
+                 onclick="showAnswer(9, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-9" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 11</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/847A24.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На рисунке изображён колодец с «журавлём».</p>
+<p>Короткое плечо имеет длину \(1\) м, а длинное плечо — \(4\) м.</p>
+<p>На сколько метров опустится конец длинного плеча, когда конец короткого поднимется на \(0{,}5\) м?</p></div>
+         <button class="show-answer-btn"
+                 data-answer="2"
+                 onclick="showAnswer(10, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-10" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 12</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/C503BE.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Участок земли имеет прямоугольную форму. Стороны прямоугольника равны \(35\) м и \(70\) м. Найдите длину забора (в метрах), которым нужно огородить участок, предусмотрев проезд шириной \(4\) м.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="206"
+                 onclick="showAnswer(11, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-11" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 13</div>
+         
+         <div class="problem-text tex2jax_process"><p>В окружности с центром \( O \) отрезки \( AC \) и \( BD \) — диаметры.</p>
+<p>Вписанный угол \( ACB \) равен \( 32^\circ \).</p>
+<p>Найдите угол \( AOD \).</p>
+<p>Ответ дайте в градусах.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="116"
+                 onclick="showAnswer(12, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-12" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 14</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/B6C3D6.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Два садовода, имеющие прямоугольные участки размерами \(35 \text{ м}\) на \(40 \text{ м}\) с общей границей, договорились и сделали общий круглый пруд площадью \(280\) квадратных метров (см. чертёж), причём граница участков проходит точно через центр пруда. Какова площадь (в квадратных метрах) оставшейся части участка каждого садовода?</p></div>
+         <button class="show-answer-btn"
+                 data-answer="1260"
+                 onclick="showAnswer(13, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-13" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 15</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/9BEAB8.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Прямые \( m \) и \( n \) параллельны (см. рисунок).</p>
+<p>Найдите \( \angle 3 \), если \( \angle 1 = 22^\circ, \angle 2 = 138^\circ \).</p>
+<p>Ответ дайте в градусах.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="158"
+                 onclick="showAnswer(14, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-14" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 16</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/800497.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Квартира состоит из двух комнат, кухни, коридора и санузла (см. чертёж).</p>
+<p>Кухня имеет размеры \( 3{,}5 \, \text{м} \times 3{,}5 \, \text{м} \), вторая комната — \( 3{,}5 \, \text{м} \times 4 \, \text{м} \), санузел имеет размеры \( 1{,}5 \, \text{м} \times 1{,}5 \, \text{м} \), длина коридора \( 11 \, \text{м} \).</p>
+<p>Найдите площадь первой комнаты (в квадратных метрах).</p></div>
+         <button class="show-answer-btn"
+                 data-answer="12,25"
+                 onclick="showAnswer(15, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-15" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 17</div>
+         
+         <div class="problem-text tex2jax_process"><p>На плане указано, что прямоугольная комната имеет площадь \(21\) кв. м. Точные измерения показали, что ширина комнаты равна \(4\) м, а длина \(5{,}3\) м. На сколько квадратных метров площадь комнаты отличается от площади, указанной на плане?</p></div>
+         <button class="show-answer-btn"
+                 data-answer="0.2"
+                 onclick="showAnswer(16, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-16" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 18</div>
+         
+         <div class="problem-text tex2jax_process"><p>Сумма двух углов ромба равна \(240^\circ\), а его периметр равен 36.</p><p>Найдите длину меньшей диагонали ромба.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="9"
+                 onclick="showAnswer(17, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-17" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 19</div>
+         
+         <div class="problem-text tex2jax_process"><p>В трапеции \( ABCD \) известно, что \( AB=CD, \angle BDA=10^\circ \) и \( \angle BDC=109^\circ \).</p>
+<p>Найдите угол \( ABD \).</p>
+<p>Ответ дайте в градусах.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="51"
+                 onclick="showAnswer(18, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-18" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 20</div>
+         
+         <div class="problem-text tex2jax_process"><p>На кольцевой дороге расположено четыре бензоколонки: А, Б, В и Г. Расстояние между А и Б — 65 км, между А и В — 50 км, между В и Г — 35 км, между Г и А — 45 км (все расстояния измеряются вдоль кольцевой дороги по кратчайшей дуге). Найдите расстояние (в километрах) между Б и В.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="15"
+                 onclick="showAnswer(19, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-19" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 21</div>
+         
+         <div class="problem-text tex2jax_process"><p>ABCDEFGHIJ — правильный десятиугольник.</p>
+<p>Найдите угол \( FGH \).</p>
+<p>Ответ дайте в градусах.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="144"
+                 onclick="showAnswer(20, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-20" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 22</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/043EA0.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Два садовода, имеющие прямоугольные участки размерами \(20 \text{ м на } 30 \text{ м}\) с общей границей, договорились и сделали общий круглый пруд площадью \(280\) квадратных метров (см. чертёж), причём граница участков проходит точно через центр пруда. Какова площадь (в квадратных метрах) оставшейся части участка каждого садовода?</p></div>
+         <button class="show-answer-btn"
+                 data-answer="460"
+                 onclick="showAnswer(21, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-21" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 23</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/40173B.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Впишите правильный ответ.</p>
+<p>Квартира состоит из комнаты, кухни, коридора и санузла (см. чертёж). Кухня имеет размеры \( 3 \, \text{м} \times 4 \, \text{м} \), санузел — \( 1,5 \, \text{м} \times 2 \, \text{м} \), длина коридора 6 м. Найдите площадь комнаты (в квадратных метрах).</p></div>
+         <button class="show-answer-btn"
+                 data-answer="В условии задачи или чертеже есть ошибка."
+                 onclick="showAnswer(22, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-22" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 24</div>
+         
+         <div class="problem-text tex2jax_process"><p>К кубу с ребром, равным \(1\), приклеили правильную четырёхугольную пирамиду со стороной основания, равной \(1\), так, что квадратные грани совпали. Сколько рёбер у получившегося многогранника (невидимые рёбра на рисунке не изображены)?</p></div>
+         <button class="show-answer-btn"
+                 data-answer="16"
+                 onclick="showAnswer(23, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-23" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 25</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/4070E7.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Участок земли имеет прямоугольную форму.</p><p>Стороны прямоугольника равны \(30\) м и \(45\) м.</p><p>Найдите длину забора (в метрах), которым нужно огородить участок, предусмотрев проезд шириной \(3\) м.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="147"
+                 onclick="showAnswer(24, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-24" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 26</div>
+         
+         <div class="problem-text tex2jax_process"><p>В параллелограмме диагонали являются биссектрисами его углов и равны \(72\) и \(30\). Найдите периметр параллелограмма.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="156"
+                 onclick="showAnswer(25, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-25" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 27</div>
+         
+         <div class="problem-text tex2jax_process"><p>В прямоугольной трапеции \( ABCD \) с основаниями \( BC \) и \( AD \) угол \( BAD \) прямой, \( AB = 15 \), \( BC = CD = 17 \). Найдите среднюю линию трапеции.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="21"
+                 onclick="showAnswer(26, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-26" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 28</div>
+         
+         <div class="problem-text tex2jax_process"><p>Участок земли для строительства санатория имеет форму прямоугольника, стороны которого равны \(1000\) м и \(600\) м. Одна из больших сторон участка идёт вдоль моря, а три остальные стороны нужно огородить забором. Найдите длину этого забора. Ответ дайте в метрах.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="3200"
+                 onclick="showAnswer(27, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-27" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 29</div>
+         
+         <div class="problem-text tex2jax_process"><p>ABCD EFGHI — правильный девятиугольник.</p>
+<p>Найдите угол \( AIH \).</p>
+<p>Ответ дайте в градусах.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="40"
+                 onclick="showAnswer(28, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-28" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 30</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images/0CB450.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Квартира состоит из комнаты, кухни, коридора и санузла (см. чертёж).</p>
+<p>Комната имеет размеры \( 5 \, \text{м} \times 3{,}5 \, \text{м} \), коридор — \( 1{,}5 \, \text{м} \times 6{,}5 \, \text{м} \), длина кухни \( 3{,}5 \, \text{м} \).</p>
+<p>Найдите площадь санузла (в квадратных метрах).</p></div>
+         <button class="show-answer-btn"
+                 data-answer="6,5"
+                 onclick="showAnswer(29, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-29" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="solutionModal" class="modal">
+    <div class="modal-content">
+      <h2>Хотите посмотреть решение?</h2>
+      <p>Создайте аккаунт или войдите, чтобы получить доступ к подробным решениям всех задач.</p>
+      <div class="modal-buttons">
+        <a href="/register" class="modal-button primary">Войти / Создать аккаунт</a>
+        <button class="modal-button secondary" onclick="closeSolutionModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Flying Math Background Animation
+    function createFlyingMath() {
+      const mathSymbols = ['π', '∑', '∫', '√', '∞', 'α', 'β', 'γ', 'δ', 'ε', 'θ', 'λ', 'μ', 'σ', 'φ', 'ψ', 'ω', 'Δ', 'Ω', '±', '×', '÷', '=', '≠', '≤', '≥', '∈', '∉', '∪', '∩', '⊂', '⊃'];
+      const container = document.getElementById('flyingMath');
+      
+      function addMathSymbol() {
+        const symbol = document.createElement('div');
+        symbol.className = 'math-symbol';
+        symbol.textContent = mathSymbols[Math.floor(Math.random() * mathSymbols.length)];
+        symbol.style.left = Math.random() * 100 + '%';
+        symbol.style.animationDuration = (Math.random() * 10 + 15) + 's';
+        symbol.style.animationDelay = Math.random() * 5 + 's';
+        container.appendChild(symbol);
+        
+        // Remove symbol after animation
+        setTimeout(() => {
+          if (symbol.parentNode) {
+            symbol.parentNode.removeChild(symbol);
+          }
+        }, 25000);
+      }
+      
+      // Add symbols periodically
+      setInterval(addMathSymbol, 2000);
+      
+      // Add initial symbols
+      for (let i = 0; i < 5; i++) {
+        setTimeout(addMathSymbol, i * 1000);
+      }
+    }
+
+    function showAnswer(index, answer) {
+      const answerDiv = document.getElementById(`answer-${index}`);
+      answerDiv.textContent = `Ответ: ${answer}`;
+      answerDiv.classList.add('visible');
+      
+      // Re-render MathJax for the newly shown content
+      if (window.MathJax) {
+        MathJax.typesetPromise([answerDiv]);
+      }
+    }
+
+    function showSolutionModal() {
+      document.getElementById('solutionModal').classList.add('visible');
+    }
+
+    function closeSolutionModal() {
+      document.getElementById('solutionModal').classList.remove('visible');
+    }
+
+    // Close modal on outside click
+    document.getElementById('solutionModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeSolutionModal();
+      }
+    });
+
+    // Initialize flying math animation
+    document.addEventListener('DOMContentLoaded', createFlyingMath);
+    
+    // Initialize MathJax rendering
+    function initializeMathJax() {
+      if (window.MathJax) {
+        MathJax.typesetPromise();
+      }
+    }
+    
+    // Re-render MathJax when content changes
+    function reRenderMathJax(element) {
+      if (window.MathJax && element) {
+        MathJax.typesetPromise([element]);
+      }
+    }
+    
+    // Initialize MathJax on page load
+    document.addEventListener('DOMContentLoaded', initializeMathJax);
+  </script>
+</body>
+</html>
+

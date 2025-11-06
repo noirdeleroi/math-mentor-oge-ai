@@ -26,14 +26,22 @@ async function generatePages() {
     const sitemapUrls = [];
 
     // helpers for escaping exactly where needed
-    const sanitizeHtml = (str) =>
-      (str || '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#x27;')
-        .replace(/\n/g, '<br>');
+    // Allow HTML in problem_text but remove dangerous elements
+    const sanitizeHtml = (str) => {
+      if (!str) return '';
+      // Remove script tags and their content
+      let sanitized = str.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+      // Remove iframe tags
+      sanitized = sanitized.replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '');
+      // Remove on* event handlers from all tags
+      sanitized = sanitized.replace(/\s*on\w+\s*=\s*["'][^"']*["']/gi, '');
+      sanitized = sanitized.replace(/\s*on\w+\s*=\s*[^\s>]*/gi, '');
+      // Remove javascript: protocol from href/src
+      sanitized = sanitized.replace(/javascript:/gi, '');
+      // Remove style attributes that could contain dangerous content
+      sanitized = sanitized.replace(/\s*style\s*=\s*["'][^"']*expression[^"']*["']/gi, '');
+      return sanitized;
+    };
     const escapeAttr = (str) =>
       (str || '')
         .replace(/&/g, '&amp;')
@@ -72,7 +80,7 @@ async function generatePages() {
        <div class="question-item">
          <div class="question-number">Вопрос ${idx + 1}</div>
          ${q.problem_image ? `<img src="${imageSrc}" alt="Problem image" class="problem-image" />` : ''}
-         <div class="problem-text">${problemText}</div>
+         <div class="problem-text tex2jax_process">${problemText}</div>
          <button class="show-answer-btn"
                  data-answer="${answerAttr}"
                  onclick="showAnswer(${idx}, this.dataset.answer)">

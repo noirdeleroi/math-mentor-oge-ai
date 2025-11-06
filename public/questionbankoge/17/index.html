@@ -395,6 +395,28 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
+    /* Table styling for problem text */
+    .problem-text table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .problem-text table td {
+      padding: 0.75rem 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+    }
+
+    .problem-text table tr:first-child td {
+      background: rgba(251, 191, 36, 0.1);
+      font-weight: 600;
+      color: #fbbf24;
+    }
+
     /* Mobile Responsiveness */
     @media (max-width: 768px) {
       .header h1 {
@@ -475,9 +497,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 1</div>
          
-         <div class="problem-text">\[ \text{Один из углов равнобедренной трапеции равен } 43^\circ. \]<br>\[ \text{Найдите больший угол этой трапеции.} \]<br>\[ \text{Ответ дайте в градусах.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Основания трапеции равны \(8\) и \(17\).</p><p>Найдите больший из отрезков, на которые делит среднюю линию этой трапеции одна из её диагоналей.</p></div>
          <button class="show-answer-btn"
-                 data-answer="137"
+                 data-answer="8,5"
                  onclick="showAnswer(0, this.dataset.answer)">
            Показать ответ
          </button>
@@ -490,9 +512,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 2</div>
          
-         <div class="problem-text">\[ \text{Основания трапеции равны } 3 \text{ и } 9, \text{ а высота равна } 5. \]<br>\[ \text{Найдите среднюю линию этой трапеции.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Сторона ромба равна $14$, а один из углов этого ромба равен $150^\circ$. Найдите высоту этого ромба.</p></div>
          <button class="show-answer-btn"
-                 data-answer="6"
+                 data-answer="7"
                  onclick="showAnswer(1, this.dataset.answer)">
            Показать ответ
          </button>
@@ -505,9 +527,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 3</div>
          
-         <div class="problem-text">\[ \text{Один из углов ромба равен } 114^\circ. \]<br>\[ \text{Найдите меньший угол этого ромба.} \]<br>\[ \text{Ответ дайте в градусах.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Диагонали \(A C\) и \(B D\) параллелограмма \(A B C D\) пересекаются в точке \(O\), \(A C = 20\), \(B D = 26\), \(A B = 8\). Найдите \(D O\).</p></div>
          <button class="show-answer-btn"
-                 data-answer="66"
+                 data-answer="13"
                  onclick="showAnswer(2, this.dataset.answer)">
            Показать ответ
          </button>
@@ -519,10 +541,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 4</div>
-         
-         <div class="problem-text">\[ \text{Периметр ромба равен } 60, \text{ а один из углов равен } 30^\circ. \]<br>\[ \text{Найдите площадь этого ромба.} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1500.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>В равнобедренной трапеции основания равны \(3\) и \(5\), а один из углов между боковой стороной и основанием равен \(45^\circ\). Найдите площадь этой трапеции.</p></div>
          <button class="show-answer-btn"
-                 data-answer="112.5"
+                 data-answer="4"
                  onclick="showAnswer(3, this.dataset.answer)">
            Показать ответ
          </button>
@@ -534,10 +556,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 5</div>
-         
-         <div class="problem-text">\[ \text{Диагонали } AC \text{ и } BD \text{ параллелограмма } ABCD \text{ пересекаются в точке } O, \]<br>\[ AC = 14, \ BD = 18, \ AB = 5. \]<br>\[ \text{Найдите } DO. \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1471.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>В равнобедренной трапеции основания равны \(3\) и \(7\), а один из углов между боковой стороной и основанием равен \(45^\circ\). Найдите площадь этой трапеции.</p></div>
          <button class="show-answer-btn"
-                 data-answer="9"
+                 data-answer="10"
                  onclick="showAnswer(4, this.dataset.answer)">
            Показать ответ
          </button>
@@ -549,10 +571,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 6</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1050.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{В равнобедренной трапеции основания равны } 4 \text{ и } 8, \]<br>\[ \text{а один из углов между боковой стороной и основанием равен } 45^\circ. \]<br>\[ \text{Найдите площадь этой трапеции.} \]</div>
+         
+         <div class="problem-text tex2jax_process"><p>Площадь параллелограмма равна \(32\), а две его стороны равны \(8\) и \(16\).</p><p>Найдите его высоты. В ответе укажите большую высоту.</p></div>
          <button class="show-answer-btn"
-                 data-answer="12"
+                 data-answer="4"
                  onclick="showAnswer(5, this.dataset.answer)">
            Показать ответ
          </button>
@@ -564,10 +586,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 7</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2223.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{Найдите площадь параллелограмма,} \]  <br>\[ \text{изображённого на рисунке.} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1649.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>В равнобедренной трапеции известна высота, меньшее основание и угол при основании (см. рисунок). Найдите большее основание.</p></div>
          <button class="show-answer-btn"
-                 data-answer="120"
+                 data-answer="13"
                  onclick="showAnswer(6, this.dataset.answer)">
            Показать ответ
          </button>
@@ -580,9 +602,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 8</div>
          
-         <div class="problem-text">\[ \text{Основания трапеции равны } 14 \text{ и } 19. \]<br>\[ \text{Найдите больший из отрезков, на которые делит среднюю линию} \]<br>\[ \text{этой трапеции одна из её диагоналей.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Диагонали \( AC \) и \( BD \) параллелограмма \( ABCD \) пересекаются в точке \( O \), причем \( AC = 14 \), \( BD = 18 \), \( AB = 5 \). Найдите \( DO \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="9,5"
+                 data-answer="9"
                  onclick="showAnswer(7, this.dataset.answer)">
            Показать ответ
          </button>
@@ -595,9 +617,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 9</div>
          
-         <div class="problem-text">\[ \text{Высота равнобедренной трапеции, проведённая из вершины } C, \] <br>\[ \text{делит основание } AD \text{ на отрезки длиной } 17 \text{ и } 19. \]<br>\[ \text{Найдите длину основания } BC. \]</div>
+         <div class="problem-text tex2jax_process"><p>Один из углов прямоугольной трапеции равен \(107^\circ\).</p><p>Найдите меньший угол этой трапеции.</p><p>Ответ дайте в градусах.</p></div>
          <button class="show-answer-btn"
-                 data-answer="2"
+                 data-answer="73"
                  onclick="showAnswer(8, this.dataset.answer)">
            Показать ответ
          </button>
@@ -610,9 +632,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 10</div>
          
-         <div class="problem-text">\[<br>\text{Сумма двух углов равнобедренной трапеции равна } 94^\circ.<br>\]<br>\[<br>\text{Найдите больший угол этой трапеции. Ответ дайте в градусах.}<br>\]</div>
+         <div class="problem-text tex2jax_process"><p>Основания трапеции равны \(11\) и \(19\), а высота равна \(9\).</p><p>Найдите среднюю линию этой трапеции.</p></div>
          <button class="show-answer-btn"
-                 data-answer="133"
+                 data-answer="15"
                  onclick="showAnswer(9, this.dataset.answer)">
            Показать ответ
          </button>
@@ -624,10 +646,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 11</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//17_29_pr_pic.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">В равнобедренной трапеции высота равна $5$, большее основание равно $15$, угол при основании равен $45^\circ$. Найдите меньшее основание.</div>
+         
+         <div class="problem-text tex2jax_process"><p>Диагонали \( AC \) и \( BD \) параллелограмма \( ABCD \) пересекаются в точке \( O \), где \( AC = 10 \), \( BD = 22 \), \( AB = 9 \).</p><p>Найдите \( DO \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="5"
+                 data-answer="11"
                  onclick="showAnswer(10, this.dataset.answer)">
            Показать ответ
          </button>
@@ -640,9 +662,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 12</div>
          
-         <div class="problem-text">\[ \text{Один из углов равнобедренной трапеции равен } 29^\circ. \]<br>\[ \text{Найдите больший угол этой трапеции.} \]<br>\[ \text{Ответ дайте в градусах.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Диагональ прямоугольника образует угол \(63^\circ\) с одной из его сторон. Найдите острый угол между диагоналями этого прямоугольника.</p></div>
          <button class="show-answer-btn"
-                 data-answer="151"
+                 data-answer="54"
                  onclick="showAnswer(11, this.dataset.answer)">
            Показать ответ
          </button>
@@ -654,10 +676,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 13</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//122.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{Диагональ } AC \text{ параллелограмма } ABCD \text{ образует с его сторонами углы,} \]<br>\[ \text{равные } 25^\circ \text{ и } 30^\circ. \]<br>\[ \text{Найдите больший угол этого параллелограмма.} \]<br>\[ \text{Ответ дайте в градусах.} \]</div>
+         
+         <div class="problem-text tex2jax_process"><p>Один из углов равнобедренной трапеции равен \(43^\circ\).</p><p>Найдите больший угол этой трапеции.</p><p>Ответ дайте в градусах.</p></div>
          <button class="show-answer-btn"
-                 data-answer="125"
+                 data-answer="137"
                  onclick="showAnswer(12, this.dataset.answer)">
            Показать ответ
          </button>
@@ -670,9 +692,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 14</div>
          
-         <div class="problem-text">Основания трапеции равны \(13\) и \(23\), а высота равна \(5\). Найдите площадь этой трапеции.</div>
+         <div class="problem-text tex2jax_process"><p>Один из углов параллелограмма равен \( 61^\circ \).</p><p>Найдите больший угол этого параллелограмма.</p><p>Ответ дайте в градусах.</p></div>
          <button class="show-answer-btn"
-                 data-answer="90"
+                 data-answer="119"
                  onclick="showAnswer(13, this.dataset.answer)">
            Показать ответ
          </button>
@@ -685,9 +707,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 15</div>
          
-         <div class="problem-text">\[ \text{Один из углов ромба равен } 62^\circ. \]<br>\[ \text{Найдите больший угол этого ромба.} \]<br>\[ \text{Ответ дайте в градусах.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Высота равнобедренной трапеции, проведённая из вершины \( C \), делит основание \( AD \) на отрезки длиной \( 10 \) и \( 11 \).</p><p>Найдите длину основания \( BC \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="118"
+                 data-answer="1"
                  onclick="showAnswer(14, this.dataset.answer)">
            Показать ответ
          </button>
@@ -700,9 +722,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 16</div>
          
-         <div class="problem-text">\[ \text{Диагонали } AC \text{ и } BD \text{ параллелограмма } ABCD \text{ пересекаются в точке } O, \]<br>\[ AC = 6, \quad BD = 12, \quad AB = 4. \]<br>\[ \text{Найдите } DO. \]</div>
+         <div class="problem-text tex2jax_process"><p>Высота равнобедренной трапеции, проведённая из вершины \( C \), делит основание \( AD \) на отрезки длиной \( 8 \) и \( 15 \).</p><p>Найдите длину основания \( BC \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="6"
+                 data-answer="7"
                  onclick="showAnswer(15, this.dataset.answer)">
            Показать ответ
          </button>
@@ -714,10 +736,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 17</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//17_27_pr_pic.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Высота равнобедренной трапеции, проведённая из вершины \(C\), делит основание \(AD\) на отрезки длиной \(1\) и \(11\). Найдите длину основания \(BC\).</div>
+         
+         <div class="problem-text tex2jax_process"><p>Один из углов ромба равен \( 99^\circ \).</p><p>Найдите меньший угол этого ромба.</p><p>Ответ дайте в градусах.</p></div>
          <button class="show-answer-btn"
-                 data-answer="10"
+                 data-answer="81"
                  onclick="showAnswer(16, this.dataset.answer)">
            Показать ответ
          </button>
@@ -730,9 +752,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 18</div>
          
-         <div class="problem-text">\[ \text{Один из углов прямоугольной трапеции равен } 121^\circ. \]<br>\[ \text{Найдите меньший угол этой трапеции.} \]<br>\[ \text{Ответ дайте в градусах.} \]</div>
+         <div class="problem-text tex2jax_process"><p>В ромбе \( ABCD \) угол \( ABC \) равен \( 134^\circ \).</p><p>Найдите угол \( ACD \).</p><p>Ответ дайте в градусах.</p></div>
          <button class="show-answer-btn"
-                 data-answer="59"
+                 data-answer="23"
                  onclick="showAnswer(17, this.dataset.answer)">
            Показать ответ
          </button>
@@ -745,9 +767,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 19</div>
          
-         <div class="problem-text">\[ \text{Найдите площадь параллелограмма,} \]<br>\[ \text{изображённого на рисунке.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Сторона ромба равна \( 24 \), а один из углов этого ромба равен \( 150^\circ \).</p><p>Найдите высоту этого ромба.</p></div>
          <button class="show-answer-btn"
-                 data-answer="20"
+                 data-answer="12"
                  onclick="showAnswer(18, this.dataset.answer)">
            Показать ответ
          </button>
@@ -759,10 +781,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 20</div>
-         
-         <div class="problem-text">\[ \text{Сторона ромба равна } 46, \text{ а один из углов этого ромба равен } 150^\circ. \]<br>\[ \text{Найдите высоту этого ромба.} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//17_3_pr_pic.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Диагональ \(A C\) параллелограмма \(A B C D\) образует с его сторонами углы, равные \(25^{\circ}\) и \(30^{\circ}\). Найдите больший угол этого параллелограмма. Ответ дайте в градусах.</p></div>
          <button class="show-answer-btn"
-                 data-answer="23"
+                 data-answer="125"
                  onclick="showAnswer(19, this.dataset.answer)">
            Показать ответ
          </button>
@@ -775,9 +797,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 21</div>
          
-         <div class="problem-text">\[ \text{Периметр ромба равен } 72, \text{ а один из углов равен } 30^\circ. \]  <br>\[ \text{Найдите площадь этого ромба.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Один из углов прямоугольной трапеции равен \(102^\circ\).</p><p>Найдите меньший угол этой трапеции.</p><p>Ответ дайте в градусах.</p></div>
          <button class="show-answer-btn"
-                 data-answer="162"
+                 data-answer="78"
                  onclick="showAnswer(20, this.dataset.answer)">
            Показать ответ
          </button>
@@ -789,10 +811,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 22</div>
-         
-         <div class="problem-text">\[ \text{Основания трапеции равны } 10 \text{ и } 11. \]<br>\[ \text{Найдите больший из отрезков, на которые делит среднюю линию} \]<br>\[ \text{этой трапеции одна из её диагоналей.} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//17_4_pr_pic.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Диагональ \(BD\) параллелограмма \(ABCD\) образует с его сторонами углы, равные \(50^\circ\) и \(85^\circ\). Найдите меньший угол этого параллелограмма. Ответ дайте в градусах.</p></div>
          <button class="show-answer-btn"
-                 data-answer="5.5"
+                 data-answer="45"
                  onclick="showAnswer(21, this.dataset.answer)">
            Показать ответ
          </button>
@@ -805,9 +827,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 23</div>
          
-         <div class="problem-text">\[ \text{Один из углов равнобедренной трапеции равен } 113^\circ. \]<br>\[ \text{Найдите меньший угол этой трапеции.} \]<br>\[ \text{Ответ дайте в градусах.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Сумма двух углов равнобедренной трапеции равна \(196^\circ\).</p><p>Найдите меньший угол этой трапеции.</p><p>Ответ дайте в градусах.</p></div>
          <button class="show-answer-btn"
-                 data-answer="67"
+                 data-answer="82"
                  onclick="showAnswer(22, this.dataset.answer)">
            Показать ответ
          </button>
@@ -820,9 +842,12 @@
        <div class="question-item">
          <div class="question-number">Вопрос 24</div>
          
-         <div class="problem-text">Один из углов параллелограмма равен \(96^\circ\). Найдите меньший угол этого параллелограмма. Ответ дайте в градусах.</div>
+         <div class="problem-text tex2jax_process"><p>Впишите правильный ответ.</p>
+<p>Один из углов ромба равен \( 24^\circ \).</p>
+<p>Найдите больший угол этого ромба.</p>
+<p>Ответ дайте в градусах.</p></div>
          <button class="show-answer-btn"
-                 data-answer="84"
+                 data-answer="156"
                  onclick="showAnswer(23, this.dataset.answer)">
            Показать ответ
          </button>
@@ -834,8 +859,8 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 25</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1242.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{В равнобедренной трапеции известна высота,} \]<br>\[ \text{большее основание и угол при основании} \]<br>\[ \text{(см. рисунок). Найдите меньшее основание.} \]</div>
+         
+         <div class="problem-text tex2jax_process"><p>Площадь параллелограмма равна \(28\), а две его стороны равны \(14\) и \(7\).</p><p>Найдите его высоты. В ответе укажите большую высоту.</p></div>
          <button class="show-answer-btn"
                  data-answer="4"
                  onclick="showAnswer(24, this.dataset.answer)">
@@ -849,10 +874,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 26</div>
-         
-         <div class="problem-text">\[ \text{Основания трапеции равны } 1 \text{ и } 11. \]<br>\[ \text{Найдите больший из отрезков, на которые делит среднюю линию} \]<br>\[ \text{этой трапеции одна из её диагоналей.} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//17_27_pr_pic.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Высота равнобедренной трапеции, проведённая из вершины \(C\), делит основание \(AD\) на отрезки длиной \(1\) и \(11\). Найдите длину основания \(BC\).</p></div>
          <button class="show-answer-btn"
-                 data-answer="5.5"
+                 data-answer="10"
                  onclick="showAnswer(25, this.dataset.answer)">
            Показать ответ
          </button>
@@ -865,9 +890,11 @@
        <div class="question-item">
          <div class="question-number">Вопрос 27</div>
          
-         <div class="problem-text">\[ \text{Основания трапеции равны } 8 \text{ и } 17. \]<br>\[ \text{Найдите больший из отрезков, на которые делит среднюю линию} \]<br>\[ \text{этой трапеции одна из её диагоналей.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Один из углов прямоугольной трапеции равен \(72^\circ\).</p>
+<p>Найдите больший угол этой трапеции.</p>
+<p>Ответ дайте в градусах.</p></div>
          <button class="show-answer-btn"
-                 data-answer="8,5"
+                 data-answer="108"
                  onclick="showAnswer(26, this.dataset.answer)">
            Показать ответ
          </button>
@@ -880,9 +907,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 28</div>
          
-         <div class="problem-text">\[ \text{Основания трапеции равны } 1 \text{ и } 5, \text{ а высота равна } 3. \]<br>\[ \text{Найдите среднюю линию этой трапеции.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Один из углов равнобедренной трапеции равен \(131^\circ\).</p><p>Найдите меньший угол этой трапеции.</p><p>Ответ дайте в градусах.</p></div>
          <button class="show-answer-btn"
-                 data-answer="3"
+                 data-answer="49"
                  onclick="showAnswer(27, this.dataset.answer)">
            Показать ответ
          </button>
@@ -894,10 +921,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 29</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2028.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{Найдите площадь параллелограмма,} \]<br>\[ \text{изображённого на рисунке.} \]</div>
+         
+         <div class="problem-text tex2jax_process"><p>Диагонали \( AC \) и \( BD \) параллелограмма \( ABCD \) пересекаются в точке \( O \), причем \( AC = 26 \), \( BD = 30 \), \( AB = 7 \). Найдите \( DO \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="44"
+                 data-answer="15"
                  onclick="showAnswer(28, this.dataset.answer)">
            Показать ответ
          </button>
@@ -909,10 +936,12 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 30</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//860.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{Диагональ } AC \text{ параллелограмма } ABCD \text{ образует с его сторонами углы,} \]<br>\[ \text{равные } 45^\circ \text{ и } 40^\circ. \]<br>\[ \text{Найдите больший угол этого параллелограмма.} \]<br>\[ \text{Ответ дайте в градусах.} \]</div>
+         
+         <div class="problem-text tex2jax_process"><p>Один из углов прямоугольной трапеции равен \(121^\circ\).</p>
+<p>Найдите меньший угол этой трапеции.</p>
+<p>Ответ дайте в градусах.</p></div>
          <button class="show-answer-btn"
-                 data-answer="95"
+                 data-answer="59"
                  onclick="showAnswer(29, this.dataset.answer)">
            Показать ответ
          </button>
@@ -931,7 +960,7 @@
       <h2>Хотите посмотреть решение?</h2>
       <p>Создайте аккаунт или войдите, чтобы получить доступ к подробным решениям всех задач.</p>
       <div class="modal-buttons">
-        <a href="/auth" class="modal-button primary">Войти / Создать аккаунт</a>
+        <a href="/register" class="modal-button primary">Войти / Создать аккаунт</a>
         <button class="modal-button secondary" onclick="closeSolutionModal()">Закрыть</button>
       </div>
     </div>

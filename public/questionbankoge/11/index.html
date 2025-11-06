@@ -395,6 +395,28 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
+    /* Table styling for problem text */
+    .problem-text table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .problem-text table td {
+      padding: 0.75rem 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+    }
+
+    .problem-text table tr:first-child td {
+      background: rgba(251, 191, 36, 0.1);
+      font-weight: 600;
+      color: #fbbf24;
+    }
+
     /* Mobile Responsiveness */
     @media (max-width: 768px) {
       .header h1 {
@@ -474,10 +496,20 @@
       
        <div class="question-item">
          <div class="question-number">Вопрос 1</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//126.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Установите соответствие и впишите ответ. Установите соответствие между графиками функций и формулами, которые их задают.<br><br>ГРАФИКИ A) Б) 2) \( y=-2 x+1 \) B) 3) \( y=2 x+1 \)<br><br>ФОРМУЛЫ 1) \( y=-2 x-1 \)<br><br>В таблице под каждой буквой укажите соответствующий номер. <br>\[\]<br>A  Б  B <br>\[\]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2018.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Установите соответствие и впишите ответ. Установите соответствие между графиками функций и формулами, которые их задают.</p>
+<p>ГРАФИКИ A) Б) B)</p>
+<p>ФОРМУЛЫ 1) \( y = -2 \) \qquad\text{ 2) } \( y = x - 2 \) \qquad\text{ 3) } \( y = -2x \)</p>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+<table>
+    <tr>
+        <td>A</td>
+        <td>Б</td>
+        <td>B</td>
+    </tr>
+</table></div>
          <button class="show-answer-btn"
-                 data-answer="231"
+                 data-answer="\begin{tabular}{|ccc|} \hline A &amp; Б &amp; B \\ \hline 1 &amp; 2 &amp; \\ \hline \end{tabular}"
                  onclick="showAnswer(0, this.dataset.answer)">
            Показать ответ
          </button>
@@ -489,10 +521,32 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 2</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//589.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{На рисунках изображены графики функций вида } y = kx + b. \]<br>\[ \text{Установите соответствие между графиками функций} \]<br>\[ \text{и знаками коэффициентов } k \text{ и } b. \]<br>\[ \text{ГРАФИКИ} \]<br>\[ \text{А) \quad Б) \quad В)} \]<br>\[ \text{КОЭФФИЦИЕНТЫ} \]<br>\[ 1) \, k &lt; 0, \, b &lt; 0 \quad 2) \, k &gt; 0, \, b &lt; 0 \quad 3) \, k &lt; 0, \, b &gt; 0 \]<br>\[ \text{В таблице под каждой буквой укажите соответствующий номер.} \]<br>\[ \begin{array}{ccc}<br>\text{А} &amp; \text{Б} &amp; \text{В} \\<br>1 &amp; 2 &amp; 3<br>\end{array} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2191.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Установите соответствие и впишите ответ. На рисунках изображены графики функций вида \( y = kx + b \).</p>
+<p>Установите соответствие между графиками функций и знаками коэффициентов \( k \) и \( b \).</p>
+<p>ГРАФИКИ</p>
+<p>А) \(\checkmark \quad\) Б) \(\checkmark \quad\) В) \(\checkmark \)</p>
+<p>КОЭФФИЦИЕНТЫ</p>
+<p>1) \( k < 0, \, b < 0 \quad \) 2) \( k > 0, \, b > 0 \quad \) 3) \( k > 0, \, b < 0 \)</p>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+<table>
+    <thead>
+        <tr>
+            <td>А</td>
+            <td>Б</td>
+            <td>В</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </tbody>
+</table></div>
          <button class="show-answer-btn"
-                 data-answer="312"
+                 data-answer="231"
                  onclick="showAnswer(1, this.dataset.answer)">
            Показать ответ
          </button>
@@ -504,10 +558,22 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 3</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1009.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{На рисунках изображены графики функций вида } y = ax^2 + bx + c. \]<br>\[ \text{Установите соответствие между графиками функций} \]<br>\[ \text{и знаками коэффициентов } a \text{ и } c. \]<br>\[ \text{ГРАФИКИ} \]<br>\[ \text{А) \quad Б) \quad В)} \]<br>\[ \text{КОЭФФИЦИЕНТЫ} \]<br>\[ 1) \, a &lt; 0, \, c &gt; 0 \quad 2) \, a &gt; 0, \, c &gt; 0 \quad 3) \, a &gt; 0, \, c &lt; 0 \]<br>\[ \text{В таблице под каждой буквой укажите соответствующий номер.} \]<br>\[ \text{А \quad Б \quad В} \]<br>\[ 1 \quad 2 \quad 3 \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//690.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Установите соответствие и впишите ответ. На рисунках изображены графики функций вида \( y=k x+b \). Установите соответствие между знаками коэффициентов \( k \) и \( b \) и графиками функций.</p>
+<p>КОЭФФИЦИЕНТЫ: A) \( k<0, b<0 \), Б) \( k<0, b>0 \), B) \( k>0, b>0 \).</p>
+<p>ГРАФИКИ: 1), 2), 3).</p>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+<p>
+$
+\begin{array}{ccccc}
+  \text{А} & | & \text{Б} & | & \text{В}  \\
+  - & - & - & - & - \\
+    & | &   & | &   
+\end{array}
+$
+</p></div>
          <button class="show-answer-btn"
-                 data-answer="321"
+                 data-answer="123"
                  onclick="showAnswer(2, this.dataset.answer)">
            Показать ответ
          </button>
@@ -519,10 +585,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 4</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//883.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Установите соответствие и впишите ответ. Установите соответствие между графиками функций и формулами, которые их задают.<br>\[\]<br>ГРАФИКИ A) Б) B)<br>\[\]<br>ФОРМУЛЫ 1) \( y=-3 x+3 \) 2) \( y=3 x \) 3) \( y=3 x-3 \)<br>\[\]<br>В таблице под каждой буквой укажите соответствующий номер.<br>$<br>\begin{array}{ccccc}<br>  \text{А} &amp; | &amp; \text{Б} &amp; | &amp; \text{В}  \\<br>  - &amp; - &amp; - &amp; - &amp; - \\<br>    &amp; | &amp;   &amp; | &amp;   <br>\end{array}<br>$</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//24.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На рисунках изображены графики функций вида \( y = ax^2 + bx + c \).</p><p>Установите соответствие между графиками функций и знаками коэффициентов \( a \) и \( c \).</p><p>ГРАФИКИ</p><p>А) \quad Б) \quad В)</p><p>КОЭФФИЦИЕНТЫ</p><p>1) \( a < 0, \, c > 0 \) \quad 2) \( a > 0, \, c < 0 \) \quad 3) \( a > 0, \, c > 0 \)</p><p>В таблице под каждой буквой укажите соответствующий номер.</p><table><tr><td>А</td><td>Б</td><td>В</td></tr><tr><td>1</td><td>2</td><td>3</td></tr></table></div>
          <button class="show-answer-btn"
-                 data-answer="213"
+                 data-answer="321"
                  onclick="showAnswer(3, this.dataset.answer)">
            Показать ответ
          </button>
@@ -534,10 +600,20 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 5</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//973.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Установите соответствие и впишите ответ.<br>Установите соответствие между функциями и их графиками.<br>ФУНКЦИИ<br>А) \( y=-2 x^{2}-6 x+1 \) Б) \( y=\frac{1}{10 x} \) B) \( y=\frac{4}{5} x+2 \)<br>\[\]<br>ГРАФИКИ<br>1)<br>2)<br>3)<br>\[\]<br>В таблице под каждой буквой укажите соответствующий номер.<br>$<br>\begin{array}{ccccc}<br>  \text{А} &amp; | &amp; \text{Б} &amp; | &amp; \text{В}  \\<br>  - &amp; - &amp; - &amp; - &amp; - \\<br>    &amp; | &amp;   &amp; | &amp;   <br>\end{array}<br>$</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1834.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Установите соответствие и впишите ответ. Установите соответствие между графиками функций и формулами, которые их задают.</p>
+<p>ГРАФИКИ: \(\text{A)}\), \(\text{Б)}\), \(\text{B)}\)</p>
+<p>ФОРМУЛЫ: \(1) \; y = 2x\), \(2) \; y = x + 2\), \(3) \; y = 2\)</p>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+<table>
+    <tr>
+        <td>\(\text{A}\)</td>
+        <td>\(\text{Б}\)</td>
+        <td>\(\text{B}\)</td>
+    </tr>
+</table></div>
          <button class="show-answer-btn"
-                 data-answer="132"
+                 data-answer="A-1, Б-2, В-3"
                  onclick="showAnswer(4, this.dataset.answer)">
            Показать ответ
          </button>
@@ -549,10 +625,20 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 6</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1793.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{На рисунках изображены графики функций вида } y = ax^2 + bx + c. \]<br>\[ \text{Установите соответствие между графиками функций и} \]<br>\[ \text{знаками коэффициентов } a \text{ и } c. \]<br>\[ \text{ГРАФИКИ} \]<br>\[ \text{А) Б) В)} \]<br>\[ \text{КОЭФФИЦИЕНТЫ} \]<br>\[ \text{1) } a&lt;0, c&gt;0 \quad \text{2) } a&gt;0, c&lt;0 \quad \text{3) } a&gt;0, c&gt;0 \]<br>\[ \text{В таблице под каждой буквой укажите соответствующий номер.} \]<br>\[ \text{А Б В} \]<br>\[ \text{1 2 3} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//937.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Установите соответствие и впишите ответ. Установите соответствие между функциями и их графиками.</p>
+<p>ФУНКЦИИ: A) \( y=\frac{1}{2} x+3 \), Б) \( y=-\frac{1}{2} x+3 \), В) \( y=\frac{1}{2} x-3 \).</p>
+<p>ГРАФИКИ: 1), 2), 3).</p>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+$
+\begin{array}{ccccc}
+  \text{А} & | & \text{Б} & | & \text{В}  \\
+  - & - & - & - & - \\
+    & | &   & | &   
+\end{array}
+$</div>
          <button class="show-answer-btn"
-                 data-answer="A - 1, Б - 2, B - 3."
+                 data-answer="132"
                  onclick="showAnswer(5, this.dataset.answer)">
            Показать ответ
          </button>
@@ -564,10 +650,16 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 7</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2103.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{Установите соответствие и впишите ответ.} \]<br>\[ \text{Установите соответствие между графиками функций и формулами,} \]<br>\[ \text{которые их задают.} \]<br>\[ \text{ГРАФИКИ A)} \]<br>\[ \text{ФОРМУЛЫ 1)} \ y = -\frac{1}{2} x \]<br>\[ \text{В таблице под каждой буквой укажите соответствующий номер.} \]<br>\[ \text{Б) 2)} \ y = -x^{2} - 2 \]<br>\[ \text{B) 3)} \ y = \sqrt{x} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//419.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Установите соответствие и впишите ответ.</p>
+<p>Установите соответствие между функциями и их графиками.</p>
+<p>ФУНКЦИИ</p>
+<p>А) \( y=-3 x^{2}+9 x-4 \)</p>
+<p>Б) \( y=-\frac{6}{x} \)</p>
+<p>В) \( y=\frac{2}{3} x-5 \)</p>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p></div>
          <button class="show-answer-btn"
-                 data-answer="A) 3, Б) 2, В) 1"
+                 data-answer="321"
                  onclick="showAnswer(6, this.dataset.answer)">
            Показать ответ
          </button>
@@ -579,10 +671,18 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 8</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//416.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{На рисунках изображены графики функций вида } y = kx + b. \]<br>\[ \text{Установите соответствие между знаками коэффициентов } k \text{ и } b \text{ и графиками функций.} \]<br>\[ \text{КОЭФФИЦИЕНТЫ} \]<br>\[ \text{А) } k &lt; 0, b &lt; 0 \]<br>\[ \text{Б) } k &lt; 0, b &gt; 0 \]<br>\[ \text{В) } k &gt; 0, b &lt; 0 \]<br>\[ \text{ГРАФИКИ} \]<br>\[ \text{1) } \text{2) } \text{3)} \]<br>\[ \text{В таблице под каждой буквой укажите} \]<br>\[ \text{соответствующий номер.} \]<br>\[ \begin{array}{ccc}<br>\text{А} &amp; \text{Б} &amp; \text{В} \\<br>1 &amp; 1 &amp; 1 \\<br>2 &amp; 2 &amp; 2 \\<br>3 &amp; 3 &amp; 3<br>\end{array} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2057.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Установите соответствие и впишите ответ.</p>
+<p>На рисунках изображены графики функций вида \( y = ax^2 + bx + c \).</p>
+<p>Установите соответствие между знаками коэффициентов \( a \) и \( c \) и графиками функций.</p>
+<p>КОЭФФИЦИЕНТЫ</p>
+<p>А) \( a > 0, c < 0 \) \quad Б) \( a < 0, c > 0 \) \quad В) \( a > 0, c > 0 \)</p>
+<p>ГРАФИКИ</p>
+<p>1) \quad 2) \quad 3)</p>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+<p>А \quad Б \quad В</p></div>
          <button class="show-answer-btn"
-                 data-answer="231"
+                 data-answer="A - 2, Б - 1, В - 3"
                  onclick="showAnswer(7, this.dataset.answer)">
            Показать ответ
          </button>
@@ -594,10 +694,23 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 9</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//512.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Установите соответствие и впишите ответ. \[\] Установите соответствие между функциями и их графиками. \[\] ФУНКЦИИ \[\] A) \( y=3 x \) \[\] Б) \( y=-3 x \) \[\] B) \( y=\frac{1}{3} x \) \[\] \[\]<br> В таблице под каждой буквой укажите соответствующий номер. <br><br>\[\]<br> A  Б  B </div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//692.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Установите соответствие между функциями и их графиками.</p>
+<p>ФУНКЦИИ</p>
+<p>А) \( y = -3x \) \quad Б) \( y = -\frac{1}{3}x \) \quad В) \( y = \frac{1}{3}x \)</p>
+<p>ГРАФИКИ</p>
+<p>1) \quad 2) \quad 3)</p>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+<p>
+  \begin{array}{ccc}
+    \text{А} & \text{Б} & \text{В} \\
+    1 & 1 & 1 \\
+    2 & 2 & 2 \\
+    3 & 3 & 3
+  \end{array}
+</p></div>
          <button class="show-answer-btn"
-                 data-answer="231"
+                 data-answer="132"
                  onclick="showAnswer(8, this.dataset.answer)">
            Показать ответ
          </button>
@@ -609,8 +722,15 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 10</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//790.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Установите соответствие и впишите ответ. Установите соответствие между графиками функций и формулами, которые их задают.<br><br>ГРАФИКИ A) Б) В)<br><br>ФОРМУЛЫ 1) \( y=\frac{6}{x} \) 2) \( y=-2 x+4 \) B) 3) \( y=-2 x^{2} \)<br><br>В таблице под каждой буквой укажите соответствующий номер. <br>$<br>\begin{array}{ccccc}<br>  \text{А} &amp; | &amp; \text{Б} &amp; | &amp; \text{В}  \\<br>  - &amp; - &amp; - &amp; - &amp; - \\<br>    &amp; | &amp;   &amp; | &amp;   <br>\end{array}<br>$</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1439.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Установите соответствие и впишите ответ. На рисунках изображены графики функций вида \( y = ax^2 + bx + c \). Установите соответствие между знаками коэффициентов \( a \) и \( c \) и графиками функций.</p>
+<p>КОЭФФИЦИЕНТЫ</p>
+<p>А) \( a > 0, c > 0 \) \quad Б) \( a < 0, c > 0 \) \quad В) \( a > 0, c < 0 \)</p>
+<p>ГРАФИКИ</p>
+<p>1) \quad 2) \quad 3)</p>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+<p>А \quad Б \quad В</p>
+<p>\[ \boxed{\begin{array}{ccc} \text{?} & \text{?} & \text{?} \end{array}} \]</p></div>
          <button class="show-answer-btn"
                  data-answer="132"
                  onclick="showAnswer(9, this.dataset.answer)">
@@ -624,10 +744,25 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 11</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2054.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{На рисунках изображены графики функций вида } y = ax^2 + bx + c. \]<br>\[ \text{Установите соответствие между графиками функций} \]<br>\[ \text{и знаками коэффициентов } a \text{ и } c. \]<br>\[ \text{ГРАФИКИ} \]<br>\[ \text{А) Б) В)} \]<br>\[ \text{КОЭФФИЦИЕНТЫ} \]<br>\[ 1) \, a &gt; 0, \, c &lt; 0 \quad 2) \, a &gt; 0, \, c &gt; 0 \quad 3) \, a &lt; 0, \, c &gt; 0 \]<br>\[ \text{В таблице под каждой буквой укажите соответствующий номер.} \]<br>\[ \text{А Б В} \]<br>\[ 1 \quad 1 \quad 1 \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1651.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Установите соответствие и впишите ответ. На рисунках изображены графики функций вида \(y=ax^2+bx+c\).</p>
+<p>Установите соответствие между знаками коэффициентов \(a\) и \(c\) и графиками функций.</p>
+<p>КОЭФФИЦИЕНТЫ</p>
+<p>A) \(a>0, c<0\)</p>
+<p>Б) \(a>0, c>0\)</p>
+<p>В) \(a<0, c>0\)</p>
+<p>ГРАФИКИ</p>
+<p>1)</p>
+<p>2)</p>
+<p>3)</p>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+<p>
+\begin{array}{ccc}
+\text{A} & \text{Б} & \text{B} \\
+\end{array}
+</p></div>
          <button class="show-answer-btn"
-                 data-answer="A:1, Б:2, B:3"
+                 data-answer="А-1, Б-2, В-3"
                  onclick="showAnswer(10, this.dataset.answer)">
            Показать ответ
          </button>
@@ -639,10 +774,27 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 12</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1834.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{Установите соответствие и впишите ответ.} \]<br>\[ \text{Установите соответствие между графиками функций и формулами,} \]<br>\[ \text{которые их задают.} \]<br><br>\[ \text{ГРАФИКИ} \]<br>\[ \text{A)} \quad \text{Б)} \quad 2) \; y = x + 2 \quad \text{B)} \quad 3) \; y = 2 \]<br><br>\[ \text{ФОРМУЛЫ} \]<br>\[ 1) \; y = 2x \]<br><br>\[ \text{В таблице под каждой буквой укажите соответствующий номер.} \]<br>\[<br>\begin{tabular}{|ccc|}<br>\hline<br>\text{A} &amp; \text{Б} &amp; \text{B} \\<br>\hline<br>&amp; \( \checkmark \) &amp; \( \vee \) \\<br>\hline<br>\end{tabular}<br>\]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1040.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Установите соответствие и впишите ответ.</p>
+<p>Установите соответствие между функциями и их графиками.</p>
+<p>ФУНКЦИИ</p>
+<p>А) \( y=-\frac{1}{5} x-5 \)</p>
+<p>Б) \( y=-x^{2}+7 x-7 \)</p>
+<p>В) \( y=\frac{9}{x} \)</p>
+<p>ГРАФИКИ</p>
+<p>1)</p>
+<p>2)</p>
+<p>3)</p>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+$
+\begin{array}{ccccc}
+  \text{А} & | & \text{Б} & | & \text{В}  \\
+  - & - & - & - & - \\
+    & | &   & | &   
+\end{array}
+$</div>
          <button class="show-answer-btn"
-                 data-answer="A-1, Б-2, В-3"
+                 data-answer="312"
                  onclick="showAnswer(11, this.dataset.answer)">
            Показать ответ
          </button>
@@ -654,10 +806,20 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 13</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1327.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{Установите соответствие и впишите ответ. На рисунках изображены графики функций вида } y = kx + b. \]<br>\[ \text{Установите соответствие между знаками коэффициентов } k \text{ и } b \text{ и графиками функций.} \]<br>\[ \text{КОЭФФИЦИЕНТЫ} \]<br>\[ \text{A) } k &lt; 0, b &lt; 0 \]<br>\[ \text{ГРАФИКИ} \]<br>\[ 1) \]<br>\[ \text{Б) } k &gt; 0, b &lt; 0 \]<br>\[ 2) \]<br>\[ \text{B) } k &gt; 0, b &gt; 0 \]<br>\[ 3) \]<br>\[ \text{В таблице под каждой буквой укажите соответствующий номер.} \]<br>\begin{tabular}{|ccc|}<br>\hline<br>\[ \text{A} \] &amp; \[ \text{Б} \] &amp; \[ \text{B} \] \\<br>\hline<br>\( \checkmark \) &amp; \( \checkmark \) &amp; \( \checkmark \) \\<br>\hline<br>\end{tabular}</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//840.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Установите соответствие и впишите ответ. Установите соответствие между графиками функций и формулами, которые их задают.</p>
+<p>ГРАФИКИ A) Б) B)</p>
+<p>ФОРМУЛЫ 1) \( y=\frac{1}{2} x \) 2) \( y=2-x^{2} \) 3) \( y=\sqrt{x} \)</p>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+$
+\begin{array}{ccccc}
+  \text{А} & | & \text{Б} & | & \text{В}  \\
+  - & - & - & - & - \\
+    & | &   & | &   
+\end{array}
+$</div>
          <button class="show-answer-btn"
-                 data-answer="213"
+                 data-answer="132"
                  onclick="showAnswer(12, this.dataset.answer)">
            Показать ответ
          </button>
@@ -669,10 +831,27 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 14</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1439.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{Установите соответствие и впишите ответ.} \]<br>\[ \text{На рисунках изображены графики функций вида } y = ax^2 + bx + c. \]<br>\[ \text{Установите соответствие между знаками коэффициентов } a \text{ и } c \text{ и графиками функций.} \]<br>\[ \text{КОЭФФИЦИЕНТЫ} \]<br>\[ \text{А) } a &gt; 0, c &gt; 0 \quad \text{Б) } a &lt; 0, c &gt; 0 \quad \text{В) } a &gt; 0, c &lt; 0 \]<br>\[ \text{ГРАФИКИ} \]<br>\[ \text{1) } \quad \text{2) } \quad \text{3)} \]<br>\[ \text{В таблице под каждой буквой укажите соответствующий номер.} \]<br>\[ \text{А} \quad \text{Б} \quad \text{В} \]<br>\[ \boxed{\begin{array}{ccc}<br>\text{?} &amp; \text{?} &amp; \text{?}<br>\end{array}} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1168.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Установите соответствие и впишите ответ.</p>
+<p>Установите соответствие между функциями и их графиками.</p>
+<p>ФУНКЦИИ</p>
+<p>A) \( y=4 x^{2}+4 x-3 \)</p>
+<p>Б) \( y=\frac{1}{2} x+6 \)</p>
+<p>B) \( y=\frac{1}{2 x} \)</p>
+<p>ГРАФИКИ</p>
+<p>1)</p>
+<p>2)</p>
+<p>3)</p>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+$
+\begin{array}{ccccc}
+  \text{А} & | & \text{Б} & | & \text{В}  \\
+  - & - & - & - & - \\
+    & | &   & | &   
+\end{array}
+$</div>
          <button class="show-answer-btn"
-                 data-answer="132"
+                 data-answer="312"
                  onclick="showAnswer(13, this.dataset.answer)">
            Показать ответ
          </button>
@@ -684,10 +863,20 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 15</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2057.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{Установите соответствие и впишите ответ.} \]<br>\[ \text{На рисунках изображены графики функций вида } y = ax^2 + bx + c. \]<br>\[ \text{Установите соответствие между знаками коэффициентов } a \text{ и } c \]<br>\[ \text{и графиками функций.} \]<br>\[ \text{КОЭФФИЦИЕНТЫ} \]<br>\[ \text{А) } a &gt; 0, c &lt; 0 \quad \text{Б) } a &lt; 0, c &gt; 0 \quad \text{В) } a &gt; 0, c &gt; 0 \]<br>\[ \text{ГРАФИКИ} \]<br>\[ \text{1) } \quad \text{2) } \quad \text{3)} \]<br>\[ \text{В таблице под каждой буквой укажите соответствующий номер.} \]<br>\[ \text{А} \quad \text{Б} \quad \text{В} \]<br>\[ \text{1} \quad \text{2} \quad \text{3} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1630.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Установите соответствие между функциями и их графиками.</p>
+<p>ФУНКЦИИ</p>
+<p>А) \( y = 2x + 6 \quad \) Б) \( y = -2x - 6 \quad \) В) \( y = -2x + 6 \)</p>
+<p>ГРАФИКИ</p>
+<p>1) \(\quad\) 2) \(\quad\) 3)</p>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+<p>
+\begin{array}{ccc}
+\text{А} & \text{Б} & \text{В} 
+\end{array}
+</p></div>
          <button class="show-answer-btn"
-                 data-answer="A - 2, Б - 1, В - 3"
+                 data-answer="\begin{tabular}{|ccc|} \hline A &amp; Б &amp; B \\ \hline 1 &amp; 3 &amp; 2 \\ \hline \end{tabular}"
                  onclick="showAnswer(14, this.dataset.answer)">
            Показать ответ
          </button>
@@ -699,10 +888,36 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 16</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1967.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{Установите соответствие между функциями и их графиками.} \]<br>\[ \text{ФУНКЦИИ} \]<br>\[ \text{А) } y = \frac{1}{2}x - 2 \]<br>\[ \text{Б) } y = -\frac{1}{2}x - 2 \]<br>\[ \text{В) } y = -\frac{1}{2}x + 2 \]<br>\[ \text{ГРАФИКИ} \]<br>\[ \text{1) [график 1]} \]<br>\[ \text{2) [график 2]} \]<br>\[ \text{3) [график 3]} \]<br>\[ \text{В таблице под каждой буквой укажите соответствующий номер.} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1385.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Установите соответствие и впишите ответ.</p>
+<p>Установите соответствие между функциями и их графиками.</p>
+<p>ФУНКЦИИ</p>
+<p>А) \( y=\frac{1}{2} x-3 \)</p>
+<p>Б) \( y=-\frac{1}{2} x-3 \)</p>
+<p>В) \( y=-\frac{1}{2} x+3 \)</p>
+<p>ГРАФИКИ</p>
+<p>1)</p>
+<p>2)</p>
+<p>3)</p>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+<table>
+  <thead>
+    <tr>
+      <td>A</td>
+      <td>Б</td>
+      <td>B</td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td></td>
+      <td>\( \checkmark \)</td>
+      <td>\( \vee \)</td>
+    </tr>
+  </tbody>
+</table></div>
          <button class="show-answer-btn"
-                 data-answer="A-2, Б-1, B-3"
+                 data-answer="312"
                  onclick="showAnswer(15, this.dataset.answer)">
            Показать ответ
          </button>
@@ -714,8 +929,20 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 17</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//306.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{Установите соответствие и впишите ответ. На рисунках изображены графики функций вида } y=kx+b. \]<br>\[ \text{Установите соответствие между знаками коэффициентов } k \text{ и } b \text{ и графиками функций.} \]<br>\[ \text{КОЭФФИЦИЕНТЫ} \]<br>\[ \text{А) } k&gt;0, b&gt;0 \quad \text{Б) } k&lt;0, b&gt;0 \quad \text{В) } k&lt;0, b&lt;0 \]<br>\[ \text{ГРАФИКИ} \]<br>\[ \text{1) \quad 2) \quad 3)} \]<br>\[ \text{В таблице под каждой буквой укажите соответствующий номер.} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//589.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На рисунках изображены графики функций вида \( y = kx + b \).</p>
+<p>Установите соответствие между графиками функций и знаками коэффициентов \( k \) и \( b \).</p>
+<p>ГРАФИКИ</p>
+<p>А) \quad Б) \quad В)</p>
+<p>КОЭФФИЦИЕНТЫ</p>
+<p>1) \( k < 0, \, b < 0 \quad 2) \, k > 0, \, b < 0 \quad 3) \, k < 0, \, b > 0 \)</p>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+<p>
+\begin{array}{ccc}
+\text{А} & \text{Б} & \text{В} \\
+1 & 2 & 3
+\end{array}
+</p></div>
          <button class="show-answer-btn"
                  data-answer="312"
                  onclick="showAnswer(16, this.dataset.answer)">
@@ -729,10 +956,29 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 18</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//818.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{Установите соответствие и впишите ответ.} \]<br>\[ \text{На рисунках изображены графики функций вида } y = ax^2 + bx + c. \]<br>\[ \text{Установите соответствие между графиками функций} \]<br>\[ \text{и знаками коэффициентов } a \text{ и } c. \]<br>\[ \text{ГРАФИКИ} \]<br>\[ \text{А) Б) В)} \]<br>\[ \text{КОЭФФИЦИЕНТЫ} \]<br>\[ 1) \text{ } a&lt;0, c&gt;0 \]<br>\[ 2) \text{ } a&gt;0, c&gt;0 \]<br>\[ 3) \text{ } a&gt;0, c&lt;0 \]<br>\[ \text{В таблице под каждой буквой укажите} \]<br>\[ \text{соответствующий номер.} \]<br>\[ \text{А Б В} \]<br>\[ 1 \ 2 \ 3 \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1512.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Установите соответствие и впишите ответ. Установите соответствие между графиками функций и формулами, которые их задают.</p>
+<p>ГРАФИКИ</p>
+<p>A) \(\checkmark\) \quad Б) \(\checkmark\) \quad B) \(\checkmark\)</p>
+<p>ФОРМУЛЫ</p>
+<p>1) \(y=\frac{2}{x}\) \quad 2) \(y=2x\) \quad 3) \(y=x^{2}\)</p>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+<table>
+<tbody>
+<tr>
+<td>A</td>
+<td>Б</td>
+<td>B</td>
+</tr>
+<tr>
+<td>\(\checkmark\)</td>
+<td>\(\checkmark\)</td>
+<td>\(\checkmark\)</td>
+</tr>
+</tbody>
+</table></div>
          <button class="show-answer-btn"
-                 data-answer="312"
+                 data-answer="321"
                  onclick="showAnswer(17, this.dataset.answer)">
            Показать ответ
          </button>
@@ -744,10 +990,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 19</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//11_4_pr_pic.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">На рисунках изображены графики функций вида \( y = kx + b \). Установите соответствие между графиками функций и знаками коэффициентов \( k \) и \( b \):<br>\[<br>\]<br>1) \( k&lt;0, b&lt;0 \)  <br>2) \( k&gt;0, b&gt;0 \)  <br>3) \( k&lt;0, b&gt;0 \)  <br>\[<br>\]<br>В таблице под каждой буквой укажите соответствующий номер.</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//11_7_pr_pic.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На рисунках изображены графики функций вида \(y = a x^2 + b x + c\). Установите соответствие между знаками коэффициентов \(a\) и \(c\) и графиками функций.</p><p>КОЭФФИЦИЕНТЫ    A) \(a>0,\;c>0\)   Б) \(a<0,\;c>0\)   В) \(a>0,\;c<0\)     В таблице под каждой буквой укажите соответствующий номер. Ответ:  AБВ</p></div>
          <button class="show-answer-btn"
-                 data-answer="312"
+                 data-answer="321"
                  onclick="showAnswer(18, this.dataset.answer)">
            Показать ответ
          </button>
@@ -759,10 +1005,23 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 20</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//151.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{На рисунках изображены графики функций вида } y = kx + b. \text{ Установите} \]<br>\[ \text{соответствие между знаками коэффициентов } k \text{ и } b \text{ и графиками функций.} \]<br>\[ \text{КОЭФФИЦИЕНТЫ} \]<br>\[ \text{А) } k &gt; 0, b &lt; 0 \quad \text{Б) } k &gt; 0, b &gt; 0 \quad \text{В) } k &lt; 0, b &lt; 0 \]<br>\[ \text{ГРАФИКИ} \]<br>\[ 1) \quad 2) \quad 3) \]<br>\[ \text{В таблице под каждой буквой укажите соответствующий номер.} \]<br>\[ \begin{array}{|c|c|c|} \hline \text{А} &amp; \text{Б} &amp; \text{В} \\ \hline 1 &amp; 1 &amp; 1 \\ \hline \end{array} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1956.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Установите соответствие и впишите ответ. На рисунках изображены графики функций вида \( y = a x^{2} + b x + c \).</p>
+<p>Установите соответствие между графиками функций и знаками коэффициентов \( a \) и \( c \).</p>
+<p>ГРАФИКИ</p>
+<p>A) \(\checkmark\) \quad Б) \(\checkmark\) \quad B) \(\checkmark\)</p>
+<p>КОЭФФИЦИЕНТЫ</p>
+<p>1) \( a > 0, \, c < 0 \)</p>
+<p>2) \( a > 0, \, c > 0 \)</p>
+<p>3) \( a < 0, \, c > 0 \)</p>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+<p>
+\begin{array}{ccc}
+\text{A} & \text{Б} & \text{B} 
+\end{array}
+</p></div>
          <button class="show-answer-btn"
-                 data-answer="231"
+                 data-answer="А-1, Б-3, В-2"
                  onclick="showAnswer(19, this.dataset.answer)">
            Показать ответ
          </button>
@@ -774,10 +1033,16 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 21</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2090.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{Установите соответствие и впишите ответ.} \]<br>\[ \text{Установите соответствие между графиками функций и формулами,} \]<br>\[ \text{которые их задают.} \]<br>\[ \text{ГРАФИКИ} \]<br>\[ \text{A)} \]<br>\[ \text{ФОРМУЛЫ} \]<br>\[ 1) \ y=\sqrt{x} \]<br>\[ 2) \ y=2 x-4 \]<br>\[ \text{Б)} \]<br>\[ y=2 x-4 \]<br>\[ \text{В таблице под каждой буквой укажите соответствующий номер.} \]<br>\begin{tabular}{|ccc|}<br>\hline <br>\text{A} &amp; \text{Б} &amp; \text{B} \\<br>\hline <br>\( \checkmark \) &amp; \( \checkmark \) &amp; \( \checkmark \) \\<br>\hline<br>\end{tabular}<br>\[ \text{B)} \]<br>\[ 3) \ y=x^{2}-4 \]<br>\[ \text{B)} \]<br>\[ \square \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//306.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Установите соответствие и впишите ответ. На рисунках изображены графики функций вида \( y=kx+b \).</p>
+<p>Установите соответствие между знаками коэффициентов \( k \) и \( b \) и графиками функций.</p>
+<p>КОЭФФИЦИЕНТЫ</p>
+<p>А) \( k>0, b>0 \) \quad Б) \( k<0, b>0 \) \quad В) \( k<0, b<0 \)</p>
+<p>ГРАФИКИ</p>
+<p>1) \quad 2) \quad 3)</p>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p></div>
          <button class="show-answer-btn"
-                 data-answer="\begin{tabular}{|ccc|} \hline A &amp; Б &amp; B \\ \hline 1 &amp; 3 &amp; 2 \\ \hline \end{tabular}"
+                 data-answer="312"
                  onclick="showAnswer(20, this.dataset.answer)">
            Показать ответ
          </button>
@@ -789,10 +1054,17 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 22</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//898.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[<br>\text{На рисунках изображены графики функций вида } y = ax^2 + bx + c.<br>\]<br>\[<br>\text{Установите соответствие между графиками функций и знаками коэффициентов } a \text{ и } c.<br>\]<br>\[<br>\text{ГРАФИКИ}<br>\]<br>\[<br>\text{А) \quad Б) \quad В)}<br>\]<br>\[<br>\text{КОЭФФИЦИЕНТЫ}<br>\]<br>\[<br>1) \, a &gt; 0, \, c &lt; 0 \quad 2) \, a &lt; 0, \, c &gt; 0 \quad 3) \, a &gt; 0, \, c &gt; 0<br>\]<br>\[<br>\text{В таблице под каждой буквой укажите соответствующий номер.}<br>\]<br>\[<br>\begin{array}{ccc}<br>\text{А} &amp; \text{Б} &amp; \text{В} \\<br>1 &amp; 2 &amp; 3<br>\end{array}<br>\]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1793.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На рисунках изображены графики функций вида \( y = ax^2 + bx + c \).</p>
+<p>Установите соответствие между графиками функций и знаками коэффициентов \( a \) и \( c \).</p>
+<p>ГРАФИКИ</p>
+<p>А) Б) В)</p>
+<p>КОЭФФИЦИЕНТЫ</p>
+<p>1) \( a<0, c>0 \) \quad 2) \( a>0, c<0 \) \quad 3) \( a>0, c>0 \)</p>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+<p>А Б В</p></div>
          <button class="show-answer-btn"
-                 data-answer="312"
+                 data-answer="A - 1, Б - 2, B - 3."
                  onclick="showAnswer(21, this.dataset.answer)">
            Показать ответ
          </button>
@@ -804,10 +1076,16 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 23</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1382.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{Установите соответствие и впишите ответ. На рисунках изображены графики функций вида } y = kx + b. \]<br>\[ \text{Установите соответствие между знаками коэффициентов } k \text{ и } b \text{ и графиками функций.} \]<br>\[ \text{КОЭФФИЦИЕНТЫ} \]<br>\[ \text{A)}\ k &gt; 0,\ b &gt; 0 \]<br>\[ \text{Б)}\ k &gt; 0,\ b &lt; 0 \]<br>\[ \text{ГРАФИКИ} \]<br>\[ 1)\ \checkmark \]<br>\[ 2)\ \checkmark \]<br>\[ 3)\ \checkmark \]<br>\[ \text{В таблице под каждой буквой укажите соответствующий номер.} \]<br>\begin{tabular}{|ccc|}<br>\hline<br>\[ \text{A} \] &amp; \[ \text{Б} \] &amp; \[ \text{B} \] \\<br>\hline<br>\( \checkmark \) &amp; \( \checkmark \) &amp; \( \checkmark \) \\<br>\hline<br>\end{tabular}</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//973.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Установите соответствие и впишите ответ.</p><p>Установите соответствие между функциями и их графиками.</p><p>ФУНКЦИИ</p><p>А) \( y=-2 x^{2}-6 x+1 \) Б) \( y=\frac{1}{10 x} \) B) \( y=\frac{4}{5} x+2 \)</p><p>ГРАФИКИ</p><p>1)</p><p>2)</p><p>3)</p><p>В таблице под каждой буквой укажите соответствующий номер.</p>$
+\begin{array}{ccccc}
+  \text{А} & | & \text{Б} & | & \text{В}  \\
+  - & - & - & - & - \\
+    & | &   & | &   
+\end{array}
+$</div>
          <button class="show-answer-btn"
-                 data-answer="312"
+                 data-answer="132"
                  onclick="showAnswer(22, this.dataset.answer)">
            Показать ответ
          </button>
@@ -819,10 +1097,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 24</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//690.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Установите соответствие и впишите ответ. На рисунках изображены графики функций вида \( y=k x+b \). Установите соответствие между знаками коэффициентов \( k \) и \( b \) и графиками функций.<br>\[\]<br>КОЭФФИЦИЕНТЫ A) \( k&lt;0, b&lt;0 \) Б) \( k&lt;0, b&gt;0 \) B) \( k&gt;0, b&gt;0 \)<br>\[\]<br>ГРАФИКИ 1) 2) 3)<br>\[\]<br>В таблице под каждой буквой укажите соответствующий номер. <br>$<br>\begin{array}{ccccc}<br>  \text{А} &amp; | &amp; \text{Б} &amp; | &amp; \text{В}  \\<br>  - &amp; - &amp; - &amp; - &amp; - \\<br>    &amp; | &amp;   &amp; | &amp;   <br>\end{array}<br>$</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//11_3_pr_pic.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На рисунках изображены функции вида \(y = kx + b\). Установите соответствие между знаками коэффициентов \(k\) и \(b\) и графиками функций.</p><p>КОЭФФИЦИЕНТЫ</p><p>A) \(k<0,\;b<0\)   Б) \(k<0,\;b>0\)   В) \(k>0,\;b<0\)</p><p>В таблице под каждой буквой укажите соответствующий номер.</p></div>
          <button class="show-answer-btn"
-                 data-answer="123"
+                 data-answer="321"
                  onclick="showAnswer(23, this.dataset.answer)">
            Показать ответ
          </button>
@@ -834,10 +1112,16 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 25</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1700.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[<br>\text{На рисунках изображены графики функций вида } y = ax^2 + bx + c.<br>\]<br>\[<br>\text{Установите соответствие между знаками коэффициентов } a \text{ и } c \text{ и графиками функций.}<br>\]<br>\[<br>\text{КОЭФФИЦИЕНТЫ}<br>\]<br>\[<br>\text{А) } a &lt; 0, c &gt; 0 \quad \text{Б) } a &gt; 0, c &gt; 0 \quad \text{В) } a &gt; 0, c &lt; 0<br>\]<br>\[<br>\text{ГРАФИКИ}<br>\]<br>\[<br>\text{1) } \quad \text{2) } \quad \text{3) }<br>\]<br>\[<br>\text{В таблице под каждой буквой укажите соответствующий номер.}<br>\]<br>\[<br>\begin{array}{ccc}<br>\text{А} &amp; \text{Б} &amp; \text{В} \\<br>1 &amp; 2 &amp; 3<br>\end{array}<br>\]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//434.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Установите соответствие и впишите ответ. Установите соответствие между графиками функций и формулами, которые их задают.</p>
+<p>ФОРМУЛЫ</p>
+<p>1) \( y=-3 \)</p>
+<p>2) \( y=x-3 \)</p>
+<p>3) \( y=-3 x \)</p>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+<p> A \quad \text{Б} \quad \text{B} </p></div>
          <button class="show-answer-btn"
-                 data-answer="213"
+                 data-answer="321"
                  onclick="showAnswer(24, this.dataset.answer)">
            Показать ответ
          </button>
@@ -849,10 +1133,14 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 26</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2085.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{Установите соответствие и впишите ответ.} \]<br>\[ \text{Установите соответствие между графиками функций и формулами,} \]<br>\[ \text{которые их задают.} \]<br>\[ \text{1) } y = -x^{2} \]<br>\[ \text{2) } y = -x \]<br>\[ \text{3) } y = -\frac{1}{x} \]<br>\[ \text{В таблице под каждой буквой укажите соответствующий номер.} \]<br>\begin{tabular}{|ccc|}<br>\hline <br>\text{A} &amp; \text{Б} &amp; \text{B} \\<br>\hline <br>&amp; \( \checkmark \) &amp; \( \vee \) \\<br>\hline<br>\end{tabular}</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//339.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На рисунках изображены графики функций вида \( y=k x+b \). Установите соответствие между графиками функций и знаками коэффициентов \( k \) и \( b \).</p>
+<p>КОЭФФИЦИЕНТЫ</p>
+<p>1) \( k<0, b<0 \) \quad 2) \( k>0, b>0 \) \quad 3) \( k>0, b<0 \)</p>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+<p>A \quad Б \quad B</p></div>
          <button class="show-answer-btn"
-                 data-answer="A2Б1В3"
+                 data-answer="231"
                  onclick="showAnswer(25, this.dataset.answer)">
            Показать ответ
          </button>
@@ -864,10 +1152,16 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 27</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2151.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{На рисунках изображены графики функций вида } y = ax^2 + bx + c. \]<br>\[ \text{Установите соответствие между графиками функций} \]<br>\[ \text{и знаками коэффициентов } a \text{ и } c. \]<br>\[ \text{ГРАФИКИ} \]<br>\[ \text{А) Б) В)} \]<br>\[ \text{КОЭФФИЦИЕНТЫ} \]<br>\[ 1) \text{ } a &lt; 0, \text{ } c &gt; 0 \]<br>\[ 2) \text{ } a &gt; 0, \text{ } c &lt; 0 \]<br>\[ 3) \text{ } a &gt; 0, \text{ } c &gt; 0 \]<br>\[ \text{В таблице под каждой буквой укажите} \]<br>\[ \text{соответствующий номер.} \]<br>\[ \text{А Б В} \]<br>\[ 1 \text{ } 2 \text{ } 3 \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1698.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Установите соответствие и впишите ответ. Установите соответствие между графиками функций и формулами, которые их задают.</p>
+<p>ГРАФИКИ</p>
+<p>A) \quad \text{Б)} \quad \text{B)}</p>
+<p>ФОРМУЛЫ</p>
+<p>1) \(y=-\frac{2}{3}x+4\) \quad 2) \(y=\frac{2}{3} x-4\) \quad 3) \(y=\frac{2}{3} x+4\)</p>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+<p>A \quad \text{Б} \quad \text{B} \quad \square</p></div>
          <button class="show-answer-btn"
-                 data-answer="\begin{tabular}{|ccc|} \hline A &amp; Б &amp; B \\ \hline 3 &amp; 1 &amp; 2 \\ \hline \end{tabular}"
+                 data-answer="A3 Б2 B3"
                  onclick="showAnswer(26, this.dataset.answer)">
            Показать ответ
          </button>
@@ -879,10 +1173,17 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 28</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//774.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Установите соответствие и впишите ответ. На рисунках изображены графики функций вида \( y=a x^{2}+b x+c \). Установите соответствие между графиками функций и знаками коэффициентов \( a \) и \( c \). ГРАФИКИ A) Б) B) 3) \( a&gt;0, c&gt;0 \) КОЭФФИЦИЕНТЫ 1) \( a&gt;0, c&lt;0 \) 2) \( a&lt;0, c&gt;0 \) В таблице под каждой буквой укажите соответствующий номер. <br>$<br>\begin{array}{ccccc}<br>  \text{А} &amp; | &amp; \text{Б} &amp; | &amp; \text{В}  \\<br>  - &amp; - &amp; - &amp; - &amp; - \\<br>    &amp; | &amp;   &amp; | &amp;   <br>\end{array}<br>$</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//366.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Установите соответствие и впишите ответ.</p>
+<p>Установите соответствие между графиками функций и формулами, которые их задают.</p>
+<p>ГРАФИКИ</p>
+<p>1) \( y= x^2 + 2 \)</p>
+<p>2) \( y= -\frac{2}{x} \)</p>
+<p>3) \( y= 2 x \)</p>
+<p>В таблице под каждой буквой укажите соответствующий номер.</p>
+<p> A \quad Б \quad B</p></div>
          <button class="show-answer-btn"
-                 data-answer="123"
+                 data-answer="132"
                  onclick="showAnswer(27, this.dataset.answer)">
            Показать ответ
          </button>
@@ -894,10 +1195,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 29</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1290.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{Установите соответствие и впишите ответ.} \]<br>\[ \text{Установите соответствие между функциями и их графиками.} \]<br>\[ \text{ФУНКЦИИ} \]<br>\[ \text{A) } y=\frac{1}{5} x-2 \]<br>\[ \text{Б) } y=-\frac{1}{5} x+2 \]<br>\[ \text{B) } y=-\frac{1}{5} x-2 \]<br>\[ \text{ГРАФИКИ} \]<br>\[ \text{1) } \]<br>\[ \text{2) } \]<br>\[ \text{3) } \]<br>\[ \text{В таблице под каждой буквой укажите} \]<br>\[ \text{соответствующий номер.} \]<br>\begin{tabular}{|ccc|}<br>\hline<br>A &amp; Б &amp; B \\<br>\hline<br>\( \checkmark \) &amp; \( \checkmark \) &amp; \( \checkmark \) \\<br>\hline<br>\end{tabular}</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2135.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На рисунках изображены графики функций вида \( y = ax^2 + bx + c \).</p><p>Установите соответствие между знаками коэффициентов \( a \) и \( c \) и графиками функций.</p><p>КОЭФФИЦИЕНТЫ</p><ul><li>А) \( a > 0, c > 0 \)</li><li>Б) \( a < 0, c > 0 \)</li><li>В) \( a > 0, c < 0 \)</li></ul><p>ГРАФИКИ</p><ul><li>1)</li><li>2)</li><li>3)</li></ul><p>В таблице под каждой буквой укажите соответствующий номер.</p><table><tr><td>A</td><td>Б</td><td>В</td></tr><tr><td></td><td></td><td></td></tr></table></div>
          <button class="show-answer-btn"
-                 data-answer="132"
+                 data-answer="А3Б2В1"
                  onclick="showAnswer(28, this.dataset.answer)">
            Показать ответ
          </button>
@@ -909,18 +1210,36 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 30</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//11_10_pr_pic.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Установите соответствие между формулами, которыми заданы функции, и графиками этих функций.<br><br>Формулы:<br>A) \(y=-3x^2+9x-4\)  <br>Б) \(y=-\frac{6}{x}\)  <br>В) \(\;y=\frac{2}{3}x-5\)<br><br>В таблице под каждой буквой укажите соответствующий номер графика.</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1700.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process">\[
+\text{На рисунках изображены графики функций вида } y = ax^2 + bx + c.
+\]
+\[
+\text{Установите соответствие между знаками коэффициентов } a \text{ и } c \text{ и графиками функций.}
+\]
+\[
+\text{КОЭФФИЦИЕНТЫ}
+\]
+\[
+\text{А) } a < 0, c > 0 \quad \text{Б) } a > 0, c > 0 \quad \text{В) } a > 0, c < 0
+\]
+\[
+\text{ГРАФИКИ}
+\]
+\[
+\text{1) } \quad \text{2) } \quad \text{3) }
+\]
+\[
+\text{В таблице под каждой буквой укажите соответствующий номер.}
+\]
+\[
+\begin{array}{ccc}
+\text{А} & \text{Б} & \text{В} \\
+1 & 2 & 3
+\end{array}
+\]</div>
          <button class="show-answer-btn"
-                 data-answer="\begin{tabular}{|l|l|l|}
-\hline
-A &amp; Б &amp; В \\
-\hline
-3 &amp; 2 &amp; 1 \\
-\hline
-\end{tabular}
-
-Ответ: 321"
+                 data-answer="213"
                  onclick="showAnswer(29, this.dataset.answer)">
            Показать ответ
          </button>
@@ -939,7 +1258,7 @@ A &amp; Б &amp; В \\
       <h2>Хотите посмотреть решение?</h2>
       <p>Создайте аккаунт или войдите, чтобы получить доступ к подробным решениям всех задач.</p>
       <div class="modal-buttons">
-        <a href="/auth" class="modal-button primary">Войти / Создать аккаунт</a>
+        <a href="/register" class="modal-button primary">Войти / Создать аккаунт</a>
         <button class="modal-button secondary" onclick="closeSolutionModal()">Закрыть</button>
       </div>
     </div>

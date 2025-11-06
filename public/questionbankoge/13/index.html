@@ -395,6 +395,28 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
+    /* Table styling for problem text */
+    .problem-text table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .problem-text table td {
+      padding: 0.75rem 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+    }
+
+    .problem-text table tr:first-child td {
+      background: rgba(251, 191, 36, 0.1);
+      font-weight: 600;
+      color: #fbbf24;
+    }
+
     /* Mobile Responsiveness */
     @media (max-width: 768px) {
       .header h1 {
@@ -474,8 +496,8 @@
       
        <div class="question-item">
          <div class="question-number">Вопрос 1</div>
-         
-         <div class="problem-text">Укажите неравенство, которое не имеет решений:<br>\[<br>\]<br>1) \(x^{2}-15&lt;0\) <br>\[<br>\] <br>2) \(x^{2}+15&lt;0\) <br>\[<br>\] <br>3) \(x^{2}+15&gt;0\) <br>\[<br>\] <br>4) \(x^{2}-15&gt;0\)</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//13_22_pr_pic.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Укажите решение системы неравенств   \[ \begin{cases} -9 + 3x < 0,\\ 2 - 3x < -10. \end{cases} \]</p></div>
          <button class="show-answer-btn"
                  data-answer="2"
                  onclick="showAnswer(0, this.dataset.answer)">
@@ -489,10 +511,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 2</div>
-         
-         <div class="problem-text">\[ \text{Выберите правильный ответ.} \]<br>\[ \text{Укажите решение неравенства } x^2 - 64 \geq 0. \]<br>\[ \text{1) } [-8; 8] \]<br>\[ \text{2) } (-\infty; -8] \cup [8; +\infty) \]<br>\[ \text{3) нет решений} \]<br>\[ \text{4) } (-\infty; +\infty) \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//13_33_pr_pic.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Укажите решение неравенства \( (x+1)(x-9)>0 \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="$x \in (-\infty; -8] \cup [8; +\infty)$"
+                 data-answer="2"
                  onclick="showAnswer(1, this.dataset.answer)">
            Показать ответ
          </button>
@@ -505,9 +527,13 @@
        <div class="question-item">
          <div class="question-number">Вопрос 3</div>
          
-         <div class="problem-text">\[ \text{Выберите правильный ответ.} \]<br>\[ \text{Укажите решение неравенства } x^2 - 25 &gt; 0. \]<br>\[ \text{1) } (-\infty; -5) \cup (5; +\infty) \]<br>\[ \text{2) } (-5; 5) \]<br>\[ \text{3) нет решений} \]<br>\[ \text{4) } (-\infty; +\infty) \]</div>
+         <div class="problem-text tex2jax_process"><p>Выберите правильный ответ. Укажите решение неравенства \(-3 - 3x > 7x - 9.\)</p>
+<p>1) \((0{,}6; +\infty)\)</p>
+<p>2) \((-\infty; 1{,}2)\)</p>
+<p>3) \((1{,}2; +\infty)\)</p>
+<p>4) \((-\infty; 0{,}6)\)</p></div>
          <button class="show-answer-btn"
-                 data-answer="1"
+                 data-answer="4"
                  onclick="showAnswer(2, this.dataset.answer)">
            Показать ответ
          </button>
@@ -519,8 +545,8 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 4</div>
-         
-         <div class="problem-text">\[ \text{Выберите правильный ответ.} \]<br>\[ \text{Укажите решение неравенства } -9-6x&gt;9x+9. \]<br>\[ \text{1) } (-\infty;-1,2) \]<br>\[ \text{2) } (0;+\infty) \]<br>\[ \text{3) } (-1,2;+\infty) \]<br>\[ \text{4) } (-\infty;0) \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2134.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Выберите правильный ответ.</p><p>Укажите неравенство, решение которого изображено на рисунке.</p><ul><li>\( 1) \ x^2 - 49 \leq 0 \)</li><li>\( 2) \ x^2 + 49 \leq 0 \)</li><li>\( 3) \ x^2 - 49 \geq 0 \)</li><li>\( 4) \ x^2 + 49 \geq 0 \)</li></ul></div>
          <button class="show-answer-btn"
                  data-answer="1"
                  onclick="showAnswer(3, this.dataset.answer)">
@@ -534,10 +560,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 5</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2207.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{Выберите правильный ответ.} \]<br>\[ \text{Укажите решение неравенства} \]<br>\[ (x+5)(x-2)&lt;0. \]<br>\[ \text{1) } \xrightarrow{\mathrm{L}} \]<br>\[ \text{2) } \xrightarrow[-5]{ } \]<br>\[ \text{3) } \frac{2}{-5}-2 \]<br>\[ \text{4) } \underset{-5}{-5} \quad 2 \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//392.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Укажите решение неравенства \( 81x^2 \leq 16 \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="4"
+                 data-answer="2"
                  onclick="showAnswer(4, this.dataset.answer)">
            Показать ответ
          </button>
@@ -549,10 +575,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 6</div>
-         
-         <div class="problem-text">Укажите решение неравенства<br>\[\]<br>$(x+3)(x-5) \leq 0$.<br><br>\[\]<br>1). $(-\infty ; -3]$<br>\[\]<br>2). [-3; 5]<br>\[\]<br>3). $(-\infty ; -5]$<br>\[\]<br>4). $(-\infty ; -3] \cup [5; +\infty]$</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//13_9_pr_pic.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Укажите решение неравенства \( -2x + 5 \leqslant -3x - 3 \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="2"
+                 data-answer="3"
                  onclick="showAnswer(5, this.dataset.answer)">
            Показать ответ
          </button>
@@ -564,10 +590,18 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 7</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//13_19_pr_pic.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Укажите решение системы неравенств <br>\[<br>\begin{cases}<br>x + 2{,}7 \leqslant 0,\\<br>x + 4 \geqslant 1.<br>\end{cases}<br>\]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1780.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Укажите решение системы неравенств:</p>
+<p>
+\[
+\begin{cases}
+x - 4{,}3 \geq 0{,} \\
+x + 5 \leq 10.
+\end{cases}
+\]
+</p></div>
          <button class="show-answer-btn"
-                 data-answer="3"
+                 data-answer="4"
                  onclick="showAnswer(6, this.dataset.answer)">
            Показать ответ
          </button>
@@ -580,9 +614,13 @@
        <div class="question-item">
          <div class="question-number">Вопрос 8</div>
          
-         <div class="problem-text">\[ \text{Выберите правильный ответ.} \]<br>\[ \text{Укажите решение неравенства } x^2 - 64 &gt; 0. \]<br>\[ \text{1) } (-\infty;+\infty) \]<br>\[ \text{2) } (-8;8) \]<br>\[ \text{3) } (-\infty;-8) \cup (8;+\infty) \]<br>\[ \text{4) нет решений} \]</div>
+         <div class="problem-text tex2jax_process"><p>Выберите правильный ответ. Укажите решение неравенства \((x+2)(x-10)>0\).</p>
+<p>1) \( (-2 ; 10) \)</p>
+<p>2) \( (-\infty ;-2) \cup(10 ;+\infty) \)</p>
+<p>3) \( (10 ;+\infty) \)</p>
+<p>4) \( (-2 ;+\infty) \)</p></div>
          <button class="show-answer-btn"
-                 data-answer="$x \in (-\infty; -8) \cup (8; +\infty)$"
+                 data-answer="2"
                  onclick="showAnswer(7, this.dataset.answer)">
            Показать ответ
          </button>
@@ -594,10 +632,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 9</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1569.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{Выберите правильный ответ.} \]<br>\[ \text{Укажите неравенство, решение которого изображено на рисунке.} \]<br>\[ x^2 - 25 &gt; 0 \]<br>\[ x^2 - 25 &lt; 0 \]<br>\[ x^2 + 25 &lt; 0 \]<br>\[ x^2 + 25 &gt; 0 \]</div>
+         
+         <div class="problem-text tex2jax_process"><p>При каких значениях \(a\) выражение \(7a+3\) принимает только отрицательные значения?</p><p>1) \(a>-\frac{3}{7}\)    2) \(a<-\frac{3}{7}\)    3) \(a>-\frac{7}{3}\)</p><p>4) \(a<-\frac{7}{3}\)</p></div>
          <button class="show-answer-btn"
-                 data-answer="1"
+                 data-answer="2"
                  onclick="showAnswer(8, this.dataset.answer)">
            Показать ответ
          </button>
@@ -609,10 +647,20 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 10</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1947.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[<br>\text{Укажите решение системы неравенств}<br>\]<br>\[<br>\begin{cases}<br>\text{-9 + 3x &lt; 0}, \\<br>\text{2 - 3x &gt; -10}.<br>\end{cases}<br>\]</div>
+         
+         <div class="problem-text tex2jax_process"><p>Выберите правильный ответ. Укажите решение системы неравенств:</p>
+<p>\[
+\left\{\begin{array}{l}
+x+4 \geq-1 \\
+x+1,4 \geq 0
+\end{array}\right.
+\]</p>
+<p>1) \( [-5 ;+\infty) \)</p>
+<p>2) \( [-1,4 ;+\infty) \)</p>
+<p>3) \( [-5 ;-1,4] \)</p>
+<p>4) \( (-\infty ;-5] \cup[-1,4 ;+\infty) \)</p></div>
          <button class="show-answer-btn"
-                 data-answer="x &lt; 3"
+                 data-answer="2"
                  onclick="showAnswer(9, this.dataset.answer)">
            Показать ответ
          </button>
@@ -624,10 +672,14 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 11</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1255.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{Выберите правильный ответ.} \]<br>\[ \text{Укажите неравенство, решение которого изображено на рисунке.} \]<br>\[ 1) \ x^2 - 1 \geq 0 \]<br>\[ 2) \ x^2 - x \geq 0 \]<br>\[ 3) \ x^2 - 1 \leq 0 \]<br>\[ 4) \ x^2 - x \leq 0 \]</div>
+         
+         <div class="problem-text tex2jax_process"><p>Выберите правильный ответ. Укажите решение неравенства \( 6-7x \leq 3x-7 \).</p>
+<p>1) \( [0{,}1 ; +\infty) \)</p>
+<p>2) \( (-\infty ; 1{,}3] \)</p>
+<p>3) \( [1{,}3 ; +\infty) \)</p>
+<p>4) \( (-\infty ; 0{,}1] \)</p></div>
          <button class="show-answer-btn"
-                 data-answer="2"
+                 data-answer="3"
                  onclick="showAnswer(10, this.dataset.answer)">
            Показать ответ
          </button>
@@ -639,10 +691,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 12</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1644.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{Выберите правильный ответ.} \]<br>\[ \text{Укажите неравенство, решение которого изображено на рисунке.} \]<br>\[ x^2 - 36 &gt; 0 \]<br>\[ x^2 + 36 &gt; 0 \]<br>\[ x^2 - 36 &lt; 0 \]<br>\[ x^2 + 36 &lt; 0 \]</div>
+         
+         <div class="problem-text tex2jax_process"><p>Укажите решение неравенства \(x^2 - 64 < 0\).</p><p>\[ 1) ~ x\in(-4,4). \]</p><p>\[ 2)~ x\in(-64,64). \]</p><p>\[ 3)~ x\in(-8,8). \]</p><p>\[ 4) ~ x\in(-128,128). \]</p></div>
          <button class="show-answer-btn"
-                 data-answer="3) \( x^2 - 36 &lt; 0 \)"
+                 data-answer="3"
                  onclick="showAnswer(11, this.dataset.answer)">
            Показать ответ
          </button>
@@ -654,10 +706,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 13</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//700.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{Выберите правильный ответ.} \]<br>\[ \text{Укажите решение неравенства } 8x - x^2 &gt; 0. \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1023.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Укажите решение неравенства \( x - x^2 \geq 0 \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="2"
+                 data-answer="4"
                  onclick="showAnswer(12, this.dataset.answer)">
            Показать ответ
          </button>
@@ -669,10 +721,14 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 14</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1690.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[<br>\text{Выберите правильный ответ.}<br>\]<br>\[<br>\text{Укажите решение системы неравенств}<br>\]<br>\[<br>\begin{cases}<br>-35+5x&gt;0, \\<br>6-3x&gt;-3.<br>\end{cases}<br>\]</div>
+         
+         <div class="problem-text tex2jax_process"><p>Выберите правильный ответ. Укажите решение системы неравенств \(\left\{\begin{array}{l} x-2,6 \leq 0 \\ x-1 \geq 1 \end{array}\right.\).</p>
+<p>1) \( [2 ; 2,6] \)</p>
+<p>2) \( (-\infty ; 2,6] \)</p>
+<p>3) \( (-\infty ; 2] \cup[2,6 ;+\infty) \)</p>
+<p>4) \( [2 ;+\infty) \)</p></div>
          <button class="show-answer-btn"
-                 data-answer="3"
+                 data-answer="1"
                  onclick="showAnswer(13, this.dataset.answer)">
            Показать ответ
          </button>
@@ -684,10 +740,15 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 15</div>
-         
-         <div class="problem-text">\[ \text{Выберите правильный ответ.} \]<br>\[ \text{Укажите решение системы неравенств} \]<br>\[<br>\left\{\begin{array}{l}<br>x-5,2 \geq 0 \\<br>x+4 \leq 10<br>\end{array}\right.<br>\]<br>\[ \text{1) } (-\infty ; 5,2] \cup[6 ;+\infty) \]<br>\[ \text{2) } [5,2 ;+\infty) \]<br>\[ \text{3) } [6 ;+\infty) \]<br>\[ \text{4) } [5,2 ; 6] \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1255.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Выберите правильный ответ.</p>
+<p>Укажите неравенство, решение которого изображено на рисунке.</p>
+<p>1) \( x^2 - 1 \geq 0 \)</p>
+<p>2) \( x^2 - x \geq 0 \)</p>
+<p>3) \( x^2 - 1 \leq 0 \)</p>
+<p>4) \( x^2 - x \leq 0 \)</p></div>
          <button class="show-answer-btn"
-                 data-answer="4"
+                 data-answer="2"
                  onclick="showAnswer(14, this.dataset.answer)">
            Показать ответ
          </button>
@@ -699,10 +760,11 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 16</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1176.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">$<br>\text{Выберите правильный ответ.}<br>$<br>$<br>\text{Укажите решение системы неравенств}<br>$<br>$<br>\begin{cases}<br>-9+3x&gt;0, \\<br>2-3x&gt;-10.<br>\end{cases}<br>$</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//844.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Выберите правильный ответ.</p>
+<p>Укажите решение неравенства \( x^2 > 36 \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="2"
+                 data-answer="1"
                  onclick="showAnswer(15, this.dataset.answer)">
            Показать ответ
          </button>
@@ -714,10 +776,14 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 17</div>
-         
-         <div class="problem-text">\[ \text{Выберите правильный ответ. Укажите решение неравенства } -9-6x&lt;9x+9. \]<br>\[ \text{1) } (-\infty;-1{,}2) \]<br>\[ \text{2) } (-1{,}2;+\infty) \]<br>\[ \text{3) } (0;+\infty) \]<br>\[ \text{4) } (-\infty;0) \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//240.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Укажите решение неравенства \(\sqrt{x^2 - 4x + 4} \le 2\).</p>
+<p>1) \(0 \le x \le 4\)</p>
+<p>2) \(x \le 0\)</p>
+<p>3) \(x \ge 4\)</p>
+<p>4) \(x \in \mathbb{R}\)</p></div>
          <button class="show-answer-btn"
-                 data-answer="2"
+                 data-answer="1"
                  onclick="showAnswer(16, this.dataset.answer)">
            Показать ответ
          </button>
@@ -729,10 +795,11 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 18</div>
-         
-         <div class="problem-text">\[ \text{Выберите правильный ответ.} \]<br>\[ \text{Укажите решение неравенства} \]<br>\[ \sqrt{2x-1} \ge 3 \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//64.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Выберите правильный ответ.</p>
+<p>Дана система неравенств: \begin{cases} \text{х} - 4 \geq 0, \\ \text{х} - 0{,}3 \geq 1. \end{cases}</p></div>
          <button class="show-answer-btn"
-                 data-answer="$x \in (-\infty; -3] \cup [8; +\infty)$"
+                 data-answer="2"
                  onclick="showAnswer(17, this.dataset.answer)">
            Показать ответ
          </button>
@@ -744,10 +811,21 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 19</div>
-         
-         <div class="problem-text">\[ \text{Укажите решение неравенства } \sqrt{x^2 - 4x + 4} \le 2 \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1176.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process">$
+\text{Выберите правильный ответ.}
+$
+$
+\text{Укажите решение системы неравенств}
+$
+$
+\begin{cases}
+-9+3x>0, \\
+2-3x>-10.
+\end{cases}
+$</div>
          <button class="show-answer-btn"
-                 data-answer="[-4; 8]"
+                 data-answer="2"
                  onclick="showAnswer(18, this.dataset.answer)">
            Показать ответ
          </button>
@@ -760,9 +838,13 @@
        <div class="question-item">
          <div class="question-number">Вопрос 20</div>
          
-         <div class="problem-text">Выберите правильный ответ.<br>Укажите решение системы неравенств<br>\[<br>\left\{\begin{array}{l}<br>-9+3 x&lt;0 \\<br>2-3 x&gt;-10<br>\end{array}\right.<br>\]<br>1) \( (-\infty ; 3) \)<br>\[\]<br>2) \( (-\infty ; 4) \)<br>\[\]<br>3) \( (3 ;+\infty) \)<br>\[\]<br>4) \( (3 ; 4) \)</div>
+         <div class="problem-text tex2jax_process"><p>Выберите правильный ответ. Укажите решение неравенства \(\sqrt{2x-1} \ge 3\).</p>
+<p>1) \(x \ge 5\)</p>
+<p>2) \(x \le 5\)</p>
+<p>3) \(x \ge -5\)</p>
+<p>4) \(x \le -5\)</p></div>
          <button class="show-answer-btn"
-                 data-answer="1"
+                 data-answer="3"
                  onclick="showAnswer(19, this.dataset.answer)">
            Показать ответ
          </button>
@@ -774,10 +856,14 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 21</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2181.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{Выберите правильный ответ.} \]<br>\[ \text{Укажите решение неравенства} \]<br>\[ (x+8)(x-3) &lt; 0. \]<br>\[ \text{1)} \]<br>\[ \text{2)} \]<br>\[ \text{3)} \]<br>\[ \text{4)} \]</div>
+         
+         <div class="problem-text tex2jax_process"><p>Выберите правильный ответ. Укажите решение неравенства \( x^2 - 25 < 0 \).</p>
+<p>1) \( (-\infty; +\infty) \)</p>
+<p>2) нет решений</p>
+<p>3) \( (-5; 5) \)</p>
+<p>4) \( (-\infty; -5) \cup (5; +\infty) \)</p></div>
          <button class="show-answer-btn"
-                 data-answer="(-8, 3)"
+                 data-answer="3"
                  onclick="showAnswer(20, this.dataset.answer)">
            Показать ответ
          </button>
@@ -789,10 +875,14 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 22</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1054.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{Выберите правильный ответ.} \]<br>\[ \text{Укажите неравенство, решение которого изображено на рисунке.} \]<br>\[ x^2 + 16 \geq 0 \]<br>\[ x^2 - 16 \leq 0 \]<br>\[ x^2 + 16 \leq 0 \]<br>\[ x^2 - 16 \geq 0 \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//805.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Выберите правильный ответ. Укажите неравенство, решение которого изображено на рисунке.</p>
+<p>\( x^2 - 9 > 0 \)</p>
+<p>\( x^2 + 9 > 0 \)</p>
+<p>\( x^2 - 9 < 0 \)</p>
+<p>\( x^2 + 9 < 0 \)</p></div>
          <button class="show-answer-btn"
-                 data-answer="2"
+                 data-answer="1"
                  onclick="showAnswer(21, this.dataset.answer)">
            Показать ответ
          </button>
@@ -804,8 +894,16 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 23</div>
-         
-         <div class="problem-text">\[ \text{Выберите правильный ответ.} \]<br>\[ \text{Укажите решение неравенства} \]<br>\[ \sqrt{x^2-4x+4} \le 2 \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//532.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Выберите правильный ответ. Укажите решение системы неравенств:</p>
+<p>
+\[
+\begin{cases}
+\text{х} - 7{,}4 \geq 0{,} \\
+\text{х} + 2 \geq 3.
+\end{cases}
+\]
+</p></div>
          <button class="show-answer-btn"
                  data-answer="3"
                  onclick="showAnswer(22, this.dataset.answer)">
@@ -819,8 +917,8 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 24</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//86.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{Выберите правильный ответ.} \]<br>\[ \text{Укажите решение системы неравенств} \]<br>\[<br>\begin{cases}<br>x + 2{,}7 \leq 0, \\<br>x + 4 \geq 1.<br>\end{cases}<br>\]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//139.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Выберите правильный ответ. Укажите решение неравенства \( 6x - x^2 > 0 \).</p></div>
          <button class="show-answer-btn"
                  data-answer="3"
                  onclick="showAnswer(23, this.dataset.answer)">
@@ -834,10 +932,18 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 25</div>
-         
-         <div class="problem-text">\[ \text{Укажите решение неравенства } \sqrt{x^2 - 4x + 4} \le 3 \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2152.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Выберите правильный ответ. Укажите решение системы неравенств:</p>
+<p>
+\[
+\begin{cases}
+-35+5x<0, \\
+6-3x>-18.
+\end{cases}
+\]
+</p></div>
          <button class="show-answer-btn"
-                 data-answer="4"
+                 data-answer="x &lt; 7"
                  onclick="showAnswer(24, this.dataset.answer)">
            Показать ответ
          </button>
@@ -849,10 +955,11 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 26</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//747.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{Выберите правильный ответ.} \]<br>\[ \text{Укажите неравенство, решение которого изображено на рисунке.} \]<br>\[ x^2 - 5x \leq 0 \]<br>\[ x^2 - 25 \leq 0 \]<br>\[ x^2 - 5x \geq 0 \]<br>\[ x^2 - 25 \geq 0 \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1209.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Выберите правильный ответ.</p>
+<p>Укажите решение неравенства \( x^2 \leq 64 \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="1"
+                 data-answer="4"
                  onclick="showAnswer(25, this.dataset.answer)">
            Показать ответ
          </button>
@@ -865,9 +972,13 @@
        <div class="question-item">
          <div class="question-number">Вопрос 27</div>
          
-         <div class="problem-text">\[ \text{Выберите правильный ответ.} \]<br>\[ \text{Укажите решение неравенства } x^2 - 36 \leq 0. \]<br>\[ \text{1) } (-\infty ; +\infty) \]<br>\[ \text{2) } (-\infty ; -6] \cup [6 ; +\infty) \]<br>\[ \text{3) } [-6 ; 6] \]<br>\[ \text{4) нет решений} \]</div>
+         <div class="problem-text tex2jax_process"><p>Выберите правильный ответ. Укажите решение неравенства \((x+3)(x-6)>0\).</p>
+<p>1) \( (6 ;+\infty) \)</p>
+<p>2) \( (-3 ;+\infty) \)</p>
+<p>3) \( (-\infty ;-3) \cup(6 ;+\infty) \)</p>
+<p>4) \( (-3 ; 6) \)</p></div>
          <button class="show-answer-btn"
-                 data-answer="[-6; 6]"
+                 data-answer="3"
                  onclick="showAnswer(26, this.dataset.answer)">
            Показать ответ
          </button>
@@ -879,10 +990,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 28</div>
-         
-         <div class="problem-text">\[ \text{Выберите правильный ответ.} \]<br>\[ \text{Укажите решение неравенства} \]<br>\[ -3 - x \geq x - 6. \]<br>\[ \text{1) } (-\infty; 1{,}5] \]<br>\[ \text{2) } [1{,}5; +\infty) \]<br>\[ \text{3) } (-\infty; 4{,}5] \]<br>\[ \text{4) } [4{,}5; +\infty) \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1051.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Выберите правильный ответ. Укажите решение неравенства \( 6x - x^2 < 0 \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="$x \in (-\infty ; 1,5]$"
+                 data-answer="2"
                  onclick="showAnswer(27, this.dataset.answer)">
            Показать ответ
          </button>
@@ -895,9 +1006,13 @@
        <div class="question-item">
          <div class="question-number">Вопрос 29</div>
          
-         <div class="problem-text">\[ \text{Выберите правильный ответ.} \]<br>\[ \text{Укажите решение неравенства} \]<br>\[ x^2 - 49 &gt; 0. \]<br>\[ \text{1) } (-7; 7) \]<br>\[ \text{2) нет решений} \]<br>\[ \text{3) } (-\infty; +\infty) \]<br>\[ \text{4) } (-\infty; -7) \cup (7; +\infty) \]</div>
+         <div class="problem-text tex2jax_process"><p>Укажите решение неравенства \( 3-2x \geq 8x-1 \).</p>
+<p>1) \( [-0.2; +\infty) \)</p>
+<p>2) \( (-\infty; 0.4] \)</p>
+<p>3) \( [0.4; +\infty) \)</p>
+<p>4) \( (-\infty; -0.2] \)</p></div>
          <button class="show-answer-btn"
-                 data-answer="4"
+                 data-answer="2"
                  onclick="showAnswer(28, this.dataset.answer)">
            Показать ответ
          </button>
@@ -909,10 +1024,14 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 30</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//484.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{Выберите правильный ответ.} \]<br>\[ \text{Укажите решение системы неравенств} \]<br>\[ <br>\begin{cases}<br>-12 + 3x &gt; 0, \\<br>9 - 4x &gt; -3.<br>\end{cases}<br>\]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2111.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Выберите правильный ответ. Укажите решение неравенства \((x+4)(x-8) > 0\).</p>
+<p>1) </p>
+<p>2) </p>
+<p>3) </p>
+<p>4) </p></div>
          <button class="show-answer-btn"
-                 data-answer="1"
+                 data-answer="Вариант 4"
                  onclick="showAnswer(29, this.dataset.answer)">
            Показать ответ
          </button>
@@ -931,7 +1050,7 @@
       <h2>Хотите посмотреть решение?</h2>
       <p>Создайте аккаунт или войдите, чтобы получить доступ к подробным решениям всех задач.</p>
       <div class="modal-buttons">
-        <a href="/auth" class="modal-button primary">Войти / Создать аккаунт</a>
+        <a href="/register" class="modal-button primary">Войти / Создать аккаунт</a>
         <button class="modal-button secondary" onclick="closeSolutionModal()">Закрыть</button>
       </div>
     </div>

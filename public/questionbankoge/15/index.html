@@ -395,6 +395,28 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
+    /* Table styling for problem text */
+    .problem-text table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .problem-text table td {
+      padding: 0.75rem 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+    }
+
+    .problem-text table tr:first-child td {
+      background: rgba(251, 191, 36, 0.1);
+      font-weight: 600;
+      color: #fbbf24;
+    }
+
     /* Mobile Responsiveness */
     @media (max-width: 768px) {
       .header h1 {
@@ -475,7 +497,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 1</div>
          
-         <div class="problem-text">В треугольнике \(ABC\) известно, что \(\angle BAC = 48^\circ\), \(AD\) — биссектриса. Найдите угол \(BAD\). Ответ дайте в градусах.</div>
+         <div class="problem-text tex2jax_process"><p>В треугольнике \(A B C\) угол \(A\) равен \(45^\circ\), угол \(B\) равен \(60^\circ\), \(BC = 8\sqrt6\). Найдите \(AC\).</p></div>
          <button class="show-answer-btn"
                  data-answer="24"
                  onclick="showAnswer(0, this.dataset.answer)">
@@ -490,9 +512,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 2</div>
          
-         <div class="problem-text">\[ \text{Сторона треугольника равна } 18, \]<br>\[ \text{а высота, проведённая к этой стороне, равна } 17. \]<br>\[ \text{Найдите площадь этого треугольника.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Точки \( M \) и \( N \) являются серединами сторон \( AB \) и \( BC \) треугольника \( ABC \), сторона \( AB \) равна \( 31 \), сторона \( BC \) равна \( 42 \), сторона \( AC \) равна \( 50 \). Найдите \( MN \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="153"
+                 data-answer="25"
                  onclick="showAnswer(1, this.dataset.answer)">
            Показать ответ
          </button>
@@ -505,9 +527,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 3</div>
          
-         <div class="problem-text">\[ \text{Катеты прямоугольного треугольника равны } 18 \text{ и } 24. \]<br>\[ \text{Найдите гипотенузу этого треугольника.} \]</div>
+         <div class="problem-text tex2jax_process"><p>В треугольнике \( ABC \) угол \( C \) равен \( 90^\circ \), \( AC = 16 \), \( AB = 40 \). Найдите \( \sin B \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="30"
+                 data-answer="0.4"
                  onclick="showAnswer(2, this.dataset.answer)">
            Показать ответ
          </button>
@@ -520,9 +542,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 4</div>
          
-         <div class="problem-text">\[ \text{В треугольнике } ABC \text{ угол } C \text{ равен } 90^\circ, \]<br>\[ BC = 4, \quad AC = 28. \]<br>\[ \text{Найдите } \operatorname{tg} B. \]</div>
+         <div class="problem-text tex2jax_process"><p>Катеты прямоугольного треугольника равны \(60\) и \(80\).</p><p>Найдите гипотенузу этого треугольника.</p></div>
          <button class="show-answer-btn"
-                 data-answer="7"
+                 data-answer="100"
                  onclick="showAnswer(3, this.dataset.answer)">
            Показать ответ
          </button>
@@ -535,9 +557,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 5</div>
          
-         <div class="problem-text">Сторона треугольника равна \$16\$, а высота, проведённая к этой стороне, равна \$27\$. Найдите площадь этого треугольника.</div>
+         <div class="problem-text tex2jax_process"><p>В треугольнике два угла равны \(47^\circ\) и \(64^\circ\).</p><p>Найдите его третий угол. Ответ дайте в градусах.</p></div>
          <button class="show-answer-btn"
-                 data-answer="216"
+                 data-answer="69"
                  onclick="showAnswer(4, this.dataset.answer)">
            Показать ответ
          </button>
@@ -550,9 +572,10 @@
        <div class="question-item">
          <div class="question-number">Вопрос 6</div>
          
-         <div class="problem-text">\[ \text{В прямоугольном треугольнике катет и гипотенуза равны } 16 \text{ и } 34 \text{ соответственно.} \]<br>\[ \text{Найдите другой катет этого треугольника.} \]</div>
+         <div class="problem-text tex2jax_process"><p>В треугольнике \( ABC \) известно, что \( \angle BAC = 86^\circ \), \( AD \) — биссектриса. Найдите угол \( BAD \).</p>
+<p>Ответ дайте в градусах.</p></div>
          <button class="show-answer-btn"
-                 data-answer="30"
+                 data-answer="43"
                  onclick="showAnswer(5, this.dataset.answer)">
            Показать ответ
          </button>
@@ -565,9 +588,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 7</div>
          
-         <div class="problem-text">\[ \text{В треугольнике } ABC \text{ известно, что } AC = 56, \]<br>\[ BM \text{ — медиана, } BM = 48. \]<br>\[ \text{Найдите } AM. \]</div>
+         <div class="problem-text tex2jax_process"><p>Катеты прямоугольного треугольника равны \(9\) и \(12\).</p><p>Найдите гипотенузу этого треугольника.</p></div>
          <button class="show-answer-btn"
-                 data-answer="28"
+                 data-answer="15"
                  onclick="showAnswer(6, this.dataset.answer)">
            Показать ответ
          </button>
@@ -580,9 +603,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 8</div>
          
-         <div class="problem-text">\[ \text{Биссектриса равностороннего треугольника равна } 9\sqrt{3}. \]<br>\[ \text{Найдите сторону этого треугольника.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Сторона равностороннего треугольника равна \( 10\sqrt{3}. \)</p><p>Найдите медиану этого треугольника.</p></div>
          <button class="show-answer-btn"
-                 data-answer="18"
+                 data-answer="15"
                  onclick="showAnswer(7, this.dataset.answer)">
            Показать ответ
          </button>
@@ -595,9 +618,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 9</div>
          
-         <div class="problem-text">\[ \text{Медиана равностороннего треугольника равна } 12\sqrt{3}. \]<br>\[ \text{Найдите сторону этого треугольника.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Биссектриса равностороннего треугольника равна \( 11\sqrt{3}. \)</p><p>Найдите сторону этого треугольника.</p></div>
          <button class="show-answer-btn"
-                 data-answer="24"
+                 data-answer="22"
                  onclick="showAnswer(8, this.dataset.answer)">
            Показать ответ
          </button>
@@ -610,9 +633,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 10</div>
          
-         <div class="problem-text">\[ \text{В остроугольном треугольнике } ABC \text{ проведена высота } BH, \angle BAC = 64^\circ. \]<br>\[ \text{Найдите угол } ABH. \]<br>\[ \text{Ответ дайте в градусах.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Площадь треугольника \(ABC\) равна \(8\), \(DE\) — средняя линия треугольника \(ABC\). Найдите площадь треугольника \(CDE\).</p></div>
          <button class="show-answer-btn"
-                 data-answer="26"
+                 data-answer="2"
                  onclick="showAnswer(9, this.dataset.answer)">
            Показать ответ
          </button>
@@ -625,9 +648,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 11</div>
          
-         <div class="problem-text">\[ \text{В треугольнике } ABC \text{ известно, что } AB = 6, \]<br>\[ BC = 12, \]<br>\[ \sin \angle ABC = \frac{1}{4}. \]<br>\[ \text{Найдите площадь треугольника } ABC. \]</div>
+         <div class="problem-text tex2jax_process"><p>В треугольнике \( ABC \) угол \( C \) равен \( 90^\circ \), стороны \( AC = 4, AB = 5 \). Найдите \( \sin B \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="9"
+                 data-answer="0,8"
                  onclick="showAnswer(10, this.dataset.answer)">
            Показать ответ
          </button>
@@ -640,9 +663,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 12</div>
          
-         <div class="problem-text">\[ \text{В треугольнике } ABC \text{ угол } C \text{ равен } 90^\circ, \]<br>\[ \text{синус угла } B \text{ равен } \frac{4}{15}, \]<br>\[ \text{гипотенуза } AB = 45. \]<br>\[ \text{Найдите катет } AC. \]</div>
+         <div class="problem-text tex2jax_process"><p>В прямоугольном треугольнике катет и гипотенуза равны \(30\) и \(50\) соответственно.</p><p>Найдите другой катет этого треугольника.</p></div>
          <button class="show-answer-btn"
-                 data-answer="12"
+                 data-answer="40"
                  onclick="showAnswer(11, this.dataset.answer)">
            Показать ответ
          </button>
@@ -655,9 +678,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 13</div>
          
-         <div class="problem-text">\[ \text{В треугольнике } ABC \text{ известно, что } \angle BAC = 64^\circ, \]<br>\[ \text{где } AD \text{ — биссектриса.} \]<br>\[ \text{Найдите угол } BAD. \]<br>\[ \text{Ответ дайте в градусах.} \]</div>
+         <div class="problem-text tex2jax_process"><p>В остроугольном треугольнике \( ABC \) проведена высота \( BH \), \( \angle BAC = 9^\circ \).</p><p>Найдите угол \( ABH \).</p><p>Ответ дайте в градусах.</p></div>
          <button class="show-answer-btn"
-                 data-answer="32"
+                 data-answer="81"
                  onclick="showAnswer(12, this.dataset.answer)">
            Показать ответ
          </button>
@@ -670,9 +693,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 14</div>
          
-         <div class="problem-text">\[ \text{В треугольнике } ABC \text{ известно, что } \angle BAC = 82^\circ, \text{ } AD \text{ — биссектриса.} \]<br>\[ \text{Найдите угол } BAD. \text{ Ответ дайте в градусах.} \]</div>
+         <div class="problem-text tex2jax_process"><p>В треугольнике \( ABC \) известно, что \( AC = 30, \) \( BC = 16, \) угол \( C \) равен \( 90^\circ \). Найдите радиус описанной около этого треугольника окружности.</p></div>
          <button class="show-answer-btn"
-                 data-answer="41"
+                 data-answer="17"
                  onclick="showAnswer(13, this.dataset.answer)">
            Показать ответ
          </button>
@@ -685,9 +708,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 15</div>
          
-         <div class="problem-text">\[ \text{В треугольнике } ABC \text{ известно, что } \angle BAC = 84^\circ, \]<br>\[ \text{AD — биссектриса. Найдите угол } BAD. \]<br>\[ \text{Ответ дайте в градусах.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Точки \( M \) и \( N \) являются серединами сторон \( AB \) и \( BC \) треугольника \( ABC \), сторона \( AB \) равна \( 28 \), сторона \( BC \) равна \( 19 \), сторона \( AC \) равна \( 34 \). Найдите \( MN \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="42"
+                 data-answer="17"
                  onclick="showAnswer(14, this.dataset.answer)">
            Показать ответ
          </button>
@@ -700,9 +723,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 16</div>
          
-         <div class="problem-text">\[ \text{В треугольнике } ABC \text{ угол } C \text{ равен } 90^\circ, \]<br>\[ \text{синус угла } B \text{ равен } \frac{7}{12}, \]<br>\[ \text{гипотенуза } AB = 48. \]<br>\[ \text{Найдите длину катета } AC. \]</div>
+         <div class="problem-text tex2jax_process"><p>В треугольнике \( ABC \) известно, что \( AB = BC \) и \( \angle ABC = 144^\circ \).</p><p>Найдите угол \( BCA \). Ответ дайте в градусах.</p></div>
          <button class="show-answer-btn"
-                 data-answer="28"
+                 data-answer="18"
                  onclick="showAnswer(15, this.dataset.answer)">
            Показать ответ
          </button>
@@ -715,9 +738,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 17</div>
          
-         <div class="problem-text">\[ \text{В треугольнике } ABC \text{ известно, что } AB = BC, \angle ABC = 142^\circ. \]<br>\[ \text{Найдите угол } BCA. \text{ Ответ дайте в градусах.} \]</div>
+         <div class="problem-text tex2jax_process"><p>В треугольнике \(ABC\) известно, что \(DE\) — средняя линия, параллельная стороне \(AB\). Площадь треугольника \(CDE\) равна \(15\). Найдите площадь треугольника \(ABC\).</p></div>
          <button class="show-answer-btn"
-                 data-answer="19"
+                 data-answer="60"
                  onclick="showAnswer(16, this.dataset.answer)">
            Показать ответ
          </button>
@@ -730,9 +753,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 18</div>
          
-         <div class="problem-text">\[ \text{В треугольнике два угла равны } 36^\circ \text{ и } 73^\circ. \]<br>\[ \text{Найдите его третий угол. Ответ дайте в градусах.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Сторона равностороннего треугольника равна \(14\sqrt{3}\). Найдите медиану этого треугольника.</p></div>
          <button class="show-answer-btn"
-                 data-answer="71"
+                 data-answer="21"
                  onclick="showAnswer(17, this.dataset.answer)">
            Показать ответ
          </button>
@@ -745,9 +768,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 19</div>
          
-         <div class="problem-text">\[ \text{В остроугольном треугольнике } ABC \text{ проведена высота } BH, \angle BAC = 55^\circ. \]<br>\[ \text{Найдите угол } ABH. \]<br>\[ \text{Ответ дайте в градусах.} \]</div>
+         <div class="problem-text tex2jax_process"><p>В треугольнике \( ABC \) угол \( C \) равен \( 90^\circ \), \( AC = 24 \), \( AB = 25 \).</p><p>Найдите \( \sin B \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="35"
+                 data-answer="0,96"
                  onclick="showAnswer(18, this.dataset.answer)">
            Показать ответ
          </button>
@@ -760,9 +783,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 20</div>
          
-         <div class="problem-text">\[ \text{В треугольнике } ABC \text{ угол } C \text{ равен } 90^\circ, \]<br>\[ AC = 8, \]<br>\[ AB = 40. \]<br>\[ \text{Найдите } \sin B. \]</div>
+         <div class="problem-text tex2jax_process"><p>Катеты прямоугольного треугольника равны \(8\) и \(15\).</p><p>Найдите гипотенузу этого треугольника.</p></div>
          <button class="show-answer-btn"
-                 data-answer="0.2"
+                 data-answer="17"
                  onclick="showAnswer(19, this.dataset.answer)">
            Показать ответ
          </button>
@@ -775,9 +798,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 21</div>
          
-         <div class="problem-text">\[ \text{В треугольнике } ABC \text{ угол } C \text{ равен } 90^\circ, \]<br>\[ \text{синус угла } B \text{ равен } \frac{5}{16}, \]<br>\[ \text{гипотенуза } AB = 80. \]<br>\[ \text{Найдите длину катета } AC. \]</div>
+         <div class="problem-text tex2jax_process"><p>Биссектриса равностороннего треугольника равна \(12\sqrt{3}\). Найдите сторону этого треугольника.</p></div>
          <button class="show-answer-btn"
-                 data-answer="25"
+                 data-answer="24"
                  onclick="showAnswer(20, this.dataset.answer)">
            Показать ответ
          </button>
@@ -790,9 +813,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 22</div>
          
-         <div class="problem-text">\[ \text{Высота равностороннего треугольника равна } 13\sqrt{3}. \]<br>\[ \text{Найдите сторону этого треугольника.} \]</div>
+         <div class="problem-text tex2jax_process"><p>В треугольнике \( ABC \) известно, что \( AC=54 \), \( BM \) — медиана, \( BM=43 \). Найдите \( AM \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="26"
+                 data-answer="27"
                  onclick="showAnswer(21, this.dataset.answer)">
            Показать ответ
          </button>
@@ -805,9 +828,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 23</div>
          
-         <div class="problem-text">\[ \text{Катеты прямоугольного треугольника равны } 60 \text{ и } 80. \]<br>\[ \text{Найдите гипотенузу этого треугольника.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Два катета прямоугольного треугольника равны \(18\) и \(7\). Найдите площадь этого треугольника.</p></div>
          <button class="show-answer-btn"
-                 data-answer="100"
+                 data-answer="63"
                  onclick="showAnswer(22, this.dataset.answer)">
            Показать ответ
          </button>
@@ -820,9 +843,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 24</div>
          
-         <div class="problem-text">В треугольнике \(A B C\) угол \(A\) равен \(45^\circ\), угол \(B\) равен \(60^\circ\), \(BC = 8\sqrt6\). Найдите \(AC\).</div>
+         <div class="problem-text tex2jax_process"><p>В треугольнике \( ABC \) известно, что \( AB = BC \) и \( \angle ABC = 122^\circ \).</p><p>Найдите угол \( BCA \).</p><p>Ответ дайте в градусах.</p></div>
          <button class="show-answer-btn"
-                 data-answer="24"
+                 data-answer="29"
                  onclick="showAnswer(23, this.dataset.answer)">
            Показать ответ
          </button>
@@ -835,9 +858,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 25</div>
          
-         <div class="problem-text">В треугольнике одна из сторон равна \(13\), а опущенная на неё высота равна \(10\). Найдите площадь треугольника.</div>
+         <div class="problem-text tex2jax_process"><p>У треугольника со сторонами \(12\) и \(6\) проведены высоты к этим сторонам. Высота, проведённая к первой стороне, равна \(3\). Чему равна высота, проведённая ко второй стороне?</p></div>
          <button class="show-answer-btn"
-                 data-answer="65"
+                 data-answer="6"
                  onclick="showAnswer(24, this.dataset.answer)">
            Показать ответ
          </button>
@@ -850,9 +873,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 26</div>
          
-         <div class="problem-text">\[ \text{В треугольнике } ABC \text{ угол } C \text{ равен } 90^\circ, \]<br>\[ \cos B = \frac{9}{10}, \]<br>\[ AB = 60. \]<br>\[ \text{Найдите } BC. \]</div>
+         <div class="problem-text tex2jax_process"><p>В треугольнике \( ABC \) угол \( C \) равен \( 90^\circ \), \( BC = 26 \), \( AB = 40 \).</p><p>Найдите \( \cos B \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="54"
+                 data-answer="0,65"
                  onclick="showAnswer(25, this.dataset.answer)">
            Показать ответ
          </button>
@@ -865,9 +888,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 27</div>
          
-         <div class="problem-text">\[ \text{В остроугольном треугольнике } ABC \text{ проведена высота } BH, \angle BAC = 48^\circ. \]<br>\[ \text{Найдите угол } ABH. \]<br>\[ \text{Ответ дайте в градусах.} \]</div>
+         <div class="problem-text tex2jax_process"><p>В треугольнике \( ABC \) известно, что \( AC = 18 \), \( BM \) — медиана, \( BM = 14 \). Найдите \( AM \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="42"
+                 data-answer="9"
                  onclick="showAnswer(26, this.dataset.answer)">
            Показать ответ
          </button>
@@ -880,9 +903,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 28</div>
          
-         <div class="problem-text">\[ \text{В треугольнике } ABC \text{ угол } C \text{ равен } 90^\circ, \]<br>\[ \sin B = \frac{4}{9}, \quad AB = 18. \]<br>\[ \text{Найдите } AC. \]</div>
+         <div class="problem-text tex2jax_process"><p>Сторона равностороннего треугольника равна \(12\sqrt{3}\). Найдите биссектрису этого треугольника.</p></div>
          <button class="show-answer-btn"
-                 data-answer="8"
+                 data-answer="18"
                  onclick="showAnswer(27, this.dataset.answer)">
            Показать ответ
          </button>
@@ -895,9 +918,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 29</div>
          
-         <div class="problem-text">\[ \text{В треугольнике два угла равны } 48^\circ \text{ и } 65^\circ. \]<br>\[ \text{Найдите его третий угол. Ответ дайте в градусах.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Сторона треугольника равна \(16\), а высота, проведённая к этой стороне, равна \(19\). Найдите площадь этого треугольника.</p></div>
          <button class="show-answer-btn"
-                 data-answer="67"
+                 data-answer="152"
                  onclick="showAnswer(28, this.dataset.answer)">
            Показать ответ
          </button>
@@ -910,9 +933,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 30</div>
          
-         <div class="problem-text">\[ \text{Сторона треугольника равна } 12, \]<br>\[ \text{а высота, проведённая к этой стороне, равна } 33. \]<br>\[ \text{Найдите площадь этого треугольника.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Один из острых углов прямоугольного треугольника равен \( 48^\circ \).</p><p>Найдите его другой острый угол. Ответ дайте в градусах.</p></div>
          <button class="show-answer-btn"
-                 data-answer="198"
+                 data-answer="42"
                  onclick="showAnswer(29, this.dataset.answer)">
            Показать ответ
          </button>
@@ -931,7 +954,7 @@
       <h2>Хотите посмотреть решение?</h2>
       <p>Создайте аккаунт или войдите, чтобы получить доступ к подробным решениям всех задач.</p>
       <div class="modal-buttons">
-        <a href="/auth" class="modal-button primary">Войти / Создать аккаунт</a>
+        <a href="/register" class="modal-button primary">Войти / Создать аккаунт</a>
         <button class="modal-button secondary" onclick="closeSolutionModal()">Закрыть</button>
       </div>
     </div>

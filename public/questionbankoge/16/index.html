@@ -395,6 +395,28 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
+    /* Table styling for problem text */
+    .problem-text table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .problem-text table td {
+      padding: 0.75rem 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+    }
+
+    .problem-text table tr:first-child td {
+      background: rgba(251, 191, 36, 0.1);
+      font-weight: 600;
+      color: #fbbf24;
+    }
+
     /* Mobile Responsiveness */
     @media (max-width: 768px) {
       .header h1 {
@@ -474,10 +496,10 @@
       
        <div class="question-item">
          <div class="question-number">Вопрос 1</div>
-         
-         <div class="problem-text">\[ \text{Четырёхугольник } ABCD \text{ описан около окружности,} \]<br>\[ \text{где } AB = 6, BC = 8, CD = 11. \]<br>\[ \text{Найдите } AD. \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//375.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Четырёхугольник \( ABCD \) вписан в окружность. Угол \( ABC \) равен \( 38^\circ \), угол \( CAD \) равен \( 33^\circ \). Найдите угол \( ABD \). Ответ дайте в градусах.</p></div>
          <button class="show-answer-btn"
-                 data-answer="9"
+                 data-answer="5"
                  onclick="showAnswer(0, this.dataset.answer)">
            Показать ответ
          </button>
@@ -490,9 +512,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 2</div>
          
-         <div class="problem-text">\[ \text{Радиус окружности, вписанной в равнобедренную трапецию, равен } 34. \]<br>\[ \text{Найдите высоту этой трапеции.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Отрезки \( AC \) и \( BD \) — диаметры окружности с центром в точке \( O \).</p><p>Угол \( ACB \) равен \( 23^\circ \).</p><p>Найдите угол \( AOD \).</p><p>Ответ дайте в градусах.</p></div>
          <button class="show-answer-btn"
-                 data-answer="68"
+                 data-answer="134"
                  onclick="showAnswer(1, this.dataset.answer)">
            Показать ответ
          </button>
@@ -505,9 +527,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 3</div>
          
-         <div class="problem-text">\[ \text{Четырёхугольник } ABCD \text{ вписан в окружность.} \]<br>\[ \text{Угол } ABC \text{ равен } 56^\circ, \text{ угол } CAD \text{ равен } 42^\circ. \]<br>\[ \text{Найдите угол } ABD. \]<br>\[ \text{Ответ дайте в градусах.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Отрезки \( AC \) и \( BD \) — диаметры окружности с центром в точке \( O \).</p><p>Угол \( ACB \) равен \( 19^\circ \).</p><p>Найдите угол \( AOD \).</p><p>Ответ дайте в градусах.</p></div>
          <button class="show-answer-btn"
-                 data-answer="14"
+                 data-answer="142"
                  onclick="showAnswer(2, this.dataset.answer)">
            Показать ответ
          </button>
@@ -520,9 +542,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 4</div>
          
-         <div class="problem-text">\[ \text{Трапеция } ABCD \text{ с основаниями } AD \text{ и } BC \text{ описана около окружности, } AB=11, BC=6, CD=9. \]<br>\[ \text{Найдите } AD. \]</div>
+         <div class="problem-text tex2jax_process"><p>Треугольник \( ABC \) вписан в окружность с центром в точке \( O \).</p><p>Точки \( O \) и \( C \) лежат в одной полуплоскости относительно прямой \( AB \).</p><p>Найдите угол \( ACB \), если угол \( AOB \) равен \( 27^\circ \).</p><p>Ответ дайте в градусах.</p></div>
          <button class="show-answer-btn"
-                 data-answer="14"
+                 data-answer="13.5"
                  onclick="showAnswer(3, this.dataset.answer)">
            Показать ответ
          </button>
@@ -535,9 +557,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 5</div>
          
-         <div class="problem-text">\[ \text{Угол } A \text{ трапеции } ABCD \text{ с основаниями } AD \text{ и } BC, \text{ вписанной в окружность, равен } 54^\circ. \]<br>\[ \text{Найдите угол } B \text{ этой трапеции. Ответ дайте в градусах.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Радиус окружности, вписанной в равносторонний треугольник, равен \( 8\sqrt{3}. \)</p><p>Найдите длину стороны этого треугольника.</p></div>
          <button class="show-answer-btn"
-                 data-answer="126"
+                 data-answer="48"
                  onclick="showAnswer(4, this.dataset.answer)">
            Показать ответ
          </button>
@@ -550,9 +572,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 6</div>
          
-         <div class="problem-text">\[ \text{Радиус окружности, описанной около квадрата, равен } 28\sqrt{2}. \]<br>\[ \text{Найдите длину стороны этого квадрата.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Сторона квадрата равна \( 22 \).</p><p>Найдите радиус окружности, вписанной в этот квадрат.</p></div>
          <button class="show-answer-btn"
-                 data-answer="56"
+                 data-answer="11"
                  onclick="showAnswer(5, this.dataset.answer)">
            Показать ответ
          </button>
@@ -565,9 +587,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 7</div>
          
-         <div class="problem-text">\[ \text{Радиус окружности, вписанной в равнобедренную трапецию, равен } 14. \]<br>\[ \text{Найдите высоту этой трапеции.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Радиус окружности, вписанной в прямоугольную трапецию, равен \( 36 \).</p><p>Найдите высоту этой трапеции.</p></div>
          <button class="show-answer-btn"
-                 data-answer="28"
+                 data-answer="72"
                  onclick="showAnswer(6, this.dataset.answer)">
            Показать ответ
          </button>
@@ -580,9 +602,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 8</div>
          
-         <div class="problem-text">\[ \text{Четырёхугольник } ABCD \text{ вписан в окружность.} \]<br>\[ \text{Угол } ABC \text{ равен } 112^\circ, \]<br>\[ \text{угол } CAD \text{ равен } 70^\circ. \]<br>\[ \text{Найдите угол } ABD. \]<br>\[ \text{Ответ дайте в градусах.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Центр окружности, описанной около треугольника \( ABC \), лежит на стороне \( AB \). Радиус окружности равен \( 17 \). Найдите \( AC \), если \( BC = 30 \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="42"
+                 data-answer="16"
                  onclick="showAnswer(7, this.dataset.answer)">
            Показать ответ
          </button>
@@ -594,10 +616,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 9</div>
-         
-         <div class="problem-text">Четырёхугольник \(ABCD\) описан около окружности, \(AB=8\), \(BC=20\), \(CD=17\). Найдите \(AD\).</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//16_7_pr_pic.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Четырёхугольник \(A B C D\) вписан в окружность. Угол \(A B C\) равен \(92^\circ\), угол \(C A D\) равен \(60^\circ\). Найдите угол \(A B D\). Ответ дайте в градусах.</p></div>
          <button class="show-answer-btn"
-                 data-answer="5"
+                 data-answer="32"
                  onclick="showAnswer(8, this.dataset.answer)">
            Показать ответ
          </button>
@@ -610,9 +632,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 10</div>
          
-         <div class="problem-text">\[ \text{Радиус окружности, вписанной в равносторонний треугольник, равен } 2\sqrt{3}. \]<br>\[ \text{Найдите длину стороны этого треугольника.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Центр окружности, описанной около треугольника \( ABC \), лежит на стороне \( AB \). Найдите угол \( ABC \), если угол \( BAC \) равен \( 48^\circ \). Ответ дайте в градусах.</p></div>
          <button class="show-answer-btn"
-                 data-answer="12"
+                 data-answer="42"
                  onclick="showAnswer(9, this.dataset.answer)">
            Показать ответ
          </button>
@@ -625,9 +647,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 11</div>
          
-         <div class="problem-text">\[ \text{Радиус окружности, описанной около равностороннего треугольника, равен } 9\sqrt{3}. \]<br>\[ \text{Найдите длину стороны этого треугольника.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Четырёхугольник \( ABCD \) вписан в окружность.</p><p>Угол \( ABD \) равен \( 51^\circ \), угол \( CAD \) равен \( 42^\circ \).</p><p>Найдите угол \( ABC \). Ответ дайте в градусах.</p></div>
          <button class="show-answer-btn"
-                 data-answer="27"
+                 data-answer="93"
                  onclick="showAnswer(10, this.dataset.answer)">
            Показать ответ
          </button>
@@ -640,9 +662,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 12</div>
          
-         <div class="problem-text">\[ \text{Радиус окружности, описанной около равностороннего треугольника, равен } 5\sqrt{3}. \]<br>\[ \text{Найдите длину стороны этого треугольника.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Радиус окружности, вписанной в равнобедренную трапецию, равен \( 28 \).</p><p>Найдите высоту этой трапеции.</p></div>
          <button class="show-answer-btn"
-                 data-answer="15"
+                 data-answer="56"
                  onclick="showAnswer(11, this.dataset.answer)">
            Показать ответ
          </button>
@@ -655,9 +677,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 13</div>
          
-         <div class="problem-text">\[ \text{Диагональ прямоугольника образует угол } 86^\circ \text{ с одной из его сторон.} \]<br>\[ \text{Найдите острый угол между диагоналями этого прямоугольника.} \]<br>\[ \text{Ответ дайте в градусах.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Сторона квадрата равна \( 24\sqrt{2}. \)</p><p>Найдите радиус окружности, описанной около этого квадрата.</p></div>
          <button class="show-answer-btn"
-                 data-answer="8"
+                 data-answer="24"
                  onclick="showAnswer(12, this.dataset.answer)">
            Показать ответ
          </button>
@@ -670,9 +692,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 14</div>
          
-         <div class="problem-text">\[ \text{Сторона квадрата равна } 14\sqrt{2}. \text{ Найдите радиус окружности,} \]<br>\[ \text{описанной около этого квадрата.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Радиус окружности, вписанной в трапецию, равен \( 48 \).</p><p>Найдите высоту этой трапеции.</p></div>
          <button class="show-answer-btn"
-                 data-answer="14"
+                 data-answer="96"
                  onclick="showAnswer(13, this.dataset.answer)">
            Показать ответ
          </button>
@@ -684,10 +706,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 15</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//16_10_pr_pic.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Угол \(A\) трапеции \(ABCD\) с основаниями \(AD\) и \(BC\), вписанной в окружность, равен \(52^\circ\). Найдите угол \(B\) этой трапеции. Ответ дайте в градусах.</div>
+         
+         <div class="problem-text tex2jax_process"><p>Угол \(A\) трапеции \(ABCD\) с основаниями \(AD\) и \(BC\), вписанной в окружность, равен \(53^\circ\).</p><p>Найдите угол \(C\) этой трапеции.</p><p>Ответ дайте в градусах.</p></div>
          <button class="show-answer-btn"
-                 data-answer="128"
+                 data-answer="127"
                  onclick="showAnswer(14, this.dataset.answer)">
            Показать ответ
          </button>
@@ -699,10 +721,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 16</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//740.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{Четырёхугольник } ABCD \text{ вписан в окружность.} \]<br>\[ \text{Угол } ABC \text{ равен } 70^\circ, \text{ угол } CAD \text{ равен } 49^\circ. \]<br>\[ \text{Найдите угол } ABD. \]<br>\[ \text{Ответ дайте в градусах.} \]</div>
+         
+         <div class="problem-text tex2jax_process"><p>Диагонали \( AC \) и \( BD \) прямоугольника \( ABCD \) пересекаются в точке \( O \), где \( BO = 11 \), а \( AB = 10 \). Найдите \( AC \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="21"
+                 data-answer="22"
                  onclick="showAnswer(15, this.dataset.answer)">
            Показать ответ
          </button>
@@ -714,10 +736,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 17</div>
-         
-         <div class="problem-text">\[ \text{На окружности по разные стороны от диаметра } AB \text{ взяты точки } M \text{ и } N. \]<br>\[ \text{Известно, что } \angle NBA = 44^\circ. \]<br>\[ \text{Найдите угол } NMB. \]<br>\[ \text{Ответ дайте в градусах.} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//436.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Треугольник \( ABC \) вписан в окружность с центром в точке \( O \).</p><p>Точки \( O \) и \( C \) лежат в одной полуплоскости относительно прямой \( AB \).</p><p>Найдите угол \( ACB \), если угол \( AOB \) равен \( 153^\circ \).</p><p>Ответ дайте в градусах.</p></div>
          <button class="show-answer-btn"
-                 data-answer="46"
+                 data-answer="76.5"
                  onclick="showAnswer(16, this.dataset.answer)">
            Показать ответ
          </button>
@@ -730,9 +752,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 18</div>
          
-         <div class="problem-text">\[ \text{Сторона квадрата равна } 18\sqrt{2}. \]<br>\[ \text{Найдите радиус окружности,} \]<br>\[ \text{описанной около этого квадрата.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Сторона равностороннего треугольника равна \( 6\sqrt{3} \). Найдите радиус окружности, описанной около этого треугольника.</p></div>
          <button class="show-answer-btn"
-                 data-answer="18"
+                 data-answer="6"
                  onclick="showAnswer(17, this.dataset.answer)">
            Показать ответ
          </button>
@@ -744,10 +766,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 19</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//275.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{В треугольнике } ABC \text{ угол } C \text{ равен } 135^\circ, \]<br>\[ AB = 14\sqrt{2}. \]<br>\[ \text{Найдите радиус окружности, описанной} \]<br>\[ \text{около этого треугольника.} \]</div>
+         
+         <div class="problem-text tex2jax_process"><p>Центр окружности, описанной около треугольника \( ABC \), лежит на стороне \( AB \).</p><p>Радиус окружности равен \( 6{,}5 \).</p><p>Найдите \( AC \), если \( BC = 12 \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="14"
+                 data-answer="5"
                  onclick="showAnswer(18, this.dataset.answer)">
            Показать ответ
          </button>
@@ -760,9 +782,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 20</div>
          
-         <div class="problem-text">\[ \text{Угол } A \text{ четырёхугольника } ABCD, \text{ вписанного в окружность, равен } 54^\circ. \]<br>\[ \text{Найдите угол } C \text{ этого четырёхугольника.} \]<br>\[ \text{Ответ дайте в градусах.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Отрезки \( AC \) и \( BD \) — диаметры окружности с центром в точке \( O \).</p><p>Угол \( ACB \) равен \( 74^\circ \).</p><p>Найдите угол \( AOD \).</p><p>Ответ дайте в градусах.</p></div>
          <button class="show-answer-btn"
-                 data-answer="126"
+                 data-answer="32"
                  onclick="showAnswer(19, this.dataset.answer)">
            Показать ответ
          </button>
@@ -775,9 +797,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 21</div>
          
-         <div class="problem-text">\[ \text{Найдите площадь квадрата, описанного около окружности радиуса } 19. \]</div>
+         <div class="problem-text tex2jax_process"><p>В окружности с центром в точке \( O \) отрезки \( AC \) и \( BD \) — диаметры.</p><p>Угол \( AOD \) равен \( 44^\circ \).</p><p>Найдите угол \( ACB \).</p><p>Ответ дайте в градусах.</p></div>
          <button class="show-answer-btn"
-                 data-answer="1444"
+                 data-answer="68"
                  onclick="showAnswer(20, this.dataset.answer)">
            Показать ответ
          </button>
@@ -790,9 +812,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 22</div>
          
-         <div class="problem-text">\[ \text{Отрезки } AC \text{ и } BD \text{ — диаметры окружности с центром в точке } O. \]<br>\[ \text{Угол } ACB \text{ равен } 54^\circ. \]<br>\[ \text{Найдите угол } AOD. \]<br>\[ \text{Ответ дайте в градусах.} \]</div>
+         <div class="problem-text tex2jax_process"><p>На окружности по разные стороны от диаметра \( AB \) взяты точки \( M \) и \( N \).</p><p>Известно, что \( \angle NBA = 44^\circ \).</p><p>Найдите угол \( NMB \).</p><p>Ответ дайте в градусах.</p></div>
          <button class="show-answer-btn"
-                 data-answer="72"
+                 data-answer="46"
                  onclick="showAnswer(21, this.dataset.answer)">
            Показать ответ
          </button>
@@ -804,8 +826,8 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 23</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//16_31_pr_pic.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Через точку \(A\), лежащую вне окружности, проведены две прямые. Одна прямая касается окружности в точке \(K\). Другая прямая пересекает окружность в точках \(B\) и \(C\), причём \(AB=4\), \(AC=64\). Найдите \(AK\).</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//16_13_pr_pic.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Сторона равностороннего треугольника равна \(16\sqrt{3}\). Найдите радиус окружности, описанной около этого треугольника.</p></div>
          <button class="show-answer-btn"
                  data-answer="16"
                  onclick="showAnswer(22, this.dataset.answer)">
@@ -819,10 +841,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 24</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//436.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{Треугольник } ABC \text{ вписан в окружность с центром в точке } O. \]<br>\[ \text{Точки } O \text{ и } C \text{ лежат в одной полуплоскости} \]<br>\[ \text{относительно прямой } AB. \]<br>\[ \text{Найдите угол } ACB, \text{ если угол } AOB \text{ равен } 153^\circ. \]<br>\[ \text{Ответ дайте в градусах.} \]</div>
+         
+         <div class="problem-text tex2jax_process"><p>Диагональ прямоугольника образует угол \( 50^\circ \) с одной из его сторон.</p><p>Найдите острый угол между диагоналями этого прямоугольника.</p><p>Ответ дайте в градусах.</p></div>
          <button class="show-answer-btn"
-                 data-answer="76.5"
+                 data-answer="80"
                  onclick="showAnswer(23, this.dataset.answer)">
            Показать ответ
          </button>
@@ -834,10 +856,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 25</div>
-         
-         <div class="problem-text">Радиус окружности, вписанной в равнобедренную трапецию, равен $22$. Найдите высоту этой трапеции.</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//16_11_pr_pic.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Угол \(A\) трапеции \(ABCD\) с основаниями \(AD\) и \(BC\), вписанной в окружность, равен \(77^\circ\). Найдите угол \(C\) этой трапеции. Ответ дайте в градусах.</p></div>
          <button class="show-answer-btn"
-                 data-answer="44"
+                 data-answer="103"
                  onclick="showAnswer(24, this.dataset.answer)">
            Показать ответ
          </button>
@@ -850,9 +872,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 26</div>
          
-         <div class="problem-text">\[ \text{Сторона квадрата равна } 16\sqrt{2}. \]<br>\[ \text{Найдите радиус окружности, описанной около этого квадрата.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Диагональ прямоугольника образует угол \( 47^\circ \) с одной из его сторон.</p><p>Найдите острый угол между диагоналями этого прямоугольника.</p><p>Ответ дайте в градусах.</p></div>
          <button class="show-answer-btn"
-                 data-answer="16"
+                 data-answer="86"
                  onclick="showAnswer(25, this.dataset.answer)">
            Показать ответ
          </button>
@@ -865,9 +887,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 27</div>
          
-         <div class="problem-text">\[ \text{Треугольник } ABC \text{ вписан в окружность с центром в точке } O. \]<br>\[ \text{Точки } O \text{ и } C \text{ лежат в одной полуплоскости} \]<br>\[ \text{относительно прямой } AB. \]<br>\[ \text{Найдите угол } ACB, \text{ если угол } AOB \text{ равен } 173^\circ. \]<br>\[ \text{Ответ дайте в градусах.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Радиус вписанной в квадрат окружности равен \(4\sqrt{2}\). Найдите диагональ этого квадрата.</p></div>
          <button class="show-answer-btn"
-                 data-answer="86.5"
+                 data-answer="16"
                  onclick="showAnswer(26, this.dataset.answer)">
            Показать ответ
          </button>
@@ -879,10 +901,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 28</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//16_11_pr_pic.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">Угол \(A\) трапеции \(ABCD\) с основаниями \(AD\) и \(BC\), вписанной в окружность, равен \(77^\circ\). Найдите угол \(C\) этой трапеции. Ответ дайте в градусах.</div>
+         
+         <div class="problem-text tex2jax_process"><p>Угол \(A\) трапеции \(ABCD\) с основаниями \(AD\) и \(BC\), вписанной в окружность, равен \(69^\circ\).</p><p>Найдите угол \(C\) этой трапеции.</p><p>Ответ дайте в градусах.</p></div>
          <button class="show-answer-btn"
-                 data-answer="103"
+                 data-answer="111"
                  onclick="showAnswer(27, this.dataset.answer)">
            Показать ответ
          </button>
@@ -895,9 +917,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 29</div>
          
-         <div class="problem-text">\[ \text{На окружности по разные стороны от диаметра } AB \text{ взяты точки } M \text{ и } N. \]<br>\[ \text{Известно, что } \angle NBA = 34^\circ. \]<br>\[ \text{Найдите угол } NMB. \]<br>\[ \text{Ответ дайте в градусах.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Сторона квадрата равна \( 6 \).</p><p>Найдите радиус окружности, вписанной в этот квадрат.</p></div>
          <button class="show-answer-btn"
-                 data-answer="56"
+                 data-answer="3"
                  onclick="showAnswer(28, this.dataset.answer)">
            Показать ответ
          </button>
@@ -910,9 +932,9 @@
        <div class="question-item">
          <div class="question-number">Вопрос 30</div>
          
-         <div class="problem-text">\[ \text{Угол } A \text{ трапеции } ABCD \text{ с основаниями } AD \text{ и } BC, \]<br>\[ \text{вписанной в окружность, равен } 108^\circ. \]<br>\[ \text{Найдите угол } B \text{ этой трапеции.} \]<br>\[ \text{Ответ дайте в градусах.} \]</div>
+         <div class="problem-text tex2jax_process"><p>Центр окружности, описанной около треугольника \( ABC \), лежит на стороне \( AB \). Найдите угол \( ABC \), если угол \( BAC \) равен \( 24^\circ \). Ответ дайте в градусах.</p></div>
          <button class="show-answer-btn"
-                 data-answer="72"
+                 data-answer="66"
                  onclick="showAnswer(29, this.dataset.answer)">
            Показать ответ
          </button>
@@ -931,7 +953,7 @@
       <h2>Хотите посмотреть решение?</h2>
       <p>Создайте аккаунт или войдите, чтобы получить доступ к подробным решениям всех задач.</p>
       <div class="modal-buttons">
-        <a href="/auth" class="modal-button primary">Войти / Создать аккаунт</a>
+        <a href="/register" class="modal-button primary">Войти / Создать аккаунт</a>
         <button class="modal-button secondary" onclick="closeSolutionModal()">Закрыть</button>
       </div>
     </div>

@@ -395,6 +395,28 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
+    /* Table styling for problem text */
+    .problem-text table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .problem-text table td {
+      padding: 0.75rem 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+    }
+
+    .problem-text table tr:first-child td {
+      background: rgba(251, 191, 36, 0.1);
+      font-weight: 600;
+      color: #fbbf24;
+    }
+
     /* Mobile Responsiveness */
     @media (max-width: 768px) {
       .header h1 {
@@ -474,10 +496,11 @@
       
        <div class="question-item">
          <div class="question-number">Вопрос 1</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2235.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{На клетчатой бумаге с размером клетки } 1 \times 1 \text{ изображён ромб.} \]<br>\[ \text{Найдите площадь этого ромба.} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1056.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На клетчатой бумаге с размером клетки \(1 \times 1\) изображён треугольник.</p>
+<p>Найдите его площадь.</p></div>
          <button class="show-answer-btn"
-                 data-answer="24"
+                 data-answer="28"
                  onclick="showAnswer(0, this.dataset.answer)">
            Показать ответ
          </button>
@@ -489,10 +512,11 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 2</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2553.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{Впишите правильный ответ. На клетчатой бумаге с размером} \]<br>\[ \text{клетки } 1 \times 1 \text{ изображена трапеция. Найдите длину её средней линии.} \]<br>\begin{tabular}{|l|l|l|l|l|l|l|}<br>\hline<br> &amp;  &amp;  &amp;  &amp;  &amp;  &amp;  \\<br>\hline<br> &amp;  &amp;  &amp;  &amp;  &amp;  &amp;  \\<br>\hline<br> &amp;  &amp;  &amp;  &amp;  &amp;  &amp;  \\<br>\hline<br> &amp;  &amp;  &amp;  &amp;  &amp;  &amp;  \\<br>\hline<br>\end{tabular}</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//616.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На клетчатой бумаге с размером клетки \(1 \times 1\) изображён ромб.</p>
+<p>Найдите площадь этого ромба.</p></div>
          <button class="show-answer-btn"
-                 data-answer="5"
+                 data-answer="10"
                  onclick="showAnswer(1, this.dataset.answer)">
            Показать ответ
          </button>
@@ -504,10 +528,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 3</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2761.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{На клетчатой бумаге изображены два круга.} \]  <br>\[ \text{Во сколько раз площадь большего круга} \]  <br>\[ \text{больше площади меньшего?} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1399.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На клетчатой бумаге с размером клетки \( 1 \times 1 \) изображён прямоугольный треугольник. Найдите длину его большего катета.</p></div>
          <button class="show-answer-btn"
-                 data-answer="4"
+                 data-answer="8"
                  onclick="showAnswer(2, this.dataset.answer)">
            Показать ответ
          </button>
@@ -519,10 +543,11 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 4</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//857.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{На клетчатой бумаге с размером клетки } 1 \times 1 \text{ изображён} \]<br>\[ \text{прямоугольный треугольник. Найдите длину его большего катета.} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2232.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На клетчатой бумаге с размером клетки \(1 \times 1\) изображён треугольник.</p>
+<p>Найдите его площадь.</p></div>
          <button class="show-answer-btn"
-                 data-answer="5"
+                 data-answer="12"
                  onclick="showAnswer(3, this.dataset.answer)">
            Показать ответ
          </button>
@@ -534,10 +559,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 5</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2830.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{На клетчатой бумаге с размером клетки } 1 \times 1 \text{ изображены две точки.} \]  <br>\[ \text{Найдите расстояние между ними.} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2757.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На клетчатой бумаге с размером клетки \(1 \times 1\) изображены две точки. Найдите расстояние между ними.</p></div>
          <button class="show-answer-btn"
-                 data-answer="$\sqrt{61} \approx 7.81$"
+                 data-answer="\(\sqrt{65} \approx 8.06\)"
                  onclick="showAnswer(4, this.dataset.answer)">
            Показать ответ
          </button>
@@ -549,10 +574,12 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 6</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//673.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{На клетчатой бумаге с размером клетки } 1 \times 1 \text{ изображён} \]<br>\[ \text{прямоугольный треугольник. Найдите длину его большего катета.} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2505.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Впишите правильный ответ.</p>
+<p>На клетчатой бумаге с размером клетки \( 1 \times 1 \) изображена фигура.</p>
+<p>Найдите длину отрезка \( AB \) по данным чертежа.</p></div>
          <button class="show-answer-btn"
-                 data-answer="8"
+                 data-answer="3"
                  onclick="showAnswer(5, this.dataset.answer)">
            Показать ответ
          </button>
@@ -564,10 +591,11 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 7</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1703.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{На клетчатой бумаге с размером клетки } 1 \times 1 \text{ изображён} \]<br>\[ \text{прямоугольный треугольник. Найдите длину его большего катета.} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2522.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На клетчатой бумаге с размером клетки \(1 \times 1\) изображена фигура.</p>
+<p>Найдите длину отрезка \(AB\) по данным чертежа.</p></div>
          <button class="show-answer-btn"
-                 data-answer="5"
+                 data-answer="$\sqrt{5}$"
                  onclick="showAnswer(6, this.dataset.answer)">
            Показать ответ
          </button>
@@ -579,10 +607,12 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 8</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2232.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{На клетчатой бумаге с размером клетки } 1 \times 1 \text{ изображён треугольник.} \]  <br>\[ \text{Найдите его площадь.} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2745.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Впишите правильный ответ.</p>
+<p>На клетчатой бумаге с размером клетки \( 1 \times 1 \) изображена фигура.</p>
+<p>Найдите длину отрезка \( AB \) по данным чертежа.</p></div>
          <button class="show-answer-btn"
-                 data-answer="12"
+                 data-answer="$\sqrt{41}$"
                  onclick="showAnswer(7, this.dataset.answer)">
            Показать ответ
          </button>
@@ -594,10 +624,12 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 9</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1450.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{На клетчатой бумаге с размером клетки } 1 \times 1 \text{ изображён} \]<br>\[ \text{параллелограмм. Найдите его площадь.} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2453.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Впишите правильный ответ.</p>
+<p>На клетчатой бумаге с размером клетки \(1 \times 1\) изображена фигура.</p>
+<p>Найдите длину отрезка \(AB\) по данным чертежа.</p></div>
          <button class="show-answer-btn"
-                 data-answer="36"
+                 data-answer="3"
                  onclick="showAnswer(8, this.dataset.answer)">
            Показать ответ
          </button>
@@ -609,10 +641,12 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 10</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1077.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{На клетчатой бумаге с размером клетки } 1 \times 1 \text{ изображён параллелограмм.} \]<br>\[ \text{Найдите его площадь.} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2377.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Впишите правильный ответ.</p>
+<p>На клетчатой бумаге изображён треугольник \( ABC \).</p>
+<p>Во сколько раз отрезок \( AM \) длиннее отрезка \( CM \)?</p></div>
          <button class="show-answer-btn"
-                 data-answer="35"
+                 data-answer="3"
                  onclick="showAnswer(9, this.dataset.answer)">
            Показать ответ
          </button>
@@ -624,10 +658,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 11</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2512.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{На клетчатой бумаге с размером клетки } 1 \times 1 \text{ изображена фигура.} \]  <br>\[ \text{Найдите длину отрезка } AB \text{ по данным чертежа.} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//45.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На клетчатой бумаге с размером клетки \(1 \times 1\) изображён ромб.</p><p>Найдите длину его большей диагонали.</p></div>
          <button class="show-answer-btn"
-                 data-answer="5"
+                 data-answer="10"
                  onclick="showAnswer(10, this.dataset.answer)">
            Показать ответ
          </button>
@@ -639,10 +673,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 12</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1710.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{На клетчатой бумаге с размером клетки } 1 \times 1 \text{ изображён ромб.} \]<br>\[ \text{Найдите площадь этого ромба.} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2525.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На клетчатой бумаге с размером клетки \(1 \times 1\) изображены две точки. Найдите расстояние между ними.</p></div>
          <button class="show-answer-btn"
-                 data-answer="16"
+                 data-answer="\(\sqrt{13}\)"
                  onclick="showAnswer(11, this.dataset.answer)">
            Показать ответ
          </button>
@@ -654,10 +688,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 13</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//25.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{На клетчатой бумаге с размером клетки } 1 \times 1 \text{ изображён треугольник.} \]<br>\[ \text{Найдите его площадь.} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//457.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На клетчатой бумаге с размером клетки \(1 \times 1\) изображён треугольник \(ABC\).</p><p>Найдите длину его средней линии, параллельной стороне \(AC\).</p></div>
          <button class="show-answer-btn"
-                 data-answer="14"
+                 data-answer="3"
                  onclick="showAnswer(12, this.dataset.answer)">
            Показать ответ
          </button>
@@ -669,10 +703,11 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 14</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1058.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{На клетчатой бумаге с размером клетки } 1 \times 1 \text{ изображена трапеция.} \]<br>\[ \text{Найдите длину её средней линии.} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2844.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На клетчатой бумаге с размером клетки \(1 \times 1\) изображена фигура.</p>
+<p>Найдите длину отрезка \(AB\) по данным чертежа.</p></div>
          <button class="show-answer-btn"
-                 data-answer="7"
+                 data-answer="2.83"
                  onclick="showAnswer(13, this.dataset.answer)">
            Показать ответ
          </button>
@@ -684,10 +719,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 15</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1592.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{На клетчатой бумаге с размером клетки } 1 \times 1 \text{ изображена трапеция.} \]<br>\[ \text{Найдите её площадь.} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2494.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На клетчатой бумаге с размером клетки \( 1 \times 1 \) изображена фигура.</p><p>Найдите длину отрезка \( AB \) по данным чертежа.</p></div>
          <button class="show-answer-btn"
-                 data-answer="30"
+                 data-answer="$\sqrt{13}$"
                  onclick="showAnswer(14, this.dataset.answer)">
            Показать ответ
          </button>
@@ -699,10 +734,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 16</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//382.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{На клетчатой бумаге с размером клетки } 1 \times 1 \text{ изображён треугольник } ABC. \]<br>\[ \text{Найдите длину его средней линии,} \]<br>\[ \text{параллельной стороне } AC. \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//18_30_pr_pic.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На клетчатой бумаге изображены два круга. Во сколько раз площадь большего круга больше площади меньшего?</p></div>
          <button class="show-answer-btn"
-                 data-answer="3"
+                 data-answer="8"
                  onclick="showAnswer(15, this.dataset.answer)">
            Показать ответ
          </button>
@@ -714,10 +749,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 17</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1943.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{На клетчатой бумаге с размером клетки } 1 \times 1 \text{ изображена трапеция.} \]<br>\[ \text{Найдите её площадь.} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2376.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На клетчатой бумаге с размером клетки \(1 \times 1\) изображены две точки.</p><p>Найдите расстояние между ними.</p></div>
          <button class="show-answer-btn"
-                 data-answer="15"
+                 data-answer="$\sqrt{106}$"
                  onclick="showAnswer(16, this.dataset.answer)">
            Показать ответ
          </button>
@@ -730,7 +765,7 @@
        <div class="question-item">
          <div class="question-number">Вопрос 18</div>
          <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//18_9_pr_pic.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">На клетчатой бумаге размером клетки \(1\times1\) изображён ромб. Найдите длину его большей диагонали.</div>
+         <div class="problem-text tex2jax_process"><p>На клетчатой бумаге размером клетки \(1\times1\) изображён ромб. Найдите длину его большей диагонали.</p></div>
          <button class="show-answer-btn"
                  data-answer="8"
                  onclick="showAnswer(17, this.dataset.answer)">
@@ -744,10 +779,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 19</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//18_24_pr_pic.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">На клетчатой бумаге изображён треугольник \( A B C \). Во сколько раз отрезок \( A M \) короче отрезка \( B M \)?</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1940.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На клетчатой бумаге с размером клетки \( 1 \times 1 \) изображён треугольник \( ABC \). Найдите длину его средней линии, параллельной стороне \( AC \).</p></div>
          <button class="show-answer-btn"
-                 data-answer="3"
+                 data-answer="4"
                  onclick="showAnswer(18, this.dataset.answer)">
            Показать ответ
          </button>
@@ -759,10 +794,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 20</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2755.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{На клетчатой бумаге изображён треугольник } \boxed{} \text{.} \]  <br>\[ \text{Во сколько раз отрезок } \boxed{} \text{ короче отрезка } \boxed{} \text{?} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1135.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На клетчатой бумаге с размером клетки \(1 \times 1\) изображён треугольник.</p><p>Найдите его площадь.</p></div>
          <button class="show-answer-btn"
-                 data-answer="отрезок \( AM \) короче отрезка \( BM \) в 3 раза."
+                 data-answer="9"
                  onclick="showAnswer(19, this.dataset.answer)">
            Показать ответ
          </button>
@@ -774,10 +809,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 21</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//18_32_pr_pic.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">На клетчатой бумаге с размером клетки \(1\times1\) изображён угол. Найдите тангенс этого угла.</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//18_23_pr_pic.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На клетчатой бумаге с размером клетки \(1\times1\) изображена фигура. Найдите длину отрезка \(AB\) по данным чертежа.</p></div>
          <button class="show-answer-btn"
-                 data-answer="3"
+                 data-answer="1"
                  onclick="showAnswer(20, this.dataset.answer)">
            Показать ответ
          </button>
@@ -789,10 +824,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 22</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1049.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{На клетчатой бумаге с размером клетки } 1 \times 1 \text{ изображён ромб.} \]<br>\[ \text{Найдите площадь этого ромба.} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2370.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На клетчатой бумаге изображены два круга. Во сколько раз площадь большего круга больше площади меньшего?</p></div>
          <button class="show-answer-btn"
-                 data-answer="36"
+                 data-answer="4"
                  onclick="showAnswer(21, this.dataset.answer)">
            Показать ответ
          </button>
@@ -804,10 +839,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 23</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1879.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{На клетчатой бумаге с размером клетки } 1 \times 1 \text{ изображён} \]<br>\[ \text{параллелограмм. Найдите его площадь.} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2219.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На клетчатой бумаге с размером клетки \(1 \times 1\) изображён ромб.</p><p>Найдите длину его большей диагонали.</p></div>
          <button class="show-answer-btn"
-                 data-answer="12"
+                 data-answer="3"
                  onclick="showAnswer(22, this.dataset.answer)">
            Показать ответ
          </button>
@@ -819,10 +854,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 24</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1483.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{На клетчатой бумаге с размером клетки } 1 \times 1 \text{ изображён} \]<br>\[ \text{прямоугольный треугольник. Найдите длину его большего катета.} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2487.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На клетчатой бумаге изображены два круга. Во сколько раз площадь большего круга больше площади меньшего?</p></div>
          <button class="show-answer-btn"
-                 data-answer="5"
+                 data-answer="16"
                  onclick="showAnswer(23, this.dataset.answer)">
            Показать ответ
          </button>
@@ -834,10 +869,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 25</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2657.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{Впишите правильный ответ.} \]<br>\[ \text{На клетчатой бумаге с размером клетки } 1 \times 1 \]<br>\[ \text{изображена фигура. Найдите длину отрезка } AB \]<br>\[ \text{по данным чертежа.} \]<br>\begin{tabular}{|l|l|l|l|l|l|l|}<br>\hline <br> &amp;  &amp;  &amp;  &amp;  &amp;  &amp;  \\ <br>\hline <br> &amp;  &amp;  &amp;  &amp;  &amp;  &amp;  \\ <br>\hline <br> &amp; 4 &amp;  &amp;  &amp;  &amp; / 8 &amp;  \\ <br>\hline <br> &amp;  &amp;  &amp;  &amp;  &amp;  &amp;  \\ <br>\hline <br> &amp;  &amp;  &amp;  &amp;  &amp;  &amp;  \\ <br>\hline <br> &amp;  &amp;  &amp;  &amp;  &amp;  &amp;  \\ <br>\hline<br>\end{tabular}</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2634.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На клетчатой бумаге изображены два круга.</p><p>Во сколько раз площадь большего круга больше площади меньшего?</p></div>
          <button class="show-answer-btn"
-                 data-answer="4.472"
+                 data-answer="4"
                  onclick="showAnswer(24, this.dataset.answer)">
            Показать ответ
          </button>
@@ -849,10 +884,11 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 26</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1375.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{На клетчатой бумаге с размером клетки } 1 \times 1 \text{ изображён} \]<br>\[ \text{параллелограмм. Найдите его площадь.} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2448.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На клетчатой бумаге с размером клетки \(1 \times 1\) изображены две точки.</p>
+<p>Найдите расстояние между ними.</p></div>
          <button class="show-answer-btn"
-                 data-answer="12"
+                 data-answer="5"
                  onclick="showAnswer(25, this.dataset.answer)">
            Показать ответ
          </button>
@@ -864,10 +900,11 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 27</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//837.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{На клетчатой бумаге с размером клетки } 1 \times 1 \text{ изображён} \]<br>\[ \text{прямоугольный треугольник. Найдите длину его большего катета.} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2230.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На клетчатой бумаге с размером клетки \(1 \times 1\) изображён ромб.</p>
+<p>Найдите площадь этого ромба.</p></div>
          <button class="show-answer-btn"
-                 data-answer="10"
+                 data-answer="12"
                  onclick="showAnswer(26, this.dataset.answer)">
            Показать ответ
          </button>
@@ -879,10 +916,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 28</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//1135.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{На клетчатой бумаге с размером клетки } 1 \times 1 \text{ изображён треугольник.} \]<br>\[ \text{Найдите его площадь.} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2387.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На клетчатой бумаге с размером клетки \( 1 \times 1 \) изображена фигура.</p><p>Найдите длину отрезка \( AB \) по данным чертежа.</p></div>
          <button class="show-answer-btn"
-                 data-answer="9"
+                 data-answer="\(\sqrt{10}\)"
                  onclick="showAnswer(27, this.dataset.answer)">
            Показать ответ
          </button>
@@ -894,10 +931,11 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 29</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2287.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{Впишите правильный ответ.} \]<br>\[ \text{На клетчатой бумаге изображён треугольник } ABC. \]<br>\[ \text{Во сколько раз отрезок } AM \text{ короче отрезка } CM? \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2862.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>Впишите правильный ответ. На клетчатой бумаге с размером клетки \(1 \times 1\) изображена фигура.</p>
+<p>Найдите длину отрезка \(AB\) по данным чертежа.</p></div>
          <button class="show-answer-btn"
-                 data-answer="1"
+                 data-answer="5"
                  onclick="showAnswer(28, this.dataset.answer)">
            Показать ответ
          </button>
@@ -909,10 +947,10 @@
      
        <div class="question-item">
          <div class="question-number">Вопрос 30</div>
-         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//550.png" alt="Problem image" class="problem-image" />
-         <div class="problem-text">\[ \text{На клетчатой бумаге с размером клетки } 1 \times 1 \text{ изображена трапеция.} \]<br>\[ \text{Найдите её площадь.} \]</div>
+         <img src="https://casohrqgydyyvcclqwqm.supabase.co/storage/v1/object/public/images//2150.png" alt="Problem image" class="problem-image" />
+         <div class="problem-text tex2jax_process"><p>На клетчатой бумаге с размером клетки \( 1 \times 1 \) изображён прямоугольный треугольник. Найдите длину его большего катета.</p></div>
          <button class="show-answer-btn"
-                 data-answer="20"
+                 data-answer="10"
                  onclick="showAnswer(29, this.dataset.answer)">
            Показать ответ
          </button>
@@ -931,7 +969,7 @@
       <h2>Хотите посмотреть решение?</h2>
       <p>Создайте аккаунт или войдите, чтобы получить доступ к подробным решениям всех задач.</p>
       <div class="modal-buttons">
-        <a href="/auth" class="modal-button primary">Войти / Создать аккаунт</a>
+        <a href="/register" class="modal-button primary">Войти / Создать аккаунт</a>
         <button class="modal-button secondary" onclick="closeSolutionModal()">Закрыть</button>
       </div>
     </div>

@@ -1,0 +1,1451 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Задание 6 - Банк заданий ЕГЭ базовый</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true,
+        processEnvironments: true,
+        packages: {'[+]': ['ams', 'newcommand', 'configmacros']}
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        ignoreHtmlClass: 'tex2jax_ignore',
+        processHtmlClass: 'tex2jax_process'
+      },
+      startup: {
+        ready: () => {
+          MathJax.startup.defaultReady();
+          MathJax.startup.defaultDocument();
+        }
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%);
+      min-height: 100vh;
+      color: #ffffff;
+      overflow-x: hidden;
+    }
+
+    /* Flying Math Background Animation */
+    .flying-math {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .math-symbol {
+      position: absolute;
+      color: rgba(255, 255, 255, 0.1);
+      font-size: 2rem;
+      animation: float 20s infinite linear;
+      user-select: none;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100px) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 3rem;
+      padding: 2rem 0;
+    }
+
+    .header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 3rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #fbbf24 0%, #10b981 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    .header p {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 1.25rem;
+      font-weight: 500;
+    }
+
+    .header .subtitle {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .question-item {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .question-item:hover {
+      border-color: rgba(251, 191, 36, 0.4);
+      box-shadow: 0 20px 40px rgba(251, 191, 36, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .question-number {
+      font-size: 0.875rem;
+      color: #fbbf24;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .problem-image {
+      max-width: 100%;
+      width: 100%;
+      max-width: 600px;
+      height: auto;
+      border-radius: 12px;
+      margin: 0 auto 1.5rem auto;
+      display: block;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      object-fit: contain;
+    }
+
+    .problem-text {
+      font-size: 1.125rem;
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+      color: #ffffff;
+      font-weight: 400;
+    }
+
+    .answer-section {
+      margin-bottom: 1.5rem;
+    }
+
+    .answer-input {
+      width: 100%;
+      padding: 1rem 1.25rem;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      color: #ffffff;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(8px);
+    }
+
+    .answer-input:focus {
+      outline: none;
+      border-color: #fbbf24;
+      box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .answer-input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .show-answer-btn,
+    .show-solution-btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .show-answer-btn {
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      color: #1a1f36;
+      margin-right: 0.75rem;
+      box-shadow: 0 4px 16px rgba(251, 191, 36, 0.3);
+    }
+
+    .show-answer-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(251, 191, 36, 0.4);
+    }
+
+    .show-solution-btn {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
+    }
+
+    .show-solution-btn:hover {
+      border-color: #fbbf24;
+      background: rgba(251, 191, 36, 0.1);
+      transform: translateY(-1px);
+    }
+
+    .answer-display {
+      margin-top: 1rem;
+      padding: 1rem 1.25rem;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 12px;
+      color: #10b981;
+      font-weight: 600;
+      display: none;
+      backdrop-filter: blur(8px);
+    }
+
+    .answer-display.visible {
+      display: block;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      backdrop-filter: blur(8px);
+    }
+
+    .modal.visible {
+      display: flex;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .modal-content {
+      background: rgba(26, 31, 54, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 2.5rem;
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-content h2 {
+      font-family: 'Playfair Display', serif;
+      margin-bottom: 1rem;
+      color: #ffffff;
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .modal-content p {
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+      font-size: 1rem;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .modal-button {
+      padding: 0.875rem 1.75rem;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .modal-button.primary {
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      color: #1a1f36;
+      box-shadow: 0 4px 16px rgba(251, 191, 36, 0.3);
+    }
+
+    .modal-button.primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(251, 191, 36, 0.4);
+    }
+
+    .modal-button.secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
+    }
+
+    .modal-button.secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-1px);
+    }
+
+    /* MathJax styling to match the app */
+    mjx-container {
+      user-select: text;
+    }
+    
+    mjx-container * {
+      user-select: none;
+    }
+    
+    /* MathJax selection and display styling */
+    mjx-container {
+      user-select: text;
+    }
+    
+    /* Selection highlighting for regular text and MathJax fallback */
+    ::selection {
+      background: rgba(251, 191, 36, 0.3);
+    }
+    
+    /* MathJax selection overlay */
+    .mjx-selection-highlight {
+      background: rgba(251, 191, 36, 0.3) !important;
+    }
+    
+    /* Force selection visibility on MathJax elements */
+    mjx-container.mjx-selected {
+      background: rgba(251, 191, 36, 0.3);
+    }
+
+    /* General image styling for any images in the content */
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto 1rem auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Table styling for problem text */
+    .problem-text table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .problem-text table td {
+      padding: 0.75rem 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+    }
+
+    .problem-text table tr:first-child td {
+      background: rgba(251, 191, 36, 0.1);
+      font-weight: 600;
+      color: #fbbf24;
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2.5rem;
+      }
+
+      .header p {
+        font-size: 1.125rem;
+      }
+
+      .question-item {
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .show-answer-btn {
+        margin-bottom: 0.75rem;
+        margin-right: 0;
+        width: 100%;
+      }
+
+      .show-solution-btn {
+        width: 100%;
+      }
+
+      .problem-image {
+        max-width: 100%;
+        margin: 0 auto 1rem auto;
+      }
+
+      .modal-content {
+        padding: 2rem;
+        margin: 1rem;
+      }
+
+      .modal-buttons {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .modal-button {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 1rem 0.75rem;
+      }
+
+      .header h1 {
+        font-size: 2rem;
+      }
+
+      .question-item {
+        padding: 1.25rem;
+      }
+
+      .problem-text {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Flying Math Background -->
+  <div class="flying-math" id="flyingMath"></div>
+
+  <div class="container">
+    <div class="header">
+      <h1>Задание 6</h1>
+      <p>Банк заданий ЕГЭ базовый по математике</p>
+    </div>
+
+    <div id="questions">
+      
+       <div class="question-item">
+         <div class="question-number">Вопрос 1</div>
+         
+         <div class="problem-text tex2jax_process"><p>В городском парке работает 5 аттракционов: карусель, колесо обозрения, автодром, «Ромашка» и «Весёлый тир». В кассах продаётся 6 видов билетов, каждый из которых на один или на два аттракциона. Сведения о стоимости билетов представлены в таблице.</p>
+<table><tr><td>Номер билета</td><td>Набор аттракционов</td><td>Стоимость (руб.)</td></tr><tr><td>1</td><td>Автодром, «Весёлый тир»</td><td>300</td></tr><tr><td>2</td><td>Карусель</td><td>150</td></tr><tr><td>3</td><td>«Ромашка», карусель</td><td>400</td></tr><tr><td>4</td><td>«Ромашка», колесо обозрения</td><td>350</td></tr><tr><td>5</td><td>«Весёлый тир», колесо обозрения</td><td>500</td></tr><tr><td>6</td><td>Карусель, автодром</td><td>400</td></tr></table>
+<p>Какие билеты должен купить Андрей, чтобы посетить все пять аттракционов и потратить не больше 900 рублей? В ответе запишите какой-нибудь один набор номеров билетов без пробелов, запятых и других дополнительных символов.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="124"
+                 onclick="showAnswer(0, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-0" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 2</div>
+         
+         <div class="problem-text tex2jax_process"><p>Михаил решил посетить Парк аттракционов. Сведения о билетах на аттракционы представлены в таблице. Некоторые билеты позволяют посетить два аттракциона.</p>
+<table><tr><td>Номер билета</td><td>Аттракционы</td><td>Стоимость (руб.)</td></tr><tr><td>1</td><td>Комната смеха</td><td>300</td></tr><tr><td>2</td><td>Комната страха, комната смеха</td><td>400</td></tr><tr><td>3</td><td>Автодром, комната смеха</td><td>350</td></tr><tr><td>4</td><td>Колесо обозрения</td><td>200</td></tr><tr><td>5</td><td>Колесо обозрения, автодром</td><td>300</td></tr><tr><td>6</td><td>Автодром</td><td>100</td></tr></table>
+<p>Пользуясь таблицей, подберите билеты так, чтобы Михаил посетил все четыре аттракциона: колесо обозрения, комнату страха, комнату смеха, автодром, а суммарная стоимость билетов не превышала 750 рублей. В ответе запишите какой-нибудь один набор номеров билетов без пробелов, запятых и других дополнительных символов.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="25"
+                 onclick="showAnswer(1, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-1" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 3</div>
+         
+         <div class="problem-text tex2jax_process"><p>Впишите правильный ответ.</p>
+<p>В таблице представлены сведения о пиццах в интернет-магазине.</p>
+<table>
+<tr>
+<td>Номер пиццы</td>
+<td>Состав / название</td>
+<td>Тип</td>
+<td>Стоимость (руб.)</td>
+</tr>
+<tr>
+<td>1</td>
+<td>«4 сыра»</td>
+<td>Вегетарианская</td>
+<td>380</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Помидоры, сладкий перец</td>
+<td>Вегетарианская</td>
+<td>350</td>
+</tr>
+<tr>
+<td>3</td>
+<td>«Болоньезе»</td>
+<td>Мясная</td>
+<td>450</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Куриное филе, ананас, сыр</td>
+<td>Мясная</td>
+<td>400</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Оливки, грибы, помидоры</td>
+<td>Вегетарианская</td>
+<td>400</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Куриное филе, грибы, помидоры</td>
+<td>Мясная</td>
+<td>480</td>
+</tr>
+</table>
+<p>Виталию нужно купить три разные пиццы так, чтобы среди них была хотя бы одна с грибами, хотя бы одна вегетарианская и хотя бы одна мясная. Какие пиццы должен выбрать Виталий, если он рассчитывает потратить на всё не более 1150 рублей?</p>
+<p>В ответе укажите какой-нибудь один набор номеров пицц без пробелов, запятых и других дополнительных символов.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="№2, №4, №5"
+                 onclick="showAnswer(2, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-2" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 4</div>
+         
+         <div class="problem-text tex2jax_process"><p>Для обслуживания международного семинара необходимо собрать группу переводчиков. Сведения о кандидатах представлены в таблице.</p>
+<table>
+<tr>
+<td style="text-align: center;">Номер переводчика</td>
+<td style="text-align: center;">Языки</td>
+<td style="text-align: center;">Стоимость услуг (руб. в день)</td>
+</tr>
+<tr>
+<td style="text-align: center;">1</td>
+<td>Испанский</td>
+<td style="text-align: center;">2850</td>
+</tr>
+<tr>
+<td style="text-align: center;">2</td>
+<td>Испанский, английский</td>
+<td style="text-align: center;">6050</td>
+</tr>
+<tr>
+<td style="text-align: center;">3</td>
+<td>Английский</td>
+<td style="text-align: center;">1900</td>
+</tr>
+<tr>
+<td style="text-align: center;">4</td>
+<td>Испанский, французский</td>
+<td style="text-align: center;">5950</td>
+</tr>
+<tr>
+<td style="text-align: center;">5</td>
+<td>Французский, немецкий</td>
+<td style="text-align: center;">6800</td>
+</tr>
+<tr>
+<td style="text-align: center;">6</td>
+<td>Немецкий</td>
+<td style="text-align: center;">4050</td>
+</tr>
+</table>
+<p>Пользуясь таблицей, соберите хотя бы одну группу, в которой переводчики вместе владеют всеми четырьмя языками: английским, немецким, испанским и французским, а суммарная стоимость их услуг не превышает 12 000 рублей в день. В ответе укажите какой-нибудь один набор номеров переводчиков без пробелов, запятых и других дополнительных символов.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="11550"
+                 onclick="showAnswer(3, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-3" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 5</div>
+         
+         <div class="problem-text tex2jax_process"><p>Турист подбирает экскурсии. Сведения об экскурсиях представлены в таблице.</p>
+<table><tr><td>Номер экскурсии</td><td>Посещаемые объекты</td><td>Стоимость (руб.)</td></tr><tr><td>1</td><td>Парк</td><td>200</td></tr><tr><td>2</td><td>Загородный дворец, музей живописи</td><td>200</td></tr><tr><td>3</td><td>Загородный дворец, крепость</td><td>300</td></tr><tr><td>4</td><td>Крепость</td><td>250</td></tr><tr><td>5</td><td>Музей живописи, парк</td><td>300</td></tr><tr><td>6</td><td>Загородный дворец</td><td>200</td></tr></table>
+<p>Пользуясь таблицей, подберите набор экскурсий так, чтобы турист посетил четыре объекта: крепость, загородный дворец, парк и музей живописи, а суммарная стоимость экскурсий не превышала 650 рублей.</p>
+<p>В ответе укажите какой-нибудь один набор номеров экскурсий без пробелов, запятых и других дополнительных символов.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="421"
+                 onclick="showAnswer(4, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-4" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 6</div>
+         
+         <div class="problem-text tex2jax_process"><p>Впишите правильный ответ.</p><p>Любовь Игнатьевна собирается в туристическую поездку на трое суток в некоторый город. В таблице дана информация о гостиницах в этом городе со свободными номерами на время её поездки.</p><table><tr><td><p align="center">Название гостиницы</p></td><td><p align="center">Рейтинг гостиницы</p></td><td><p align="center">Расстояние до центральной площади (км)</p></td><td><p align="center">Цена номера (руб. за сутки)</p></td></tr><tr><td><p align="center">«Южная»</p></td><td><p align="center">8,1</p></td><td><p align="center">2,3</p></td><td><p align="center">3550</p></td></tr><tr><td><p align="center">«Уют-плюс»</p></td><td><p align="center">6,9</p></td><td><p align="center">2,5</p></td><td><p align="center">3450</p></td></tr><tr><td><p align="center">«Центральная»</p></td><td><p align="center">7,4</p></td><td><p align="center">3,4</p></td><td><p align="center">3200</p></td></tr><tr><td><p align="center">«Вокзальная»</p></td><td><p align="center">8,6</p></td><td><p align="center">1,2</p></td><td><p align="center">3250</p></td></tr><tr><td><p align="center">«Турист»</p></td><td><p align="center">8,3</p></td><td><p align="center">1,7</p></td><td><p align="center">3200</p></td></tr><tr><td><p align="center">«Эльдорадо»</p></td><td><p align="center">9,5</p></td><td><p align="center">2,6</p></td><td><p align="center">3600</p></td></tr></table><p>Любовь Игнатьевна хочет остановиться в гостинице, которая находится не далее 2,4 км от центральной площади города и цена номера в которой не превышает 3500 рублей за сутки. Среди гостиниц, удовлетворяющих этим условиям, выберите гостиницу с наивысшим рейтингом. Сколько рублей стоит проживание в этой гостинице в течение трёх суток?</p></div>
+         <button class="show-answer-btn"
+                 data-answer="9750"
+                 onclick="showAnswer(5, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-5" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 7</div>
+         
+         <div class="problem-text tex2jax_process"><p>В городском парке работает 5 аттракционов: карусель, колесо обозрения, автодром, «Ромашка» и «Весёлый тир». В кассах продаётся 6 видов билетов, каждый из которых на один или два аттракциона. Сведения о стоимости билетов представлены в таблице.</p>
+<table>
+<tr>
+<td>Номер билета</td>
+<td>Набор аттракционов</td>
+<td>Стоимость (руб.)</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Автодром, колесо обозрения</td>
+<td>500</td>
+</tr>
+<tr>
+<td>2</td>
+<td>«Ромашка», карусель</td>
+<td>250</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Автодром, «Ромашка»</td>
+<td>500</td>
+</tr>
+<tr>
+<td>4</td>
+<td>«Ромашка»</td>
+<td>150</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Карусель, «Весёлый тир»</td>
+<td>200</td>
+</tr>
+<tr>
+<td>6</td>
+<td>«Весёлый тир», колесо обозрения</td>
+<td>350</td>
+</tr>
+</table>
+<p>Какие билеты должен купить Андрей, чтобы посетить все пять аттракционов и затратить не более 900 рублей? В ответе укажите какой-нибудь один набор номеров билетов без пробелов, запятых и других дополнительных символов.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="850"
+                 onclick="showAnswer(6, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-6" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 8</div>
+         
+         <div class="problem-text tex2jax_process"><p>Для обслуживания международного семинара необходимо собрать группу переводчиков.</p><p>Сведения о кандидатах представлены в таблице.</p><table><tr><td>\centering \text{Номер переводчика}</td><td>\centering \text{Языки}</td><td>\centering \text{Стоимость услуг (руб. в день)}</td></tr><tr><td>\centering 1</td><td>\text{Английский}</td><td>\centering 3900</td></tr><tr><td>\centering 2</td><td>\text{Испанский, английский}</td><td>\centering 7050</td></tr><tr><td>\centering 3</td><td>\text{Немецкий}</td><td>\centering 2850</td></tr><tr><td>\centering 4</td><td>\text{Немецкий, испанский}</td><td>\centering 6150</td></tr><tr><td>\centering 5</td><td>\text{Немецкий, французский}</td><td>\centering 5800</td></tr><tr><td>\centering 6</td><td>\text{Французский}</td><td>\centering 1900</td></tr></table><p>Пользуясь таблицей, соберите хотя бы одну группу, в которой переводчики вместе владеют всеми четырьмя языками: английским, немецким, испанским и французским, а суммарная стоимость их услуг не превышает 12 000 рублей в день.</p><p>В ответе укажите какой-нибудь один набор номеров переводчиков без пробелов, запятых и других дополнительных символов.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="236"
+                 onclick="showAnswer(7, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-7" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 9</div>
+         
+         <div class="problem-text tex2jax_process"><p>Дмитрий Валентинович собирается в туристическую поездку на трое суток в некоторый город. В таблице дана информация о гостиницах в этом городе со свободными номерами на время его поездки.</p>
+<table>
+<tr><td>Название гостиницы</td><td>Рейтинг гостиницы</td><td>Расстояние до центральной площади (км)</td><td>Цена номера (руб. за сутки)</td></tr>
+<tr><td>«Южная»</td><td>9,2</td><td>2,3</td><td>3600</td></tr>
+<tr><td>«Уют-плюс»</td><td>8,5</td><td>0,5</td><td>3700</td></tr>
+<tr><td>«Центральная»</td><td>7,3</td><td>1,2</td><td>2400</td></tr>
+<tr><td>«Вокзальная»</td><td>8,7</td><td>3,7</td><td>3600</td></tr>
+<tr><td>«Турист»</td><td>5,8</td><td>2,7</td><td>1900</td></tr>
+<tr><td>«Эльдорадо»</td><td>6,2</td><td>3,2</td><td>1500</td></tr>
+</table>
+<p>Дмитрий Валентинович хочет остановиться в гостинице, которая находится не далее 2,5 км от центральной площади и рейтинг которой не ниже 8,5. Среди гостиниц, удовлетворяющих этим условиям, выберите гостиницу с наименьшей ценой номера за сутки. Сколько рублей стоит проживание в этой гостинице в течение трёх суток?</p></div>
+         <button class="show-answer-btn"
+                 data-answer="10800"
+                 onclick="showAnswer(8, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-8" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 10</div>
+         
+         <div class="problem-text tex2jax_process"><p>Турист подбирает экскурсии. Сведения об экскурсиях представлены в таблице.</p>
+<table>
+<tr><td>Номер экскурсии</td><td>Посещаемые объекты</td><td>Стоимость (руб.)</td></tr>
+<tr><td>1</td><td>Загородный дворец</td><td>350</td></tr>
+<tr><td>2</td><td>Загородный дворец, музей живописи</td><td>400</td></tr>
+<tr><td>3</td><td>Парк, крепость</td><td>300</td></tr>
+<tr><td>4</td><td>Загородный дворец, парк</td><td>200</td></tr>
+<tr><td>5</td><td>Крепость</td><td>200</td></tr>
+<tr><td>6</td><td>Музей живописи</td><td>150</td></tr>
+</table>
+<p>Пользуясь таблицей, подберите набор экскурсий так, чтобы турист посетил четыре объекта: крепость, загородный дворец, парк и музей живописи, а суммарная стоимость экскурсий не превышала 650 рублей. В ответе укажите какой-нибудь один набор номеров экскурсий без пробелов, запятых и других дополнительных символов.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="456"
+                 onclick="showAnswer(9, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-9" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 11</div>
+         
+         <div class="problem-text tex2jax_process"><p>Для обработки дачного участка дачнику необходимо приобрести: лопату, тяпку, вилы и грабли. В магазине продаются наборы инструментов, некоторые наборы состоят только из одного инструмента. Цены приведены в таблице.</p>
+<table>
+<tr><td>\(\text{Номер набора}\)</td><td>\(\text{Инструменты}\)</td><td>\(\text{Стоимость (руб.)}\)</td></tr>
+<tr><td>\(1\)</td><td>\(\text{вилы, тяпка}\)</td><td>\(430\)</td></tr>
+<tr><td>\(2\)</td><td>\(\text{тяпка}\)</td><td>\(160\)</td></tr>
+<tr><td>\(3\)</td><td>\(\text{грабли}\)</td><td>\(190\)</td></tr>
+<tr><td>\(4\)</td><td>\(\text{лопата}\)</td><td>\(190\)</td></tr>
+<tr><td>\(5\)</td><td>\(\text{вилы, грабли}\)</td><td>\(460\)</td></tr>
+<tr><td>\(6\)</td><td>\(\text{лопата, грабли}\)</td><td>\(340\)</td></tr>
+</table>
+<p>Пользуясь таблицей, соберите полный комплект необходимых инструментов так, чтобы суммарная стоимость была наименьшей. В ответе для собранного комплекта укажите номера наборов без пробелов, запятых и других дополнительных символов.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="970"
+                 onclick="showAnswer(10, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-10" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 12</div>
+         
+         <div class="problem-text tex2jax_process"><p>Турист, прибывший в Санкт-Петербург, хочет посетить 4 музея: Эрмитаж, Русский музей, Петропавловскую крепость и Исаакиевский собор. Экскурсионные кассы предлагают маршруты с посещением одного или нескольких объектов. Сведения о стоимости билетов и составе маршрутов представлены в таблице.</p>
+<table><tr><td>Номер маршрута</td><td>Посещаемые объекты</td><td>Стоимость (руб.)</td></tr><tr><td>1</td><td>Исаакиевский собор, Эрмитаж</td><td>1600</td></tr><tr><td>2</td><td>Петропавловская крепость, Эрмитаж</td><td>1450</td></tr><tr><td>3</td><td>Исаакиевский собор, Русский музей</td><td>1400</td></tr><tr><td>4</td><td>Петропавловская крепость</td><td>350</td></tr><tr><td>5</td><td>Эрмитаж</td><td>400</td></tr><tr><td>6</td><td>Русский музей</td><td>350</td></tr></table>
+<p>Какие маршруты должен выбрать путешественник, чтобы посетить все четыре музея и затратить на все билеты наименьшую сумму? В ответе укажите ровно один набор номеров маршрутов без пробелов, запятых и других дополнительных символов.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="453"
+                 onclick="showAnswer(11, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-11" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 13</div>
+         
+         <div class="problem-text tex2jax_process"><p>Для обработки дачного участка дачнику необходимо приобрести: лопату, тяпку, вилы и грабли. В магазине продаются наборы инструментов, некоторые наборы состоят только из одного инструмента. Цены приведены в таблице.</p>
+<table>
+<tr><td><b>№ Набора</b></td><td><b>Инструменты</b></td><td><b>Стоимость (руб. за штуку)</b></td></tr>
+<tr><td>1</td><td>вилы, лопата</td><td>370</td></tr>
+<tr><td>2</td><td>грабли</td><td>250</td></tr>
+<tr><td>3</td><td>тяпка, грабли</td><td>370</td></tr>
+<tr><td>4</td><td>тяпка</td><td>160</td></tr>
+<tr><td>5</td><td>вилы, грабли</td><td>440</td></tr>
+<tr><td>6</td><td>лопата</td><td>130</td></tr>
+</table>
+<p>Пользуясь таблицей, соберите полный комплект необходимых инструментов так, чтобы суммарная стоимость была наименьшей. В ответе для собранного комплекта укажите номера наборов без пробелов, запятых и других дополнительных символов.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="730"
+                 onclick="showAnswer(12, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-12" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 14</div>
+         
+         <div class="problem-text tex2jax_process"><p>Турист подбирает экскурсии. Сведения об экскурсиях представлены в таблице.</p>
+<table>
+<tr><td>Номер экскурсии</td><td>Посещаемые объекты</td><td>Стоимость (руб.)</td></tr>
+<tr><td>1</td><td>Загородный дворец, крепость</td><td>250</td></tr>
+<tr><td>2</td><td>Крепость</td><td>100</td></tr>
+<tr><td>3</td><td>Парк, музей живописи</td><td>390</td></tr>
+<tr><td>4</td><td>Загородный дворец</td><td>200</td></tr>
+<tr><td>5</td><td>Музей живописи</td><td>150</td></tr>
+<tr><td>6</td><td>Загородный дворец, парк</td><td>320</td></tr>
+</table>
+<p>Пользуясь таблицей, подберите набор экскурсий так, чтобы турист посетил четыре объекта: крепость, загородный дворец, парк и музей живописи, а суммарная стоимость экскурсий не превышала 650 рублей. В ответе запишите какой-нибудь один набор номеров экскурсий без пробелов, запятых и других дополнительных символов.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="640"
+                 onclick="showAnswer(13, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-13" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 15</div>
+         
+         <div class="problem-text tex2jax_process"><p>Путешественник из Москвы хочет посетить 4 города Золотого кольца России: Владимир, Ярославль, Суздаль и Ростов Великий. Турагентство предлагает маршруты с посещением некоторых городов Золотого кольца. Сведения о стоимости билетов и маршрутах представлены в таблице.</p>
+<table>
+<tr>
+<td>Номер маршрута</td>
+<td>Посещаемые города</td>
+<td>Стоимость (руб.)</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Суздаль, Ярославль, Владимир</td>
+<td>3800</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Ростов, Владимир</td>
+<td>2250</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Ростов, Суздаль</td>
+<td>2700</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Ярославль, Владимир</td>
+<td>2100</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Ярославль, Ростов</td>
+<td>2300</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Суздаль</td>
+<td>1700</td>
+</tr>
+</table>
+<p>Какие маршруты должен выбрать путешественник, чтобы побывать во всех четырёх городах и затратить менее 6000 рублей? В ответе укажите какой-нибудь один набор номеров маршрутов без пробелов, запятых и других дополнительных символов.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="маршруты 2, 3, 4"
+                 onclick="showAnswer(14, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-14" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 16</div>
+         
+         <div class="problem-text tex2jax_process"><p>Впишите правильный ответ.</p>
+<p>В таблице приведены данные о шести чемоданах.</p>
+<table><tr><td>Номер чемодана</td><td>Длина (см)</td><td>Высота (см)</td><td>Ширина (см)</td><td>Масса (кг)</td></tr><tr><td>1</td><td>104</td><td>55</td><td>40</td><td>25</td></tr><tr><td>2</td><td>95</td><td>65</td><td>41</td><td>27</td></tr><tr><td>3</td><td>97</td><td>57</td><td>43</td><td>22</td></tr><tr><td>4</td><td>89</td><td>72</td><td>51</td><td>21,5</td></tr><tr><td>5</td><td>101</td><td>54</td><td>39</td><td>23,5</td></tr><tr><td>6</td><td>88</td><td>48</td><td>36</td><td>18</td></tr></table>
+<p>По правилам авиакомпании сумма трёх измерений (длина, высота, ширина) чемодана, сдаваемого в багаж, не должна превышать \( 203 \) см, а масса не должна быть больше \( 23 \) кг.</p>
+<p>Какие чемоданы можно сдать в багаж по правилам этой авиакомпании? В ответе укажите номера всех выбранных чемоданов без пробелов, запятых и других дополнительных символов.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="36"
+                 onclick="showAnswer(15, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-15" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 17</div>
+         
+         <div class="problem-text tex2jax_process"><p>Путешественник из Москвы хочет посетить 4 города Золотого кольца России: Владимир, Ярославль, Суздаль и Ростов Великий. Турагентство предлагает маршруты с посещением некоторых городов Золотого кольца. Сведения о стоимости билетов и маршрутах представлены в таблице.</p>
+<table>
+  <tr>
+    <td>Номер маршрута</td>
+    <td>Посещаемые города</td>
+    <td>Стоимость (руб.)</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>Ростов, Владимир</td>
+    <td>2150</td>
+  </tr>
+  <tr>
+    <td>2</td>
+    <td>Ярославль, Владимир</td>
+    <td>2500</td>
+  </tr>
+  <tr>
+    <td>3</td>
+    <td>Ростов, Ярославль</td>
+    <td>2250</td>
+  </tr>
+  <tr>
+    <td>4</td>
+    <td>Ярославль, Суздаль</td>
+    <td>2700</td>
+  </tr>
+  <tr>
+    <td>5</td>
+    <td>Суздаль</td>
+    <td>1700</td>
+  </tr>
+  <tr>
+    <td>6</td>
+    <td>Суздаль, Ростов, Владимир</td>
+    <td>3800</td>
+  </tr>
+</table>
+<p>Какие маршруты должен выбрать путешественник, чтобы побывать во всех четырёх городах и затратить менее 6000 рублей? В ответе укажите какой-нибудь один набор номеров маршрутов без пробелов, запятых и других дополнительных символов.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="14"
+                 onclick="showAnswer(16, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-16" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 18</div>
+         
+         <div class="problem-text tex2jax_process"><p>Путешественник из Москвы хочет посетить 4 города Золотого кольца России: Владимир, Ярославль, Суздаль и Ростов Великий. Турагентство предлагает маршруты с посещением некоторых городов Золотого кольца. Сведения о стоимости билетов и маршрутах представлены в таблице.</p>
+<table><tr><td>Номер маршрута</td><td>Посещаемые города</td><td>Стоимость (руб.)</td></tr><tr><td>1</td><td>Ростов, Владимир</td><td>2150</td></tr><tr><td>2</td><td>Ярославль, Владимир</td><td>2500</td></tr><tr><td>3</td><td>Ростов, Ярославль</td><td>2250</td></tr><tr><td>4</td><td>Ярославль, Суздаль</td><td>2700</td></tr><tr><td>5</td><td>Суздаль</td><td>1700</td></tr><tr><td>6</td><td>Суздаль, Ростов, Владимир</td><td>3800</td></tr></table>
+<p>Какие маршруты должен выбрать путешественник, чтобы побывать во всех четырёх городах и затратить менее 6000 рублей? В ответе укажите какой-нибудь один набор номеров маршрутов без пробелов, запятых и других дополнительных символов.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="14"
+                 onclick="showAnswer(17, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-17" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 19</div>
+         
+         <div class="problem-text tex2jax_process"><p>Любовь Игнатьевна собирается в туристическую поездку на трое суток в некоторый город. В таблице дана информация о гостиницах в этом городе со свободными номерами на время её поездки.</p>
+<table>
+<tr>
+<td style="text-align: center;">Название гостиницы</td>
+<td style="text-align: center;">Рейтинг гостиницы</td>
+<td style="text-align: center;">Расстояние до центральной площади (км)</td>
+<td style="text-align: center;">Цена номера (руб. за сутки)</td>
+</tr>
+<tr>
+<td style="text-align: center;">«Южная»</td>
+<td style="text-align: center;">7,5</td>
+<td style="text-align: center;">1,3</td>
+<td style="text-align: center;">3000</td>
+</tr>
+<tr>
+<td style="text-align: center;">«Уют-плюс»</td>
+<td style="text-align: center;">8,6</td>
+<td style="text-align: center;">2,3</td>
+<td style="text-align: center;">3300</td>
+</tr>
+<tr>
+<td style="text-align: center;">«Центральная»</td>
+<td style="text-align: center;">6,4</td>
+<td style="text-align: center;">2,8</td>
+<td style="text-align: center;">2890</td>
+</tr>
+<tr>
+<td style="text-align: center;">«Вокзальная»</td>
+<td style="text-align: center;">9,2</td>
+<td style="text-align: center;">3,2</td>
+<td style="text-align: center;">3100</td>
+</tr>
+<tr>
+<td style="text-align: center;">«Турист»</td>
+<td style="text-align: center;">8,7</td>
+<td style="text-align: center;">1,4</td>
+<td style="text-align: center;">3250</td>
+</tr>
+<tr>
+<td style="text-align: center;">«Эльдорадо»</td>
+<td style="text-align: center;">8,8</td>
+<td style="text-align: center;">1,9</td>
+<td style="text-align: center;">3580</td>
+</tr>
+</table>
+<p>Любовь Игнатьевна хочет остановиться в гостинице, которая находится не далее 2,4 км от центральной площади города и цена номера в которой не превышает 3500 рублей за сутки. Среди гостиниц, удовлетворяющих этим условиям, выберите гостиницу с наивысшим рейтингом. Сколько рублей стоит проживание в этой гостинице в течение трёх суток?</p></div>
+         <button class="show-answer-btn"
+                 data-answer="9750"
+                 onclick="showAnswer(18, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-18" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 20</div>
+         
+         <div class="problem-text tex2jax_process"><p>Впишите правильный ответ.</p>
+<p>В таблице приведены данные о шести сумках.</p>
+<table><tr><td>Номер сумки</td><td>Длина (см)</td><td>Высота (см)</td><td>Ширина (см)</td><td>Масса (кг)</td></tr><tr><td>1</td><td>58</td><td>49</td><td>35</td><td>4,9</td></tr><tr><td>2</td><td>105</td><td>65</td><td>35</td><td>3,9</td></tr><tr><td>3</td><td>85</td><td>64</td><td>17</td><td>4,7</td></tr><tr><td>4</td><td>69</td><td>55</td><td>37</td><td>5,4</td></tr><tr><td>5</td><td>102</td><td>75</td><td>46</td><td>4,8</td></tr><tr><td>6</td><td>76</td><td>56</td><td>42</td><td>8,3</td></tr></table>
+<p>По правилам авиакомпании в ручную кладь может быть взята сумка, сумма трёх измерений (длина, высота, ширина) которой не превышает 203 см, а масса не превышает 5 кг. Какие сумки можно взять в ручную кладь по правилам этой авиакомпании?</p>
+<p>В ответе укажите номера всех выбранных сумок без пробелов, запятых и других дополнительных символов.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="13"
+                 onclick="showAnswer(19, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-19" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 21</div>
+         
+         <div class="problem-text tex2jax_process"><p>Клиент хочет арендовать автомобиль на сутки для поездки протяжённостью \(300\) км. В таблице приведены характеристики трёх автомобилей и стоимость их аренды.</p>
+<table><tr><td>Автомобиль</td><td>Топливо</td><td>Расход топлива (л на 100 км)</td><td>Арендная плата (руб. за 1 сутки)</td></tr><tr><td>А</td><td>Дизельное</td><td>8</td><td>3900</td></tr><tr><td>Б</td><td>Бензин</td><td>9</td><td>3700</td></tr><tr><td>В</td><td>Газ</td><td>12</td><td>3750</td></tr></table>
+<p>Помимо аренды, клиент обязан оплатить топливо для автомобиля на всю поездку. Цена дизельного топлива — \(30\) рублей за литр, бензина — \(35\) рублей за литр, газа — \(25\) рублей за литр. Сколько рублей заплатит клиент за аренду и топливо, если выберет самый дешёвый вариант?</p></div>
+         <button class="show-answer-btn"
+                 data-answer="4620"
+                 onclick="showAnswer(20, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-20" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 22</div>
+         
+         <div class="problem-text tex2jax_process"><p>Мебельный салон заключает договоры с производителями мебели. В договорах указывается, сколько процентов от выручки поступает в доход мебельного салона.</p>
+<table>
+<tr><td>Фирма-производитель</td><td>Процент от выручки, поступающий в доход салона</td><td>Примечания</td></tr>
+<tr><td>«Альфа»</td><td>5\%</td><td>Изделия стоимостью до 20\,000 руб.</td></tr>
+<tr><td>«Альфа»</td><td>2,5\%</td><td>Изделия стоимостью свыше 20\,000 руб.</td></tr>
+<tr><td>«Бета»</td><td>3,5\%</td><td>Все изделия</td></tr>
+<tr><td>«Омикрон»</td><td>4\%</td><td>Все изделия</td></tr>
+</table>
+<p>В прейскуранте приведены стоимости четырёх гардеробов.</p>
+<table>
+<tr><td>Фирма-производитель</td><td>Изделие</td><td>Стоимость (руб.)</td></tr>
+<tr><td>«Альфа»</td><td>Гардероб «Ариадна»</td><td>16\,000</td></tr>
+<tr><td>«Альфа»</td><td>Гардероб «Глафира»</td><td>23\,000</td></tr>
+<tr><td>«Бета»</td><td>Гардероб «Казимира»</td><td>20\,000</td></tr>
+<tr><td>«Омикрон»</td><td>Гардероб «Ирина»</td><td>17\,500</td></tr>
+</table>
+<p>Определите, от продажи какого гардероба салон получит в доход наибольшую сумму. В ответ запишите, сколько рублей поступит в доход салона от продажи этого гардероба.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="800"
+                 onclick="showAnswer(21, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-21" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 23</div>
+         
+         <div class="problem-text tex2jax_process"><p>Телефонная компания предоставляет на выбор три тарифных плана.</p>
+<table>
+<tr><td>Тарифный план</td><td>Абонентская плата (в месяц)</td><td>Плата за 1 минуту разговора</td></tr>
+<tr><td>«Повременный»</td><td>Нет</td><td>2 руб.</td></tr>
+<tr><td>«Комбинированный»</td><td>290 руб. за 350 мин.</td><td>1,5 руб. (сверх 350 мин. в месяц)</td></tr>
+<tr><td>«Безлимитный»</td><td>1150 руб.</td><td>Нет</td></tr>
+</table>
+<p>Абонент предполагает, что общая длительность разговоров составит 600 минут в месяц, и исходя из этого выбирает наиболее дешёвый тарифный план. Сколько рублей должен будет заплатить абонент за месяц по выбранному тарифному плану, если общая длительность разговоров действительно будет равна 600 минутам?</p></div>
+         <button class="show-answer-btn"
+                 data-answer="665"
+                 onclick="showAnswer(22, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-22" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 24</div>
+         
+         <div class="problem-text tex2jax_process"><p>\[ \text{В таблице приведены данные о шести чемоданах.} \]</p>
+<table>
+<tr><td>Номер чемодана</td><td>Длина (см)</td><td>Высота (см)</td><td>Ширина (см)</td><td>Масса (кг)</td></tr>
+<tr><td>1</td><td>110</td><td>52</td><td>45</td><td>22{,}5</td></tr>
+<tr><td>2</td><td>84</td><td>66</td><td>59</td><td>26</td></tr>
+<tr><td>3</td><td>105</td><td>65</td><td>29</td><td>23</td></tr>
+<tr><td>4</td><td>86</td><td>67</td><td>52</td><td>20</td></tr>
+<tr><td>5</td><td>90</td><td>71</td><td>40</td><td>21</td></tr>
+<tr><td>6</td><td>100</td><td>58</td><td>46</td><td>30</td></tr>
+</table>
+<p>\[ \text{По правилам авиакомпании сумма трёх измерений (длина, высота, ширина)} \]</p>
+<p>\[ \text{чемодана, сдаваемого в багаж, не должна превышать } 203 \text{ см,} \]</p>
+<p>\[ \text{а масса не должна быть больше } 23 \text{ кг.} \]</p>
+<p>\[ \text{Какие чемоданы можно сдать в багаж по правилам этой авиакомпании?} \]</p>
+<p>\[ \text{В ответе укажите номера всех выбранных чемоданов} \]</p>
+<p>\[ \text{без пробелов, запятых и других дополнительных символов.} \]</p></div>
+         <button class="show-answer-btn"
+                 data-answer="35"
+                 onclick="showAnswer(23, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-23" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 25</div>
+         
+         <div class="problem-text tex2jax_process"><p>Телефонная компания предоставляет на выбор три тарифных плана.</p>
+<table>
+<tr><td>Тарифный план</td><td>Абонентская плата (в месяц)</td><td>Плата за 1 минуту разговора</td></tr>
+<tr><td>«Повременный»</td><td>Нет</td><td>0,4 руб.</td></tr>
+<tr><td>«Комбинированный»</td><td>160 руб. за 400 мин.</td><td>0,3 руб. (сверх 400 мин. в месяц)</td></tr>
+<tr><td>«Безлимитный»</td><td>285 руб. в месяц</td><td>Нет</td></tr>
+</table>
+<p>Абонент предполагает, что общая длительность разговоров составит 600 минут в месяц, и исходя из этого выбирает наиболее дешёвый тарифный план. Сколько рублей должен будет заплатить абонент за месяц, если общая длительность разговоров действительно будет равна 600 минутам?</p></div>
+         <button class="show-answer-btn"
+                 data-answer="220"
+                 onclick="showAnswer(24, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-24" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 26</div>
+         
+         <div class="problem-text tex2jax_process"><p>Интернет-провайдер предлагает три тарифных плана.</p>
+<p>Тарифный план План «0»: абонентская плата отсутствует, плата за трафик составляет \(2\) рубля за \(1\) Мбайт.</p>
+<p>Тарифный план План «100»: абонентская плата \(90\) рублей за \(100\) Мбайт трафика в месяц, плата за трафик сверх \(100\) Мбайт составляет \(1,5\) рубля за \(1\) Мбайт.</p>
+<p>Тарифный план План «500»: абонентская плата \(400\) рублей за \(500\) Мбайт трафика в месяц, плата за трафик сверх \(500\) Мбайт составляет \(2,5\) рубля за \(1\) Мбайт.</p>
+<p>Пользователь предполагает, что его трафик составит \(350\) Мбайт в месяц, и исходя из этого выбирает наиболее дешёвый тарифный план.</p>
+<p>Сколько рублей должен будет заплатить пользователь за месяц, если его трафик действительно будет равен \(350\) Мбайт?</p></div>
+         <button class="show-answer-btn"
+                 data-answer="400"
+                 onclick="showAnswer(25, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-25" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 27</div>
+         
+         <div class="problem-text tex2jax_process"><p>Путешественник из Москвы хочет посетить 4 города Золотого кольца России: Владимир, Ярославль, Суздаль и Ростов Великий. Турагентство предлагает маршруты с посещением некоторых городов Золотого кольца. Сведения о стоимости билетов и маршрутах представлены в таблице.</p>
+<table><tr><td>Номер маршрута</td><td>Посещаемые города</td><td>Стоимость (руб.)</td></tr><tr><td>1</td><td>Суздаль, Владимир</td><td>2350</td></tr><tr><td>2</td><td>Суздаль, Ростов</td><td>2000</td></tr><tr><td>3</td><td>Владимир, Ростов</td><td>2450</td></tr><tr><td>4</td><td>Владимир, Ярославль</td><td>3000</td></tr><tr><td>5</td><td>Ярославль, Суздаль, Ростов</td><td>3650</td></tr><tr><td>6</td><td>Ярославль</td><td>1750</td></tr></table>
+<p>Какие маршруты должен выбрать путешественник, чтобы побывать во всех четырёх городах и затратить менее 6000 рублей? В ответе укажите какой-нибудь один набор номеров маршрутов без пробелов, запятых и других дополнительных символов.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="5000"
+                 onclick="showAnswer(26, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-26" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 28</div>
+         
+         <div class="problem-text tex2jax_process"><p>Для обслуживания международного семинара необходимо собрать группу переводчиков. Сведения о кандидатах представлены в таблице.</p>
+<table><tr><td>Номер переводчика</td><td>Языки</td><td>Стоимость услуг (руб. в день)</td></tr><tr><td>1</td><td>Английский, немецкий</td><td>5950</td></tr><tr><td>2</td><td>Французский</td><td>3950</td></tr><tr><td>3</td><td>Английский, испанский</td><td>6050</td></tr><tr><td>4</td><td>Испанский, французский</td><td>6850</td></tr><tr><td>5</td><td>Немецкий</td><td>1900</td></tr><tr><td>6</td><td>Английский</td><td>3150</td></tr></table>
+<p>Пользуясь таблицей, соберите хотя бы одну группу, в которой переводчики вместе владеют всеми четырьмя языками: английским, немецким, испанским и французским, а суммарная стоимость их услуг не превышает 12 000 рублей в день. В ответе укажите какой-нибудь один набор номеров переводчиков без пробелов, запятых и других дополнительных символов.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="235"
+                 onclick="showAnswer(27, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-27" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 29</div>
+         
+         <div class="problem-text tex2jax_process"><p>Интернет-провайдер предлагает три тарифных плана.</p>
+<table><tr><td>Тарифный план</td><td>Абонентская плата</td><td>Плата за трафик</td></tr><tr><td>План «0»</td><td>Нет</td><td>0,6 руб. за 1 Мб</td></tr><tr><td>План «100»</td><td>98 руб. за 100 Мб трафика в месяц</td><td>0,4 руб. за 1 Мб сверх 100 Мб</td></tr><tr><td>План «400»</td><td>387 руб. за 400 Мб трафика в месяц</td><td>0,3 руб. за 1 Мб сверх 400 Мб</td></tr></table>
+<p>Пользователь предполагает, что его трафик составит 250 Мб в месяц, и исходя из этого выбирает наиболее дешёвый тарифный план. Сколько рублей должен будет заплатить пользователь за месяц, если его трафик действительно будет равен 250 Мб?</p></div>
+         <button class="show-answer-btn"
+                 data-answer="150"
+                 onclick="showAnswer(28, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-28" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+       <div class="question-item">
+         <div class="question-number">Вопрос 30</div>
+         
+         <div class="problem-text tex2jax_process"><p>Путешественник из Москвы хочет посетить четыре города Золотого кольца России: Владимир, Ярославль, Суздаль и Ростов Великий. Турагентство предлагает маршруты с посещением некоторых городов Золотого кольца. Сведения о стоимости билетов и маршрутах представлены в таблице.</p>
+<table>
+<tr>
+<td style="text-align:center;">Номер маршрута</td>
+<td style="text-align:center;">Посещаемые города</td>
+<td style="text-align:center;">Стоимость (руб.)</td>
+</tr>
+<tr>
+<td style="text-align:center;">1</td>
+<td style="text-align:center;">Владимир, Ярославль</td>
+<td style="text-align:center;">2350</td>
+</tr>
+<tr>
+<td style="text-align:center;">2</td>
+<td style="text-align:center;">Владимир, Суздаль</td>
+<td style="text-align:center;">2950</td>
+</tr>
+<tr>
+<td style="text-align:center;">3</td>
+<td style="text-align:center;">Ростов, Владимир</td>
+<td style="text-align:center;">2350</td>
+</tr>
+<tr>
+<td style="text-align:center;">4</td>
+<td style="text-align:center;">Ростов, Ярославль</td>
+<td style="text-align:center;">2150</td>
+</tr>
+<tr>
+<td style="text-align:center;">5</td>
+<td style="text-align:center;">Суздаль, Ростов, Ярославль</td>
+<td style="text-align:center;">3700</td>
+</tr>
+<tr>
+<td style="text-align:center;">6</td>
+<td style="text-align:center;">Суздаль</td>
+<td style="text-align:center;">1500</td>
+</tr>
+</table>
+<p>Какие маршруты должен выбрать путешественник, чтобы побывать во всех четырёх городах и затратить менее 6000 рублей? В ответе укажите какой-нибудь один набор номеров маршрутов без пробелов, запятых и других дополнительных символов.</p></div>
+         <button class="show-answer-btn"
+                 data-answer="24"
+                 onclick="showAnswer(29, this.dataset.answer)">
+           Показать ответ
+         </button>
+         <div id="answer-29" class="answer-display"></div>
+         <button class="show-solution-btn" onclick="showSolutionModal()">
+           Показать решение
+         </button>
+       </div>
+     
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="solutionModal" class="modal">
+    <div class="modal-content">
+      <h2>Хотите посмотреть решение?</h2>
+      <p>Создайте аккаунт или войдите, чтобы получить доступ к подробным решениям всех задач.</p>
+      <div class="modal-buttons">
+        <a href="/register" class="modal-button primary">Войти / Создать аккаунт</a>
+        <button class="modal-button secondary" onclick="closeSolutionModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Flying Math Background Animation
+    function createFlyingMath() {
+      const mathSymbols = ['π', '∑', '∫', '√', '∞', 'α', 'β', 'γ', 'δ', 'ε', 'θ', 'λ', 'μ', 'σ', 'φ', 'ψ', 'ω', 'Δ', 'Ω', '±', '×', '÷', '=', '≠', '≤', '≥', '∈', '∉', '∪', '∩', '⊂', '⊃'];
+      const container = document.getElementById('flyingMath');
+      
+      function addMathSymbol() {
+        const symbol = document.createElement('div');
+        symbol.className = 'math-symbol';
+        symbol.textContent = mathSymbols[Math.floor(Math.random() * mathSymbols.length)];
+        symbol.style.left = Math.random() * 100 + '%';
+        symbol.style.animationDuration = (Math.random() * 10 + 15) + 's';
+        symbol.style.animationDelay = Math.random() * 5 + 's';
+        container.appendChild(symbol);
+        
+        // Remove symbol after animation
+        setTimeout(() => {
+          if (symbol.parentNode) {
+            symbol.parentNode.removeChild(symbol);
+          }
+        }, 25000);
+      }
+      
+      // Add symbols periodically
+      setInterval(addMathSymbol, 2000);
+      
+      // Add initial symbols
+      for (let i = 0; i < 5; i++) {
+        setTimeout(addMathSymbol, i * 1000);
+      }
+    }
+
+    function showAnswer(index, answer) {
+      const answerDiv = document.getElementById(`answer-${index}`);
+      answerDiv.textContent = `Ответ: ${answer}`;
+      answerDiv.classList.add('visible');
+      
+      // Re-render MathJax for the newly shown content
+      if (window.MathJax) {
+        MathJax.typesetPromise([answerDiv]);
+      }
+    }
+
+    function showSolutionModal() {
+      document.getElementById('solutionModal').classList.add('visible');
+    }
+
+    function closeSolutionModal() {
+      document.getElementById('solutionModal').classList.remove('visible');
+    }
+
+    // Close modal on outside click
+    document.getElementById('solutionModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeSolutionModal();
+      }
+    });
+
+    // Initialize flying math animation
+    document.addEventListener('DOMContentLoaded', createFlyingMath);
+    
+    // Initialize MathJax rendering
+    function initializeMathJax() {
+      if (window.MathJax) {
+        MathJax.typesetPromise();
+      }
+    }
+    
+    // Re-render MathJax when content changes
+    function reRenderMathJax(element) {
+      if (window.MathJax && element) {
+        MathJax.typesetPromise([element]);
+      }
+    }
+    
+    // Initialize MathJax on page load
+    document.addEventListener('DOMContentLoaded', initializeMathJax);
+  </script>
+</body>
+</html>
+
