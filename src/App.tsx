@@ -14,6 +14,7 @@ import PrivateRoute from "./components/PrivateRoute";
 import TopicsIndex from "@/pages/TopicsIndex";
 import TopicPage from "@/pages/TopicPage"; // if not already
 import LearningLayout from "@/components/layouts/LearningLayout";
+import AdaptiveLayout from "@/components/layouts/AdaptiveLayout";
 
 
 const Profile = lazy(() => import("./pages/Profile"));
@@ -90,31 +91,28 @@ const App = () => (
               <Sonner />
               <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Загрузка...</div>}>
             <Routes>
-              {/* pages WITHOUT the layout (plain) */}
-              <Route path="/" element={<Index />} />
-              <Route path="/subscribe" element={<Subscribe />} />
-              <Route path="/pricing" element={<Pricing />} />
-              <Route path="/faq" element={<FAQ />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/questionbankoge" element={<QuestionBankOGE />} />
-              <Route path="/questionbankegeb" element={<QuestionBankEGEB />} />
-              <Route path="/questionbankegep" element={<QuestionBankEGEP />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/login" element={<Login />} />
-          
-              {/* pages WITH the layout (shared gradient + flying symbols) */}
-              <Route element={<LearningLayout />}>
+              {/* All pages use AdaptiveLayout - shows LandingHeader for guests, LearningLayout nav for authenticated */}
+              <Route element={<AdaptiveLayout />}>
+                {/* Public pages */}
+                <Route path="/" element={<Index />} />
+                <Route path="/subscribe" element={<Subscribe />} />
+                <Route path="/pricing" element={<Pricing />} />
+                <Route path="/faq" element={<FAQ />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/questionbankoge" element={<QuestionBankOGE />} />
+                <Route path="/questionbankegeb" element={<QuestionBankEGEB />} />
+                <Route path="/questionbankegep" element={<QuestionBankEGEP />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/login" element={<Login />} />
                 <Route path="/cellard-lp2" element={<CellardLp2 />} />
                 <Route path="/platformogeb" element={<PlatformOgeb />} />
                 <Route path="/platformogep" element={<PlatformOgep />} />
-          
-                {/* put any other pages that should share the look here: */}
                 <Route path="/textbook" element={<DigitalTextbook />} />
                 <Route path="/textbook-base" element={<TextbookBase />} />
                 <Route path="/textbook-prof" element={<TextbookProf />} />
                 <Route path="/book-test" element={<BookTest />} />
-            <Route path="/ogemath" element={<OgeMath />} />
-            <Route path="/ogemath-practice" element={<OgemathPractice />} />
+                <Route path="/ogemath" element={<OgeMath />} />
+                <Route path="/ogemath-practice" element={<OgemathPractice />} />
                 <Route path="/ogemath-mock" element={<OgemathMock />} />
                 <Route path="/ogemath-revision" element={<OgemathRevision />} />
                 <Route path="/ogemath-progress2" element={<OgemathProgress2 />} />
@@ -135,27 +133,23 @@ const App = () => (
                 
                 <Route path="/egeruses2" element={<Egeruses2 />} />
                 <Route path="/egeruses-analytics" element={<EgerusesAnalytics />} />
+                
+                {/* Protected pages */}
+                <Route element={<PrivateRoute />}>
+                  <Route path="/module/:moduleSlug" element={<ModulePage />} />
+                  <Route path="/module/:moduleSlug/topic/:topicId" element={<TopicPage />} />
+                  <Route path="/mydb3" element={<MyDb3 />} />
+                  <Route path="/topics" element={<TopicsIndex />} />
+                  <Route path="/topic/:topicNumber" element={<TopicPage />} />
+                  <Route path="/profile" element={<Profile />} />
+                  <Route path="/diagnostic" element={<DiagnosticTest />} />
+                  <Route path="/practice" element={<PracticeExercise />} />
+                  <Route path="/homework" element={<Homework />} />
+                  <Route path="/homework-egeb" element={<HomeworkEgeb />} />
+                  <Route path="/homework-egeprof" element={<HomeworkEgeprof />} />
+                  <Route path="/homework-fipi-practice" element={<HomeworkFipiPractice />} />
+                </Route>
               </Route>
-          
-              {/* protected pages – wrap in layout too if you want the same background */}
-              <Route element={<PrivateRoute />}>
-              {/* With layout */}
-              <Route element={<LearningLayout />}>
-                <Route path="/module/:moduleSlug" element={<ModulePage />} />
-                <Route path="/module/:moduleSlug/topic/:topicId" element={<TopicPage />} />
-                <Route path="/mydb3" element={<MyDb3 />} />
-                <Route path="/topics" element={<TopicsIndex />} />
-                <Route path="/topic/:topicNumber" element={<TopicPage />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/diagnostic" element={<DiagnosticTest />} />
-                <Route path="/practice" element={<PracticeExercise />} />
-                <Route path="/homework" element={<Homework />} />
-                <Route path="/homework-egeb" element={<HomeworkEgeb />} />
-                <Route path="/homework-egeprof" element={<HomeworkEgeprof />} />
-                <Route path="/homework-fipi-practice" element={<HomeworkFipiPractice />} />
-              </Route>
-              </Route>
-          
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
