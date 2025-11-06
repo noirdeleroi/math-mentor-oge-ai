@@ -59,17 +59,14 @@ export default function HighlightCards() {
             onClick={() => scrollToSection('mathematics-section')}
             className="cursor-pointer"
           >
-            <Card className="h-full bg-white dark:bg-card border border-border hover:border-green-500/60 transition-all duration-500 hover:shadow-2xl hover:shadow-green-500/20 hover:scale-105 hover:bg-green-50/50 dark:hover:bg-green-950/20 group relative overflow-hidden">
-              {/* Glassmorphism overlay */}
-              <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 via-transparent to-green-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              
+            <Card className="h-full bg-white dark:bg-card border border-border hover:border-green-500/60 transition-all duration-500 hover:shadow-2xl hover:shadow-green-500/20 hover:scale-105 group relative overflow-hidden">
               {/* Animated border glow */}
               <div className="absolute -inset-[1px] bg-gradient-to-r from-green-500 to-green-400 opacity-0 group-hover:opacity-20 blur-sm transition-opacity duration-500 rounded-lg"></div>
               
-              <CardContent className="p-8 relative z-10">
+              <CardContent className="p-8 relative z-10 group-hover:opacity-90 transition-opacity duration-500">
                 <div className="text-center mb-6">
-                  <h3 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-2 group-hover:scale-110 transition-transform duration-300">ОГЭ Математика</h3>
-                  <div className="w-16 h-1 bg-gradient-to-r from-primary to-primary/60 mx-auto rounded-full group-hover:w-24 transition-all duration-300"></div>
+                  <h3 className="text-2xl font-display font-bold bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent mb-2 group-hover:scale-110 transition-transform duration-300">ОГЭ Математика</h3>
+                  <div className="w-16 h-1 bg-gradient-to-r from-yellow-500 to-emerald-500 mx-auto rounded-full group-hover:w-24 transition-all duration-300"></div>
                 </div>
                 
                 <ul className="space-y-4">
@@ -104,17 +101,14 @@ export default function HighlightCards() {
             onClick={() => scrollToSection('mathematics-section')}
             className="cursor-pointer"
           >
-            <Card className="h-full bg-white dark:bg-card border border-border hover:border-green-500/60 transition-all duration-500 hover:shadow-2xl hover:shadow-green-500/20 hover:scale-105 hover:bg-green-50/50 dark:hover:bg-green-950/20 group relative overflow-hidden">
-              {/* Glassmorphism overlay */}
-              <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 via-transparent to-green-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              
+            <Card className="h-full bg-white dark:bg-card border border-border hover:border-green-500/60 transition-all duration-500 hover:shadow-2xl hover:shadow-green-500/20 hover:scale-105 group relative overflow-hidden">
               {/* Animated border glow */}
               <div className="absolute -inset-[1px] bg-gradient-to-r from-green-500 to-green-400 opacity-0 group-hover:opacity-20 blur-sm transition-opacity duration-500 rounded-lg"></div>
               
-              <CardContent className="p-8 relative z-10">
+              <CardContent className="p-8 relative z-10 group-hover:opacity-90 transition-opacity duration-500">
                 <div className="text-center mb-6">
-                  <h3 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-2 group-hover:scale-110 transition-transform duration-300">ЕГЭ Математика</h3>
-                  <div className="w-16 h-1 bg-gradient-to-r from-primary to-primary/60 mx-auto rounded-full group-hover:w-24 transition-all duration-300"></div>
+                  <h3 className="text-2xl font-display font-bold bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent mb-2 group-hover:scale-110 transition-transform duration-300">ЕГЭ Математика</h3>
+                  <div className="w-16 h-1 bg-gradient-to-r from-yellow-500 to-emerald-500 mx-auto rounded-full group-hover:w-24 transition-all duration-300"></div>
                 </div>
                 
                 <ul className="space-y-4">
@@ -149,17 +143,14 @@ export default function HighlightCards() {
             onClick={() => scrollToSection('essay-section')}
             className="cursor-pointer"
           >
-            <Card className="h-full bg-white dark:bg-card border border-border hover:border-green-500/60 transition-all duration-500 hover:shadow-2xl hover:shadow-green-500/20 hover:scale-105 hover:bg-green-50/50 dark:hover:bg-green-950/20 group relative overflow-hidden">
-              {/* Glassmorphism overlay */}
-              <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 via-transparent to-green-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              
+            <Card className="h-full bg-white dark:bg-card border border-border hover:border-green-500/60 transition-all duration-500 hover:shadow-2xl hover:shadow-green-500/20 hover:scale-105 group relative overflow-hidden">
               {/* Animated border glow */}
               <div className="absolute -inset-[1px] bg-gradient-to-r from-green-500 to-green-400 opacity-0 group-hover:opacity-20 blur-sm transition-opacity duration-500 rounded-lg"></div>
               
-              <CardContent className="p-8 relative z-10">
+              <CardContent className="p-8 relative z-10 group-hover:opacity-90 transition-opacity duration-500">
                 <div className="text-center mb-6">
-                  <h3 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-2 group-hover:scale-110 transition-transform duration-300">Сочинение</h3>
-                  <div className="w-16 h-1 bg-gradient-to-r from-primary to-primary/60 mx-auto rounded-full group-hover:w-24 transition-all duration-300"></div>
+                  <h3 className="text-2xl font-display font-bold bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent mb-2 group-hover:scale-110 transition-transform duration-300">Сочинение</h3>
+                  <div className="w-16 h-1 bg-gradient-to-r from-yellow-500 to-emerald-500 mx-auto rounded-full group-hover:w-24 transition-all duration-300"></div>
                 </div>
                 
                 <ul className="space-y-4">
