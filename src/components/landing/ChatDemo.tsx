@@ -46,9 +46,9 @@ export default function ChatDemo() {
                   <MessageCircle className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-gray-900 mb-1">Персональный помощник</h3>
+                  <h3 className="text-base font-bold text-gray-900 mb-1">Персональный репетитор</h3>
                   <p className="text-xs text-gray-700">
-                    Ёжик отвечает на вопросы по математике, объясняет сложные темы и помогает с решением задач в режиме реального времени.
+                    Твой личный наставник, который будет с тобой непрерывно и поможет прийти к максимальному баллу. Он знает о тебе всё, даёт домашние задания, постепенно подводит тебя к новым темам.
                   </p>
                 </div>
               </div>
@@ -60,9 +60,23 @@ export default function ChatDemo() {
                   <Sparkles className="w-5 h-5 text-white" />
                 </div>
                 <div>
+                  <h3 className="text-base font-bold text-gray-900 mb-1">Персональный помощник</h3>
+                  <p className="text-xs text-gray-700">
+                    Он отвечает на вопросы по математике, решает задачи, объясняет сложные темы, анализирует твои домашние задания и помогает с решением задач. Если ты читаешь учебник на платформе и что-то не понимаешь - выдели текст и твой ассистент даст объяснение в чате.
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-white dark:bg-white/95 border-border shadow-lg p-4 rounded-xl">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Sparkles className="w-5 h-5 text-white" />
+                </div>
+                <div>
                   <h3 className="text-base font-bold text-gray-900 mb-1">Умный подбор заданий</h3>
                   <p className="text-xs text-gray-700">
-                    AI-ассистент анализирует ваши слабые места и подбирает задания для эффективной подготовки к экзаменам.
+                    Твой чат-ассистент подбирает темы и задания, он "ведёт" тебя к сдаче экзамена.
                   </p>
                 </div>
               </div>
@@ -76,7 +90,7 @@ export default function ChatDemo() {
                 <div>
                   <h3 className="text-base font-bold text-gray-900 mb-1">Обучение с пониманием</h3>
                   <p className="text-xs text-gray-700">
-                    Не просто решения, а детальные объяснения каждого шага. Ёжик учит думать и понимать математику.
+                    Не просто решения, а детальные объяснения каждого шага. Твой чат-наставник учит думать и понимать математику.
                   </p>
                 </div>
               </div>

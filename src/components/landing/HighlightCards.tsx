@@ -72,15 +72,15 @@ export default function HighlightCards() {
                 <ul className="space-y-4">
                   <li className="flex items-start gap-3 group/item">
                     <CheckCircle className="w-5 h-5 text-orange-500 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform duration-200" />
-                    <span className="text-foreground">300 заданий ФИПИ (Часть 1 + разборы)</span>
+                    <span className="text-foreground">3500 заданий ФИПИ и 3000 новых задач</span>
                   </li>
                   <li className="flex items-start gap-3 group/item">
                     <CheckCircle className="w-5 h-5 text-orange-500 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform duration-200" />
-                    <span className="text-foreground">Учебник по навыкам (новый формат)</span>
+                    <span className="text-foreground">Реалистичные тренировочные экзамены на время</span>
                   </li>
                   <li className="flex items-start gap-3 group/item">
                     <CheckCircle className="w-5 h-5 text-orange-500 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform duration-200" />
-                    <span className="text-foreground">Видеоразборы и короткие клипы</span>
+                    <span className="text-foreground">Загрузи фото решения и получи разбор</span>
                   </li>
                   <li className="flex items-start gap-3 group/item">
                     <CheckCircle className="w-5 h-5 text-orange-500 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform duration-200" />
@@ -107,26 +107,26 @@ export default function HighlightCards() {
               
               <CardContent className="p-8 relative z-10 group-hover:opacity-90 transition-opacity duration-500">
                 <div className="text-center mb-6">
-                  <h3 className="text-2xl font-display font-bold bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent mb-2 group-hover:scale-110 transition-transform duration-300">ЕГЭ Математика</h3>
+                  <h3 className="text-2xl font-display font-bold bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent mb-2 group-hover:scale-110 transition-transform duration-300">ЕГЭ Математика (Профиль и База)</h3>
                   <div className="w-16 h-1 bg-gradient-to-r from-yellow-500 to-emerald-500 mx-auto rounded-full group-hover:w-24 transition-all duration-300"></div>
                 </div>
                 
                 <ul className="space-y-4">
                   <li className="flex items-start gap-3 group/item">
                     <CheckCircle className="w-5 h-5 text-orange-500 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform duration-200" />
-                    <span className="text-foreground">5000 заданий по ЕГЭ</span>
+                    <span className="text-foreground">9100 заданий ФИПИ по Базе, 900 заданий ФИПИ по Профилю</span>
                   </li>
                   <li className="flex items-start gap-3 group/item">
                     <CheckCircle className="w-5 h-5 text-orange-500 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform duration-200" />
-                    <span className="text-foreground">Учебник и база задач</span>
+                    <span className="text-foreground">Реалистичные тренировочные экзамены на время</span>
                   </li>
                   <li className="flex items-start gap-3 group/item">
                     <CheckCircle className="w-5 h-5 text-orange-500 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform duration-200" />
-                    <span className="text-foreground">Видео и методички</span>
+                    <span className="text-foreground">Загрузи фото решения и получи разбор</span>
                   </li>
                   <li className="flex items-start gap-3 group/item">
                     <CheckCircle className="w-5 h-5 text-orange-500 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform duration-200" />
-                    <span className="text-foreground">Подготовка к базовому и профильному уровням</span>
+                    <span className="text-foreground">Интерактивная практика и прогресс</span>
                   </li>
                 </ul>
               </CardContent>
@@ -156,7 +156,7 @@ export default function HighlightCards() {
                 <ul className="space-y-4">
                   <li className="flex items-start gap-3 group/item">
                     <CheckCircle className="w-5 h-5 text-orange-500 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform duration-200" />
-                    <span className="text-foreground">Проверка сочинений ЕГЭ по русскому</span>
+                    <span className="text-foreground">Проверка сочинений ЕГЭ/ОГЭ по русскому</span>
                   </li>
                   <li className="flex items-start gap-3 group/item">
                     <CheckCircle className="w-5 h-5 text-orange-500 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform duration-200" />
@@ -164,11 +164,11 @@ export default function HighlightCards() {
                   </li>
                   <li className="flex items-start gap-3 group/item">
                     <CheckCircle className="w-5 h-5 text-orange-500 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform duration-200" />
-                    <span className="text-foreground">Оценка по критериям ФИПИ</span>
+                    <span className="text-foreground">Находим грамматические, речевые и логические ошибки по критериям ФИПИ 2026 года</span>
                   </li>
                   <li className="flex items-start gap-3 group/item">
                     <CheckCircle className="w-5 h-5 text-orange-500 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform duration-200" />
-                    <span className="text-foreground">Рекомендации по улучшению</span>
+                    <span className="text-foreground">Выставляем баллы, как на реальном экзамене</span>
                   </li>
                 </ul>
               </CardContent>

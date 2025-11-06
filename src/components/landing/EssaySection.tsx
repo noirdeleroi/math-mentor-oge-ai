@@ -18,9 +18,9 @@ export const EssaySection = () => {
                   <FileText className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg mb-2">Структура сочинения</h3>
+                  <h3 className="font-semibold text-lg mb-2">База тренировочных тем для сочинений</h3>
                   <p className="text-sm text-muted-foreground">
-                    Изучите основные элементы сочинения: вступление, аргументация, примеры и заключение
+                    Тренируйся писать сочинения на базе топиков ФИПИ
                   </p>
                 </div>
               </div>
@@ -34,7 +34,7 @@ export const EssaySection = () => {
                 <div>
                   <h3 className="font-semibold text-lg mb-2">Критерии оценивания</h3>
                   <p className="text-sm text-muted-foreground">
-                    Понимание критериев поможет написать сочинение на максимальный балл
+                    Находим грамматические, речевые и логические ошибки по критериям ФИПИ 2026 года, даём рекомендации для улучшения навыков
                   </p>
                 </div>
               </div>
@@ -48,7 +48,7 @@ export const EssaySection = () => {
                 <div>
                   <h3 className="font-semibold text-lg mb-2">Практика и проверка</h3>
                   <p className="text-sm text-muted-foreground">
-                    Пишите сочинения и получайте обратную связь от нашей AI-системы
+                    AI-анализ с подробной обратной связью. Выставляем баллы, как на реальном экзамене
                   </p>
                 </div>
               </div>
