@@ -96,7 +96,7 @@ const DropdownMenu = ({ title, items, isOpen, onToggle }: DropdownMenuProps) => 
                   ) : (
                     <Link
                       to={item.href!}
-                      className="block px-4 py-2 text-foreground hover:bg-accent hover:text-accent-foreground transition-colors duration-200"
+                      className="block px-4 py-2 text-foreground hover:bg-orange-500/10 hover:text-orange-500 transition-colors duration-200"
                       role="menuitem"
                       onClick={onToggle}
                     >
