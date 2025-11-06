@@ -42,7 +42,7 @@ export default function HighlightCards() {
           className="text-center mb-16"
         >
           <motion.h2 
-            className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-4 tracking-tight"
+            className="text-4xl md:text-6xl font-display font-bold bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent mb-4 tracking-tight"
             variants={cardVariants}
           >
             Что внутри платформы
