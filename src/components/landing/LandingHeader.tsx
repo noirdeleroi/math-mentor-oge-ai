@@ -26,6 +26,8 @@ const DropdownMenu = ({ title, items, isOpen, onToggle }: DropdownMenuProps) => 
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!isOpen) return;
+
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         onToggle();
@@ -38,16 +40,18 @@ const DropdownMenu = ({ title, items, isOpen, onToggle }: DropdownMenuProps) => 
       }
     };
 
-    if (isOpen) {
+    // Add small delay to prevent immediate closing
+    const timer = setTimeout(() => {
       document.addEventListener("mousedown", handleClickOutside);
       document.addEventListener("keydown", handleEscape);
-    }
+    }, 100);
 
     return () => {
+      clearTimeout(timer);
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleEscape);
     };
-  }, [isOpen, onToggle]);
+  }, [isOpen]);
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -61,14 +65,14 @@ const DropdownMenu = ({ title, items, isOpen, onToggle }: DropdownMenuProps) => 
         <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
       </button>
 
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {isOpen && (
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: -10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -10 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
-            className="absolute top-full left-0 mt-1 w-64 bg-card border border-border rounded-lg shadow-lg z-50"
+            className="absolute top-full left-0 mt-1 w-64 bg-card/95 backdrop-blur-md border border-border rounded-lg shadow-xl z-[100]"
             role="menu"
           >
             <div className="py-2">
@@ -117,7 +121,7 @@ export default function LandingHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleDropdownToggle = (dropdownName: string) => {
-    setOpenDropdown(openDropdown === dropdownName ? null : dropdownName);
+    setOpenDropdown(prev => prev === dropdownName ? null : dropdownName);
   };
 
   const handleLoginClick = () => {
