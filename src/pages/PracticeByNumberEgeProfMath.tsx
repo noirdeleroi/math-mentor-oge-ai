@@ -875,6 +875,33 @@ const PracticeByNumberEgeProfMath = () => {
             const isCorrect = feedbackData.scores > 0;
             await updateStudentActivity(isCorrect, feedbackData.scores);
             
+            // Award energy points if scores >= 1
+            if (feedbackData.scores >= 1) {
+              // Trigger animation IMMEDIATELY
+              const { data: streakData } = await supabase
+                .from('user_streaks')
+                .select('current_streak')
+                .eq('user_id', user.id)
+                .single();
+              
+              const currentStreak = streakData?.current_streak || 0;
+              const basePoints = 2;
+              const pointsToShow = currentStreak >= 3 ? basePoints * 10 : basePoints;
+              
+              if ((window as any).triggerEnergyPointsAnimation) {
+                (window as any).triggerEnergyPointsAnimation(pointsToShow);
+              }
+              
+              // Award energy points in background
+              (async () => {
+                try {
+                  await awardEnergyPoints(user.id, 'problem', undefined, 'egemathprof', currentStreak);
+                } catch (error) {
+                  console.error('Error awarding energy points:', error);
+                }
+              })();
+            }
+            
             // Update UI states
             setIsCorrect(isCorrect);
             setIsAnswered(true);
@@ -1281,6 +1308,34 @@ const PracticeByNumberEgeProfMath = () => {
                                   if (feedbackData.review && typeof feedbackData.scores === 'number') {
                                   const isCorrectNow = feedbackData.scores > 0;
                                   await updateStudentActivity(isCorrectNow, feedbackData.scores);
+                                  
+                                  // Award energy points if scores >= 1
+                                  if (feedbackData.scores >= 1) {
+                                    // Trigger animation IMMEDIATELY
+                                    const { data: streakData } = await supabase
+                                      .from('user_streaks')
+                                      .select('current_streak')
+                                      .eq('user_id', user.id)
+                                      .single();
+                                    
+                                    const currentStreak = streakData?.current_streak || 0;
+                                    const basePoints = 2;
+                                    const pointsToShow = currentStreak >= 3 ? basePoints * 10 : basePoints;
+                                    
+                                    if ((window as any).triggerEnergyPointsAnimation) {
+                                      (window as any).triggerEnergyPointsAnimation(pointsToShow);
+                                    }
+                                    
+                                    // Award energy points in background
+                                    (async () => {
+                                      try {
+                                        await awardEnergyPoints(user.id, 'problem', undefined, 'egemathprof', currentStreak);
+                                      } catch (error) {
+                                        console.error('Error awarding energy points:', error);
+                                      }
+                                    })();
+                                  }
+                                  
                                   setIsCorrect(isCorrectNow);
                                   setIsAnswered(true);
                                   setPhotoFeedback(feedbackData.review?.overview_latex || '');
