@@ -13,17 +13,19 @@ export default function LandingFooter() {
           viewport={{ once: true }}
           transition={{ duration: 0.4 }}
         >
-          {/* Left: ЭЙАЙ / ПРОВЕРКА */}
-          <Link to="/" className="flex flex-col leading-tight">
-            <span className="text-xs font-semibold text-emerald-400 tracking-[0.25em] uppercase">
-              ЭЙАЙ
-            </span>
-            <span className="font-black text-xl md:text-2xl tracking-wide">
-              ПРОВЕРКА
+          {/* Left: Brand logo + name */}
+          <Link to="/" className="flex items-center gap-2">
+            <img
+              src="https://kbaazksvkvnafrwtmkcw.supabase.co/storage/v1/object/public/avatars/logo100.png"
+              alt="EGEChat Logo"
+              className="w-8 h-8"
+            />
+            <span className="font-black text-xl md:text-2xl tracking-wide text-white">
+              EGEChat
             </span>
           </Link>
 
-          {/* Center: navigation like on screenshot */}
+          {/* Center: Navigation */}
           <nav className="hidden md:flex items-center gap-8 text-xs md:text-sm font-semibold tracking-wide uppercase">
             <Link
               to="/about"
@@ -51,7 +53,7 @@ export default function LandingFooter() {
             </a>
           </nav>
 
-          {/* Right: Telegram icon in circle */}
+          {/* Right: Telegram icon */}
           <a
             href="https://t.me/egechat"
             target="_blank"
