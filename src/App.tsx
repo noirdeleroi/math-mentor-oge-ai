@@ -32,6 +32,8 @@ const EgeMathBasic = lazy(() => import("./pages/EgeMathBasic"));
 const OgeMath = lazy(() => import("./pages/OgeMath"));
 const OgemathPractice = lazy(() => import("./pages/OgemathPractice"));
 const QuestionBankOGE = lazy(() => import("./pages/QuestionBankOGE"));
+const QuestionBankEGEB = lazy(() => import("./pages/QuestionBankEGEB"));
+const QuestionBankEGEP = lazy(() => import("./pages/QuestionBankEGEP"));
 const OgemathMock = lazy(() => import("./pages/OgemathMock"));
 const OgemathRevision = lazy(() => import("./pages/OgemathRevision"));
 const EgemathbasicRevision = lazy(() => import("./pages/EgemathbasicRevision"));
@@ -95,6 +97,8 @@ const App = () => (
               <Route path="/faq" element={<FAQ />} />
               <Route path="/about" element={<About />} />
               <Route path="/questionbankoge" element={<QuestionBankOGE />} />
+              <Route path="/questionbankegeb" element={<QuestionBankEGEB />} />
+              <Route path="/questionbankegep" element={<QuestionBankEGEP />} />
               <Route path="/register" element={<Register />} />
               <Route path="/login" element={<Login />} />
           

@@ -128,7 +128,11 @@ export default function LandingHeader() {
     }
   };
 
-  const dropdownItems = {
+  const dropdownItems: {
+    textbook: Array<{ label: string; href?: string; disabled?: boolean; tooltip?: string }>;
+    platform: Array<{ label: string; href?: string; disabled?: boolean; tooltip?: string }>;
+    practice: Array<{ label: string; href?: string; disabled?: boolean; tooltip?: string }>;
+  } = {
     textbook: [
       { label: "ОГЭ математика", href: "/textbook" },
       { label: "ЕГЭ базовый уровень (математика)", href: "/textbook-base" },

@@ -4,11 +4,11 @@ import { ArrowLeft } from 'lucide-react';
 import LandingHeader from '@/components/landing/LandingHeader';
 import FlyingMathBackground from '@/components/FlyingMathBackground';
 
-export default function QuestionBankOGE() {
-  const questionTypes = [
-    { label: '1-5', number: 1 },
-    ...Array.from({ length: 20 }, (_, i) => ({ label: String(i + 6), number: i + 6 }))
-  ];
+export default function QuestionBankEGEB() {
+  const questionTypes = Array.from({ length: 21 }, (_, i) => ({ 
+    label: String(i + 1), 
+    number: i + 1 
+  }));
 
   return (
     <div className="min-h-screen relative" style={{ background: "linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)" }}>
@@ -24,7 +24,7 @@ export default function QuestionBankOGE() {
 
         <div className="text-center mb-12">
           <h1 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent mb-4">
-            Банк заданий ОГЭ
+            Банк заданий ЕГЭ (базовый уровень)
           </h1>
           <p className="text-lg text-gray-300 max-w-2xl mx-auto">
             Выберите номер задания для практики
@@ -35,7 +35,7 @@ export default function QuestionBankOGE() {
           {questionTypes.map(({ label, number }) => (
             <a
               key={label}
-              href={`/questionbankoge/${label}/index.html`}
+              href={`/questionbankegeb/${label}/index.html`}
               rel="noopener noreferrer"
             >
               <Card className="p-6 hover:shadow-lg hover:scale-105 transition-all duration-300 cursor-pointer bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm border-white/30 hover:border-yellow-400/60 hover:bg-gradient-to-br hover:from-white/30 hover:to-white/20 group">
