@@ -6,7 +6,7 @@ export default function VideoEmbed() {
   const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const videoUrl = "https://kbaazksvkvnafrwtmkcw.supabase.co/storage/v1/object/public/videos/test11.mp4";
+  const videoUrl = "https://kbaazksvkvnafrwtmkcw.supabase.co/storage/v1/object/public/videos/demo1.mp4";
 
   const handlePlayClick = () => {
     if (videoRef.current) {
