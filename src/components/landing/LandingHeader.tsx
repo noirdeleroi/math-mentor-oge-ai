@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, LogIn, Menu, X } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -116,9 +116,15 @@ const DropdownMenu = ({ title, items, isOpen, onToggle }: DropdownMenuProps) => 
 export default function LandingHeader() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Close dropdown when route changes
+  useEffect(() => {
+    setOpenDropdown(null);
+  }, [location.pathname]);
 
   const handleDropdownToggle = (dropdownName: string) => {
     setOpenDropdown(prev => prev === dropdownName ? null : dropdownName);
