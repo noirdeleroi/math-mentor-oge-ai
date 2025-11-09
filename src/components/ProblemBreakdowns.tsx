@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { ArrowLeft, BookOpen } from 'lucide-react';
 import ArticleRenderer from './ArticleRenderer';
 import { toast } from 'sonner';
@@ -188,19 +189,26 @@ const ProblemBreakdowns: React.FC = () => {
           </Button>
         </div>
 
-        <div className="mb-6">
-          <h1 className="font-display text-3xl font-bold bg-gradient-to-r from-yellow-500 to-emerald-500 text-transparent bg-clip-text">
-            Задание № {problemLabel}
-          </h1>
-        </div>
+        <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
+          <CardContent className="p-0">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-t-lg">
+              <h1 className="text-2xl font-bold">Задание № {problemLabel}</h1>
+              <p className="text-blue-100 text-sm mt-1">Разбор экзаменационного задания</p>
+            </div>
 
-        <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-lg border border-white/20 p-8">
-          <ArticleRenderer
-            text={article.text}
-            article={{ skill: selectedProblem, art: article.text }}
-            skillTitle={`Задание ${problemLabel}`}
-          />
-        </div>
+            {/* Article Content */}
+            <div className="p-8">
+              <div className="textbook-preview prose max-w-none">
+                <ArticleRenderer
+                  text={article.text}
+                  article={{ skill: selectedProblem, art: article.text }}
+                  skillTitle={`Задание ${problemLabel}`}
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   };
