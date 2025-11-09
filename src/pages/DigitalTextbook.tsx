@@ -14,6 +14,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import newSyllabusData from '../data/newSyllabusStructure.json';
 import ArticleRenderer from '../components/ArticleRenderer';
 import OgeExerciseQuiz from '../components/OgeExerciseQuiz';
+import ProblemBreakdowns from '../components/ProblemBreakdowns';
 import { useChatContext } from '@/contexts/ChatContext';
 import { sendChatMessage } from '@/services/chatService';
 import CourseChatMessages from '@/components/chat/CourseChatMessages';
@@ -729,17 +730,7 @@ const DigitalTextbook = () => {
                 </TabsContent>
                 
                 <TabsContent value="problems">
-                  <div className="max-w-4xl mx-auto">
-                    <div className="mb-8">
-                      <h1 className="font-display text-3xl font-bold mb-2 bg-gradient-to-r from-yellow-500 to-emerald-500 text-transparent bg-clip-text">
-                        Разборы экзаменационных заданий
-                      </h1>
-                    </div>
-                    
-                    <div className="bg-white/95 backdrop-blur-lg rounded-lg p-6 text-[#1a1f36]">
-                      <p className="text-lg">Раздел в разработке. Скоро здесь будут доступны подробные разборы экзаменационных заданий.</p>
-                    </div>
-                  </div>
+                  <ProblemBreakdowns />
                 </TabsContent>
               </Tabs>
             )}
