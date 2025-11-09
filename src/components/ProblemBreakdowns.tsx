@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, BookOpen } from 'lucide-react';
@@ -11,9 +12,11 @@ interface Article {
 }
 
 const ProblemBreakdowns: React.FC = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [articles, setArticles] = useState<Record<number, Article>>({});
-  const [selectedProblem, setSelectedProblem] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const selectedProblem = searchParams.get('problem') ? parseInt(searchParams.get('problem')!) : null;
 
   useEffect(() => {
     fetchArticles();
@@ -69,6 +72,14 @@ const ProblemBreakdowns: React.FC = () => {
     { id: 25, label: '25', title: 'Геометрия (макс.)', dbId: 25 }
   ];
 
+  const handleProblemClick = (dbId: number) => {
+    setSearchParams({ problem: String(dbId) });
+  };
+
+  const handleBackToList = () => {
+    setSearchParams({});
+  };
+
   const renderProblemsList = () => (
     <div className="max-w-4xl mx-auto">
       <div className="mb-8">
@@ -86,7 +97,7 @@ const ProblemBreakdowns: React.FC = () => {
           return (
             <Button
               key={problem.id}
-              onClick={() => hasArticle && setSelectedProblem(problem.dbId)}
+              onClick={() => hasArticle && handleProblemClick(problem.dbId)}
               variant="outline"
               className={`
                 h-auto py-4 px-6 text-left justify-start
@@ -132,7 +143,7 @@ const ProblemBreakdowns: React.FC = () => {
       <div className="max-w-4xl mx-auto">
         <div className="mb-6 flex items-center gap-4">
           <Button
-            onClick={() => setSelectedProblem(null)}
+            onClick={handleBackToList}
             variant="ghost"
             size="sm"
             className="text-white/70 hover:text-white hover:bg-white/10"
