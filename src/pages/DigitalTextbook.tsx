@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ChevronDown, ChevronRight, MessageCircle, X, BookOpen, Lightbulb, ArrowLeft, Play, Edit3, Send, ChevronLeft, Calculator, Highlighter, Target } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import newSyllabusData from '../data/newSyllabusStructure.json';
@@ -712,7 +713,36 @@ const DigitalTextbook = () => {
             )}
 
             {/* Main Content */}
-            {!selectedSkill && !selectedTopic && renderFullSyllabus()}
+            {!selectedSkill && !selectedTopic && (
+              <Tabs defaultValue="syllabus" className="w-full">
+                <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-2 mb-8 bg-white/10 backdrop-blur-sm border border-white/20">
+                  <TabsTrigger value="syllabus" className="data-[state=active]:bg-white/95 data-[state=active]:text-[#1a1f36]">
+                    Программа ОГЭ по математике
+                  </TabsTrigger>
+                  <TabsTrigger value="problems" className="data-[state=active]:bg-white/95 data-[state=active]:text-[#1a1f36]">
+                    Разборы экзаменационных заданий
+                  </TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="syllabus">
+                  {renderFullSyllabus()}
+                </TabsContent>
+                
+                <TabsContent value="problems">
+                  <div className="max-w-4xl mx-auto">
+                    <div className="mb-8">
+                      <h1 className="font-display text-3xl font-bold mb-2 bg-gradient-to-r from-yellow-500 to-emerald-500 text-transparent bg-clip-text">
+                        Разборы экзаменационных заданий
+                      </h1>
+                    </div>
+                    
+                    <div className="bg-white/95 backdrop-blur-lg rounded-lg p-6 text-[#1a1f36]">
+                      <p className="text-lg">Раздел в разработке. Скоро здесь будут доступны подробные разборы экзаменационных заданий.</p>
+                    </div>
+                  </div>
+                </TabsContent>
+              </Tabs>
+            )}
             {selectedTopic && !selectedSkill && renderTopicView()}
             {selectedSkill && (
               <div className="space-y-6">
