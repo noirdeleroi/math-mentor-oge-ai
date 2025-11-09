@@ -44,9 +44,15 @@ const ProblemBreakdowns: React.FC = () => {
     }
   };
 
+  // Map problem numbers to their database IDs
+  // Problems 1-5 share ID 1, then 6-25 have IDs 6-25
   const problemNumbers = [
-    { id: 0, label: '1-5' },
-    ...Array.from({ length: 20 }, (_, i) => ({ id: i + 6, label: String(i + 6) }))
+    { id: 1, label: '1-5', dbId: 1 },
+    ...Array.from({ length: 20 }, (_, i) => ({ 
+      id: i + 6, 
+      label: String(i + 6),
+      dbId: i + 6 
+    }))
   ];
 
   const renderProblemsList = () => (
@@ -64,16 +70,16 @@ const ProblemBreakdowns: React.FC = () => {
         {problemNumbers.map((problem) => (
           <Button
             key={problem.id}
-            onClick={() => setSelectedProblem(problem.id)}
+            onClick={() => setSelectedProblem(problem.dbId)}
             variant="outline"
             className={`
               h-24 text-lg font-semibold
               bg-white/10 backdrop-blur-sm border-white/20
               hover:bg-white/20 hover:scale-105
               transition-all duration-200
-              ${!articles[problem.id] ? 'opacity-50 cursor-not-allowed' : ''}
+              ${!articles[problem.dbId] ? 'opacity-50 cursor-not-allowed' : ''}
             `}
-            disabled={!articles[problem.id]}
+            disabled={!articles[problem.dbId]}
           >
             <div className="flex flex-col items-center gap-2">
               <BookOpen className="w-6 h-6" />
@@ -92,12 +98,12 @@ const ProblemBreakdowns: React.FC = () => {
   );
 
   const renderArticleView = () => {
-    if (!selectedProblem && selectedProblem !== 0) return null;
+    if (!selectedProblem) return null;
     
     const article = articles[selectedProblem];
     if (!article) return null;
 
-    const problemLabel = selectedProblem === 0 ? '1-5' : String(selectedProblem);
+    const problemLabel = selectedProblem === 1 ? '1-5' : String(selectedProblem);
 
     return (
       <div className="max-w-4xl mx-auto">
