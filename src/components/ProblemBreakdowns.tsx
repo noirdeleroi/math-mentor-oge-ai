@@ -31,6 +31,8 @@ const ProblemBreakdowns: React.FC = () => {
 
       if (error) throw error;
 
+      console.log('Fetched articles:', data);
+
       const articlesMap: Record<number, Article> = {};
       data?.forEach((article) => {
         if (article.id) {
@@ -38,6 +40,7 @@ const ProblemBreakdowns: React.FC = () => {
         }
       });
       
+      console.log('Articles map:', articlesMap);
       setArticles(articlesMap);
     } catch (error) {
       console.error('Error fetching articles:', error);
@@ -92,34 +95,25 @@ const ProblemBreakdowns: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {problemNumbers.map((problem) => {
-          const hasArticle = !!articles[problem.dbId];
-          return (
-            <Button
-              key={problem.id}
-              onClick={() => hasArticle && handleProblemClick(problem.dbId)}
-              variant="outline"
-              className={`
-                h-auto py-4 px-6 text-left justify-start
-                bg-white/10 backdrop-blur-sm border-white/20
-                transition-all duration-200
-                ${hasArticle 
-                  ? 'hover:bg-white/20 hover:scale-[1.02] cursor-pointer' 
-                  : 'opacity-50 cursor-not-allowed'
-                }
-              `}
-              disabled={!hasArticle}
-            >
-              <div className="flex flex-col gap-1 w-full">
-                <div className="flex items-center gap-2">
-                  <BookOpen className="w-5 h-5 text-yellow-500" />
-                  <span className="font-bold text-white">Задача {problem.label}</span>
-                </div>
-                <span className="text-sm text-white/70">{problem.title}</span>
+        {problemNumbers.map((problem) => (
+          <Button
+            key={problem.id}
+            onClick={() => {
+              console.log('Clicking problem:', problem.dbId, 'Has article:', !!articles[problem.dbId]);
+              handleProblemClick(problem.dbId);
+            }}
+            variant="outline"
+            className="h-auto py-4 px-6 text-left justify-start bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 hover:scale-[1.02] transition-all duration-200 cursor-pointer"
+          >
+            <div className="flex flex-col gap-1 w-full">
+              <div className="flex items-center gap-2">
+                <BookOpen className="w-5 h-5 text-yellow-500" />
+                <span className="font-bold text-white">Задача {problem.label}</span>
               </div>
-            </Button>
-          );
-        })}
+              <span className="text-sm text-white/70">{problem.title}</span>
+            </div>
+          </Button>
+        ))}
       </div>
 
       {loading && (
