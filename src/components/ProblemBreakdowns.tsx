@@ -44,15 +44,29 @@ const ProblemBreakdowns: React.FC = () => {
     }
   };
 
-  // Map problem numbers to their database IDs
-  // Problems 1-5 share ID 1, then 6-25 have IDs 6-25
+  // Map problem numbers to their database IDs with titles
   const problemNumbers = [
-    { id: 1, label: '1-5', dbId: 1 },
-    ...Array.from({ length: 20 }, (_, i) => ({ 
-      id: i + 6, 
-      label: String(i + 6),
-      dbId: i + 6 
-    }))
+    { id: 1, label: '1-5', title: 'Таблицы и графики', dbId: 1 },
+    { id: 6, label: '6', title: 'Дроби', dbId: 6 },
+    { id: 7, label: '7', title: 'Сравнение чисел', dbId: 7 },
+    { id: 8, label: '8', title: 'Степени', dbId: 8 },
+    { id: 9, label: '9', title: 'Уравнения', dbId: 9 },
+    { id: 10, label: '10', title: 'Вероятность', dbId: 10 },
+    { id: 11, label: '11', title: 'Графики функций', dbId: 11 },
+    { id: 12, label: '12', title: 'Формулы', dbId: 12 },
+    { id: 13, label: '13', title: 'Неравенства', dbId: 13 },
+    { id: 14, label: '14', title: 'Прогрессии', dbId: 14 },
+    { id: 15, label: '15', title: 'Треугольники', dbId: 15 },
+    { id: 16, label: '16', title: 'Окружности', dbId: 16 },
+    { id: 17, label: '17', title: 'Площади', dbId: 17 },
+    { id: 18, label: '18', title: 'Геометрия на клетках', dbId: 18 },
+    { id: 19, label: '19', title: 'Свойства фигур', dbId: 19 },
+    { id: 20, label: '20', title: 'Сложные уравнения', dbId: 20 },
+    { id: 21, label: '21', title: 'Текстовые задачи', dbId: 21 },
+    { id: 22, label: '22', title: 'Анализ графиков', dbId: 22 },
+    { id: 23, label: '23', title: 'Геометрия (повыш.)', dbId: 23 },
+    { id: 24, label: '24', title: 'Доказательство', dbId: 24 },
+    { id: 25, label: '25', title: 'Геометрия (макс.)', dbId: 25 }
   ];
 
   const renderProblemsList = () => (
@@ -66,27 +80,35 @@ const ProblemBreakdowns: React.FC = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-        {problemNumbers.map((problem) => (
-          <Button
-            key={problem.id}
-            onClick={() => setSelectedProblem(problem.dbId)}
-            variant="outline"
-            className={`
-              h-24 text-lg font-semibold
-              bg-white/10 backdrop-blur-sm border-white/20
-              hover:bg-white/20 hover:scale-105
-              transition-all duration-200
-              ${!articles[problem.dbId] ? 'opacity-50 cursor-not-allowed' : ''}
-            `}
-            disabled={!articles[problem.dbId]}
-          >
-            <div className="flex flex-col items-center gap-2">
-              <BookOpen className="w-6 h-6" />
-              <span>№ {problem.label}</span>
-            </div>
-          </Button>
-        ))}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {problemNumbers.map((problem) => {
+          const hasArticle = !!articles[problem.dbId];
+          return (
+            <Button
+              key={problem.id}
+              onClick={() => hasArticle && setSelectedProblem(problem.dbId)}
+              variant="outline"
+              className={`
+                h-auto py-4 px-6 text-left justify-start
+                bg-white/10 backdrop-blur-sm border-white/20
+                transition-all duration-200
+                ${hasArticle 
+                  ? 'hover:bg-white/20 hover:scale-[1.02] cursor-pointer' 
+                  : 'opacity-50 cursor-not-allowed'
+                }
+              `}
+              disabled={!hasArticle}
+            >
+              <div className="flex flex-col gap-1 w-full">
+                <div className="flex items-center gap-2">
+                  <BookOpen className="w-5 h-5 text-yellow-500" />
+                  <span className="font-bold text-white">Задача {problem.label}</span>
+                </div>
+                <span className="text-sm text-white/70">{problem.title}</span>
+              </div>
+            </Button>
+          );
+        })}
       </div>
 
       {loading && (
@@ -103,7 +125,8 @@ const ProblemBreakdowns: React.FC = () => {
     const article = articles[selectedProblem];
     if (!article) return null;
 
-    const problemLabel = selectedProblem === 1 ? '1-5' : String(selectedProblem);
+    const problemInfo = problemNumbers.find(p => p.dbId === selectedProblem);
+    const problemLabel = problemInfo ? `${problemInfo.label}: ${problemInfo.title}` : String(selectedProblem);
 
     return (
       <div className="max-w-4xl mx-auto">
