@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, BookOpen } from 'lucide-react';
 import ArticleRenderer from './ArticleRenderer';
@@ -25,22 +25,29 @@ const ProblemBreakdowns: React.FC = () => {
   const fetchArticles = async () => {
     try {
       const { data, error } = await supabase
-        .from('articles_memos_oge')
-        .select('*')
+        .from('articles_memos_oge' as any)
+        .select('id, text')
         .order('id', { ascending: true });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
 
       console.log('Fetched articles:', data);
 
       const articlesMap: Record<number, Article> = {};
-      data?.forEach((article) => {
-        if (article.id) {
-          articlesMap[article.id] = article as Article;
+      data?.forEach((article: any) => {
+        if (article.id && article.text) {
+          articlesMap[article.id] = {
+            id: article.id,
+            text: article.text
+          };
         }
       });
       
       console.log('Articles map:', articlesMap);
+      console.log('Articles count:', Object.keys(articlesMap).length);
       setArticles(articlesMap);
     } catch (error) {
       console.error('Error fetching articles:', error);
@@ -128,7 +135,41 @@ const ProblemBreakdowns: React.FC = () => {
     if (!selectedProblem) return null;
     
     const article = articles[selectedProblem];
-    if (!article) return null;
+    
+    // Show loading state while articles are being fetched
+    if (loading) {
+      return (
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center text-white/70 mt-8">
+            Загрузка...
+          </div>
+        </div>
+      );
+    }
+    
+    // Show "not found" message if article doesn't exist
+    if (!article) {
+      return (
+        <div className="max-w-4xl mx-auto">
+          <div className="mb-6 flex items-center gap-4">
+            <Button
+              onClick={handleBackToList}
+              variant="ghost"
+              size="sm"
+              className="text-white/70 hover:text-white hover:bg-white/10"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Назад к списку
+            </Button>
+          </div>
+          <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-lg border border-white/20 p-8">
+            <p className="text-lg text-center text-gray-600">
+              Статья не найдена. Возможно, она ещё в разработке.
+            </p>
+          </div>
+        </div>
+      );
+    }
 
     const problemInfo = problemNumbers.find(p => p.dbId === selectedProblem);
     const problemLabel = problemInfo ? `${problemInfo.label}: ${problemInfo.title}` : String(selectedProblem);
