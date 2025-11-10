@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  ArrowLeft, Play, BookOpen, Target, X, Crown, Clock, CheckCircle2, Zap
+  ArrowLeft, Play, BookOpen, Target, X, Crown, Clock, CheckCircle2, Zap, Sparkles
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -470,8 +470,78 @@ const TopicPage: React.FC = () => {
     return topicSkillsMeta.slice(0, 4);
   }, [topicSkillsMeta]);
 
+  const topicTestData = useMemo(() => {
+    if (!moduleEntry || !topic) return null;
+
+    const testSkills = getTopicTestSkills(moduleSlug, topicId);
+    const testQuestionCount = getTopicTestQuestionCount(testSkills);
+    const testItemId = `${moduleSlug}-${topicId}-topic-test`;
+
+    const matchingItems = progressData.filter(
+      (p) => p.item_id === testItemId && p.activity_type === "test"
+    );
+    const correctCount =
+      matchingItems.length > 0
+        ? Math.max(
+            ...matchingItems.map((item) => parseInt(item.correct_count || "0"))
+          )
+        : 0;
+    const testStatus = getTopicTestStatus(correctCount, testQuestionCount);
+
+    return {
+      testSkills,
+      testQuestionCount,
+      testItemId,
+      testStatus,
+      correctCount,
+    };
+  }, [moduleEntry, topic, moduleSlug, topicId, progressData]);
+
   // ✅ Use global simulation opener
   const { open } = useSimulation();
+
+  const renderTestStatusBadge = (
+    status: ReturnType<typeof getTopicTestStatus> | "not_started",
+    size: "lg" | "sm" = "lg"
+  ) => {
+    const sizeClasses = size === "lg" ? "w-9 h-9" : "w-6 h-6";
+    const iconClasses = size === "lg" ? "h-4 w-4" : "h-3 w-3";
+
+    const baseClasses = `flex items-center justify-center rounded-full border-2 ${sizeClasses}`;
+
+    switch (status) {
+      case "mastered":
+        return (
+          <div className={`${baseClasses} bg-purple-100 border-purple-400 text-purple-800`}>
+            <Sparkles className={iconClasses} />
+          </div>
+        );
+      case "proficient":
+        return (
+          <div className={`${baseClasses} bg-orange-100 border-orange-400 text-orange-700`}>
+            <Sparkles className={iconClasses} />
+          </div>
+        );
+      case "familiar":
+        return (
+          <div className={`${baseClasses} bg-emerald-50 border-emerald-300 text-emerald-600`}>
+            <Sparkles className={iconClasses} />
+          </div>
+        );
+      case "attempted":
+        return (
+          <div className={`${baseClasses} bg-slate-100 border-slate-300 text-slate-500`}>
+            <Sparkles className={iconClasses} />
+          </div>
+        );
+      default:
+        return (
+          <div className={`${baseClasses} bg-white border-slate-200 text-slate-400`}>
+            <Sparkles className={iconClasses} />
+          </div>
+        );
+    }
+  };
 
   // Guards
   if (!moduleEntry || !topic) {
@@ -559,145 +629,74 @@ const TopicPage: React.FC = () => {
       {/* Page content lives above the layout background */}
       <div className="relative z-20 max-w-7xl mx-auto px-4 py-4 pb-12">
         {/* Header */}
-        <div className="flex items-center mb-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate(`/module/${moduleSlug}`)}
-            className="mr-4 hover:bg-white/20 text-white"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Назад к модулю
-          </Button>
-          <div className="flex-1">
-            <h1 className="text-2xl sm:text-3xl font-bold font-display bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent">
-              {topic.title}
-            </h1>
-            <Link
-              to={`/module/${moduleSlug}`}
-              className="text-gray-200/90 hover:text-yellow-400 inline-block cursor-pointer transition-colors"
+        <div className="flex flex-col gap-3 mb-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate(`/module/${moduleSlug}`)}
+              className="hover:bg-white/20 text-white"
             >
-              Тема {topicNumber} • Урок {moduleEntry.moduleNumber}:{" "}
-              {moduleEntry.title
-                .replace(/^Модуль \d+:\s*/, "")
-                .replace(/Модуль/g, "Урок")}
-            </Link>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Назад к модулю
+            </Button>
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold font-display bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent">
+                {topic.title}
+              </h1>
+              <Link
+                to={`/module/${moduleSlug}`}
+                className="text-gray-200/90 hover:text-yellow-400 inline-block cursor-pointer transition-colors"
+              >
+                Тема {topicNumber} • Урок {moduleEntry.moduleNumber}:{" "}
+                {moduleEntry.title
+                  .replace(/^Модуль \d+:\s*/, "")
+                  .replace(/Модуль/g, "Урок")}
+              </Link>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              className="bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-white font-semibold"
+              title="Подробная теория, примеры и упражнения для практики."
+              onClick={() => {
+                const textbookRoute =
+                  moduleEntry.courseId === "ege-basic"
+                    ? "/textbook-base"
+                    : moduleEntry.courseId === "ege-advanced"
+                    ? "/textbook-prof"
+                    : "/textbook";
+                window.location.href = `${textbookRoute}?topic=${topicNumber}`;
+              }}
+            >
+              <BookOpen className="h-4 w-4 mr-2" />
+              Открыть учебник
+            </Button>
+            <Button
+              className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold"
+              title="Пройдите этот тест, чтобы охватить все навыки по этой теме"
+              onClick={() => {
+                if (!topicTestData) return;
+                setSelectedExercise({
+                  title: `Тест по теме: ${topic?.title}`,
+                  skills: topicTestData.testSkills,
+                  questionCount: topicTestData.testQuestionCount,
+                  isTest: true,
+                  itemId: topicTestData.testItemId,
+                });
+              }}
+              disabled={!topicTestData || topicTestData.testSkills.length === 0}
+            >
+              <span className="mr-2 inline-flex">
+                {renderTestStatusBadge(topicTestData?.testStatus ?? "not_started", "sm")}
+              </span>
+              Итоговый тест по теме
+            </Button>
           </div>
         </div>
 
         {/* Lesson Description */}
         <div className="bg-white/95 backdrop-blur-sm rounded-lg border border-white/20 shadow-sm p-4 mb-4">
-          {/* Textbook Link - Full Width */}
-          <div className="bg-gradient-to-br from-yellow-50 to-emerald-50 border border-yellow-300/50 rounded-lg p-3 mb-4">
-            <div className="flex flex-col md:flex-row items-start md:items-center gap-3">
-              <div className="w-9 h-9 bg-gradient-to-br from-yellow-500 to-emerald-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                <BookOpen className="h-4 w-4 text-white" />
-              </div>
-              <div className="flex-1 w-full">
-                <h3 className="text-sm font-semibold text-[#1a1f36] mb-0.5">
-                  Углубленное изучение в учебнике
-                </h3>
-                <p className="text-xs text-gray-700">
-                  Подробная теория, примеры и упражнения для практики.
-                </p>
-              </div>
-              <Button
-                onClick={() => {
-                  const textbookRoute = moduleEntry.courseId === 'ege-basic' ? '/textbook-base'
-                    : moduleEntry.courseId === 'ege-advanced' ? '/textbook-prof'
-                    : '/textbook';
-                  window.location.href = `${textbookRoute}?topic=${topicNumber}`;
-                }}
-                className="bg-gradient-to-r from-yellow-500 to-emerald-500 hover:from-yellow-600 hover:to-emerald-600 text-white font-semibold h-9 w-full md:w-auto flex-shrink-0 px-5 text-sm"
-              >
-                <BookOpen className="h-4 w-4 mr-2" />
-                Открыть учебник
-              </Button>
-            </div>
-          </div>
-
-          {/* Topic Test - Same style as Textbook */}
-          {(() => {
-            const testSkills = getTopicTestSkills(moduleSlug, topicId);
-            const testQuestionCount = getTopicTestQuestionCount(testSkills);
-            const testItemId = `${moduleSlug}-${topicId}-topic-test`;
-
-            // Get progress data and calculate status
-            const matchingItems = progressData.filter(
-              (p) => p.item_id === testItemId && p.activity_type === "test"
-            );
-            const correctCount =
-              matchingItems.length > 0
-                ? Math.max(
-                    ...matchingItems.map((item) =>
-                      parseInt(item.correct_count || "0")
-                    )
-                  )
-                : 0;
-            const testStatus = getTopicTestStatus(
-              correctCount,
-              testQuestionCount
-            );
-
-            return (
-              <div className="bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-300/50 rounded-lg p-3 mb-4">
-                <div className="flex flex-col md:flex-row items-start md:items-center gap-3">
-                  <div className="flex-shrink-0">
-                    {(() => {
-                      switch (testStatus) {
-                        case "mastered":
-                          return (
-                            <div className="relative w-9 h-9 bg-purple-600 rounded-lg flex items-center justify-center">
-                              <Crown className="h-5 w-5 text-white" />
-                            </div>
-                          );
-                        case "proficient":
-                          return (
-                            <div className="w-9 h-9 bg-gradient-to-t from-orange-500 from-33% to-gray-200 to-33% rounded-lg" />
-                          );
-                        case "familiar":
-                          return (
-                            <div className="w-9 h-9 rounded-lg border-2 border-orange-500 bg-[linear-gradient(to_top,theme(colors.orange.500)_20%,white_20%)]" />
-                          );
-                        case "attempted":
-                          return (
-                            <div className="w-9 h-9 border-2 border-orange-400 rounded-lg bg-white" />
-                          );
-                        default:
-                          return (
-                            <div className="w-9 h-9 border-2 border-gray-300 rounded-lg bg-white" />
-                          );
-                      }
-                    })()}
-                  </div>
-                  <div className="flex-1 w-full">
-                    <h3 className="text-sm font-semibold text-[#1a1f36] mb-0.5">
-                      Тест по теме
-                    </h3>
-                    <p className="text-xs text-gray-700">
-                      Пройдите этот тест, чтобы охватить все навыки по этой теме
-                    </p>
-                  </div>
-                  <Button
-                    onClick={() =>
-                      setSelectedExercise({
-                        title: `Тест по теме: ${topic?.title}`,
-                        skills: testSkills,
-                        questionCount: testQuestionCount,
-                        isTest: true,
-                        itemId: testItemId,
-                      })
-                    }
-                    className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold h-9 w-full md:w-auto flex-shrink-0 px-5 text-sm"
-                  >
-                    <Zap className="h-4 w-4 mr-2" />
-                    Начать тест
-                  </Button>
-                </div>
-              </div>
-            );
-          })()}
-
           <div className="grid md:grid-cols-2 gap-4 mb-4">
             {/* Skills */}
             <div>
@@ -972,11 +971,17 @@ const TopicPage: React.FC = () => {
                 const difficultyLabel = ex.isAdvanced ? "Сложный" : "Легкий";
 
                 return (
-                  <div
+                  <button
                     key={`ex-${i}`}
-                    className="relative p-6 rounded-lg border border-gray-200 bg-white hover:shadow-md transition-all"
+                    type="button"
+                    onClick={() => {
+                      if (!ex.skills.length) return;
+                      setSelectedExercise(exerciseWithId);
+                    }}
+                    className="relative w-full p-0 text-left rounded-lg border border-gray-200 bg-white hover:shadow-md transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 disabled:opacity-60"
+                    disabled={!ex.skills.length}
                   >
-                    <div className="flex items-start gap-4">
+                    <div className="flex items-start gap-4 p-6">
                       {/* Progress Cell - same as module page */}
                       <div className="flex-shrink-0">
                         {(() => {
@@ -1035,24 +1040,12 @@ const TopicPage: React.FC = () => {
 
                       {/* Action buttons */}
                       <div className="flex items-center gap-3 flex-shrink-0">
-                        <Button
-                          onClick={() =>
-                            !ex.skills.length ? null : setSelectedExercise(exerciseWithId)
-                          }
-                          disabled={!ex.skills.length}
-                          className="bg-[#1a1f36] text-white hover:bg-[#2d3748] px-6"
-                        >
+                        <span className="inline-flex items-center rounded-lg bg-gradient-to-r from-emerald-400 via-emerald-500 to-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm">
                           Начать упражнение
-                        </Button>
-                        <Button
-                          variant="outline"
-                          className="text-gray-700 border-gray-300 hover:bg-gray-50"
-                        >
-                          Отметить
-                        </Button>
+                        </span>
                       </div>
                     </div>
-                  </div>
+                  </button>
                 );
               })}
 
