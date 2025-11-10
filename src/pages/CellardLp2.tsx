@@ -16,6 +16,7 @@ type ModuleCard = {
   img: string;
   progress: number; // 0..100
   locked?: boolean;
+  isLoading?: boolean;
 };
 
 const moduleDefinitions = [
@@ -46,6 +47,31 @@ const CellardLp2: React.FC = () => {
     streak: 0
   });
   const [generalProgress, setGeneralProgress] = useState(0);
+  const placeholderModules = useMemo<ModuleCard[]>(
+    () =>
+      moduleDefinitions.map((moduleDef) => ({
+        n: moduleDef.n,
+        title: moduleDef.title,
+        subtitle: moduleDef.subtitle,
+        img: moduleDef.img,
+        progress: 0,
+        locked: true,
+        isLoading: true,
+      })),
+    [],
+  );
+  const defaultModules = useMemo<ModuleCard[]>(
+    () =>
+      moduleDefinitions.map((moduleDef) => ({
+        n: moduleDef.n,
+        title: moduleDef.title,
+        subtitle: moduleDef.subtitle,
+        img: moduleDef.img,
+        progress: 0,
+        locked: true,
+      })),
+    [],
+  );
 
   const goToModule = (n: number) => {
     const moduleSlugMap: Record<number, string> = {
@@ -75,7 +101,7 @@ const CellardLp2: React.FC = () => {
     const loadProgressData = async () => {
       if (!user) {
         // Set default modules with 0 progress if not logged in
-        setModules(moduleDefinitions.map(m => ({ ...m, progress: 0, locked: true })));
+        setModules(defaultModules);
         setLoading(false);
         return;
       }
@@ -92,7 +118,7 @@ const CellardLp2: React.FC = () => {
 
         if (error || !snapshot?.raw_data) {
           console.log('No snapshot found, using default values');
-          setModules(moduleDefinitions.map(m => ({ ...m, progress: 0 })));
+          setModules(defaultModules);
           setLoading(false);
           return;
         }
@@ -132,7 +158,8 @@ const CellardLp2: React.FC = () => {
             subtitle: moduleDef.subtitle,
             img: moduleDef.img,
             progress,
-            locked: progress === 0
+            locked: progress === 0,
+            isLoading: false,
           };
         });
 
@@ -157,14 +184,14 @@ const CellardLp2: React.FC = () => {
         }
       } catch (err) {
         console.error('Error loading progress data:', err);
-        setModules(moduleDefinitions.map(m => ({ ...m, progress: 0 })));
+        setModules(defaultModules);
       } finally {
         setLoading(false);
       }
     };
 
     loadProgressData();
-  }, [user]);
+  }, [user, defaultModules]);
 
   // Animate module cards on view
   useEffect(() => {
@@ -350,19 +377,36 @@ const CellardLp2: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-            {modules.map((m, i) => {
+            {(loading ? placeholderModules : modules.length ? modules : defaultModules).map((m, i) => {
+              const isLoadingCard = Boolean(m.isLoading);
               const offsetClass = ["mt-24", "mt-12", "mt-36", "mt-20", "mt-28", "mt-16", "mt-24", "mt-20", "mt-28"][i] || "mt-16";
-              const strokeColor = m.progress === 100 ? "#10b981" : m.progress > 0 ? "#f59e0b" : "#64748b";
-              const statusText = m.locked ? "Заблокировано" : m.progress === 100 ? "Завершено" : m.progress > 0 ? "В процессе" : "Не начато";
+              const strokeColor = isLoadingCard
+                ? "#cbd5f5"
+                : m.progress === 100
+                ? "#10b981"
+                : m.progress > 0
+                ? "#f59e0b"
+                : "#64748b";
+              const statusText = isLoadingCard
+                ? "Загрузка..."
+                : m.locked
+                ? "Заблокировано"
+                : m.progress === 100
+                ? "Завершено"
+                : m.progress > 0
+                ? "В процессе"
+                : "Не начато";
 
-              const progressOffset = circumference - (m.progress / 100) * circumference;
+              const effectiveProgress = isLoadingCard ? 0 : m.progress;
+              const progressOffset = circumference - (effectiveProgress / 100) * circumference;
               
               return (
                 <div
                   key={m.n}
                   className={`module-card rounded-xl p-4 sm:p-6 cursor-pointer bg-white/95 text-[#1a1f36] border border-white/20 ${offsetClass} sm:${offsetClass}`}
-                  onClick={() => (m.locked ? null : goToModule(m.n))}
+                  onClick={() => (isLoadingCard || m.locked ? null : goToModule(m.n))}
                   style={{ backdropFilter: "blur(10px)" }}
+                  aria-busy={isLoadingCard}
                 >
                   <div className="flex items-center justify-between mb-3 sm:mb-4">
                     <img src={m.img} alt={m.title} className="w-12 h-12 sm:w-16 sm:h-16" />
@@ -379,11 +423,11 @@ const CellardLp2: React.FC = () => {
                           strokeWidth="3"
                           strokeLinecap="round"
                           className="progress-ring-circle sm:hidden"
-                          data-progress={m.progress}
+                          data-progress={effectiveProgress}
                           style={{ 
                             strokeDasharray: 2 * Math.PI * 20, 
-                            strokeDashoffset: 2 * Math.PI * 20 - (m.progress / 100) * 2 * Math.PI * 20,
-                            transition: 'stroke-dashoffset 0.3s ease'
+                            strokeDashoffset: 2 * Math.PI * 20 - (effectiveProgress / 100) * 2 * Math.PI * 20,
+                            transition: isLoadingCard ? undefined : 'stroke-dashoffset 0.3s ease'
                           }}
                         />
                         <circle
@@ -395,25 +439,25 @@ const CellardLp2: React.FC = () => {
                           strokeWidth="4"
                           strokeLinecap="round"
                           className="progress-ring-circle hidden sm:block"
-                          data-progress={m.progress}
+                          data-progress={effectiveProgress}
                           style={{ 
                             strokeDasharray: circumference, 
                             strokeDashoffset: progressOffset,
-                            transition: 'stroke-dashoffset 0.3s ease'
+                            transition: isLoadingCard ? undefined : 'stroke-dashoffset 0.3s ease'
                           }}
                         />
                       </svg>
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="text-xs sm:text-sm font-bold text-[#1a1f36]">{m.progress}%</span>
+                      <div className={`absolute inset-0 flex items-center justify-center ${isLoadingCard ? "text-gray-400 animate-pulse" : ""}`}>
+                        <span className="text-xs sm:text-sm font-bold text-[#1a1f36]">{isLoadingCard ? "…" : `${m.progress}%`}</span>
                       </div>
                     </div>
                   </div>
                   <h3 className="font-display text-base sm:text-xl font-semibold mb-2">{m.title}</h3>
                   <p className="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4">{m.subtitle}</p>
                   <div className="flex items-center justify-between">
-                    <span className={`text-xs font-medium ${m.locked ? "text-gray-500" : "text-emerald-600"}`}>{statusText}</span>
-                    <span className={`${m.locked ? "text-gray-400 cursor-not-allowed" : "text-yellow-600 hover:text-yellow-700"} font-medium text-xs sm:text-sm`}>
-                      {m.locked ? "Скоро →" : m.progress === 100 ? "Повторить →" : "Продолжить →"}
+                    <span className={`text-xs font-medium ${isLoadingCard ? "text-gray-400" : m.locked ? "text-gray-500" : "text-emerald-600"}`}>{statusText}</span>
+                    <span className={`${isLoadingCard || m.locked ? "text-gray-400 cursor-not-allowed" : "text-yellow-600 hover:text-yellow-700"} font-medium text-xs sm:text-sm`}>
+                      {isLoadingCard ? "…" : m.locked ? "Скоро →" : m.progress === 100 ? "Повторить →" : "Продолжить →"}
                     </span>
                   </div>
                 </div>
