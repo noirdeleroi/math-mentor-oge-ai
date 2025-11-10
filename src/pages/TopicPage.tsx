@@ -316,6 +316,12 @@ const TopicPage: React.FC = () => {
     title: string;
   } | null>(null);
   const [topicSkillsMeta, setTopicSkillsMeta] = useState<TopicSkillMeta[]>([]);
+  const skillsWithArticles = useMemo(() => {
+    const ids = topicArticles
+      .filter((item) => item.article?.article_text)
+      .map((item) => item.skillId);
+    return new Set(ids);
+  }, [topicArticles]);
 
   useEffect(() => {
     let ignore = false;
@@ -704,18 +710,22 @@ const TopicPage: React.FC = () => {
               <div className="flex flex-wrap gap-1.5">
                 {skillsChips.length > 0 ? (
                   skillsChips.map((skill) => {
-                    const importance = skill.importance ?? 0;
-                    const chipClass =
-                      importance >= 3
-                        ? "bg-emerald-100 text-emerald-700"
-                        : importance <= 0
-                        ? "bg-gray-100 text-gray-700"
-                        : "bg-yellow-100 text-yellow-700";
+                    const hasArticle =
+                      skill.number !== null && skill.number !== undefined && skillsWithArticles.has(skill.number);
+                    const key = `${skill.number ?? skill.label}`;
+                    if (hasArticle) {
+                      return (
+                        <a
+                          key={key}
+                          href={`#article-skill-${skill.number}`}
+                          className="px-2 py-1 text-xs text-gray-700 rounded transition-colors hover:text-emerald-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+                        >
+                          {skill.label}
+                        </a>
+                      );
+                    }
                     return (
-                      <span
-                        key={`${skill.number ?? skill.label}`}
-                        className={`px-2 py-1 rounded text-xs ${chipClass}`}
-                      >
+                      <span key={key} className="px-2 py-1 text-xs text-gray-600">
                         {skill.label}
                       </span>
                     );
@@ -824,7 +834,11 @@ const TopicPage: React.FC = () => {
                 </div>
               ) : (
                 topicArticles.map((topicArticle, index) => (
-                  <div key={topicArticle.skillId} className="space-y-4">
+                  <div
+                    key={topicArticle.skillId}
+                    id={`article-skill-${topicArticle.skillId}`}
+                    className="space-y-4"
+                  >
                     {topicArticle.article?.article_text ? (
                       <>
                         <div className="border-b border-gray-200 pb-2">
@@ -978,7 +992,7 @@ const TopicPage: React.FC = () => {
                       if (!ex.skills.length) return;
                       setSelectedExercise(exerciseWithId);
                     }}
-                    className="relative w-full p-0 text-left rounded-lg border border-gray-200 bg-white hover:shadow-md transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 disabled:opacity-60"
+                    className="relative w-full p-0 text-left rounded-lg border border-gray-200 bg-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 disabled:opacity-60 hover:-translate-y-0.5 hover:shadow-lg"
                     disabled={!ex.skills.length}
                   >
                     <div className="flex items-start gap-4 p-6">
@@ -1076,11 +1090,21 @@ const TopicPage: React.FC = () => {
                 const testStatusBadge = getTestStatusBadge();
 
                 return (
-                  <div
+                  <button
                     key="topic-test"
-                    className="relative p-6 rounded-lg border-2 border-orange-400 bg-gradient-to-br from-orange-50 to-amber-50 hover:shadow-lg transition-all mt-6"
+                    type="button"
+                    onClick={() =>
+                      setSelectedExercise({
+                        title: `Тест по теме: ${topic?.title}`,
+                        skills: testSkills,
+                        questionCount: testQuestionCount,
+                        isTest: true,
+                        itemId: testItemId,
+                      })
+                    }
+                    className="relative w-full text-left p-0 rounded-lg border-2 border-orange-400 bg-gradient-to-br from-orange-50 to-amber-50 transition-all mt-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 hover:-translate-y-0.5 hover:shadow-xl"
                   >
-                    <div className="flex items-start gap-4">
+                    <div className="flex items-start gap-4 p-6">
                       {/* Progress Cell */}
                       <div className="flex-shrink-0">
                         {(() => {
@@ -1145,23 +1169,12 @@ const TopicPage: React.FC = () => {
 
                       {/* Action button */}
                       <div className="flex items-center gap-3 flex-shrink-0">
-                        <Button
-                          onClick={() =>
-                            setSelectedExercise({
-                              title: `Тест по теме: ${topic?.title}`,
-                              skills: testSkills,
-                              questionCount: testQuestionCount,
-                              isTest: true,
-                              itemId: testItemId,
-                            })
-                          }
-                          className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-6 font-semibold"
-                        >
-                          Начать тест
-                        </Button>
+                        <span className="inline-flex items-center rounded-lg bg-gradient-to-r from-orange-500 to-amber-500 px-4 py-2 text-sm font-semibold text-white shadow-sm">
+                          Пройти тест
+                        </span>
                       </div>
                     </div>
-                  </div>
+                  </button>
                 );
               })()}
 

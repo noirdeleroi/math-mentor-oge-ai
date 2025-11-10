@@ -1,7 +1,7 @@
 // src/pages/ModulePage.tsx
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Play, BookOpen, Target, Crown, Zap, Star, Info, X } from "lucide-react";
+import { ArrowLeft, Play, BookOpen, Target, Crown, Zap, Star, Info, X, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StreakDisplay } from "@/components/streak/StreakDisplay";
 import VideoPlayerWithChat from "@/components/video/VideoPlayerWithChat";
@@ -461,6 +461,10 @@ const ModulePage = () => {
             <div className="flex items-center gap-2">
               <Zap className="h-4 w-4 text-blue-600" />
               <span className="text-sm">Тест</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-emerald-600" />
+              <span className="text-sm">Тест по теме</span>
             </div>
             <div className="flex items-center gap-2">
               <Star className="h-4 w-4 text-yellow-600" />
