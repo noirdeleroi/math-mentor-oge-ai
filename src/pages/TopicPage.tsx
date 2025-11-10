@@ -316,12 +316,6 @@ const TopicPage: React.FC = () => {
     title: string;
   } | null>(null);
   const [topicSkillsMeta, setTopicSkillsMeta] = useState<TopicSkillMeta[]>([]);
-  const skillsWithArticles = useMemo(() => {
-    const ids = topicArticles
-      .filter((item) => item.article?.article_text)
-      .map((item) => item.skillId);
-    return new Set(ids);
-  }, [topicArticles]);
 
   useEffect(() => {
     let ignore = false;
@@ -710,20 +704,25 @@ const TopicPage: React.FC = () => {
               <div className="flex flex-wrap gap-1.5">
                 {skillsChips.length > 0 ? (
                   skillsChips.map((skill) => {
-                    const hasArticle =
-                      skill.number !== null && skill.number !== undefined && skillsWithArticles.has(skill.number);
                     const key = `${skill.number ?? skill.label}`;
-                    if (hasArticle) {
+                    const textbookRoute = moduleEntry.courseId === "ege-basic"
+                      ? "/textbook-base"
+                      : moduleEntry.courseId === "ege-advanced"
+                      ? "/textbook-prof"
+                      : "/textbook";
+
+                    if (skill.number !== null && skill.number !== undefined) {
                       return (
                         <a
                           key={key}
-                          href={`#article-skill-${skill.number}`}
-                          className="px-2 py-1 text-xs text-gray-700 rounded transition-colors hover:text-emerald-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+                          href={`${textbookRoute}?skill=${skill.number}`}
+                          className="px-2 py-1 text-xs text-gray-700 underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
                         >
                           {skill.label}
                         </a>
                       );
                     }
+
                     return (
                       <span key={key} className="px-2 py-1 text-xs text-gray-600">
                         {skill.label}
@@ -834,11 +833,7 @@ const TopicPage: React.FC = () => {
                 </div>
               ) : (
                 topicArticles.map((topicArticle, index) => (
-                  <div
-                    key={topicArticle.skillId}
-                    id={`article-skill-${topicArticle.skillId}`}
-                    className="space-y-4"
-                  >
+                  <div key={topicArticle.skillId} className="space-y-4">
                     {topicArticle.article?.article_text ? (
                       <>
                         <div className="border-b border-gray-200 pb-2">
