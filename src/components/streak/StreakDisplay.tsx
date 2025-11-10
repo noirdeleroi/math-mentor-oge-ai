@@ -187,12 +187,7 @@ export const StreakDisplay = () => {
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              setShowDropdown(!showDropdown);
-            }}
-            onTouchStart={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setShowDropdown(!showDropdown);
+              setShowDropdown((prev) => !prev);
             }}
             className="flex items-center gap-1 text-sm text-white hover:opacity-80 transition-opacity duration-200 px-1.5 py-1 touch-manipulation"
           >

@@ -1248,8 +1248,29 @@ const PracticeByNumberEgeProfMath = () => {
 
                   {/* Answer Input */}
                   <div className="space-y-4">
-                    <div className="flex flex-col sm:flex-row gap-2 justify-center">
-                    <Button
+                    <div className="flex flex-col sm:flex-row items-center gap-2 justify-center">
+                      {(!currentQuestion.problem_number_type || currentQuestion.problem_number_type <= 12) && (
+                        <Input
+                          value={userAnswer}
+                          onChange={(event) => setUserAnswer(event.target.value)}
+                          onKeyDown={(event) => {
+                            if (event.key === "Enter") {
+                              event.preventDefault();
+                              if (
+                                !isAnswered &&
+                                event.currentTarget.value.trim().length > 0
+                              ) {
+                                checkAnswer();
+                              }
+                            }
+                          }}
+                          placeholder="Введите ответ"
+                          disabled={isAnswered}
+                          inputMode={isNonNumericAnswer(currentQuestion.answer) ? "text" : "decimal"}
+                          className="w-full sm:flex-1 sm:min-w-[18rem] bg-white/80 text-[#1a1f36] border border-white/60 focus-visible:ring-2 focus-visible:ring-yellow-500"
+                        />
+                      )}
+                      <Button
                       onClick={async () => {
                         if (uploadedImages.length > 0 && currentQuestion.problem_number_type && currentQuestion.problem_number_type >= 13 && currentQuestion.problem_number_type <= 19) {
                           if (!user) { setShowAuthRequiredMessage(true); setTimeout(() => setShowAuthRequiredMessage(false), 5000); return; }
