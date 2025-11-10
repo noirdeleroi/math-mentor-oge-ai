@@ -1,4 +1,11 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 /**
  * ОГЭ-мини-игра: «Признаки делимости на 2, 3, 5, 9, 10»
@@ -54,6 +61,30 @@ const RANGE: Record<Divisor, { min: number; max: number }> = {
 
 const CLOUD_SIZE = 7;
 const MIN_DIST_PCT = 12;
+
+type PlacementBounds = {
+  topMin: number;
+  topMax: number;
+  leftMin: number;
+  leftMax: number;
+};
+
+interface PlacementOptions {
+  bounds?: PlacementBounds;
+  minDist?: number;
+}
+
+type LayoutPreset = "compact" | "cozy" | "spacious";
+
+type SizeConfig = {
+  title: string;
+  subtitle: string;
+  tagSize: "compact" | "normal" | "roomy";
+  scoreChip: string;
+  scoreValue: string;
+  pill: string;
+  ruleRow: string;
+};
 
 // ==== Вспомогательные ====
 const randInt = (a: number, b: number) => a + Math.floor(Math.random() * (b - a + 1));
@@ -175,13 +206,22 @@ const TagButton: React.FC<{
   selected?: boolean;
   tone?: "neutral" | "good" | "bad";
   onClick?: () => void;
-}> = ({ label, selected, tone = "neutral", onClick }) => {
+  size?: "compact" | "normal" | "roomy";
+}> = ({ label, selected, tone = "neutral", onClick, size = "normal" }) => {
   const toneClass = tone === "good" ? "glow-green" : tone === "bad" ? "glow-red" : "";
+  const sizeClass =
+    size === "compact"
+      ? "px-3 py-1.5 text-xs sm:text-sm"
+      : size === "roomy"
+      ? "px-5 py-2.5 text-sm sm:text-base"
+      : "px-4 py-2 text-sm md:text-base";
   return (
     <button
       onClick={onClick}
       className={[
-        "btn px-4 py-2 rounded-2xl text-sm md:text-base font-semibold",
+        "btn",
+        sizeClass,
+        "rounded-2xl font-semibold",
         "glass border border-white/20",
         selected ? "bg-white/70 text-gray-900" : "text-white/90 hover:bg-white/10",
         toneClass,
@@ -192,13 +232,21 @@ const TagButton: React.FC<{
   );
 };
 
-const Hint: React.FC<{ divisor: Divisor }> = ({ divisor }) => (
-  <div className="mt-2 text-white/90 text-sm md:text-base leading-snug">
-    <div className="font-semibold">Подсказка по {divisor}:</div>
-    <div>{HINTS[divisor]}</div>
-    <div className="opacity-80 mt-1">{FRIENDLY_TIPS[divisor]}</div>
-  </div>
-);
+const Hint: React.FC<{ divisor: Divisor; layout: LayoutPreset }> = ({ divisor, layout }) => {
+  const hintClass =
+    layout === "compact"
+      ? "text-xs sm:text-sm"
+      : layout === "spacious"
+      ? "text-sm sm:text-base md:text-lg"
+      : "text-sm md:text-base";
+  return (
+    <div className={`mt-2 text-white/90 leading-snug ${hintClass}`}>
+      <div className="font-semibold">Подсказка по {divisor}:</div>
+      <div>{HINTS[divisor]}</div>
+      <div className="opacity-80 mt-1">{FRIENDLY_TIPS[divisor]}</div>
+    </div>
+  );
+};
 
 // ==== Главный компонент ====
 const DivisionGame: React.FC = () => {
@@ -213,6 +261,107 @@ const DivisionGame: React.FC = () => {
   const [confetti, setConfetti] = useState<
     { id: string; x: number; r: number; dur: number; ch: string }[]
   >([]);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [scale, setScale] = useState<number>(1);
+
+  const layoutPreset: LayoutPreset = useMemo(() => {
+    if (scale >= 1.08) return "spacious";
+    if (scale <= 0.9) return "compact";
+    return "cozy";
+  }, [scale]);
+
+  const placementOptions = useMemo<PlacementOptions>(() => {
+    switch (layoutPreset) {
+      case "compact":
+        return {
+          bounds: { topMin: 12, topMax: 72, leftMin: 10, leftMax: 86 },
+          minDist: 10,
+        };
+      case "spacious":
+        return {
+          bounds: { topMin: 6, topMax: 82, leftMin: 4, leftMax: 94 },
+          minDist: 14,
+        };
+      default:
+        return {
+          bounds: { topMin: 8, topMax: 78, leftMin: 6, leftMax: 90 },
+          minDist: 12,
+        };
+    }
+  }, [layoutPreset]);
+
+  const sizeConfig: SizeConfig = useMemo(() => {
+    switch (layoutPreset) {
+      case "compact":
+        return {
+          title: "text-base sm:text-lg",
+          subtitle: "text-xs sm:text-sm",
+          tagSize: "compact",
+          scoreChip: "text-[11px] sm:text-xs",
+          scoreValue: "px-2 py-0.5 text-sm",
+          pill: "px-3 py-1.5 sm:px-4 sm:py-2 text-base sm:text-lg",
+          ruleRow: "text-[11px] sm:text-xs",
+        };
+      case "spacious":
+        return {
+          title: "text-xl sm:text-2xl",
+          subtitle: "text-sm sm:text-base",
+          tagSize: "roomy",
+          scoreChip: "text-sm sm:text-base",
+          scoreValue: "px-3 py-1 text-lg",
+          pill: "px-6 py-3 text-xl sm:text-2xl",
+          ruleRow: "text-xs sm:text-sm",
+        };
+      default:
+        return {
+          title: "text-lg md:text-xl",
+          subtitle: "text-sm md:text-base",
+          tagSize: "normal",
+          scoreChip: "text-xs md:text-sm",
+          scoreValue: "px-2.5 py-0.5 text-base",
+          pill: "px-4 py-2 md:px-5 md:py-2.5 text-lg md:text-xl",
+          ruleRow: "text-[11px] md:text-xs",
+        };
+    }
+  }, [layoutPreset]);
+
+  const containerStyle = useMemo(
+    () =>
+      ({
+        background: "linear-gradient(135deg, #0b1220 0%, #14203a 45%, #0b776f 100%)",
+        maxWidth: "min(960px, 100%)",
+        "--game-scale": Number(scale.toFixed(3)),
+      }) as React.CSSProperties,
+    [scale]
+  );
+
+  useLayoutEffect(() => {
+    const computeScale = () => {
+      const el = containerRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+      const widthRatio = rect.width / 720;
+      const heightRatio = rect.height / 620;
+      const nextScale = Math.max(0.85, Math.min(1.18, Math.min(widthRatio, heightRatio)));
+      setScale((prev) => (Math.abs(prev - nextScale) > 0.02 ? nextScale : prev));
+    };
+
+    computeScale();
+
+    let resizeObserver: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== "undefined") {
+      resizeObserver = new ResizeObserver(() => computeScale());
+      if (containerRef.current) resizeObserver.observe(containerRef.current);
+    }
+
+    window.addEventListener("resize", computeScale);
+
+    return () => {
+      resizeObserver?.disconnect();
+      window.removeEventListener("resize", computeScale);
+    };
+  }, []);
 
   const spawnConfetti = () => {
     const shapes = ["✦", "✧", "★", "◆", "●", "▲", "✺", "✱", "✸", "✿"];
@@ -227,28 +376,31 @@ const DivisionGame: React.FC = () => {
     setTimeout(() => setConfetti([]), 950);
   };
 
-  const regenerate = (d: Divisor) => {
-    const { correct, pool } = generateOneCorrect(d);
-    setCorrectValue(correct);
-    const positions = placePositions(pool.length);
-    const items: FloatingNumber[] = pool.map((value, idx) => ({
-      id: `${Date.now()}-${idx}-${value}`,
-      value,
-      top: positions[idx].top,
-      left: positions[idx].left,
-      duration: randInt(7, 12),
-      delay: randInt(0, 5),
-      rotate: randInt(-6, 6),
-    }));
-    setCloud(items);
-    setRound((r) => r + 1);
-    setPickedValue(null);
-    setPickedTone("none");
-  };
+  const regenerate = useCallback(
+    (d: Divisor) => {
+      const { correct, pool } = generateOneCorrect(d);
+      setCorrectValue(correct);
+      const positions = placePositions(pool.length, placementOptions);
+      const items: FloatingNumber[] = pool.map((value, idx) => ({
+        id: `${Date.now()}-${idx}-${value}`,
+        value,
+        top: positions[idx]?.top ?? 50,
+        left: positions[idx]?.left ?? 50,
+        duration: randInt(7, 12),
+        delay: randInt(0, 5),
+        rotate: randInt(-6, 6),
+      }));
+      setCloud(items);
+      setRound((r) => r + 1);
+      setPickedValue(null);
+      setPickedTone("none");
+    },
+    [placementOptions]
+  );
 
   useEffect(() => {
     regenerate(divisor);
-  }, [divisor]);
+  }, [divisor, regenerate]);
 
   const onPick = (n: number) => {
     if (n === correctValue) {
@@ -349,10 +501,9 @@ const DivisionGame: React.FC = () => {
 
   return (
     <div
-      className="relative w-full max-w-[720px] h-[340px] sm:h-[360px] md:h-[380px] overflow-hidden rounded-3xl"
-      style={{
-        background: "linear-gradient(135deg, #0b1220 0%, #14203a 45%, #0b776f 100%)",
-      }}
+      ref={containerRef}
+      className="division-game relative w-full h-full overflow-hidden rounded-3xl flex flex-col"
+      style={containerStyle}
     >
       <AnimStyles />
       <div className="absolute inset-0 bgPattern -z-10" />
@@ -372,11 +523,11 @@ const DivisionGame: React.FC = () => {
           >
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
               <div className="flex items-center gap-2">
-                <span className="text-lg md:text-xl font-extrabold text-white tracking-tight">
+                <span className={`${sizeConfig.title} font-extrabold text-white tracking-tight`}>
                   ОГЭ-тренажёр
                 </span>
                 <span className="hidden md:inline text-white/70">·</span>
-                <span className="text-white/80 text-sm md:text-base">
+                <span className={`text-white/80 ${sizeConfig.subtitle}`}>
                   Признаки делимости
                 </span>
               </div>
@@ -387,24 +538,32 @@ const DivisionGame: React.FC = () => {
                     label={`${d}`}
                     selected={d === divisor}
                     tone={headerTone}
+                    size={sizeConfig.tagSize}
                     onClick={() => setDivisor(d)}
                   />
                 ))}
-                <div className="score-chip glass border border-white/20 rounded-2xl px-3 py-1.5 text-white/90 text-xs md:text-sm font-semibold flex items-center gap-2">
+                <div
+                  className={`score-chip glass border border-white/20 rounded-2xl px-3 py-1.5 text-white/90 font-semibold flex items-center gap-2 ${sizeConfig.scoreChip}`}
+                >
                   <span>Очки</span>
-                  <span className="text-white bg-white/20 rounded-xl px-2 py-0.5 font-bold">
+                  <span
+                    className={[
+                      "text-white bg-white/20 rounded-xl font-bold",
+                      sizeConfig.scoreValue,
+                    ].join(" ")}
+                  >
                     {score}
                   </span>
                 </div>
               </div>
             </div>
-            <Hint divisor={divisor} />
+            <Hint divisor={divisor} layout={layoutPreset} />
           </div>
         </div>
       </div>
 
       {/* Поле игры */}
-      <div className="relative z-10 h-[210px] sm:h-[225px] md:h-[235px]">
+      <div className="relative z-10 flex-1">
         <div className="absolute inset-0">
           {cloud.map((item) => (
             <button
@@ -462,12 +621,14 @@ const DivisionGame: React.FC = () => {
 
         {/* Низ страницы: быстрые правила */}
         <div className="absolute bottom-1 left-0 right-0 px-3 md:px-4">
-          <div className="glass border border-white/10 rounded-3xl p-2.5 md:p-3 text-white/90 text-[11px] md:text-xs flex flex-wrap gap-1.5 justify-center">
-            <RulePill label="✌️ Делимость на 2: чётные" />
-            <RulePill label="➗ На 3: сумма цифр кратна 3" />
-            <RulePill label="🖐️ На 5: 0 или 5 на конце" />
-            <RulePill label="9️⃣ На 9: сумма цифр кратна 9" />
-            <RulePill label="🔟 На 10: 0 на конце" />
+          <div
+            className={`glass border border-white/10 rounded-3xl p-2.5 md:p-3 text-white/90 flex flex-wrap gap-1.5 justify-center ${sizeConfig.ruleRow}`}
+          >
+            <RulePill label="✌️ Делимость на 2: чётные" layout={layoutPreset} />
+            <RulePill label="➗ На 3: сумма цифр кратна 3" layout={layoutPreset} />
+            <RulePill label="🖐️ На 5: 0 или 5 на конце" layout={layoutPreset} />
+            <RulePill label="9️⃣ На 9: сумма цифр кратна 9" layout={layoutPreset} />
+            <RulePill label="🔟 На 10: 0 на конце" layout={layoutPreset} />
           </div>
         </div>
       </div>
@@ -477,11 +638,19 @@ const DivisionGame: React.FC = () => {
   );
 };
 
-const RulePill: React.FC<{ label: string }> = ({ label }) => (
-  <div className="px-2 py-1 rounded-2xl bg-white/10 text-white/90 border border-white/15">
-    {label}
-  </div>
-);
+const RulePill: React.FC<{ label: string; layout: LayoutPreset }> = ({ label, layout }) => {
+  const sizeClass =
+    layout === "compact"
+      ? "text-[10px] sm:text-xs"
+      : layout === "spacious"
+      ? "text-xs sm:text-sm"
+      : "text-[11px] md:text-xs";
+  return (
+    <div className={`px-2 py-1 rounded-2xl bg-white/10 text-white/90 border border-white/15 ${sizeClass}`}>
+      {label}
+    </div>
+  );
+};
 
 const BackgroundStickers: React.FC = () => {
   const stickers = [

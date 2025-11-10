@@ -8,10 +8,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ChevronDown, ChevronRight, MessageCircle, X, BookOpen, Lightbulb, ArrowLeft, Play, Edit3, Send, ChevronLeft, Calculator, Highlighter, Target } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import egeBasicSyllabusData from '../data/egeBasicSyllabusStructure.json';
 import ArticleRenderer from '../components/ArticleRenderer';
+import ProblemBreakdowns from '../components/ProblemBreakdowns';
 import OgeExerciseQuiz from '../components/OgeExerciseQuiz';
 import { useChatContext } from '@/contexts/ChatContext';
 import { sendChatMessage } from '@/services/chatService';
@@ -71,6 +73,30 @@ interface MCQQuestion {
 }
 
 const COURSE_ID = '2'; // ЕГЭ База
+
+const EGE_BASE_PROBLEM_NUMBERS = [
+  { id: 1, label: '1', title: 'Простейшие текстовые задачи', dbId: 1 },
+  { id: 2, label: '2', title: 'Размеры и единицы измерения', dbId: 2 },
+  { id: 3, label: '3', title: 'Чтение графиков и диаграмм', dbId: 3 },
+  { id: 4, label: '4', title: 'Преобразования выражений', dbId: 4 },
+  { id: 5, label: '5', title: 'Начала теории вероятностей', dbId: 5 },
+  { id: 6, label: '6', title: 'Выбор оптимального варианта', dbId: 6 },
+  { id: 7, label: '7', title: 'Анализ графиков и диаграмм', dbId: 7 },
+  { id: 8, label: '8', title: 'Анализ утверждений', dbId: 8 },
+  { id: 9, label: '9', title: 'Задачи на квадратной решётке', dbId: 9 },
+  { id: 10, label: '10', title: 'Прикладная геометрия', dbId: 10 },
+  { id: 11, label: '11', title: 'Прикладная стереометрия', dbId: 11 },
+  { id: 12, label: '12', title: 'Планиметрия', dbId: 12 },
+  { id: 13, label: '13', title: 'Задачи по стереометрии', dbId: 13 },
+  { id: 14, label: '14', title: 'Вычисления', dbId: 14 },
+  { id: 15, label: '15', title: 'Простейшие текстовые задачи', dbId: 15 },
+  { id: 16, label: '16', title: 'Вычисления и преобразования', dbId: 16 },
+  { id: 17, label: '17', title: 'Простейшие уравнения', dbId: 17 },
+  { id: 18, label: '18', title: 'Неравенства', dbId: 18 },
+  { id: 19, label: '19', title: 'Числа и их свойства', dbId: 19 },
+  { id: 20, label: '20', title: 'Текстовые задачи', dbId: 20 },
+  { id: 21, label: '21', title: 'Задачи на смекалку', dbId: 21 },
+];
 
 const getArticleForSkill = async (skillId: number): Promise<Article | null> => {
   try {
@@ -640,15 +666,16 @@ const TextbookBase = () => {
             К программе
           </Button>
           
-          {/* Platform Link - Inactive */}
-          <Button
-            variant="ghost"
-            disabled
-            className="w-full justify-start text-white/50 hover:bg-transparent cursor-not-allowed opacity-50"
-          >
-            <Target className="mr-2 h-4 w-4" />
-            Платформа
-          </Button>
+          {/* Platform Link */}
+          <Link to="/platformogeb" className="block">
+            <Button
+              variant="ghost"
+              className="w-full justify-start text-white hover:bg-white/10 hover:text-yellow-400 font-medium"
+            >
+              <Target className="mr-2 h-4 w-4" />
+              Платформа
+            </Button>
+          </Link>
           
           <Button
             onClick={toggleSelecter}
@@ -737,7 +764,30 @@ const TextbookBase = () => {
             )}
 
             {/* Main Content */}
-            {!selectedSkill && !selectedTopic && renderFullSyllabus()}
+            {!selectedSkill && !selectedTopic && (
+              <Tabs defaultValue="syllabus" className="w-full">
+                <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-2 mb-8 bg-white/10 backdrop-blur-sm border border-white/20">
+                  <TabsTrigger value="syllabus" className="data-[state=active]:bg-white/95 data-[state=active]:text-[#1a1f36]">
+                    Программа ЕГЭ по математике (база)
+                  </TabsTrigger>
+                  <TabsTrigger value="problems" className="data-[state=active]:bg-white/95 data-[state=active]:text-[#1a1f36]">
+                    Разборы экзаменационных заданий
+                  </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="syllabus">
+                  {renderFullSyllabus()}
+                </TabsContent>
+
+                <TabsContent value="problems">
+                  <ProblemBreakdowns
+                    problemNumbers={EGE_BASE_PROBLEM_NUMBERS}
+                    headerTitle="Разборы экзаменационных заданий"
+                    supabaseTable="articles_memos_egeb"
+                  />
+                </TabsContent>
+              </Tabs>
+            )}
             {selectedTopic && !selectedSkill && renderTopicView()}
             {selectedSkill && (
               <div className="space-y-6">
