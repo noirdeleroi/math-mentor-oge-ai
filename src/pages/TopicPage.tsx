@@ -53,6 +53,203 @@ interface TopicArticle {
   article: Article | null;
 }
 
+type TopicSkillMeta = {
+  number: number | null;
+  label: string;
+  importance: number | null;
+};
+
+const getCourseMapping = (courseId: string) => {
+  switch (courseId) {
+    case "oge-math":
+      return OGE_TOPIC_SKILL_MAPPING;
+    case "ege-basic":
+      return EGE_BASIC_TOPIC_SKILL_MAPPING;
+    case "ege-advanced":
+      return EGE_PROFIL_TOPIC_SKILL_MAPPING;
+    default:
+      return null;
+  }
+};
+
+const normalizeSkillEntry = (entry: any): TopicSkillMeta | null => {
+  if (entry === null || entry === undefined) return null;
+
+  if (typeof entry === "number") {
+    return {
+      number: entry,
+      label: `Навык ${entry}`,
+      importance: null,
+    };
+  }
+
+  if (typeof entry === "string") {
+    return {
+      number: null,
+      label: entry.trim(),
+      importance: null,
+    };
+  }
+
+  if (typeof entry === "object") {
+    const number =
+      typeof entry.number === "number"
+        ? entry.number
+        : typeof entry.id === "number"
+        ? entry.id
+        : null;
+    const label =
+      (typeof entry.Темы === "string" && entry.Темы.trim()) ||
+      (typeof entry.Навык === "string" && entry.Навык.trim()) ||
+      (typeof entry.Тема === "string" && entry.Тема.trim()) ||
+      (typeof entry.name === "string" && entry.name.trim()) ||
+      (typeof entry.title === "string" && entry.title.trim()) ||
+      (number !== null ? `Навык ${number}` : null) ||
+      "Навык";
+    const importance =
+      typeof entry.importance === "number"
+        ? entry.importance
+        : typeof entry.важность === "number"
+        ? entry.важность
+        : null;
+
+    return {
+      number,
+      label,
+      importance,
+    };
+  }
+
+  return null;
+};
+
+const extractSkillEntriesFromTopic = (topicData: any): TopicSkillMeta[] => {
+  if (!topicData) return [];
+
+  const possibleArrays = [
+    topicData?.навыки,
+    topicData?.Навыки,
+    topicData?.skills,
+    topicData?.skillList,
+    topicData,
+  ];
+
+  for (const candidate of possibleArrays) {
+    if (Array.isArray(candidate)) {
+      const seen = new Set<string>();
+      const entries: TopicSkillMeta[] = [];
+      candidate.forEach((item: any) => {
+        const normalized = normalizeSkillEntry(item);
+        if (!normalized) return;
+        const key =
+          normalized.number !== null
+            ? `num-${normalized.number}`
+            : `label-${normalized.label.toLowerCase()}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          entries.push({
+            number: normalized.number,
+            label: normalized.label,
+            importance: normalized.importance,
+          });
+        }
+      });
+      if (entries.length > 0) {
+        return entries;
+      }
+    }
+  }
+
+  return [];
+};
+
+const getTopicSkillsFromMapping = (
+  courseId: string,
+  topicNumberRaw: string
+): { entries: TopicSkillMeta[]; numbers: number[] } => {
+  const mapping = getCourseMapping(courseId);
+  if (!mapping) return { entries: [], numbers: [] };
+
+  const normalizedTopicNumber =
+    courseId === "oge-math"
+      ? topicNumberRaw.replace(/E/gi, "")
+      : topicNumberRaw;
+
+  const matchesTopicKey = (topicKey: string) => {
+    if (topicKey === topicNumberRaw) return true;
+    if (topicKey === normalizedTopicNumber) return true;
+    const normalizedTopicKey =
+      courseId === "oge-math" ? topicKey.replace(/E/gi, "") : topicKey;
+    if (normalizedTopicKey === normalizedTopicNumber) return true;
+    if (topicKey.replace(/E/gi, "") === topicNumberRaw) return true;
+    return false;
+  };
+
+  const tryExtract = (topicKey: string, topicData: any) => {
+    if (!matchesTopicKey(topicKey)) return null;
+    const entries = extractSkillEntriesFromTopic(topicData);
+    return entries.length > 0 ? entries : null;
+  };
+
+  if (typeof mapping === "object" && !Array.isArray(mapping)) {
+    if (mapping[topicNumberRaw]) {
+      const entries = extractSkillEntriesFromTopic(mapping[topicNumberRaw]);
+      if (entries.length > 0) {
+        return {
+          entries,
+          numbers: entries
+            .map((entry) => entry.number)
+            .filter((num): num is number => num !== null),
+        };
+      }
+    }
+    if (mapping[normalizedTopicNumber]) {
+      const entries = extractSkillEntriesFromTopic(mapping[normalizedTopicNumber]);
+      if (entries.length > 0) {
+        return {
+          entries,
+          numbers: entries
+            .map((entry) => entry.number)
+            .filter((num): num is number => num !== null),
+        };
+      }
+    }
+
+    for (const moduleKey of Object.keys(mapping)) {
+      const moduleValue = (mapping as Record<string, any>)[moduleKey];
+      if (
+        moduleValue &&
+        typeof moduleValue === "object" &&
+        !Array.isArray(moduleValue)
+      ) {
+        for (const topicKey of Object.keys(moduleValue)) {
+          const entries = tryExtract(topicKey, moduleValue[topicKey]);
+          if (entries) {
+            return {
+              entries,
+              numbers: entries
+                .map((entry) => entry.number)
+                .filter((num): num is number => num !== null),
+            };
+          }
+        }
+      } else if (Array.isArray(moduleValue)) {
+        const entries = tryExtract(moduleKey, moduleValue);
+        if (entries) {
+          return {
+            entries,
+            numbers: entries
+              .map((entry) => entry.number)
+              .filter((num): num is number => num !== null),
+          };
+        }
+      }
+    }
+  }
+
+  return { entries: [], numbers: [] };
+};
+
 // Helper to get JSON file ID from course ID (topic-skill mapping files)
 // Based on boost-low-mastery-skills/index.ts and user confirmation
 const getJsonFileIdForCourse = (courseId: string): number => {
@@ -118,6 +315,7 @@ const TopicPage: React.FC = () => {
     skillId: number;
     title: string;
   } | null>(null);
+  const [topicSkillsMeta, setTopicSkillsMeta] = useState<TopicSkillMeta[]>([]);
 
   useEffect(() => {
     let ignore = false;
@@ -148,173 +346,87 @@ const TopicPage: React.FC = () => {
   useEffect(() => {
     let ignore = false;
     setLoadingArticles(true);
-    (async () => {
-      if (!topicNumber || !moduleEntry?.courseId) {
-        if (!ignore) {
-          setTopicArticles([]);
-          setLoadingArticles(false);
-        }
-        return;
+
+    if (!topicNumber || !moduleEntry?.courseId) {
+      if (!ignore) {
+        setTopicArticles([]);
+        setTopicSkillsMeta([]);
+        setLoadingArticles(false);
       }
+      return;
+    }
 
+    const { entries, numbers } = getTopicSkillsFromMapping(
+      moduleEntry.courseId,
+      topicNumber
+    );
+
+    if (!ignore) {
+      setTopicSkillsMeta(entries);
+    }
+
+    if (numbers.length === 0) {
+      console.warn(`[Articles] No skills found for topic ${topicNumber}`);
+      if (!ignore) {
+        setTopicArticles([]);
+        setLoadingArticles(false);
+      }
+      return;
+    }
+
+    (async () => {
       try {
-        // Use hardcoded mappings for all courses
-        let mapping: any = null;
-        
-        if (moduleEntry.courseId === 'oge-math') {
-          // Use hardcoded OGE mapping
-          mapping = OGE_TOPIC_SKILL_MAPPING;
-          console.log('[Articles] Using hardcoded OGE mapping');
-        } else if (moduleEntry.courseId === 'ege-basic') {
-          // Use hardcoded EGE Basic mapping
-          mapping = EGE_BASIC_TOPIC_SKILL_MAPPING;
-          console.log('[Articles] Using hardcoded EGE Basic mapping');
-        } else if (moduleEntry.courseId === 'ege-advanced') {
-          // Use hardcoded EGE Profil mapping
-          mapping = EGE_PROFIL_TOPIC_SKILL_MAPPING;
-          console.log('[Articles] Using hardcoded EGE Profil mapping');
-        } else {
-          console.error('[Articles] Unknown course ID:', moduleEntry.courseId);
-          if (!ignore) {
-            setTopicArticles([]);
-            setLoadingArticles(false);
-          }
-          return;
-        }
-
-        // Parse the mapping - OGE uses nested structure: { "Module Name": { "Topic Code": { "Темы": "...", "навыки": [...] } } }
-        
-        // Normalize topicNumber - remove E suffix only for OGE (OGE uses "1.1", not "1.1E")
-        // EGE courses keep the "E" suffix
-        const normalizedTopicNumber = moduleEntry.courseId === 'oge-math' 
-          ? topicNumber.replace('E', '') 
-          : topicNumber;
-        
-        console.log('[Articles] Using mapping:', {
-          courseId: moduleEntry.courseId,
-          topicNumber,
-          normalizedTopicNumber,
-          mappingType: Array.isArray(mapping) ? 'array' : typeof mapping,
-          moduleKeys: mapping ? Object.keys(mapping).slice(0, 5) : null,
-        });
-        
-        // Find skills for current topicNumber
-        let skills: number[] = [];
-        
-        // Try flat structure first: Record<string, number[]> like { "1.1": [1, 2, 3] }
-        if (mapping && typeof mapping === 'object' && !Array.isArray(mapping)) {
-          // Check if it's a flat structure (topic codes as direct keys)
-          const firstKey = Object.keys(mapping)[0];
-          if (firstKey && /^\d+\.\d+/.test(firstKey)) {
-            // Flat structure - topic codes are direct keys
-            if (mapping[topicNumber] && Array.isArray(mapping[topicNumber])) {
-              skills = mapping[topicNumber].filter((s: any) => typeof s === 'number');
-              console.log('[Articles] Found skills in flat structure (exact match):', skills);
-            } else if (mapping[normalizedTopicNumber] && Array.isArray(mapping[normalizedTopicNumber])) {
-              skills = mapping[normalizedTopicNumber].filter((s: any) => typeof s === 'number');
-              console.log('[Articles] Found skills in flat structure (normalized):', skills);
-            }
-          }
-        }
-        
-        // If not found in flat structure, try nested structure (OGE format)
-        if (skills.length === 0 && mapping && typeof mapping === 'object') {
-          for (const moduleKey in mapping) {
-            const module = mapping[moduleKey];
-            if (typeof module === 'object' && module !== null && !Array.isArray(module)) {
-              for (const topicKey in module) {
-                // Try exact match, normalized match (without E), and vice versa
-                const topicMatch = topicKey === topicNumber || 
-                                  topicKey === normalizedTopicNumber ||
-                                  topicKey.replace('E', '') === normalizedTopicNumber ||
-                                  topicKey === topicNumber.replace('E', '');
-                if (topicMatch) {
-                  console.log('[Articles] Found topic match:', { topicKey, topicNumber, normalizedTopicNumber, topicData: module[topicKey] });
-                  const topicData = module[topicKey];
-                  if (topicData?.навыки && Array.isArray(topicData.навыки)) {
-                    // Extract skill numbers from the навыки array (each skill is an object with 'number' property)
-                    skills = topicData.навыки
-                      .map((s: any) => {
-                        if (typeof s === 'number') return s;
-                        if (typeof s === 'object' && s !== null && s.number !== undefined) return s.number;
-                        return null;
-                      })
-                      .filter((s: any) => s !== null && typeof s === 'number');
-                    console.log('[Articles] Extracted skills from навыки:', skills);
-                    break;
-                  } else if (topicData?.skills && Array.isArray(topicData.skills)) {
-                    // Try English key as fallback
-                    skills = topicData.skills
-                      .map((s: any) => {
-                        if (typeof s === 'number') return s;
-                        if (typeof s === 'object' && s !== null && s.number !== undefined) return s.number;
-                        return null;
-                      })
-                      .filter((s: any) => s !== null && typeof s === 'number');
-                    console.log('[Articles] Extracted skills from skills:', skills);
-                    break;
-                  } else if (Array.isArray(topicData)) {
-                    // If skills is directly an array of numbers
-                    skills = topicData.filter((s: any) => typeof s === 'number');
-                    console.log('[Articles] Extracted skills from array:', skills);
-                    break;
-                  }
-                }
-              }
-              if (skills.length > 0) break;
-            }
-          }
-        }
-
-        if (skills.length === 0) {
-          console.warn(`[Articles] No skills found for topic ${topicNumber}. Available topics:`, 
-            mapping ? Object.keys(mapping).flatMap(mk => Object.keys(mapping[mk] || {})) : []);
-          if (!ignore) {
-            setTopicArticles([]);
-            setLoadingArticles(false);
-          }
-          return;
-        }
-        
-        console.log(`[Articles] Found ${skills.length} skills for topic ${topicNumber}:`, skills);
-
-        // Fetch articles for each skill, maintaining order
-        const articlesPromises = skills.map(async (skillId) => {
+        const articlesPromises = numbers.map(async (skillId) => {
           const { data, error } = await supabase
-            .from('articles_oge_full')
-            .select('*')
-            .eq('ID', skillId)
+            .from("articles_oge_full")
+            .select("*")
+            .eq("ID", skillId)
             .maybeSingle();
 
           if (error) {
-            console.error(`[Articles] Error fetching article for skill ${skillId}:`, error);
+            console.error(
+              `[Articles] Error fetching article for skill ${skillId}:`,
+              error
+            );
             return { skillId, article: null };
           }
 
           if (!data) {
             console.log(`[Articles] No article found for skill ${skillId}`);
           } else {
-            console.log(`[Articles] Found article for skill ${skillId}:`, data.ID, data.article_text ? 'has text' : 'no text');
+            console.log(
+              `[Articles] Found article for skill ${skillId}:`,
+              data.ID,
+              data.article_text ? "has text" : "no text"
+            );
           }
 
           return { skillId, article: data };
         });
 
         const articles = await Promise.all(articlesPromises);
-        console.log(`[Articles] Total articles loaded: ${articles.length}, with content: ${articles.filter(a => a.article?.article_text).length}`);
+        console.log(
+          `[Articles] Total articles loaded: ${
+            articles.length
+          }, with content: ${
+            articles.filter((a) => a.article?.article_text).length
+          }`
+        );
 
         if (!ignore) {
           setTopicArticles(articles);
           setLoadingArticles(false);
         }
       } catch (error) {
-        console.error('Error loading articles:', error);
+        console.error("Error loading articles:", error);
         if (!ignore) {
           setTopicArticles([]);
+          setTopicSkillsMeta([]);
           setLoadingArticles(false);
         }
       }
     })();
+
     return () => {
       ignore = true;
     };
@@ -339,6 +451,24 @@ const TopicPage: React.FC = () => {
     }
     return list;
   }, [moduleEntry, topic]);
+
+  const skillsChips = useMemo(() => {
+    if (!topicSkillsMeta || topicSkillsMeta.length === 0) return [];
+    return topicSkillsMeta.slice(0, 8);
+  }, [topicSkillsMeta]);
+
+  const learningGoals = useMemo(() => {
+    if (!topicSkillsMeta || topicSkillsMeta.length === 0) return [];
+    const sorted = [...topicSkillsMeta].sort((a, b) => {
+      const importanceA = a.importance ?? 0;
+      const importanceB = b.importance ?? 0;
+      if (importanceA === importanceB) return 0;
+      return importanceB - importanceA;
+    });
+    const prioritized = sorted.filter((entry) => entry.label).slice(0, 4);
+    if (prioritized.length > 0) return prioritized;
+    return topicSkillsMeta.slice(0, 4);
+  }, [topicSkillsMeta]);
 
   // ✅ Use global simulation opener
   const { open } = useSimulation();
@@ -545,7 +675,7 @@ const TopicPage: React.FC = () => {
                       Тест по теме
                     </h3>
                     <p className="text-xs text-gray-700">
-                      Take this test to cover ALL the skills taught in this topic
+                      Пройдите этот тест, чтобы охватить все навыки по этой теме
                     </p>
                   </div>
                   <Button
@@ -573,11 +703,29 @@ const TopicPage: React.FC = () => {
             <div>
               <h3 className="font-semibold text-[#1a1f36] text-sm mb-2">Навыки:</h3>
               <div className="flex flex-wrap gap-1.5">
-                <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs">Натуральные числа</span>
-                <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs">Целые числа</span>
-                <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs">Модуль числа</span>
-                <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs">Делимость</span>
-                <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs">НОД и НОК</span>
+                {skillsChips.length > 0 ? (
+                  skillsChips.map((skill) => {
+                    const importance = skill.importance ?? 0;
+                    const chipClass =
+                      importance >= 3
+                        ? "bg-emerald-100 text-emerald-700"
+                        : importance <= 0
+                        ? "bg-gray-100 text-gray-700"
+                        : "bg-yellow-100 text-yellow-700";
+                    return (
+                      <span
+                        key={`${skill.number ?? skill.label}`}
+                        className={`px-2 py-1 rounded text-xs ${chipClass}`}
+                      >
+                        {skill.label}
+                      </span>
+                    );
+                  })
+                ) : (
+                  <span className="text-xs text-gray-500">
+                    Навыки для этой темы появятся позже.
+                  </span>
+                )}
               </div>
             </div>
 
@@ -585,18 +733,22 @@ const TopicPage: React.FC = () => {
             <div>
               <h3 className="font-semibold text-[#1a1f36] text-sm mb-2">Цели обучения:</h3>
               <ul className="space-y-1 text-xs text-gray-700">
-                <li className="flex items-start gap-1.5">
-                  <CheckCircle2 className="h-4 w-4 text-green-600 flex-shrink-0 mt-0.5" />
-                  <span>Понимать разницу между натуральными и целыми числами</span>
-                </li>
-                <li className="flex items-start gap-1.5">
-                  <CheckCircle2 className="h-4 w-4 text-green-600 flex-shrink-0 mt-0.5" />
-                  <span>Выполнять операции с целыми числами</span>
-                </li>
-                <li className="flex items-start gap-1.5">
-                  <CheckCircle2 className="h-4 w-4 text-green-600 flex-shrink-0 mt-0.5" />
-                  <span>Применять признаки делимости и находить НОД/НОК</span>
-                </li>
+                {learningGoals.length > 0 ? (
+                  learningGoals.map((goal) => (
+                    <li
+                      key={`${goal.number ?? goal.label}`}
+                      className="flex items-start gap-1.5"
+                    >
+                      <CheckCircle2 className="h-4 w-4 text-green-600 flex-shrink-0 mt-0.5" />
+                      <span>Освоить «{goal.label}»</span>
+                    </li>
+                  ))
+                ) : (
+                  <li className="flex items-start gap-1.5 text-gray-500">
+                    <CheckCircle2 className="h-4 w-4 text-gray-400 flex-shrink-0 mt-0.5" />
+                    <span>Цели обучения появятся позже.</span>
+                  </li>
+                )}
               </ul>
             </div>
           </div>
@@ -722,19 +874,41 @@ const TopicPage: React.FC = () => {
                   <div className="text-sm text-gray-700">
                     Запусти интерактивные симуляции по теме.
                   </div>
-                  <div className="flex flex-wrap gap-3">
-                    <Button
-                      className="bg-[#1a1f36] text-white hover:bg-[#2d3748]"
+                  <div className="grid gap-4 sm:grid-cols-2 pt-1">
+                    <button
+                      type="button"
                       onClick={() => open("divisibility")}
+                      className="group relative overflow-hidden rounded-xl border border-gray-200 bg-white text-left shadow-sm transition hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
                     >
-                      Открыть «Признаки делимости»
-                    </Button>
-                    <Button
-                      variant="secondary"
+                      <img
+                        src="https://kbaazksvkvnafrwtmkcw.supabase.co/storage/v1/object/public/img/divisibility_sim.png"
+                        alt="Предпросмотр симуляции «Признаки делимости»"
+                        className="h-40 w-full object-cover transition duration-300 group-hover:scale-105"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-0 transition group-hover:opacity-100" />
+                      <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                        <p className="text-xs uppercase tracking-wide text-white/80">Симуляция</p>
+                        <p className="text-base font-semibold">Открыть «Признаки делимости»</p>
+                      </div>
+                    </button>
+                    <button
+                      type="button"
                       onClick={() => open("sci-notation")}
+                      className="group relative overflow-hidden rounded-xl border border-gray-200 bg-white text-left shadow-sm transition hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
                     >
-                      Открыть «Scientific notation»
-                    </Button>
+                      <img
+                        src="https://kbaazksvkvnafrwtmkcw.supabase.co/storage/v1/object/public/img/scientific_sim.png"
+                        alt="Предпросмотр симуляции «Научная запись»"
+                        className="h-40 w-full object-cover transition duration-300 group-hover:scale-105"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-0 transition group-hover:opacity-100" />
+                      <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                        <p className="text-xs uppercase tracking-wide text-white/80">Симуляция</p>
+                        <p className="text-base font-semibold">Открыть «Научная запись»</p>
+                      </div>
+                    </button>
                   </div>
                 </>
               ) : (

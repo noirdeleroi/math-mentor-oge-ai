@@ -783,7 +783,8 @@ export const modulesRegistry: Record<string, ModuleConfig> = {
     ],
     quizzes: [
       { id: 'quiz-1', title: 'Тест 1', description: 'Статистика и вероятность (162–168)' },
-      { id: 'quiz-2', title: 'Тест 2', description: 'Комбинаторика и множества (169–174)' }
+      { id: 'quiz-2', title: 'Тест 2', description: 'Комбинаторика и множества (169–174)' },
+      { id: 'module-exam', title: 'Итоговый тест', description: 'Проверьте все навыки модуля 8' }
     ],
     orderedContent: [
       { type: 'topic', topicIndex: 0 }, // 8.1
@@ -792,7 +793,8 @@ export const modulesRegistry: Record<string, ModuleConfig> = {
       { type: 'topic', topicIndex: 2 }, // 8.3
       { type: 'topic', topicIndex: 3 }, // 8.4
       { type: 'quiz', quizIndex: 1 },   // Test 2 (169–174)
-      { type: 'topic', topicIndex: 4 }  // 8.5 (Графы)
+      { type: 'topic', topicIndex: 4 }, // 8.5 (Графы)
+      { type: 'quiz', isFinalTest: true } // Итоговый тест модуля
     ],
     getExerciseData: (topicId: string, exerciseIndex: number) => {
       // 8.1 Описательная статистика
@@ -845,6 +847,18 @@ export const modulesRegistry: Record<string, ModuleConfig> = {
           skills: Array.from({ length: 6 }, (_, i) => 169 + i), // 169..174
           questionCount: 6,
           isTest: true
+        };
+      }
+      if (quizId === 'module-exam') {
+        return {
+          title: 'Итоговый тест модуля',
+          skills: [
+            162, 163, 164, 165, 166, 167, 168,
+            169, 170, 171, 172, 173, 174,
+            175, 176, 177, 178
+          ],
+          questionCount: 10,
+          isExam: true
         };
       }
       return null;

@@ -83,7 +83,7 @@ const CellardLp2: React.FC = () => {
       6: 'coordinates',
       7: 'geometry',
       8: 'probability-statistics',
-      9: 'applications'
+      9: 'applied-math'
     };
     
     const slug = moduleSlugMap[n];
