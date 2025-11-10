@@ -173,6 +173,7 @@ const DigitalTextbook = () => {
   const { user } = useAuth();
   const { messages, isTyping, isDatabaseMode, addMessage, setIsTyping } = useChatContext();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState<'syllabus' | 'problems'>('syllabus');
   const [missingMCQs, setMissingMCQs] = useState<number[]>([]);
   const [showPractice, setShowPractice] = useState(false);
   const navigate = useNavigate();
@@ -208,7 +209,14 @@ const DigitalTextbook = () => {
   useEffect(() => {
     const skillParam = searchParams.get('skill');
     const topicParam = searchParams.get('topic');
-    
+    const problemParam = searchParams.get('problem');
+
+    if (problemParam) {
+      setActiveTab('problems');
+    } else if (!skillParam && !topicParam) {
+      setActiveTab('syllabus');
+    }
+
     if (skillParam) {
       const skillId = parseInt(skillParam);
       setSelectedSkill(skillId);
@@ -715,7 +723,11 @@ const DigitalTextbook = () => {
 
             {/* Main Content */}
             {!selectedSkill && !selectedTopic && (
-              <Tabs defaultValue="syllabus" className="w-full">
+              <Tabs
+                value={activeTab}
+                onValueChange={(value) => setActiveTab(value as 'syllabus' | 'problems')}
+                className="w-full"
+              >
                 <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-2 mb-8 bg-white/10 backdrop-blur-sm border border-white/20">
                   <TabsTrigger value="syllabus" className="data-[state=active]:bg-white/95 data-[state=active]:text-[#1a1f36]">
                     Программа ОГЭ по математике

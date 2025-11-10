@@ -98,17 +98,15 @@ export default function SimulationModal({
         "
       >
         {/* Заголовок */}
-        <div ref={headerWrapperRef}>
-          <DialogHeader className="px-4 sm:px-6 pt-4 pb-3">
-            <DialogTitle className="text-lg sm:text-xl font-semibold">
+        <div
+          ref={headerWrapperRef}
+          className="px-4 sm:px-6 pt-4 pb-2 border-b border-gray-200/60 bg-white"
+        >
+          <div className="flex items-center justify-center">
+            <DialogTitle className="text-base sm:text-lg font-semibold text-gray-900">
               {titleOverride ?? meta?.title ?? "Симуляция"}
             </DialogTitle>
-            {!!meta?.description && (
-              <DialogDescription className="text-xs sm:text-sm text-gray-600">
-                {meta.description}
-              </DialogDescription>
-            )}
-          </DialogHeader>
+          </div>
         </div>
 
         {/* Основная зона под симуляцию */}
@@ -119,8 +117,7 @@ export default function SimulationModal({
             w-full
             flex-1
             overflow-auto
-            bg-gray-50
-            px-2 sm:px-4 pb-4
+            bg-transparent
           "
           style={
             viewportHeight
@@ -140,14 +137,7 @@ export default function SimulationModal({
               }
             >
               {/* Центруем симуляцию без дополнительного scale */}
-              <div
-                className="w-full flex justify-center items-start"
-                style={
-                  viewportHeight
-                    ? { minHeight: viewportHeight }
-                    : undefined
-                }
-              >
+              <div className="w-full h-full flex items-stretch">
                 <Comp {...mergedProps} />
               </div>
             </Suspense>
