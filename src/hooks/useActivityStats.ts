@@ -21,7 +21,7 @@ export const useActivityStats = (days: number | null = 30) => {
   const courseIdToName: Record<string, string> = {
     '1': 'ОГЭ Математика',
     '2': 'ЕГЭ Математика Базовая',
-    '3': 'ЕГЭ Математика Профильная'
+    '3': 'ЕГЭ Математика Профильная',
   };
 
   useEffect(() => {
@@ -47,48 +47,50 @@ export const useActivityStats = (days: number | null = 30) => {
           .eq('user_id', user.id)
           .maybeSingle();
 
-        const userCourses = profileData?.courses || [];
+        const userCourses: string[] = (profileData?.courses || []).map(String);
 
-        // Fetch activity statistics for each course
-        const stats: CourseStats[] = [];
+        // Build base query
+        let query = supabase
+          .from('student_activity')
+          .select(
+            `
+            course_id,
+            total_attempts:count(*),
+            correct_attempts:count_if(is_correct),
+            unique_questions:count(distinct question_id),
+            last_activity:max(updated_at)
+          `,
+            { count: 'exact', head: false }
+          )
+          .eq('user_id', user.id)
+          .in('course_id', userCourses);
 
-        for (const courseId of userCourses) {
-          const courseIdStr = String(courseId);
-          
-          // Build query for student_activity
-          let query = supabase
-            .from('student_activity')
-            .select('*')
-            .eq('user_id', user.id)
-            .eq('course_id', courseIdStr);
-
-          // Add date filter if days is specified
-          if (days !== null) {
-            const dateThreshold = new Date();
-            dateThreshold.setDate(dateThreshold.getDate() - days);
-            query = query.gte('updated_at', dateThreshold.toISOString());
-          }
-
-          const { data: activityData } = await query;
-
-          if (activityData && activityData.length > 0) {
-            const totalAttempts = activityData.length;
-            const correctAttempts = activityData.filter(a => a.is_correct).length;
-            const accuracy = totalAttempts > 0 ? (correctAttempts / totalAttempts * 100) : 0;
-            const uniqueQuestions = new Set(activityData.map(a => a.question_id)).size;
-            const lastActivity = activityData[0]?.updated_at || null;
-
-            stats.push({
-              courseId: courseIdStr,
-              courseName: courseIdToName[courseIdStr] || `Курс ${courseIdStr}`,
-              totalAttempts,
-              correctAttempts,
-              accuracy,
-              uniqueQuestions,
-              lastActivity
-            });
-          }
+        // Apply date filter if needed
+        if (days !== null) {
+          const dateThreshold = new Date();
+          dateThreshold.setDate(dateThreshold.getDate() - days);
+          query = query.gte('updated_at', dateThreshold.toISOString());
         }
+
+        // Run query
+        const { data: statsData, error } = await query.group('course_id');
+
+        if (error) throw error;
+
+        const stats: CourseStats[] = (statsData || []).map((item: any) => {
+          const total = item.total_attempts || 0;
+          const correct = item.correct_attempts || 0;
+          const accuracy = total > 0 ? (correct / total) * 100 : 0;
+          return {
+            courseId: item.course_id,
+            courseName: courseIdToName[item.course_id] || `Курс ${item.course_id}`,
+            totalAttempts: total,
+            correctAttempts: correct,
+            accuracy,
+            uniqueQuestions: item.unique_questions || 0,
+            lastActivity: item.last_activity,
+          };
+        });
 
         // Sort by last activity
         stats.sort((a, b) => {
