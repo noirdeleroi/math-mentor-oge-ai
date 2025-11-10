@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Trophy, BookOpen, Video, FileText, Target, CheckCircle } from 'lucide-react';
+import { Trophy, BookOpen, Video, FileText, Target, CheckCircle, Sparkles, Zap } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { getTextbookProgress, getActivityStats } from '@/services/textbookProgressService';
 
 interface ActivityStats {
+  skillQuizzes: { started: number; completed: number };
   exercises: { started: number; completed: number };
   tests: { started: number; completed: number };
+  topicTests: { started: number; completed: number };
+  midTests: { started: number; completed: number };
   exams: { started: number; completed: number };
   videos: { watched: number; finished: number };
   articles: { read: number };
@@ -59,7 +62,10 @@ const ProgressDashboard: React.FC = () => {
 
   const getActivityIcon = (activityType: string) => {
     switch (activityType) {
+      case 'skill_quiz': return <Sparkles className="w-4 h-4" />;
       case 'exercise': return <Target className="w-4 h-4" />;
+      case 'topic_test': return <Sparkles className="w-4 h-4" />;
+      case 'mid_test': return <Zap className="w-4 h-4" />;
       case 'test': return <CheckCircle className="w-4 h-4" />;
       case 'exam': return <Trophy className="w-4 h-4" />;
       case 'video': return <Video className="w-4 h-4" />;
@@ -70,7 +76,10 @@ const ProgressDashboard: React.FC = () => {
 
   const getActivityColor = (activityType: string) => {
     switch (activityType) {
+      case 'skill_quiz': return 'text-emerald-600 bg-emerald-50';
       case 'exercise': return 'text-blue-600 bg-blue-50';
+      case 'topic_test': return 'text-amber-600 bg-amber-50';
+      case 'mid_test': return 'text-green-600 bg-green-50';
       case 'test': return 'text-green-600 bg-green-50';
       case 'exam': return 'text-purple-600 bg-purple-50';
       case 'video': return 'text-red-600 bg-red-50';
@@ -118,7 +127,26 @@ const ProgressDashboard: React.FC = () => {
 
       {/* Stats Cards */}
       {stats && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-4 mb-8">
+          <Card className="bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-emerald-600">Навык дня</p>
+                  <p className="text-2xl font-bold text-emerald-700">{stats.skillQuizzes.completed}</p>
+                  <p className="text-xs text-emerald-500">из {stats.skillQuizzes.started} начатых</p>
+                </div>
+                <Sparkles className="w-8 h-8 text-emerald-600" />
+              </div>
+              {stats.skillQuizzes.started > 0 && (
+                <Progress 
+                  value={(stats.skillQuizzes.completed / Math.max(stats.skillQuizzes.started, 1)) * 100} 
+                  className="mt-2 h-2"
+                />
+              )}
+            </CardContent>
+          </Card>
+
           <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
@@ -138,19 +166,38 @@ const ProgressDashboard: React.FC = () => {
             </CardContent>
           </Card>
 
+          <Card className="bg-gradient-to-br from-amber-50 to-amber-100 border-amber-200">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-amber-600">Тесты темы</p>
+                  <p className="text-2xl font-bold text-amber-700">{stats.topicTests.completed}</p>
+                  <p className="text-xs text-amber-500">из {stats.topicTests.started} начатых</p>
+                </div>
+                <Sparkles className="w-8 h-8 text-amber-600" />
+              </div>
+              {stats.topicTests.started > 0 && (
+                <Progress 
+                  value={(stats.topicTests.completed / stats.topicTests.started) * 100} 
+                  className="mt-2 h-2"
+                />
+              )}
+            </CardContent>
+          </Card>
+
           <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-green-600">Тесты</p>
-                  <p className="text-2xl font-bold text-green-700">{stats.tests.completed}</p>
-                  <p className="text-xs text-green-500">из {stats.tests.started} начатых</p>
+                  <p className="text-sm font-medium text-green-600">Тесты модуля</p>
+                  <p className="text-2xl font-bold text-green-700">{stats.midTests.completed}</p>
+                  <p className="text-xs text-green-500">из {stats.midTests.started} начатых</p>
                 </div>
-                <CheckCircle className="w-8 h-8 text-green-600" />
+                <Zap className="w-8 h-8 text-green-600" />
               </div>
-              {stats.tests.started > 0 && (
+              {stats.midTests.started > 0 && (
                 <Progress 
-                  value={(stats.tests.completed / stats.tests.started) * 100} 
+                  value={(stats.midTests.completed / stats.midTests.started) * 100} 
                   className="mt-2 h-2"
                 />
               )}

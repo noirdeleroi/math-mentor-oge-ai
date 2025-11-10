@@ -26,6 +26,7 @@ interface ExerciseConfig {
   questionCount?: number;
   isAdvanced?: boolean;
   isTest?: boolean;
+  isMidTest?: boolean;
   isExam?: boolean;
 }
 

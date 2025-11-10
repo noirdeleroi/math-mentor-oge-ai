@@ -1172,15 +1172,15 @@ const PracticeByNumberEgeProfMath = () => {
             currentQuestion && (
               <>
                 {/* Action Buttons Above Question */}
-                <div className="mb-6 flex items-center justify-between">
+                <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
                   <h2 className="text-xl md:text-2xl font-display font-bold bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent">
                     Вопрос {currentQuestionIndex + 1} из {questions.length}
                   </h2>
-                  <div className="flex items-center gap-3">
+                  <div className="flex flex-col sm:flex-row w-full sm:w-auto items-stretch sm:items-center gap-2 sm:gap-3">
                     <Button
                       onClick={() => setShowFormulaBooklet(true)}
                       variant="outline"
-                      className="bg-transparent border-white/20 hover:border-white/40 text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+                      className="bg-transparent border-white/20 hover:border-white/40 text-white/70 hover:text-white hover:bg-white/10 transition-colors w-full sm:w-auto"
                     >
                       <BookOpen className="w-4 h-4 mr-2" />
                       Справочник формул
@@ -1188,7 +1188,7 @@ const PracticeByNumberEgeProfMath = () => {
                     <Button
                       onClick={handleFinishTest}
                       variant="outline"
-                      className="bg-red-50 hover:bg-red-100 border-red-200 text-red-700 hover:text-red-700"
+                      className="bg-red-50 hover:bg-red-100 border-red-200 text-red-700 hover:text-red-700 w-full sm:w-auto justify-center"
                     >
                       Завершить тест
                     </Button>

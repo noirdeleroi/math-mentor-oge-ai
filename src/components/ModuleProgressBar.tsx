@@ -1,5 +1,5 @@
 import React from "react";
-import { Crown, Zap, Star } from "lucide-react";
+import { Crown, Zap, Star, Sparkles } from "lucide-react";
 import { useModuleProgress } from "@/hooks/useModuleProgress";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -33,7 +33,7 @@ export const ModuleProgressBar: React.FC<ModuleProgressBarProps> = ({
 
   // Build array of all items with their types and IDs
   const progressItems: Array<{
-    type: 'exercise' | 'test' | 'exam';
+    type: 'exercise' | 'topic_test' | 'mid_test' | 'exam';
     itemId: string;
     status: string;
     topicId?: string;
@@ -72,9 +72,9 @@ export const ModuleProgressBar: React.FC<ModuleProgressBarProps> = ({
       } else if (content.quizIndex !== undefined) {
         const quiz = quizzes[content.quizIndex];
         const itemId = `${moduleSlug}-${quiz.id}`;
-        const status = getProgressStatus(itemId, 'test');
+        const status = getProgressStatus(itemId, 'mid_test');
         progressItems.push({
-          type: 'test',
+          type: 'mid_test',
           itemId,
           status,
           quizId: quiz.id,
@@ -112,7 +112,7 @@ export const ModuleProgressBar: React.FC<ModuleProgressBarProps> = ({
     }
   };
 
-  const renderTestIcon = (status: string) => {
+  const renderMidTestIcon = (status: string) => {
     if (status === 'completed') {
       return (
         <div className="relative mx-1">
@@ -125,6 +125,21 @@ export const ModuleProgressBar: React.FC<ModuleProgressBarProps> = ({
       return <Zap className="h-6 w-6 text-blue-400 mx-1" />;
     }
     return <Zap className="h-6 w-6 text-gray-400 mx-1" />;
+  };
+
+  const renderTopicTestIcon = (status: string) => {
+    if (status === 'completed') {
+      return (
+        <div className="relative mx-1">
+          <Sparkles className="h-6 w-6 text-amber-500" style={{
+            filter: 'drop-shadow(0 0 8px rgba(251, 191, 36, 0.6))'
+          }} />
+        </div>
+      );
+    } else if (status === 'attempted') {
+      return <Sparkles className="h-6 w-6 text-amber-400 mx-1" />;
+    }
+    return <Sparkles className="h-6 w-6 text-gray-400 mx-1" />;
   };
 
   const renderExamIcon = (status: string) => {
@@ -156,7 +171,7 @@ export const ModuleProgressBar: React.FC<ModuleProgressBarProps> = ({
                 </TooltipContent>
               </Tooltip>
             );
-          } else if (item.type === 'test' && item.quizId) {
+          } else if (item.type === 'mid_test' && item.quizId) {
             return (
               <Tooltip key={index}>
                 <TooltipTrigger asChild>
@@ -164,8 +179,21 @@ export const ModuleProgressBar: React.FC<ModuleProgressBarProps> = ({
                     onClick={() => onQuizClick(item.quizId!)}
                     className="hover:scale-110 transition-transform cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
                   >
-                    {renderTestIcon(item.status)}
+                    {renderMidTestIcon(item.status)}
                   </button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{item.title}</p>
+                </TooltipContent>
+              </Tooltip>
+            );
+          } else if (item.type === 'topic_test') {
+            return (
+              <Tooltip key={index}>
+                <TooltipTrigger asChild>
+                  <div className="mx-1">
+                    {renderTopicTestIcon(item.status)}
+                  </div>
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>{item.title}</p>

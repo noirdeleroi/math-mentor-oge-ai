@@ -14,12 +14,15 @@ import { logTextbookActivity } from '@/utils/logTextbookActivity';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
+export type QuizMode = 'skill_quiz' | 'exercise' | 'topic_test' | 'mid_test' | 'exam';
+
 interface OgeExerciseQuizProps {
   title: string;
   skills: number[];
   onBack: () => void;
   questionCount?: number;
   isModuleTest?: boolean;
+  mode?: QuizMode;
   moduleTopics?: string[];
   courseId?: string;
   itemId?: string;
@@ -31,6 +34,7 @@ const OgeExerciseQuiz: React.FC<OgeExerciseQuizProps> = ({
   onBack, 
   questionCount = 4,
   isModuleTest = false,
+  mode,
   moduleTopics = [],
   courseId = "1",
   itemId
@@ -110,6 +114,31 @@ const OgeExerciseQuiz: React.FC<OgeExerciseQuizProps> = ({
     setSelectedAnswer(answerLetter);
   };
 
+  const resolvedMode: QuizMode = mode
+    ? mode
+    : isModuleTest || questionCount === 10
+    ? 'exam'
+    : questionCount === 6
+    ? 'topic_test'
+    : skills.length === 1
+    ? 'skill_quiz'
+    : 'exercise';
+
+  const mapModeToActivity = (quizMode: QuizMode): "skill_quiz" | "exercise" | "topic_test" | "mid_test" | "exam" => {
+    switch (quizMode) {
+      case 'skill_quiz':
+        return 'skill_quiz';
+      case 'topic_test':
+        return 'topic_test';
+      case 'mid_test':
+        return 'mid_test';
+      case 'exam':
+        return 'exam';
+      default:
+        return 'exercise';
+    }
+  };
+
   const handleSubmitAnswer = async () => {
     if (!selectedAnswer || showResult) return;
 
@@ -126,14 +155,7 @@ const OgeExerciseQuiz: React.FC<OgeExerciseQuizProps> = ({
     const solvedCount = answers.length + 1;
     const correctCount = [...answers, isCorrect].filter(Boolean).length;
     
-    let activityType: "exercise" | "test" | "exam";
-    if (questionCount === 10 || isModuleTest) {
-      activityType = "exam";
-    } else if (questionCount === 6) {
-      activityType = "test";
-    } else {
-      activityType = "exercise";
-    }
+    const activityType = mapModeToActivity(resolvedMode);
     
     logTextbookActivity({
       activity_type: activityType,
@@ -293,14 +315,7 @@ const OgeExerciseQuiz: React.FC<OgeExerciseQuizProps> = ({
       const solvedCount = answers.length + 1;
       const correctCount = answers.filter(Boolean).length;
       
-      let activityType: "exercise" | "test" | "exam";
-      if (questionCount === 10 || isModuleTest) {
-        activityType = "exam";
-      } else if (questionCount === 6) {
-        activityType = "test";
-      } else {
-        activityType = "exercise";
-      }
+      const activityType = mapModeToActivity(resolvedMode);
       
       logTextbookActivity({
         activity_type: activityType,

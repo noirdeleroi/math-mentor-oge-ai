@@ -1,6 +1,14 @@
 import { supabase } from "@/integrations/supabase/client";
 
-type ActivityType = "exercise" | "test" | "exam" | "video" | "article";
+type ActivityType =
+  | "skill_quiz"
+  | "exercise"
+  | "topic_test"
+  | "mid_test"
+  | "test"
+  | "exam"
+  | "video"
+  | "article";
 
 export async function logTextbookActivity(payload: {
   activity_type: ActivityType;

@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { StreakDisplay } from "@/components/streak/StreakDisplay";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ArticleRenderer from "@/components/ArticleRenderer";
-import OgeExerciseQuiz from "@/components/OgeExerciseQuiz";
+import OgeExerciseQuiz, { QuizMode } from "@/components/OgeExerciseQuiz";
 import VideoPlayerWithChat from "@/components/video/VideoPlayerWithChat";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -434,7 +434,13 @@ const TopicPage: React.FC = () => {
 
   // State for exercise
   const [selectedExercise, setSelectedExercise] = useState<
-    (ExerciseConfig & { itemId?: string }) | null
+    (ExerciseConfig & {
+      itemId?: string;
+      mode?: QuizMode;
+      courseId?: string;
+      isModuleTest?: boolean;
+      isMidTest?: boolean;
+    }) | null
   >(null);
 
   // Exercises resolved from registry
@@ -478,7 +484,7 @@ const TopicPage: React.FC = () => {
     const testItemId = `${moduleSlug}-${topicId}-topic-test`;
 
     const matchingItems = progressData.filter(
-      (p) => p.item_id === testItemId && p.activity_type === "test"
+      (p) => p.item_id === testItemId && (p.activity_type === "topic_test" || p.activity_type === "test")
     );
     const correctCount =
       matchingItems.length > 0
@@ -591,9 +597,10 @@ const TopicPage: React.FC = () => {
               title={selectedExercise.title}
               skills={selectedExercise.skills}
               questionCount={selectedExercise.questionCount}
-              isModuleTest={false}
+              mode={selectedExercise.mode}
+              isModuleTest={Boolean(selectedExercise.isModuleTest)}
               itemId={selectedExercise.itemId}
-              courseId={getNumericCourseId(moduleEntry?.courseId || 'oge-math')}
+              courseId={selectedExercise.courseId}
               onBack={() => {
                 setSelectedExercise(null);
                 refetch();
@@ -613,7 +620,7 @@ const TopicPage: React.FC = () => {
               title={selectedArticleQuiz.title}
               skills={[selectedArticleQuiz.skillId]}
               questionCount={4}
-              isModuleTest={false}
+              mode="skill_quiz"
               itemId={`article-quiz-${moduleSlug}-${topicId}-skill-${selectedArticleQuiz.skillId}`}
               courseId={getNumericCourseId(moduleEntry?.courseId || 'oge-math')}
               onBack={() => {
@@ -681,8 +688,9 @@ const TopicPage: React.FC = () => {
                   title: `Тест по теме: ${topic?.title}`,
                   skills: topicTestData.testSkills,
                   questionCount: topicTestData.testQuestionCount,
-                  isTest: true,
                   itemId: topicTestData.testItemId,
+                  courseId: getNumericCourseId(moduleEntry?.courseId || 'oge-math'),
+                  mode: 'topic_test',
                 });
               }}
               disabled={!topicTestData || topicTestData.testSkills.length === 0}
@@ -833,13 +841,19 @@ const TopicPage: React.FC = () => {
                 </div>
               ) : (
                 topicArticles.map((topicArticle, index) => (
-                  <div key={topicArticle.skillId} className="space-y-4">
+                  <div
+                    key={topicArticle.skillId}
+                    className="space-y-4 rounded-xl border border-gray-200 bg-white/95 shadow-sm p-4 md:p-6"
+                  >
                     {topicArticle.article?.article_text ? (
                       <>
-                        <div className="border-b border-gray-200 pb-2">
+                        <div className="border-b border-gray-200 pb-2 flex items-center justify-between">
                           <h3 className="text-lg font-semibold text-[#1a1f36]">
                             Статья {index + 1} (Навык {topicArticle.skillId})
                           </h3>
+                          <span className="text-xs uppercase tracking-wide text-orange-500">
+                            Учебник
+                          </span>
                         </div>
                         <ArticleRenderer
                           text={topicArticle.article.article_text}
@@ -864,7 +878,7 @@ const TopicPage: React.FC = () => {
                         </div>
                       </>
                     ) : (
-                      <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                      <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-gray-50">
                         <div className="text-sm text-gray-600">
                           Статья для навыка {topicArticle.skillId} пока не добавлена.
                         </div>
@@ -985,7 +999,14 @@ const TopicPage: React.FC = () => {
                     type="button"
                     onClick={() => {
                       if (!ex.skills.length) return;
-                      setSelectedExercise(exerciseWithId);
+                      setSelectedExercise({
+                        title: ex.title,
+                        skills: ex.skills,
+                        questionCount: ex.questionCount,
+                        itemId,
+                        courseId: getNumericCourseId(moduleEntry?.courseId || 'oge-math'),
+                        mode: 'exercise',
+                      });
                     }}
                     className="relative w-full p-0 text-left rounded-lg border border-gray-200 bg-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 disabled:opacity-60 hover:-translate-y-0.5 hover:shadow-lg"
                     disabled={!ex.skills.length}
@@ -1063,7 +1084,7 @@ const TopicPage: React.FC = () => {
                 const testSkills = getTopicTestSkills(moduleSlug, topicId);
                 const testQuestionCount = getTopicTestQuestionCount(testSkills);
                 const testItemId = `${moduleSlug}-${topicId}-topic-test`;
-                const testStatus = getProgressStatus(testItemId, "exercise");
+                const testStatus = getProgressStatus(testItemId, "topic_test");
 
                 if (testSkills.length === 0) return null;
 
@@ -1093,8 +1114,9 @@ const TopicPage: React.FC = () => {
                         title: `Тест по теме: ${topic?.title}`,
                         skills: testSkills,
                         questionCount: testQuestionCount,
-                        isTest: true,
                         itemId: testItemId,
+                        courseId: getNumericCourseId(moduleEntry?.courseId || 'oge-math'),
+                        mode: 'topic_test',
                       })
                     }
                     className="relative w-full text-left p-0 rounded-lg border-2 border-orange-400 bg-gradient-to-br from-orange-50 to-amber-50 transition-all mt-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 hover:-translate-y-0.5 hover:shadow-xl"

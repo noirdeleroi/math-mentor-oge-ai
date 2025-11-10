@@ -16,6 +16,7 @@ type ModuleCard = {
   img: string;
   progress: number; // 0..100
   locked?: boolean;
+  isLoading?: boolean;
 };
 
 const moduleDefinitions = [
@@ -46,6 +47,34 @@ const PlatformOgep: React.FC = () => {
   });
   const [generalProgress, setGeneralProgress] = useState(0);
 
+  const placeholderModules = useMemo<ModuleCard[]>(
+    () =>
+      moduleDefinitions.map((moduleDef) => ({
+        n: moduleDef.n,
+        title: moduleDef.title,
+        subtitle: moduleDef.subtitle,
+        img: moduleDef.img,
+        progress: 0,
+        locked: false,
+        isLoading: true,
+      })),
+    []
+  );
+
+  const defaultModules = useMemo<ModuleCard[]>(
+    () =>
+      moduleDefinitions.map((moduleDef) => ({
+        n: moduleDef.n,
+        title: moduleDef.title,
+        subtitle: moduleDef.subtitle,
+        img: moduleDef.img,
+        progress: 0,
+        locked: false,
+        isLoading: false,
+      })),
+    []
+  );
+
   const goToModule = (n: number) => {
     const moduleSlugMap: Record<number, string> = {
       1: 'ege-profil-numbers',
@@ -73,7 +102,7 @@ const PlatformOgep: React.FC = () => {
     const loadProgressData = async () => {
       if (!user) {
         // Set default modules with 0 progress if not logged in
-        setModules(moduleDefinitions.map(m => ({ ...m, progress: 0, locked: false })));
+        setModules(defaultModules);
         setLoading(false);
         return;
       }
@@ -90,7 +119,7 @@ const PlatformOgep: React.FC = () => {
 
         if (error || !snapshot?.raw_data) {
           console.log('No snapshot found, using default values');
-          setModules(moduleDefinitions.map(m => ({ ...m, progress: 0, locked: false })));
+          setModules(defaultModules);
           setLoading(false);
           return;
         }
@@ -130,7 +159,8 @@ const PlatformOgep: React.FC = () => {
             subtitle: moduleDef.subtitle,
             img: moduleDef.img,
             progress,
-            locked: false
+            locked: false,
+            isLoading: false,
           };
         });
 
@@ -155,14 +185,14 @@ const PlatformOgep: React.FC = () => {
         }
       } catch (err) {
         console.error('Error loading progress data:', err);
-        setModules(moduleDefinitions.map(m => ({ ...m, progress: 0, locked: false })));
+        setModules(defaultModules);
       } finally {
         setLoading(false);
       }
     };
 
     loadProgressData();
-  }, [user]);
+  }, [user, defaultModules]);
 
   // Animate module cards on view
   useEffect(() => {
@@ -348,10 +378,32 @@ const PlatformOgep: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-            {modules.map((m, i) => {
+            {(loading ? placeholderModules : modules.length ? modules : defaultModules).map((m, i) => {
+              const isLoadingCard = Boolean(m.isLoading);
               const offsetClass = ["mt-24", "mt-12", "mt-36", "mt-20", "mt-28", "mt-16", "mt-24", "mt-20"][i] || "mt-16";
-              const strokeColor = m.progress === 100 ? "#10b981" : m.progress > 0 ? "#f59e0b" : "#64748b";
-              const statusText = m.locked ? "Заблокировано" : m.progress === 100 ? "Завершено" : m.progress > 0 ? "В процессе" : "Не начато";
+              const strokeColor = isLoadingCard
+                ? "#cbd5f5"
+                : m.progress === 100
+                ? "#10b981"
+                : m.progress > 0
+                ? "#f59e0b"
+                : "#64748b";
+              const statusText = isLoadingCard
+                ? "Загрузка..."
+                : m.locked
+                ? "Заблокировано"
+                : m.progress === 100
+                ? "Завершено"
+                : m.progress > 0
+                ? "В процессе"
+                : "Не начато";
+              const ctaText = isLoadingCard
+                ? "..."
+                : m.locked
+                ? "Скоро →"
+                : m.progress === 100
+                ? "Повторить →"
+                : "Продолжить →";
 
               const progressOffset = circumference - (m.progress / 100) * circumference;
               
@@ -402,16 +454,32 @@ const PlatformOgep: React.FC = () => {
                         />
                       </svg>
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="text-xs sm:text-sm font-bold text-[#1a1f36]">{m.progress}%</span>
+                        <span className="text-xs sm:text-sm font-bold text-[#1a1f36]">
+                          {isLoadingCard ? "--" : `${m.progress}%`}
+                        </span>
                       </div>
                     </div>
                   </div>
                   <h3 className="font-display text-base sm:text-xl font-semibold mb-2">{m.title}</h3>
                   <p className="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4">{m.subtitle}</p>
                   <div className="flex items-center justify-between">
-                    <span className={`text-xs font-medium ${m.locked ? "text-gray-500" : "text-emerald-600"}`}>{statusText}</span>
-                    <span className={`${m.locked ? "text-gray-400 cursor-not-allowed" : "text-yellow-600 hover:text-yellow-700"} font-medium text-xs sm:text-sm`}>
-                      {m.locked ? "Скоро →" : m.progress === 100 ? "Повторить →" : "Продолжить →"}
+                    <span
+                      className={`text-xs font-medium ${
+                        isLoadingCard ? "text-gray-500" : m.locked ? "text-gray-500" : "text-emerald-600"
+                      }`}
+                    >
+                      {statusText}
+                    </span>
+                    <span
+                      className={`${
+                        isLoadingCard
+                          ? "text-gray-400"
+                          : m.locked
+                          ? "text-gray-400 cursor-not-allowed"
+                          : "text-yellow-600 hover:text-yellow-700"
+                      } font-medium text-xs sm:text-sm`}
+                    >
+                      {ctaText}
                     </span>
                   </div>
                 </div>

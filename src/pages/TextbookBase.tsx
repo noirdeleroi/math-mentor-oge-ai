@@ -867,8 +867,8 @@ const TextbookBase = () => {
                     title={`Практика: ${getAllSkillsFromStructure().find(s => s.number === selectedSkill)?.name || ''}`}
                     skills={[selectedSkill]}
                     onBack={handleBackToArticle}
-                    questionCount={5}
-                    isModuleTest={false}
+                    questionCount={4}
+                    mode="skill_quiz"
                   />
                 )}
               </div>

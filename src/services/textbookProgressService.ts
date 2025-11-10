@@ -1,6 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 
-export type ActivityType = 'exercise' | 'test' | 'exam' | 'video' | 'article';
+export type ActivityType = 'skill_quiz' | 'exercise' | 'topic_test' | 'mid_test' | 'test' | 'exam' | 'video' | 'article';
 
 export interface TextbookProgressEntry {
   user_id: string;
@@ -77,7 +77,10 @@ export const getActivityStats = async (userId: string) => {
 
     // Process stats
     const stats = {
+      skillQuizzes: { started: 0, completed: 0 },
       exercises: { started: 0, completed: 0 },
+      topicTests: { started: 0, completed: 0 },
+      midTests: { started: 0, completed: 0 },
       tests: { started: 0, completed: 0 },
       exams: { started: 0, completed: 0 },
       videos: { watched: 0, finished: 0 },
@@ -86,11 +89,32 @@ export const getActivityStats = async (userId: string) => {
 
     data?.forEach(item => {
       switch (item.activity_type) {
+        case 'skill_quiz':
+          if (item.work_done.includes('started')) stats.skillQuizzes.started++;
+          if (item.work_done.includes('solved') && item.work_done.includes('/') &&
+              item.work_done.split('/')[0] === item.work_done.split('/')[1]) {
+            stats.skillQuizzes.completed++;
+          }
+          break;
         case 'exercise':
           if (item.work_done.includes('started')) stats.exercises.started++;
           if (item.work_done.includes('solved') && item.work_done.includes('/') && 
               item.work_done.split('/')[0] === item.work_done.split('/')[1]) {
             stats.exercises.completed++;
+          }
+          break;
+        case 'topic_test':
+          if (item.work_done.includes('started')) stats.topicTests.started++;
+          if (item.work_done.includes('solved') && item.work_done.includes('/') &&
+              item.work_done.split('/')[0] === item.work_done.split('/')[1]) {
+            stats.topicTests.completed++;
+          }
+          break;
+        case 'mid_test':
+          if (item.work_done.includes('started')) stats.midTests.started++;
+          if (item.work_done.includes('solved') && item.work_done.includes('/') &&
+              item.work_done.split('/')[0] === item.work_done.split('/')[1]) {
+            stats.midTests.completed++;
           }
           break;
         case 'test':

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { StreakDisplay } from "@/components/streak/StreakDisplay";
 import VideoPlayerWithChat from "@/components/video/VideoPlayerWithChat";
 import ArticleRenderer from "@/components/ArticleRenderer";
-import OgeExerciseQuiz from "@/components/OgeExerciseQuiz";
+import OgeExerciseQuiz, { QuizMode } from "@/components/OgeExerciseQuiz";
 import { useModuleProgress } from "@/hooks/useModuleProgress";
 import type { TopicContent, QuizContent } from "@/lib/modules.registry";
 import { modulesRegistry } from "@/lib/modules.registry";
@@ -31,9 +31,11 @@ const ModulePage = () => {
     isAdvanced?: boolean;
     isModuleTest?: boolean;
     isTest?: boolean;
+    isMidTest?: boolean;
     moduleTopics?: string[];
     courseId?: string;
     itemId?: string;
+    mode?: QuizMode;
   } | null>(null);
 
   if (!moduleSlug || !modulesRegistry[moduleSlug]) {
@@ -75,87 +77,13 @@ const ModulePage = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
         {/* Left Column - Learn */}
-        <div>
-          <h4 className="text-sm font-medium text-gray-600 mb-3 uppercase tracking-wide">Изучение</h4>
-          <div className="space-y-3">
-            {/* Videos */}
-            {Array.from({ length: topic.videos }, (_, i) => (
-              <div
-                key={`video-${i}`}
-                className="flex items-center justify-between p-3 bg-white/70 rounded-lg border border-black/5 hover:bg-white/90 cursor-pointer transition-colors"
-                onClick={() => {
-                  if (topic.videoData && topic.videoData[i]) {
-                    setSelectedVideo(topic.videoData[i]);
-                  }
-                }}
-              >
-                <div className="flex items-center space-x-3 min-w-0 flex-1">
-                  <div className="p-2 bg-blue-100 rounded-full flex-shrink-0">
-                    <Play className="h-4 w-4 text-blue-600" />
-                  </div>
-                  <span className="text-sm font-medium truncate">Видео {i + 1}</span>
-                </div>
-                <span className="text-sm text-blue-600 flex-shrink-0 ml-2">
-                  {topic.videoData && topic.videoData[i] ? "Доступно" : "Не начато"}
-                </span>
-              </div>
-            ))}
-
-            {/* Article (Обзор) */}
-            <div
-              className="flex items-center justify-between p-3 bg-white/70 rounded-lg border border-purple-200/40 hover:bg-white/90 cursor-pointer transition-colors"
-              onClick={async () => {
-                const topicNumber = module.topicMapping[topicIndex];
-
-                const dbArt = await loadOverviewByTopicNumber(topicNumber);
-                if (dbArt?.content) {
-                  setSelectedArticle({
-                    title: dbArt.title ?? `Тема ${topicNumber}: ${topic.title}`,
-                    content: dbArt.content,
-                  });
-                  return;
-                }
-
-                if (module.articleContent && module.articleContent[topic.id]) {
-                  setSelectedArticle(module.articleContent[topic.id]);
-                  return;
-                }
-
-                setSelectedArticle({
-                  title: `Тема ${topicNumber}: ${topic.title}`,
-                  content:
-                    `<p>Обзор для этой темы пока не добавлен. Откройте «Читать учебник», затем посмотрите видео и переходите к практике.</p>`,
-                });
-              }}
-            >
-              <div className="flex items-center space-x-3 min-w-0 flex-1">
-                <div className="p-2 bg-purple-100 rounded-full flex-shrink-0">
-                  <BookOpen className="h-4 w-4 text-purple-600" />
-                </div>
-                <span className="text-sm font-medium truncate">Обзор</span>
-              </div>
-              <span className="text-sm text-purple-600 flex-shrink-0 ml-2">Откроется</span>
-            </div>
-
-            {/* Read Textbook */}
-            <div
-              className="flex items-center justify-between p-3 bg-white/70 rounded-lg border border-purple-200/40 hover:bg-white/90 cursor-pointer transition-colors"
-              onClick={() => {
-                const textbookRoute = module.courseId === 'ege-basic' ? '/textbook-base' 
-                  : module.courseId === 'ege-advanced' ? '/textbook-prof' 
-                  : '/textbook';
-                window.location.href = `${textbookRoute}?topic=${module.topicMapping[topicIndex]}`;
-              }}
-            >
-              <div className="flex items-center space-x-3 min-w-0 flex-1">
-                <div className="p-2 bg-purple-100 rounded-full flex-shrink-0">
-                  <BookOpen className="h-4 w-4 text-purple-600" />
-                </div>
-                <span className="text-sm font-medium truncate">Читать учебник</span>
-              </div>
-              <span className="text-sm text-gray-600 flex-shrink-0 ml-2">Доступно</span>
-            </div>
-          </div>
+        <div className="flex flex-col items-start justify-center">
+          <Button
+            className="w-full md:w-auto bg-gradient-to-r from-yellow-500 via-orange-500 to-emerald-500 hover:from-yellow-400 hover:via-orange-400 hover:to-emerald-400 text-[#1a1f36] font-semibold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all"
+            onClick={() => navigate(`/module/${moduleSlug}/topic/${topic.id}`)}
+          >
+            Начать изучение
+          </Button>
         </div>
 
         {/* Right Column - Practice */}
@@ -192,7 +120,7 @@ const ModulePage = () => {
               return (
                 <div 
                   key={`exercise-${i}`} 
-                  onClick={() => exerciseData.skills.length > 0 ? setSelectedExercise({ ...exerciseData, itemId }) : null}
+                  onClick={() => exerciseData.skills.length > 0 ? setSelectedExercise({ ...exerciseData, itemId, mode: 'exercise', courseId: getCourseId(module.courseId) }) : null}
                   className={`p-3 bg-white/70 rounded-lg border border-green-200/40 flex items-center justify-between gap-3 transition-all ${
                     exerciseData.skills.length > 0 ? 'hover:bg-white hover:shadow-md cursor-pointer' : 'opacity-50 cursor-not-allowed'
                   }`}
@@ -222,26 +150,22 @@ const ModulePage = () => {
               const testSkills = getTopicTestSkills(moduleSlug!, topic.id);
               const testQuestionCount = getTopicTestQuestionCount(testSkills);
               const testItemId = `${moduleSlug}-${topic.id}-topic-test`;
-              const testStatus = getProgressStatus(testItemId, 'exercise');
+              const testStatus = getProgressStatus(testItemId, 'topic_test');
 
               const renderTestProgressCell = () => {
-                switch (testStatus) {
-                  case 'mastered':
-                    return (
-                      <div className="relative w-6 h-6 bg-purple-600 rounded flex items-center justify-center">
-                        <Crown className="h-3 w-3 text-white" />
-                      </div>
-                    );
-                  case 'proficient':
-                    return <div className="w-6 h-6 bg-gradient-to-t from-orange-500 from-33% to-gray-200 to-33% rounded" />;
-                  case 'familiar':
-                    return <div className="w-6 h-6 rounded border border-orange-500 bg-[linear-gradient(to_top,theme(colors.orange.500)_20%,white_20%)]" />;
-                  case 'attempted':
-                    return <div className="w-6 h-6 border-2 border-orange-400 rounded bg-white" />;
-                  default:
-                    return <div className="w-6 h-6 border-2 border-gray-300 rounded bg-white" />;
-                }
-              };
+                  switch (testStatus) {
+                    case 'completed':
+                      return (
+                        <div className="relative w-6 h-6 bg-amber-500 rounded flex items-center justify-center">
+                          <Sparkles className="h-3 w-3 text-white" />
+                        </div>
+                      );
+                    case 'attempted':
+                      return <div className="w-6 h-6 border-2 border-amber-400 rounded bg-white" />;
+                    default:
+                      return <div className="w-6 h-6 border-2 border-gray-300 rounded bg-white" />;
+                  }
+                };
 
               if (testSkills.length === 0) return null;
 
@@ -253,7 +177,9 @@ const ModulePage = () => {
                     skills: testSkills,
                     questionCount: testQuestionCount,
                     isTest: true,
-                    itemId: testItemId
+                    itemId: testItemId,
+                    courseId: getCourseId(module.courseId),
+                    mode: 'topic_test'
                   })}
                   className="p-3 bg-gradient-to-br from-orange-50 to-amber-50 rounded-lg border-2 border-orange-300 flex items-center justify-between gap-3 transition-all hover:shadow-md cursor-pointer hover:from-orange-100 hover:to-amber-100"
                 >
@@ -321,9 +247,11 @@ const ModulePage = () => {
               setSelectedExercise({
                 ...quizData,
                 isModuleTest: isFinal,
+                isMidTest: !isFinal,
                 moduleTopics: isFinal ? module.topicMapping : undefined,
-                courseId: isFinal ? numericCourseId : undefined,
-                itemId
+                courseId: numericCourseId,
+                itemId,
+                mode: isFinal ? 'exam' : 'mid_test'
               });
             }}
           >
@@ -393,6 +321,7 @@ const ModulePage = () => {
               }}
               questionCount={selectedExercise.questionCount}
               isModuleTest={selectedExercise.isModuleTest}
+              mode={selectedExercise.mode}
               courseId={selectedExercise.courseId}
               itemId={selectedExercise.itemId}
             />
@@ -484,14 +413,14 @@ const ModulePage = () => {
               const exerciseData = module.getExerciseData?.(topicId, exerciseIndex);
               if (exerciseData) {
                 const itemId = `${moduleSlug}-${topicId}-ex${exerciseIndex}`;
-                setSelectedExercise({ ...exerciseData, itemId });
+                setSelectedExercise({ ...exerciseData, itemId, mode: 'exercise', courseId: getCourseId(module.courseId) });
               }
             }}
             onQuizClick={(quizId) => {
               const quizData = module.getQuizData?.(quizId);
               if (quizData) {
                 const itemId = `${moduleSlug}-${quizId}`;
-                setSelectedExercise({ ...quizData, itemId });
+                setSelectedExercise({ ...quizData, itemId, mode: 'mid_test', courseId: getCourseId(module.courseId) });
               }
             }}
             onExamClick={() => {
@@ -504,7 +433,8 @@ const ModulePage = () => {
                   isModuleTest: true,
                   moduleTopics: module.topicMapping,
                   courseId: numericCourseId,
-                  itemId
+                  itemId,
+                  mode: 'exam'
                 });
               }
             }}

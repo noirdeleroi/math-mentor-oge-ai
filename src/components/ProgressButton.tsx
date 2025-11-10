@@ -1,8 +1,8 @@
 import React from 'react';
-import { Crown, Zap, Star } from 'lucide-react';
+import { Crown, Zap, Star, Sparkles } from 'lucide-react';
 
 interface ProgressButtonProps {
-  type: 'exercise' | 'test' | 'exam';
+  type: 'exercise' | 'test' | 'topic_test' | 'mid_test' | 'exam' | 'skill_quiz';
   status: 'not_started' | 'attempted' | 'familiar' | 'proficient' | 'mastered' | 'completed';
   title: string;
   questionCount: number;
@@ -75,6 +75,34 @@ export const ProgressButton: React.FC<ProgressButtonProps> = ({
         onClick={onClick}
       >
         <Zap className={`h-6 w-6 mx-1 ${getButtonStyle()}`} />
+        <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-2 py-1 rounded text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-10">
+          {getTooltipText()}
+        </div>
+      </button>
+    );
+  }
+
+  if (type === 'topic_test' || type === 'skill_quiz') {
+    return (
+      <button 
+        className="transition-all hover:scale-110 hover:shadow-md relative group"
+        onClick={onClick}
+      >
+        <Sparkles className={`h-6 w-6 mx-1 ${type === 'topic_test' ? 'text-amber-500' : 'text-emerald-500'}` } />
+        <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-2 py-1 rounded text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-10">
+          {getTooltipText()}
+        </div>
+      </button>
+    );
+  }
+
+  if (type === 'mid_test') {
+    return (
+      <button 
+        className="transition-all hover:scale-110 hover:shadow-md relative group"
+        onClick={onClick}
+      >
+        <Zap className={`h-6 w-6 mx-1 text-blue-500`} />
         <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-2 py-1 rounded text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-10">
           {getTooltipText()}
         </div>
