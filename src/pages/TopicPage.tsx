@@ -772,35 +772,35 @@ const TopicPage: React.FC = () => {
             <TabsList className="w-full justify-between rounded-none border-b-0 bg-transparent p-0 h-auto gap-1 md:gap-2 px-2 md:px-4 pt-4">
               <TabsTrigger
                 value="overview"
-                className="flex-1 rounded-t-lg rounded-b-none border border-b-0 border-gray-200 data-[state=active]:bg-white data-[state=active]:border-gray-300 data-[state=active]:shadow-sm data-[state=inactive]:bg-gray-50/50 data-[state=inactive]:text-gray-600 px-2 md:px-6 py-2 md:py-3 font-medium text-xs md:text-sm"
+                className="relative flex-1 rounded-t-lg rounded-b-none border border-b-0 border-gray-200 px-2 md:px-6 py-2 md:py-3 font-medium text-xs md:text-sm transition-all data-[state=active]:bg-white data-[state=active]:text-[#1a1f36] data-[state=active]:border-orange-400 data-[state=active]:shadow-lg data-[state=active]:ring-2 data-[state=active]:ring-orange-200 data-[state=inactive]:bg-gray-50/70 data-[state=inactive]:text-gray-500 data-[state=inactive]:opacity-80"
               >
                 <span className="hidden sm:inline">Обзор</span>
                 <span className="sm:hidden">Обзор</span>
               </TabsTrigger>
               <TabsTrigger
                 value="articles"
-                className="flex-1 rounded-t-lg rounded-b-none border border-b-0 border-gray-200 data-[state=active]:bg-white data-[state=active]:border-gray-300 data-[state=active]:shadow-sm data-[state=inactive]:bg-gray-50/50 data-[state=inactive]:text-gray-600 px-2 md:px-6 py-2 md:py-3 font-medium text-xs md:text-sm"
+                className="relative flex-1 rounded-t-lg rounded-b-none border border-b-0 border-gray-200 px-2 md:px-6 py-2 md:py-3 font-medium text-xs md:text-sm transition-all data-[state=active]:bg-white data-[state=active]:text-[#1a1f36] data-[state=active]:border-orange-400 data-[state=active]:shadow-lg data-[state=active]:ring-2 data-[state=active]:ring-orange-200 data-[state=inactive]:bg-gray-50/70 data-[state=inactive]:text-gray-500 data-[state=inactive]:opacity-80"
               >
                 <span className="hidden sm:inline">Статьи ({topicArticles.length})</span>
                 <span className="sm:hidden">Статьи</span>
               </TabsTrigger>
               <TabsTrigger
                 value="demonstrations"
-                className="flex-1 rounded-t-lg rounded-b-none border border-b-0 border-gray-200 data-[state=active]:bg-white data-[state=active]:border-gray-300 data-[state=active]:shadow-sm data-[state=inactive]:bg-gray-50/50 data-[state=inactive]:text-gray-600 px-2 md:px-6 py-2 md:py-3 font-medium text-xs md:text-sm"
+                className="relative flex-1 rounded-t-lg rounded-b-none border border-b-0 border-gray-200 px-2 md:px-6 py-2 md:py-3 font-medium text-xs md:text-sm transition-all data-[state=active]:bg-white data-[state=active]:text-[#1a1f36] data-[state=active]:border-orange-400 data-[state=active]:shadow-lg data-[state=active]:ring-2 data-[state=active]:ring-orange-200 data-[state=inactive]:bg-gray-50/70 data-[state=inactive]:text-gray-500 data-[state=inactive]:opacity-80"
               >
                 <span className="hidden sm:inline">Демонстрации</span>
                 <span className="sm:hidden">Демо</span>
               </TabsTrigger>
               <TabsTrigger
                 value="videos"
-                className="flex-1 rounded-t-lg rounded-b-none border border-b-0 border-gray-200 data-[state=active]:bg-white data-[state=active]:border-gray-300 data-[state=active]:shadow-sm data-[state=inactive]:bg-gray-50/50 data-[state=inactive]:text-gray-600 px-2 md:px-6 py-2 md:py-3 font-medium text-xs md:text-sm"
+                className="relative flex-1 rounded-t-lg rounded-b-none border border-b-0 border-gray-200 px-2 md:px-6 py-2 md:py-3 font-medium text-xs md:text-sm transition-all data-[state=active]:bg-white data-[state=active]:text-[#1a1f36] data-[state=active]:border-orange-400 data-[state=active]:shadow-lg data-[state=active]:ring-2 data-[state=active]:ring-orange-200 data-[state=inactive]:bg-gray-50/70 data-[state=inactive]:text-gray-500 data-[state=inactive]:opacity-80"
               >
                 <span className="hidden sm:inline">Видео ({topic.videoData?.length || topic.videos || 0})</span>
                 <span className="sm:hidden">Видео</span>
               </TabsTrigger>
               <TabsTrigger
                 value="practice"
-                className="flex-1 rounded-t-lg rounded-b-none border border-b-0 border-gray-200 data-[state=active]:bg-white data-[state=active]:border-gray-300 data-[state=active]:shadow-sm data-[state=inactive]:bg-gray-50/50 data-[state=inactive]:text-gray-600 px-2 md:px-6 py-2 md:py-3 font-medium text-xs md:text-sm"
+                className="relative flex-1 rounded-t-lg rounded-b-none border border-b-0 border-gray-200 px-2 md:px-6 py-2 md:py-3 font-medium text-xs md:text-sm transition-all data-[state=active]:bg-white data-[state=active]:text-[#1a1f36] data-[state=active]:border-orange-400 data-[state=active]:shadow-lg data-[state=active]:ring-2 data-[state=active]:ring-orange-200 data-[state=inactive]:bg-gray-50/70 data-[state=inactive]:text-gray-500 data-[state=inactive]:opacity-80"
               >
                 <span className="hidden sm:inline">Упражнения ({exercises.length})</span>
                 <span className="sm:hidden">Упр.</span>
