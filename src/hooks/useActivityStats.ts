@@ -7,7 +7,7 @@ interface CourseStats {
   courseName: string;
   totalAttempts: number;
   correctAttempts: number;
-  accuracy: number;
+  accuracy: number;          // percentage, 0..100 with 2 decimals
   uniqueQuestions: number;
   lastActivity: string | null;
 }
@@ -21,78 +21,73 @@ export const useActivityStats = (days: number | null = 30) => {
   const courseIdToName: Record<string, string> = {
     '1': 'ОГЭ Математика',
     '2': 'ЕГЭ Математика Базовая',
-    '3': 'ЕГЭ Математика Профильная',
+    '3': 'ЕГЭ Математика Профильная'
   };
 
   useEffect(() => {
     const fetchData = async () => {
       if (!user) return;
-
       setLoading(true);
 
       try {
-        // Fetch current streak
-        const { data: streakData } = await supabase
+        // 1) Current streak (unchanged)
+        const { data: streakData, error: streakErr } = await supabase
           .from('user_streaks')
           .select('current_streak')
           .eq('user_id', user.id)
           .maybeSingle();
 
-        setCurrentStreak(streakData?.current_streak || 0);
+        if (!streakErr) {
+          setCurrentStreak(streakData?.current_streak ?? 0);
+        } else {
+          console.error('Streak fetch error:', streakErr);
+        }
 
-        // Fetch user's enrolled courses
-        const { data: profileData } = await supabase
+        // 2) We still read enrolled courses to keep parity with your logic
+        const { data: profileData, error: profileErr } = await supabase
           .from('profiles')
           .select('courses')
           .eq('user_id', user.id)
           .maybeSingle();
 
-        const userCourses: string[] = (profileData?.courses || []).map(String);
-
-        // Build base query
-        let query = supabase
-          .from('student_activity')
-          .select(
-            `
-            course_id,
-            total_attempts:count(*),
-            correct_attempts:count_if(is_correct),
-            unique_questions:count(distinct question_id),
-            last_activity:max(updated_at)
-          `,
-            { count: 'exact', head: false }
-          )
-          .eq('user_id', user.id)
-          .in('course_id', userCourses);
-
-        // Apply date filter if needed
-        if (days !== null) {
-          const dateThreshold = new Date();
-          dateThreshold.setDate(dateThreshold.getDate() - days);
-          query = query.gte('updated_at', dateThreshold.toISOString());
+        if (profileErr) {
+          console.error('Profiles fetch error:', profileErr);
         }
 
-        // Run query
-        const { data: statsData, error } = await query.group('course_id');
+        const enrolledCourses: string[] = (profileData?.courses ?? []).map((c: any) => String(c));
 
-        if (error) throw error;
+        if (enrolledCourses.length === 0) {
+          setCourseStats([]);
+          return;
+        }
 
-        const stats: CourseStats[] = (statsData || []).map((item: any) => {
-          const total = item.total_attempts || 0;
-          const correct = item.correct_attempts || 0;
-          const accuracy = total > 0 ? (correct / total) * 100 : 0;
-          return {
-            courseId: item.course_id,
-            courseName: courseIdToName[item.course_id] || `Курс ${item.course_id}`,
-            totalAttempts: total,
-            correctAttempts: correct,
-            accuracy,
-            uniqueQuestions: item.unique_questions || 0,
-            lastActivity: item.last_activity,
-          };
+        // 3) Single aggregate query via RPC
+        //    Pass days as provided (null => no date filter inside SQL)
+        const { data: rpcData, error: rpcErr } = await supabase.rpc('get_activity_stats', {
+          p_user: user.id,
+          p_days: days
         });
 
-        // Sort by last activity
+        if (rpcErr) {
+          console.error('get_activity_stats RPC error:', rpcErr);
+          setCourseStats([]);
+          return;
+        }
+
+        // rpcData is already filtered to enrolled courses and (if days != null) date range
+        // It also already excludes unfinished and NULL is_correct attempts.
+        const stats: CourseStats[] = (rpcData ?? []).map((row: any) => ({
+          courseId: row.course_id,
+          courseName: courseIdToName[row.course_id] ?? `Курс ${row.course_id}`,
+          totalAttempts: Number(row.total_attempts ?? 0),
+          correctAttempts: Number(row.correct_attempts ?? 0),
+          accuracy: Number(row.accuracy ?? 0),
+          uniqueQuestions: Number(row.unique_questions ?? 0),
+          lastActivity: row.last_activity ?? null
+        }));
+
+        // Defensive: if RPC returns nothing for some enrolled course, ensure we keep it out (same as old code)
+        // Already sorted by last_activity in SQL, but we can preserve sort here too if needed:
         stats.sort((a, b) => {
           if (!a.lastActivity) return 1;
           if (!b.lastActivity) return -1;
@@ -100,8 +95,8 @@ export const useActivityStats = (days: number | null = 30) => {
         });
 
         setCourseStats(stats);
-      } catch (error) {
-        console.error('Error fetching activity stats:', error);
+      } catch (e) {
+        console.error('Error fetching activity stats:', e);
       } finally {
         setLoading(false);
       }
