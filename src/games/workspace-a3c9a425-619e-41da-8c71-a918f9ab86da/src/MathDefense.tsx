@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState, useEffect, useRef } from 'react';
 
 const PixelMathDefense = () => {
@@ -67,7 +65,6 @@ const PixelMathDefense = () => {
   const explosionsRef = useRef<Array<{x: number, y: number, radius: number, life: number, isZombieExplosion?: boolean}>>([]);
   
   // Mobile responsive canvas sizing
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [canvasSize, setCanvasSize] = useState({ width: 700, height: 400 });
   
   // Handle window resize for mobile responsiveness
@@ -1945,161 +1942,146 @@ const PixelMathDefense = () => {
   }, [towerHP, gameState]);
   
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      {/* Header Section */}
-      <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-blue-600/20"></div>
-        <div className="relative z-10 text-center py-6 px-4">
-          <h1 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-400 mb-1">
-            🏰 МАТЕМАТИЧЕСКАЯ БАШНЯ 🧮
-          </h1>
-          <p className="text-base text-purple-200">
-            Защищайте башню, решая математические задачи!
-          </p>
-        </div>
-      </div>
-
-      {/* Game Container */}
-      <div className="container mx-auto px-4 py-4">
-        {/* Game Canvas - Unchanged */}
-        <div className="flex justify-center mb-6 relative">
-          <canvas 
-            ref={canvasRef} 
-            width={700} 
-            height={400}
-            className="border-4 border-amber-600 rounded-lg shadow-2xl bg-sky-400"
-            style={{ 
-              imageRendering: 'pixelated',
-              boxShadow: '0 20px 40px rgba(0,0,0,0.5)'
-            }}
-          />
-          
-          {/* Feedback Messages - Positioned outside canvas */}
-          <div className="absolute top-4 right-4 z-20 space-y-2">
-            {feedback && (
-              <div 
-                className="px-4 py-2 rounded-lg border-2 font-bold text-sm min-w-[200px] text-center"
-                style={{
-                  backgroundColor: 'rgba(0, 0, 0, 0.9)',
-                  borderColor: feedback.color === '#FF4444' ? '#FF4444' : '#44FF44',
-                  color: feedback.color === '#FF4444' ? '#FF4444' : '#44FF44',
-                  fontFamily: 'monospace',
-                  fontSize: '16px',
-                  fontWeight: 'bold',
-                  textShadow: '1px 1px 2px rgba(0,0,0,0.8)',
-                  boxShadow: '0 4px 8px rgba(0,0,0,0.3)'
-                }}
-              >
-                {feedback.message}
-              </div>
-            )}
-            
-            {difficultyNotification && (
-              <div 
-                className="px-4 py-3 rounded-lg border-2 font-bold text-sm min-w-[200px] text-center"
-                style={{
-                  backgroundColor: 'rgba(0, 0, 0, 0.9)',
-                  borderColor: difficultyNotification.color.includes('44') && difficultyNotification.color.includes('FF') ? '#FF4444' : 
-                           difficultyNotification.color.includes('88') ? '#FF8844' : 
-                           difficultyNotification.color.includes('FF') ? '#FF00FF' : '#FFFF44',
-                  color: difficultyNotification.color.includes('44') && difficultyNotification.color.includes('FF') ? '#FF4444' : 
-                         difficultyNotification.color.includes('88') ? '#FF8844' : 
-                         difficultyNotification.color.includes('FF') ? '#FF00FF' : '#FFFF44',
-                  fontFamily: 'monospace',
-                  fontSize: '14px',
-                  fontWeight: 'bold',
-                  textShadow: '1px 1px 2px rgba(0,0,0,0.8)',
-                  boxShadow: '0 4px 8px rgba(0,0,0,0.3)'
-                }}
-              >
-                {difficultyNotification.message}
-              </div>
-            )}
+    <div className="flex min-h-screen flex-col bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white">
+      <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 px-4 py-4 lg:gap-6 lg:px-6 lg:py-6">
+        <header className="relative overflow-hidden rounded-xl border border-purple-500/30 bg-black/25 px-3 py-2 text-center shadow-md lg:px-5 lg:py-3">
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-blue-600/20" />
+          <div className="relative z-10 space-y-1">
+            <h1 className="text-lg font-semibold md:text-xl lg:text-2xl">
+              <span className="bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-400 bg-clip-text text-transparent">
+                🏰 Математическая башня 🧮
+              </span>
+            </h1>
+            <p className="text-[10px] font-medium text-purple-100 md:text-[11px] lg:text-xs">
+              Решайте задачи, чтобы башня выдержала натиск до рассвета!
+            </p>
           </div>
-        </div>
+        </header>
 
-        {/* Game Controls */}
-        <div className="flex justify-center mb-6">
-          {gameState === 'idle' && (
-            <button 
-              onClick={startGame}
-              className="relative px-8 py-4 bg-slate-800 text-white font-bold text-lg border-4 border-green-500 shadow-lg transform transition-all duration-200 hover:scale-105 active:scale-95"
-              style={{
-                fontFamily: '"Press Start 2P", monospace',
-                textShadow: '2px 2px 0px #000',
-                boxShadow: '0 4px 0px #15803d, 0 6px 8px rgba(0,0,0,0.3)',
-                imageRendering: 'pixelated'
-              }}
-            >
-              <span className="relative z-10 flex items-center gap-3">
-                <span className="text-xl">🎮</span>
-                <span>НАЧАТЬ ИГРУ</span>
-              </span>
-              <div className="absolute inset-0 border-2 border-green-300 opacity-0 hover:opacity-100 transition-opacity duration-200 pointer-events-none"></div>
-            </button>
-          )}
-          
-          {gameState === 'gameOver' && (
-            <button 
-              onClick={startGame}
-              className="relative px-8 py-4 bg-slate-800 text-white font-bold text-lg border-4 border-red-500 shadow-lg transform transition-all duration-200 hover:scale-105 active:scale-95"
-              style={{
-                fontFamily: '"Press Start 2P", monospace',
-                textShadow: '2px 2px 0px #000',
-                boxShadow: '0 4px 0px #dc2626, 0 6px 8px rgba(0,0,0,0.3)',
-                imageRendering: 'pixelated'
-              }}
-            >
-              <span className="relative z-10 flex items-center gap-3">
-                <span className="text-xl">🔄</span>
-                <span>ИГРАТЬ СНОВА</span>
-              </span>
-              <div className="absolute inset-0 border-2 border-red-300 opacity-0 hover:opacity-100 transition-opacity duration-200 pointer-events-none"></div>
-            </button>
-          )}
-        </div>
+        <div className="flex flex-1 flex-col gap-4 lg:flex-row lg:gap-5">
+          <section className="relative flex flex-1 items-center justify-center overflow-hidden rounded-2xl border border-amber-600/45 bg-black/35 p-2 shadow-[0_20px_45px_rgba(0,0,0,0.45)] lg:min-h-0">
+            <div className="flex h-full w-full items-center justify-center">
+              <canvas
+                ref={canvasRef}
+                width={canvasSize.width}
+                height={canvasSize.height}
+                className="h-full w-full max-h-[420px] max-w-[720px] rounded-xl border-4 border-amber-600 bg-sky-400 shadow-[0_20px_40px_rgba(0,0,0,0.45)]"
+                style={{ imageRendering: 'pixelated' }}
+              />
+            </div>
 
-        {/* Math Challenge Section - Centered */}
-        {gameState === 'playing' && currentQuestion && (
-          <div className="flex justify-center">
-            <div className="bg-gradient-to-br from-slate-800/90 to-purple-800/90 backdrop-blur-sm rounded-xl p-6 border-2 border-purple-500/30 shadow-2xl w-full max-w-lg">
-              {/* Challenge Header */}
-              <div className="text-center mb-4">
-                <h2 className="text-xl md:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-yellow-400 mb-1">
-                  🧮 МАТЕМАТИЧЕСКИЙ ВЫЗОВ 🧮
-                </h2>
-                <div className="w-16 h-1 bg-gradient-to-r from-amber-400 to-yellow-400 mx-auto rounded-full"></div>
-              </div>
-
-              {/* Question Display */}
-              <div className="bg-slate-900/80 rounded-lg p-4 mb-4 border-2 border-purple-500/20">
-                <div className="text-2xl md:text-3xl font-bold text-white text-center font-mono leading-relaxed">
-                  {currentQuestion.text}
+            <div className="pointer-events-none absolute right-3 top-3 flex w-48 flex-col gap-2 text-left sm:w-60 lg:right-4 lg:top-4">
+              {feedback && (
+                <div
+                  className="rounded-md border-2 bg-black/85 px-3 py-2 text-center font-mono text-sm font-bold shadow-lg"
+                  style={{
+                    borderColor: feedback.color,
+                    color: feedback.color,
+                    textShadow: '1px 1px 2px rgba(0,0,0,0.85)',
+                  }}
+                >
+                  {feedback.message}
                 </div>
+              )}
+              {difficultyNotification && (
+                <div
+                  className="rounded-md border-2 bg-black/85 px-3 py-2 text-center font-mono text-xs font-bold uppercase tracking-wide shadow-lg"
+                  style={{
+                    borderColor: difficultyNotification.color,
+                    color: difficultyNotification.color,
+                    textShadow: '1px 1px 2px rgba(0,0,0,0.85)',
+                  }}
+                >
+                  {difficultyNotification.message}
+                </div>
+              )}
+            </div>
+          </section>
+
+          <section className="flex w-full flex-col justify-between gap-4 rounded-2xl border border-purple-500/40 bg-black/40 p-4 shadow-2xl backdrop-blur-sm lg:max-w-sm lg:p-5">
+            <div className="flex flex-col gap-3">
+              <div className="rounded-lg border border-purple-500/35 bg-slate-950/70 px-4 py-3 text-center font-mono text-xs text-purple-100 sm:text-sm">
+                Жизни башни: <span className="font-bold text-amber-300">{towerHPRef.current}</span> · Очки:{' '}
+                <span className="font-bold text-emerald-300">{scoreRef.current}</span>
               </div>
 
-              {/* Answer Options */}
-              <div className="grid grid-cols-2 gap-3 mb-4">
-                {currentQuestion.options.map((option, index) => (
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-1">
+                {gameState === 'idle' && (
                   <button
-                    key={index}
-                    onClick={() => handleAnswer(option)}
-                    className="group relative p-3 bg-gradient-to-br from-blue-600 to-blue-700 text-white font-bold text-base rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-xl border-2 border-blue-500/50 hover:border-blue-400"
+                    onClick={startGame}
+                    className="relative overflow-hidden rounded-lg border-4 border-green-500 bg-slate-800 px-6 py-4 text-xs font-bold uppercase text-white shadow-lg transition-transform hover:scale-[1.02] active:scale-95 sm:col-span-2 lg:col-span-1"
+                    style={{
+                      fontFamily: '"Press Start 2P", monospace',
+                      textShadow: '2px 2px 0px #000',
+                      boxShadow: '0 4px 0px #15803d, 0 6px 8px rgba(0,0,0,0.3)',
+                    }}
                   >
-                    <span className="relative z-10">{option}</span>
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <span className="relative z-10 flex items-center justify-center gap-2">
+                      <span className="text-base">🎮</span>
+                      <span>Начать игру</span>
+                    </span>
+                    <span className="absolute inset-0 border-2 border-green-300 opacity-0 transition-opacity hover:opacity-100" />
                   </button>
-                ))}
+                )}
+
+                {gameState === 'gameOver' && (
+                  <button
+                    onClick={startGame}
+                    className="relative overflow-hidden rounded-lg border-4 border-red-500 bg-slate-800 px-6 py-4 text-xs font-bold uppercase text-white shadow-lg transition-transform hover:scale-[1.02] active:scale-95 sm:col-span-2 lg:col-span-1"
+                    style={{
+                      fontFamily: '"Press Start 2P", monospace',
+                      textShadow: '2px 2px 0px #000',
+                      boxShadow: '0 4px 0px #dc2626, 0 6px 8px rgba(0,0,0,0.3)',
+                    }}
+                  >
+                    <span className="relative z-10 flex items-center justify-center gap-2">
+                      <span className="text-base">🔄</span>
+                      <span>Играть снова</span>
+                    </span>
+                    <span className="absolute inset-0 border-2 border-red-300 opacity-0 transition-opacity hover:opacity-100" />
+                  </button>
+                )}
               </div>
             </div>
-          </div>
-        )}
-      </div>
 
-      {/* Footer - Mobile Optimized */}
-        <div className="text-center py-2 sm:py-4 text-purple-300/70 text-xs">
-          <p className="text-xs sm:text-sm">Используйте математические навыки для защиты башни от атак зомби!</p>
+            <div className="flex-1 rounded-xl border border-purple-500/25 bg-slate-950/60 p-4 shadow-inner">
+              {gameState === 'playing' && currentQuestion ? (
+                <div className="flex h-full flex-col gap-3">
+                  <h2 className="text-center text-sm font-semibold uppercase tracking-wide text-amber-300 sm:text-base">
+                    Математический вызов
+                  </h2>
+                  <div className="rounded-lg border border-purple-500/25 bg-slate-900/80 p-3 text-center font-mono text-lg font-bold text-white sm:text-xl">
+                    {currentQuestion.text}
+                  </div>
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-1 lg:overflow-y-auto lg:pr-1">
+                    {currentQuestion.options.map((option, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleAnswer(option)}
+                        className="relative overflow-hidden rounded-md border-2 border-blue-500/40 bg-gradient-to-br from-blue-600 to-blue-700 px-3 py-2 text-sm font-bold text-white shadow-lg transition-transform hover:scale-[1.02] hover:border-blue-400 hover:shadow-xl"
+                      >
+                        <span className="relative z-10">{option}</span>
+                        <span className="absolute inset-0 opacity-0 transition-opacity hover:opacity-100 bg-gradient-to-br from-blue-500/50 to-blue-600/50" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="flex h-full flex-col items-center justify-center gap-3 text-center text-xs text-purple-100 sm:text-sm">
+                  <span className="text-2xl sm:text-3xl">🧠</span>
+                  <p>
+                    Нажмите <span className="font-semibold text-amber-300">«Начать игру»</span>, чтобы защитить башню
+                    своими знаниями!
+                  </p>
+                </div>
+              )}
+            </div>
+          </section>
         </div>
+
+        <footer className="mt-1 text-center text-[11px] text-purple-200/70 sm:text-xs lg:text-sm">
+          Используйте точные ответы и быструю реакцию, чтобы никто не прорвался к башне.
+        </footer>
       </div>
     </div>
   );
