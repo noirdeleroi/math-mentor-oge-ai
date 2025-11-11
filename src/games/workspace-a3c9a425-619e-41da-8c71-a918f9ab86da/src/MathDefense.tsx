@@ -66,22 +66,27 @@ const PixelMathDefense = () => {
   
   // Mobile responsive canvas sizing
   const [canvasSize, setCanvasSize] = useState({ width: 700, height: 400 });
+  const [isMobileLayout, setIsMobileLayout] = useState(false);
+  const [canvasScale, setCanvasScale] = useState(1);
   
   // Handle window resize for mobile responsiveness
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth;
-      const isMobile = width < 640; // Mobile breakpoint
-      
-      if (isMobile) {
-        // Smaller canvas for mobile
-        setCanvasSize({ width: Math.min(width - 40, 500), height: 300 });
+      const mobile = width < 768;
+      setIsMobileLayout(mobile);
+
+      if (mobile) {
+        const maxContentWidth = Math.min(width - 24, 420);
+        const scale = Math.max(0.55, maxContentWidth / 700);
+        setCanvasScale(scale);
+        setCanvasSize({ width: 700, height: 400 });
       } else {
-        // Full size for desktop
+        setCanvasScale(1);
         setCanvasSize({ width: 700, height: 400 });
       }
     };
-    
+
     handleResize();
     window.addEventListener('resize', handleResize);
     
@@ -1944,33 +1949,52 @@ const PixelMathDefense = () => {
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white">
       <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 px-4 py-4 lg:gap-6 lg:px-6 lg:py-6">
-        <header className="relative overflow-hidden rounded-xl border border-purple-500/30 bg-black/25 px-3 py-2 text-center shadow-md lg:px-5 lg:py-3">
+        <header
+          className={`relative overflow-hidden rounded-xl border border-purple-500/30 bg-black/25 text-center shadow-md ${
+            isMobileLayout ? 'px-2 py-1.5' : 'px-3 py-2 lg:px-5 lg:py-3'
+          }`}
+        >
           <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-blue-600/20" />
           <div className="relative z-10 space-y-1">
-            <h1 className="text-lg font-semibold md:text-xl lg:text-2xl">
+            <h1 className={`font-semibold ${isMobileLayout ? 'text-base' : 'text-lg md:text-xl lg:text-2xl'}`}>
               <span className="bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-400 bg-clip-text text-transparent">
                 🏰 Математическая башня 🧮
               </span>
             </h1>
-            <p className="text-[10px] font-medium text-purple-100 md:text-[11px] lg:text-xs">
+            <p
+              className={`font-medium text-purple-100 ${
+                isMobileLayout ? 'text-[10px]' : 'text-[11px] md:text-xs lg:text-sm'
+              }`}
+            >
               Решайте задачи, чтобы башня выдержала натиск до рассвета!
             </p>
           </div>
         </header>
 
         <div className="flex flex-1 flex-col gap-4 lg:flex-row lg:gap-5">
-          <section className="relative flex flex-1 items-center justify-center overflow-hidden rounded-2xl border border-amber-600/45 bg-black/35 p-2 shadow-[0_20px_45px_rgba(0,0,0,0.45)] lg:min-h-0">
+          <section className={`relative flex flex-1 items-center justify-center overflow-hidden rounded-2xl border border-amber-600/45 bg-black/35 shadow-[0_20px_45px_rgba(0,0,0,0.45)] lg:min-h-0 ${isMobileLayout ? 'p-2' : 'p-4'}`}>
             <div className="flex h-full w-full items-center justify-center">
               <canvas
                 ref={canvasRef}
                 width={canvasSize.width}
                 height={canvasSize.height}
-                className="h-full w-full max-h-[420px] max-w-[720px] rounded-xl border-4 border-amber-600 bg-sky-400 shadow-[0_20px_40px_rgba(0,0,0,0.45)]"
-                style={{ imageRendering: 'pixelated' }}
+                className="h-full w-full max-h-[420px] max-w-[720px] rounded-xl border-4 border-amber-600 bg-sky-400 shadow-[0_20px_40px_rgba(0,0,0,0.45)] transition-transform"
+                style={{
+                  transform: `scale(${canvasScale})`,
+                  transformOrigin: 'top center',
+                  width: 700,
+                  height: 400,
+                  imageRendering: 'pixelated',
+                  maxWidth: '100%',
+                }}
               />
             </div>
 
-            <div className="pointer-events-none absolute right-3 top-3 flex w-48 flex-col gap-2 text-left sm:w-60 lg:right-4 lg:top-4">
+            <div
+              className={`pointer-events-none absolute flex flex-col gap-2 text-left lg:right-4 lg:top-4 ${
+                isMobileLayout ? 'right-2 top-2 w-40' : 'right-3 top-3 w-48 sm:w-60'
+              }`}
+            >
               {feedback && (
                 <div
                   className="rounded-md border-2 bg-black/85 px-3 py-2 text-center font-mono text-sm font-bold shadow-lg"
@@ -1998,9 +2022,17 @@ const PixelMathDefense = () => {
             </div>
           </section>
 
-          <section className="flex w-full flex-col justify-between gap-4 rounded-2xl border border-purple-500/40 bg-black/40 p-4 shadow-2xl backdrop-blur-sm lg:max-w-sm lg:p-5">
-            <div className="flex flex-col gap-3">
-              <div className="rounded-lg border border-purple-500/35 bg-slate-950/70 px-4 py-3 text-center font-mono text-xs text-purple-100 sm:text-sm">
+          <section
+            className={`flex w-full flex-col gap-4 rounded-2xl border border-purple-500/40 bg-black/40 shadow-2xl backdrop-blur-sm lg:max-w-sm ${
+              isMobileLayout ? 'p-3' : 'p-4 lg:p-5'
+            }`}
+          >
+            <div className={`flex flex-col gap-3 ${isMobileLayout ? 'text-[11px]' : ''}`}>
+              <div
+                className={`rounded-lg border border-purple-500/35 bg-slate-950/70 text-center font-mono text-purple-100 ${
+                  isMobileLayout ? 'px-3 py-2 text-[11px]' : 'px-4 py-3 text-xs sm:text-sm'
+                }`}
+              >
                 Жизни башни: <span className="font-bold text-amber-300">{towerHPRef.current}</span> · Очки:{' '}
                 <span className="font-bold text-emerald-300">{scoreRef.current}</span>
               </div>
@@ -2009,7 +2041,9 @@ const PixelMathDefense = () => {
                 {gameState === 'idle' && (
                   <button
                     onClick={startGame}
-                    className="relative overflow-hidden rounded-lg border-4 border-green-500 bg-slate-800 px-6 py-4 text-xs font-bold uppercase text-white shadow-lg transition-transform hover:scale-[1.02] active:scale-95 sm:col-span-2 lg:col-span-1"
+                    className={`relative overflow-hidden rounded-lg border-4 border-green-500 bg-slate-800 text-white shadow-lg transition-transform hover:scale-[1.02] active:scale-95 sm:col-span-2 lg:col-span-1 ${
+                      isMobileLayout ? 'px-4 py-3 text-[11px]' : 'px-6 py-4 text-xs'
+                    }`}
                     style={{
                       fontFamily: '"Press Start 2P", monospace',
                       textShadow: '2px 2px 0px #000',
@@ -2027,7 +2061,9 @@ const PixelMathDefense = () => {
                 {gameState === 'gameOver' && (
                   <button
                     onClick={startGame}
-                    className="relative overflow-hidden rounded-lg border-4 border-red-500 bg-slate-800 px-6 py-4 text-xs font-bold uppercase text-white shadow-lg transition-transform hover:scale-[1.02] active:scale-95 sm:col-span-2 lg:col-span-1"
+                    className={`relative overflow-hidden rounded-lg border-4 border-red-500 bg-slate-800 text-white shadow-lg transition-transform hover:scale-[1.02] active:scale-95 sm:col-span-2 lg:col-span-1 ${
+                      isMobileLayout ? 'px-4 py-3 text-[11px]' : 'px-6 py-4 text-xs'
+                    }`}
                     style={{
                       fontFamily: '"Press Start 2P", monospace',
                       textShadow: '2px 2px 0px #000',
@@ -2044,21 +2080,39 @@ const PixelMathDefense = () => {
               </div>
             </div>
 
-            <div className="flex-1 rounded-xl border border-purple-500/25 bg-slate-950/60 p-4 shadow-inner">
+            <div
+              className={`flex-1 rounded-xl border border-purple-500/25 bg-slate-950/60 shadow-inner ${
+                isMobileLayout ? 'p-3' : 'p-4'
+              }`}
+            >
               {gameState === 'playing' && currentQuestion ? (
-                <div className="flex h-full flex-col gap-3">
-                  <h2 className="text-center text-sm font-semibold uppercase tracking-wide text-amber-300 sm:text-base">
+                <div className={`flex h-full flex-col gap-3 ${isMobileLayout ? 'gap-2' : ''}`}>
+                  <h2
+                    className={`text-center font-semibold uppercase tracking-wide text-amber-300 ${
+                      isMobileLayout ? 'text-xs' : 'text-sm sm:text-base'
+                    }`}
+                  >
                     Математический вызов
                   </h2>
-                  <div className="rounded-lg border border-purple-500/25 bg-slate-900/80 p-3 text-center font-mono text-lg font-bold text-white sm:text-xl">
+                  <div
+                    className={`rounded-lg border border-purple-500/25 bg-slate-900/80 text-center font-mono font-bold text-white ${
+                      isMobileLayout ? 'px-3 py-3 text-base' : 'px-4 py-4 text-lg sm:text-xl'
+                    }`}
+                  >
                     {currentQuestion.text}
                   </div>
-                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-1 lg:overflow-y-auto lg:pr-1">
+                  <div
+                    className={`grid gap-2 lg:overflow-y-auto lg:pr-1 ${
+                      isMobileLayout ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-1'
+                    }`}
+                  >
                     {currentQuestion.options.map((option, index) => (
                       <button
                         key={index}
                         onClick={() => handleAnswer(option)}
-                        className="relative overflow-hidden rounded-md border-2 border-blue-500/40 bg-gradient-to-br from-blue-600 to-blue-700 px-3 py-2 text-sm font-bold text-white shadow-lg transition-transform hover:scale-[1.02] hover:border-blue-400 hover:shadow-xl"
+                        className={`relative overflow-hidden rounded-md border-2 border-blue-500/40 bg-gradient-to-br from-blue-600 to-blue-700 font-bold text-white shadow-lg transition-transform hover:scale-[1.02] hover:border-blue-400 hover:shadow-xl ${
+                          isMobileLayout ? 'px-3 py-2 text-sm' : 'px-4 py-2 text-sm'
+                        }`}
                       >
                         <span className="relative z-10">{option}</span>
                         <span className="absolute inset-0 opacity-0 transition-opacity hover:opacity-100 bg-gradient-to-br from-blue-500/50 to-blue-600/50" />
@@ -2067,8 +2121,12 @@ const PixelMathDefense = () => {
                   </div>
                 </div>
               ) : (
-                <div className="flex h-full flex-col items-center justify-center gap-3 text-center text-xs text-purple-100 sm:text-sm">
-                  <span className="text-2xl sm:text-3xl">🧠</span>
+                <div
+                  className={`flex h-full flex-col items-center justify-center gap-3 text-center text-purple-100 ${
+                    isMobileLayout ? 'text-xs' : 'text-xs sm:text-sm'
+                  }`}
+                >
+                  <span className={`text-2xl ${isMobileLayout ? '' : 'sm:text-3xl'}`}>🧠</span>
                   <p>
                     Нажмите <span className="font-semibold text-amber-300">«Начать игру»</span>, чтобы защитить башню
                     своими знаниями!
