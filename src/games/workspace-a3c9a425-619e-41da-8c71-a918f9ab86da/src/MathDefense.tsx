@@ -12,6 +12,12 @@ const PixelMathDefense = () => {
   const towerHPRef = useRef(100); // Ref for real-time HP access
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   
+  const BASE_CANVAS_WIDTH = 700;
+  const BASE_CANVAS_HEIGHT = 400;
+  const [canvasSize, setCanvasSize] = useState({ width: BASE_CANVAS_WIDTH, height: BASE_CANVAS_HEIGHT });
+  const [canvasDisplaySize, setCanvasDisplaySize] = useState({ width: BASE_CANVAS_WIDTH, height: BASE_CANVAS_HEIGHT });
+  const [isMobileLayout, setIsMobileLayout] = useState(false);
+  
   // Speed thresholds for progressive difficulty
   const getZombieSpeed = (): number => {
     const currentScore = scoreRef.current;
@@ -64,11 +70,6 @@ const PixelMathDefense = () => {
   const projectilesRef = useRef<Array<{x: number, y: number, targetX: number, targetY: number, life: number}>>([]);
   const explosionsRef = useRef<Array<{x: number, y: number, radius: number, life: number, isZombieExplosion?: boolean}>>([]);
   
-  // Mobile responsive canvas sizing
-  const [canvasSize, setCanvasSize] = useState({ width: 700, height: 400 });
-  const [isMobileLayout, setIsMobileLayout] = useState(false);
-  const [canvasScale, setCanvasScale] = useState(1);
-  
   // Handle window resize for mobile responsiveness
   useEffect(() => {
     const handleResize = () => {
@@ -77,13 +78,15 @@ const PixelMathDefense = () => {
       setIsMobileLayout(mobile);
 
       if (mobile) {
-        const maxContentWidth = Math.min(width - 24, 420);
-        const scale = Math.max(0.55, maxContentWidth / 700);
-        setCanvasScale(scale);
-        setCanvasSize({ width: 700, height: 400 });
+        const horizontalPadding = 16;
+        const availableWidth = Math.max(280, width - horizontalPadding);
+        const displayWidth = Math.min(availableWidth, BASE_CANVAS_WIDTH);
+        const displayHeight = Math.round((BASE_CANVAS_HEIGHT / BASE_CANVAS_WIDTH) * displayWidth);
+        setCanvasDisplaySize({ width: displayWidth, height: displayHeight });
+        setCanvasSize({ width: BASE_CANVAS_WIDTH, height: BASE_CANVAS_HEIGHT });
       } else {
-        setCanvasScale(1);
-        setCanvasSize({ width: 700, height: 400 });
+        setCanvasDisplaySize({ width: BASE_CANVAS_WIDTH, height: BASE_CANVAS_HEIGHT });
+        setCanvasSize({ width: BASE_CANVAS_WIDTH, height: BASE_CANVAS_HEIGHT });
       }
     };
 
@@ -111,7 +114,7 @@ const PixelMathDefense = () => {
       if (gameState === 'playing' && currentQuestion) {
         const options = currentQuestion.options;
         const optionHeight = 60; // Height of each option button
-        const optionWidth = canvas.width / 2 - 20; // Width of each option button
+        const optionWidth = rect.width / 2 - 20; // Width of each option button
         
         options.forEach((option, index) => {
           const optionY = rect.height - 150 + (index * optionHeight);
@@ -1950,9 +1953,10 @@ const PixelMathDefense = () => {
     <div className="flex min-h-screen flex-col bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white">
       <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 px-4 py-4 lg:gap-6 lg:px-6 lg:py-6">
         <header
-          className={`relative overflow-hidden rounded-xl border border-purple-500/30 bg-black/25 text-center shadow-md ${
+          className={`relative mx-auto overflow-hidden rounded-xl border border-purple-500/30 bg-black/25 text-center shadow-md ${
             isMobileLayout ? 'px-2 py-1.5' : 'px-3 py-2 lg:px-5 lg:py-3'
           }`}
+          style={isMobileLayout ? { width: canvasDisplaySize.width, maxWidth: '100%' } : { width: canvasDisplaySize.width, maxWidth: '100%' }}
         >
           <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-blue-600/20" />
           <div className="relative z-10 space-y-1">
@@ -1972,60 +1976,75 @@ const PixelMathDefense = () => {
         </header>
 
         <div className="flex flex-1 flex-col gap-4 lg:flex-row lg:gap-5">
-          <section className={`relative flex flex-1 items-center justify-center overflow-hidden rounded-2xl border border-amber-600/45 bg-black/35 shadow-[0_20px_45px_rgba(0,0,0,0.45)] lg:min-h-0 ${isMobileLayout ? 'p-2' : 'p-4'}`}>
-            <div className="flex h-full w-full items-center justify-center">
+          <section
+            className={`relative flex ${isMobileLayout ? 'flex-none' : 'flex-1'} items-center justify-center overflow-hidden rounded-2xl border border-amber-600/45 bg-black/35 shadow-[0_20px_45px_rgba(0,0,0,0.45)] lg:min-h-0 ${
+              isMobileLayout ? 'p-0' : 'p-4'
+            }`}
+            style={
+              isMobileLayout
+                ? { width: canvasDisplaySize.width, height: canvasDisplaySize.height, maxWidth: '100%', margin: '0 auto' }
+                : undefined
+            }
+          >
+            <div
+              className="relative flex items-center justify-center"
+              style={{
+                width: canvasDisplaySize.width,
+                height: canvasDisplaySize.height,
+                maxWidth: '100%',
+              }}
+            >
               <canvas
                 ref={canvasRef}
                 width={canvasSize.width}
                 height={canvasSize.height}
-                className="h-full w-full max-h-[420px] max-w-[720px] rounded-xl border-4 border-amber-600 bg-sky-400 shadow-[0_20px_40px_rgba(0,0,0,0.45)] transition-transform"
+                className="rounded-xl border-4 border-amber-600 bg-sky-400 shadow-[0_20px_40px_rgba(0,0,0,0.45)]"
                 style={{
-                  transform: `scale(${canvasScale})`,
-                  transformOrigin: 'top center',
-                  width: 700,
-                  height: 400,
+                  width: canvasDisplaySize.width,
+                  height: canvasDisplaySize.height,
                   imageRendering: 'pixelated',
                   maxWidth: '100%',
                 }}
               />
-            </div>
 
-            <div
-              className={`pointer-events-none absolute flex flex-col gap-2 text-left lg:right-4 lg:top-4 ${
-                isMobileLayout ? 'right-2 top-2 w-40' : 'right-3 top-3 w-48 sm:w-60'
-              }`}
-            >
-              {feedback && (
-                <div
-                  className="rounded-md border-2 bg-black/85 px-3 py-2 text-center font-mono text-sm font-bold shadow-lg"
-                  style={{
-                    borderColor: feedback.color,
-                    color: feedback.color,
-                    textShadow: '1px 1px 2px rgba(0,0,0,0.85)',
-                  }}
-                >
-                  {feedback.message}
-                </div>
-              )}
-              {difficultyNotification && (
-                <div
-                  className="rounded-md border-2 bg-black/85 px-3 py-2 text-center font-mono text-xs font-bold uppercase tracking-wide shadow-lg"
-                  style={{
-                    borderColor: difficultyNotification.color,
-                    color: difficultyNotification.color,
-                    textShadow: '1px 1px 2px rgba(0,0,0,0.85)',
-                  }}
-                >
-                  {difficultyNotification.message}
-                </div>
-              )}
+              <div
+                className={`pointer-events-none absolute inset-x-0 top-2 flex flex-col gap-2 px-2 ${
+                  isMobileLayout ? '' : 'sm:px-4'
+                }`}
+              >
+                {feedback && (
+                  <div
+                    className="rounded-md border-2 bg-black/85 px-3 py-2 text-center font-mono text-sm font-bold shadow-lg"
+                    style={{
+                      borderColor: feedback.color,
+                      color: feedback.color,
+                      textShadow: '1px 1px 2px rgba(0,0,0,0.85)',
+                    }}
+                  >
+                    {feedback.message}
+                  </div>
+                )}
+                {difficultyNotification && (
+                  <div
+                    className="rounded-md border-2 bg-black/85 px-3 py-2 text-center font-mono text-xs font-bold uppercase tracking-wide shadow-lg"
+                    style={{
+                      borderColor: difficultyNotification.color,
+                      color: difficultyNotification.color,
+                      textShadow: '1px 1px 2px rgba(0,0,0,0.85)',
+                    }}
+                  >
+                    {difficultyNotification.message}
+                  </div>
+                )}
+              </div>
             </div>
           </section>
 
           <section
-            className={`flex w-full flex-col gap-4 rounded-2xl border border-purple-500/40 bg-black/40 shadow-2xl backdrop-blur-sm lg:max-w-sm ${
+            className={`mx-auto flex w-full flex-col gap-4 rounded-2xl border border-purple-500/40 bg-black/40 shadow-2xl backdrop-blur-sm lg:max-w-sm ${
               isMobileLayout ? 'p-3' : 'p-4 lg:p-5'
             }`}
+            style={isMobileLayout ? { width: canvasDisplaySize.width, maxWidth: '100%' } : undefined}
           >
             <div className={`flex flex-col gap-3 ${isMobileLayout ? 'text-[11px]' : ''}`}>
               <div
