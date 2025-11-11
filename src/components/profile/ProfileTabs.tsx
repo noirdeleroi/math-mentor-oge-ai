@@ -35,6 +35,7 @@ import {
   Menu,
   X,
   Users,
+  Gamepad2,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -185,6 +186,17 @@ export const ProfileTabs: React.FC<ProfileTabsProps> = ({
         >
           <Crown className="w-5 h-5 mr-2" />
           Подписки
+        </Button>
+
+        <Button
+          onClick={() => {
+            navigate("/games");
+            isMobile && setOpen(false);
+          }}
+          className="w-full bg-white/10 backdrop-blur-sm border border-white/30 hover:bg-white/20 text-white font-semibold shadow-lg transform hover:scale-105 transition-all duration-200 rounded-xl h-12 text-base"
+        >
+          <Gamepad2 className="w-5 h-5 mr-2 text-amber-300" />
+          Игровая арена
         </Button>
 
         <Button
