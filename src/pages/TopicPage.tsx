@@ -969,7 +969,7 @@ const TopicPage: React.FC = () => {
               )}
             </TabsContent>
 
-            <TabsContent value="practice" className="m-0 p-6 space-y-4">
+            <TabsContent value="practice" className="m-0 space-y-4 p-4 sm:p-6">
               {exercises.map((ex, i) => {
                 const itemId = `${moduleSlug}-${topicId}-ex${i}`;
                 const status = getProgressStatus(itemId, "exercise");
@@ -1011,9 +1011,9 @@ const TopicPage: React.FC = () => {
                     className="relative w-full p-0 text-left rounded-lg border border-gray-200 bg-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 disabled:opacity-60 hover:-translate-y-0.5 hover:shadow-lg"
                     disabled={!ex.skills.length}
                   >
-                    <div className="flex items-start gap-4 p-6">
+                    <div className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:gap-6 sm:p-6">
                       {/* Progress Cell - same as module page */}
-                      <div className="flex-shrink-0">
+                      <div className="flex-shrink-0 self-start sm:self-auto">
                         {(() => {
                           switch (status) {
                             case "mastered":
@@ -1043,21 +1043,21 @@ const TopicPage: React.FC = () => {
                       </div>
 
                       {/* Content */}
-                      <div className="flex-1 min-w-0">
-                        <h4 className="text-lg font-semibold text-[#1a1f36] mb-2">
+                      <div className="flex-1 min-w-0 space-y-2">
+                        <h4 className="text-base font-semibold text-[#1a1f36] sm:text-lg">
                           {ex.title}
                         </h4>
-                        <p className="text-sm text-gray-600 mb-3">
+                        <p className="text-sm text-gray-600">
                           Базовые упражнения на закрепление материала темы
                         </p>
 
                         {/* Metadata badges */}
-                        <div className="flex items-center gap-3 text-sm">
+                        <div className="flex flex-wrap items-center gap-2 text-xs text-gray-600 sm:gap-3 sm:text-sm">
                           <div className="flex items-center gap-1.5 text-gray-600">
                             <Clock className="h-4 w-4" />
                             <span>15 минут</span>
                           </div>
-                          <span className="px-3 py-1 bg-green-100 text-green-700 rounded-md font-medium">
+                          <span className="rounded-md bg-green-100 px-3 py-1 font-medium text-green-700">
                             {difficultyLabel}
                           </span>
                           <span
@@ -1069,8 +1069,8 @@ const TopicPage: React.FC = () => {
                       </div>
 
                       {/* Action buttons */}
-                      <div className="flex items-center gap-3 flex-shrink-0">
-                        <span className="inline-flex items-center rounded-lg bg-gradient-to-r from-emerald-400 via-emerald-500 to-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm">
+                      <div className="flex w-full flex-shrink-0 items-center justify-center sm:w-auto sm:justify-end">
+                        <span className="inline-flex w-full items-center justify-center rounded-lg bg-gradient-to-r from-emerald-400 via-emerald-500 to-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm sm:w-auto">
                           Начать упражнение
                         </span>
                       </div>
@@ -1119,11 +1119,11 @@ const TopicPage: React.FC = () => {
                         mode: 'topic_test',
                       })
                     }
-                    className="relative w-full text-left p-0 rounded-lg border-2 border-orange-400 bg-gradient-to-br from-orange-50 to-amber-50 transition-all mt-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 hover:-translate-y-0.5 hover:shadow-xl"
+                    className="relative mt-6 w-full rounded-lg border-2 border-orange-400 bg-gradient-to-br from-orange-50 to-amber-50 p-0 text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 hover:-translate-y-0.5 hover:shadow-xl"
                   >
-                    <div className="flex items-start gap-4 p-6">
+                    <div className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:gap-6 sm:p-6">
                       {/* Progress Cell */}
-                      <div className="flex-shrink-0">
+                      <div className="flex-shrink-0 self-start sm:self-auto">
                         {(() => {
                           switch (testStatus) {
                             case "mastered":
@@ -1153,28 +1153,24 @@ const TopicPage: React.FC = () => {
                       </div>
 
                       {/* Content */}
-                      <div className="flex-1 min-w-0">
-                        <h4 className="text-lg font-bold text-orange-900 mb-2 flex items-center gap-2">
-                          <Zap className="h-5 w-5 text-orange-600" />
-                          Тест по теме: {topic?.title}
+                      <div className="flex-1 min-w-0 space-y-2">
+                        <div className="mb-1 flex items-center gap-2 text-xs font-medium text-orange-700 sm:text-sm">
+                          <Zap className="h-4 w-4" />
+                          Тест по теме
+                        </div>
+                        <h4 className="text-base font-semibold text-[#1a1f36] sm:text-xl">
+                          {`(${testQuestionCount} вопросов)`}
                         </h4>
-                        <p className="text-sm text-orange-800 mb-3">
-                          Проверьте усвоение материала этой темы • {testQuestionCount}{" "}
-                          {testQuestionCount === 1
-                            ? "вопрос"
-                            : testQuestionCount < 5
-                            ? "вопроса"
-                            : "вопросов"}
+                        <p className="text-sm text-gray-700">
+                          Закрепите тему, решив подборку задач из банка.
                         </p>
-
-                        {/* Metadata badges */}
-                        <div className="flex items-center gap-3 text-sm">
-                          <div className="flex items-center gap-1.5 text-orange-700">
+                        <div className="flex flex-wrap items-center gap-2 text-xs text-gray-700 sm:gap-3 sm:text-sm">
+                          <div className="flex items-center gap-1.5">
                             <Clock className="h-4 w-4" />
-                            <span>10-15 минут</span>
+                            <span>25 минут</span>
                           </div>
-                          <span className="px-3 py-1 bg-orange-200 text-orange-900 rounded-md font-semibold">
-                            Тест
+                          <span className="px-3 py-1 bg-orange-100 text-orange-700 rounded-md font-medium">
+                            Средний уровень
                           </span>
                           <span
                             className={`px-3 py-1 rounded-md font-medium ${testStatusBadge.color}`}
@@ -1185,9 +1181,9 @@ const TopicPage: React.FC = () => {
                       </div>
 
                       {/* Action button */}
-                      <div className="flex items-center gap-3 flex-shrink-0">
-                        <span className="inline-flex items-center rounded-lg bg-gradient-to-r from-orange-500 to-amber-500 px-4 py-2 text-sm font-semibold text-white shadow-sm">
-                          Пройти тест
+                      <div className="flex w-full flex-shrink-0 items-center justify-center sm:w-auto sm:justify-end">
+                        <span className="inline-flex w-full items-center justify-center rounded-lg bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600 px-4 py-2 text-sm font-semibold text-white shadow-sm sm:w-auto">
+                          Пройти тест по теме
                         </span>
                       </div>
                     </div>
