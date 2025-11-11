@@ -2122,7 +2122,7 @@ const PixelMathDefense = () => {
                   </div>
                   <div
                     className={`grid gap-2 lg:overflow-y-auto lg:pr-1 ${
-                      isMobileLayout ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-1'
+                      isMobileLayout ? 'grid-cols-2' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-1'
                     }`}
                   >
                     {currentQuestion.options.map((option, index) => (
@@ -2130,7 +2130,7 @@ const PixelMathDefense = () => {
                         key={index}
                         onClick={() => handleAnswer(option)}
                         className={`relative overflow-hidden rounded-md border-2 border-blue-500/40 bg-gradient-to-br from-blue-600 to-blue-700 font-bold text-white shadow-lg transition-transform hover:scale-[1.02] hover:border-blue-400 hover:shadow-xl ${
-                          isMobileLayout ? 'px-3 py-2 text-sm' : 'px-4 py-2 text-sm'
+                          isMobileLayout ? 'px-2 py-2 text-sm' : 'px-4 py-2 text-sm'
                         }`}
                       >
                         <span className="relative z-10">{option}</span>

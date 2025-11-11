@@ -97,7 +97,7 @@ const LearningLayout: React.FC = () => {
             <div>
               <DailyTaskStory courseId={currentCourse?.numericId?.toString() || null} />
             </div>
-            <div className="relative scale-75 sm:scale-100">
+            <div className="relative">
               <StreakDisplay />
               <EnergyPointsHeaderAnimation
                 points={energyPointsAnimation.points}
