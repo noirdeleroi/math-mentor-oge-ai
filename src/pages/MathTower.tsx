@@ -1,7 +1,12 @@
-import PixelMathDefense from "@/games/workspace-a3c9a425-619e-41da-8c71-a918f9ab86da/src/MathDefense";
-
 const MathTowerPage = () => {
-  return <PixelMathDefense />;
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-600 to-blue-600">
+      <div className="text-white text-center">
+        <h1 className="text-4xl font-bold mb-4">Математическая Башня</h1>
+        <p className="text-lg">Игра временно недоступна</p>
+      </div>
+    </div>
+  );
 };
 
 export default MathTowerPage;
