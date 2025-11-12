@@ -808,11 +808,13 @@
                       <Button 
                         variant="ghost" 
                         size="icon"
-                        className="fixed left-4 z-[9999] bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20 shadow-lg"
+                        className="fixed left-4 bg-white/20 backdrop-blur-sm border-2 border-white/40 text-white hover:bg-white/30 shadow-xl"
                         style={{ 
                           position: 'fixed',
                           top: '80px',
-                          zIndex: 9999
+                          zIndex: 99999,
+                          width: '44px',
+                          height: '44px'
                         }}
                       >
                         <Menu className="h-5 w-5" />
@@ -941,7 +943,7 @@
                     <div className="mb-4 flex-shrink-0">
                       <div className="bg-white/10 backdrop-blur border border-white/20 rounded-xl p-4">
                         <div className="flex flex-col md:flex-row items-center gap-4">
-                          <span className="text-white font-medium text-sm md:text-base">тип сочинения:</span>
+                          <span className="text-white font-medium text-xs md:text-base">тип сочинения:</span>
                           <div className="flex gap-2">
                             <button
                               onClick={() => {
@@ -953,7 +955,7 @@
                                 setErrorText(null);
                               }}
                               disabled={checking}
-                              className={`px-4 md:px-6 py-2 rounded-lg font-medium transition text-sm md:text-base ${
+                              className={`px-2 md:px-6 py-1.5 md:py-2 rounded-lg font-medium transition text-xs md:text-base ${
                                 essayType === 'ege'
                                   ? 'bg-gradient-to-r from-yellow-500 to-emerald-500 text-[#1a1f36]'
                                   : 'bg-white/10 text-white hover:bg-white/20'
@@ -971,7 +973,7 @@
                                 setErrorText(null);
                               }}
                               disabled={checking}
-                              className={`px-4 md:px-6 py-2 rounded-lg font-medium transition text-sm md:text-base ${
+                              className={`px-2 md:px-6 py-1.5 md:py-2 rounded-lg font-medium transition text-xs md:text-base ${
                                 essayType === 'oge'
                                   ? 'bg-gradient-to-r from-yellow-500 to-emerald-500 text-[#1a1f36]'
                                   : 'bg-white/10 text-white hover:bg-white/20'
@@ -983,7 +985,7 @@
                           <button
                             onClick={handleGetTopic}
                             disabled={starting || loadingPending || checking}
-                            className="w-full md:w-auto px-4 md:px-6 py-2 bg-gradient-to-r from-yellow-500 to-emerald-500 text-[#1a1f36] font-semibold rounded-lg hover:from-yellow-600 hover:to-emerald-600 transition disabled:opacity-50 text-sm md:text-base"
+                            className="w-full md:w-auto px-3 md:px-6 py-1.5 md:py-2 bg-gradient-to-r from-yellow-500 to-emerald-500 text-[#1a1f36] font-semibold rounded-lg hover:from-yellow-600 hover:to-emerald-600 transition disabled:opacity-50 text-xs md:text-base"
                           >
                             Получить тему
                           </button>
@@ -1261,16 +1263,13 @@
           </div>
           {/* Mobile fixed action button */}
           <div
-            className="md:hidden fixed left-0 right-0 z-50 pointer-events-none"
+            className="md:hidden fixed left-0 right-0 z-50 pointer-events-none flex justify-center"
             style={{ bottom: 16 + keyboardInset }}
           >
             <button
               onClick={handleCheck}
               disabled={!essayText.trim() || checking || !currentTopic}
-              className="pointer-events-auto mx-auto w-[90%] px-4 py-3 bg-white/20 text-white font-bold rounded-xl backdrop-blur-md border border-white/30 shadow-[0_4px_10px_rgba(0,0,0,0.25)] transition-all duration-300 ease-out disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{
-                backdropFilter: 'blur(8px)',
-              }}
+              className="pointer-events-auto px-6 py-2 bg-gradient-to-r from-yellow-500 to-emerald-500 text-[#1a1f36] font-semibold rounded-lg hover:from-yellow-600 hover:to-emerald-600 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm shadow-lg"
             >
               Проверить
             </button>
