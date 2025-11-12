@@ -745,15 +745,15 @@
     };
 
     const renderCriterion = (key: string, title: string, comment: string, score: number, max: number, colorClass: string) => (
-      <div className={`bg-white/10 backdrop-blur border border-white/20 rounded-xl p-3 sm:p-4`}>
+      <div className={`bg-white/10 backdrop-blur border border-white/20 rounded-xl p-4`}>
         <div className="flex items-center justify-between mb-2">
-          <div className={`text-xs sm:text-sm font-semibold ${colorClass}`}>{key}</div>
-          <div className="text-base sm:text-lg font-bold text-white">
+          <div className={`text-sm font-semibold ${colorClass}`}>{key}</div>
+          <div className="text-lg font-bold text-white">
             {score}/{max}
           </div>
         </div>
-        <div className="text-xs sm:text-sm font-medium text-white mb-2 break-words">{title}</div>
-        <div className="text-xs text-white/70 mb-3 break-words">{comment}</div>
+        <div className="text-sm font-medium text-white mb-2">{title}</div>
+        <div className="text-xs text-white/70 mb-3">{comment}</div>
         <div className="w-full bg-white/20 rounded-full h-2">
           <div
             className={`h-2 rounded-full ${getScoreColor(score, max)}`}
@@ -789,30 +789,25 @@
           <div className="container mx-auto px-4 md:pb-0 pb-20 h-full overflow-hidden flex flex-col">
             <div className="max-w-7xl mx-auto flex flex-col h-full">
               {/* Title and Navigation */}
-              <div className="flex flex-col gap-3 mb-4 flex-shrink-0 pt-4">
-                {/* Top row: Back button and title */}
-                <div className="flex items-center justify-between gap-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => window.location.href = '/mydb3'}
-                    className="hover:bg-white/20 text-white flex-shrink-0"
-                  >
-                    <ArrowLeft className="h-4 w-4 mr-1 md:mr-2" />
-                    <span className="hidden sm:inline">Назад</span>
-                  </Button>
-                  <h1 className="text-xl sm:text-2xl md:text-4xl font-bold bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent text-center flex-1 truncate">
-                    Проверка сочинения
-                  </h1>
-                  <div className="w-16 sm:w-auto flex-shrink-0" />
-                </div>
-                {/* Bottom row: Action buttons - wrap on mobile */}
-                <div className="flex flex-wrap items-center gap-2 justify-center md:justify-end">
+              <div className="flex flex-col md:flex-row items-center justify-between mb-4 gap-4 flex-shrink-0 pt-4">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => window.location.href = '/mydb3'}
+                  className="hover:bg-white/20 text-white order-1 md:order-1"
+                >
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Назад
+                </Button>
+                <h1 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent text-center order-2 md:order-2">
+                  Проверка сочинения
+              </h1>
+                <div className="flex items-center gap-2 order-3 md:order-3">
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => window.location.href = '/egeruses-analytics'}
-                    className="hover:bg-white/20 text-white text-xs sm:text-sm px-2 sm:px-3"
+                    className="hover:bg-white/20 text-white"
                   >
                     Аналитика
                   </Button>
@@ -823,11 +818,10 @@
                       setShowHistory(true);
                       loadEssayHistory();
                     }}
-                    className="hover:bg-white/20 text-white text-xs sm:text-sm px-2 sm:px-3"
+                    className="hover:bg-white/20 text-white"
                   >
-                    <History className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                    <span className="hidden sm:inline">История сочинений</span>
-                    <span className="sm:hidden">История</span>
+                    <History className="h-4 w-4 mr-2" />
+                    История сочинений
                   </Button>
                   {analysisData && (
                     <Button
@@ -839,7 +833,7 @@
                         setCurrentTopic(null);
                         setCurrentEssay(null);
                       }}
-                      className="hover:bg-white/20 text-white text-xs sm:text-sm px-2 sm:px-3"
+                      className="hover:bg-white/20 text-white"
                     >
                       Новое сочинение
                     </Button>
@@ -854,53 +848,51 @@
                   <div className="h-full flex flex-col">
                     {/* Essay type selector */}
                     <div className="mb-4 flex-shrink-0">
-                      <div className="bg-white/10 backdrop-blur border border-white/20 rounded-xl p-3 sm:p-4">
-                        <div className="flex flex-col gap-3 sm:gap-4">
-                          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
-                            <span className="text-white font-medium text-sm sm:text-base flex-shrink-0">тип сочинения:</span>
-                            <div className="flex gap-2 w-full sm:w-auto">
-                              <button
-                                onClick={() => {
-                                  setEssayType('ege');
-                                  setCurrentTopic(null);
-                                  setCurrentEssay(null);
-                                  setEssayText('');
-                                  setAnalysisData(null);
-                                  setErrorText(null);
-                                }}
-                                disabled={checking}
-                                className={`flex-1 sm:flex-none px-4 sm:px-6 py-2.5 sm:py-2 rounded-lg font-medium transition text-sm sm:text-base min-h-[44px] touch-manipulation ${
-                                  essayType === 'ege'
-                                    ? 'bg-gradient-to-r from-yellow-500 to-emerald-500 text-[#1a1f36]'
-                                    : 'bg-white/10 text-white hover:bg-white/20 active:bg-white/30'
-                                }`}
-                              >
-                                ЕГЭ
-                              </button>
-                              <button
-                                onClick={() => {
-                                  setEssayType('oge');
-                                  setCurrentTopic(null);
-                                  setCurrentEssay(null);
-                                  setEssayText('');
-                                  setAnalysisData(null);
-                                  setErrorText(null);
-                                }}
-                                disabled={checking}
-                                className={`flex-1 sm:flex-none px-4 sm:px-6 py-2.5 sm:py-2 rounded-lg font-medium transition text-sm sm:text-base min-h-[44px] touch-manipulation ${
-                                  essayType === 'oge'
-                                    ? 'bg-gradient-to-r from-yellow-500 to-emerald-500 text-[#1a1f36]'
-                                    : 'bg-white/10 text-white hover:bg-white/20 active:bg-white/30'
-                                }`}
-                              >
-                                ОГЭ
-                              </button>
-                            </div>
+                      <div className="bg-white/10 backdrop-blur border border-white/20 rounded-xl p-4">
+                        <div className="flex flex-col md:flex-row items-center gap-4">
+                          <span className="text-white font-medium text-sm md:text-base">тип сочинения:</span>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => {
+                                setEssayType('ege');
+                                setCurrentTopic(null);
+                                setCurrentEssay(null);
+                                setEssayText('');
+                                setAnalysisData(null);
+                                setErrorText(null);
+                              }}
+                              disabled={checking}
+                              className={`px-4 md:px-6 py-2 rounded-lg font-medium transition text-sm md:text-base ${
+                                essayType === 'ege'
+                                  ? 'bg-gradient-to-r from-yellow-500 to-emerald-500 text-[#1a1f36]'
+                                  : 'bg-white/10 text-white hover:bg-white/20'
+                              }`}
+                            >
+                              ЕГЭ
+                            </button>
+                            <button
+                              onClick={() => {
+                                setEssayType('oge');
+                                setCurrentTopic(null);
+                                setCurrentEssay(null);
+                                setEssayText('');
+                                setAnalysisData(null);
+                                setErrorText(null);
+                              }}
+                              disabled={checking}
+                              className={`px-4 md:px-6 py-2 rounded-lg font-medium transition text-sm md:text-base ${
+                                essayType === 'oge'
+                                  ? 'bg-gradient-to-r from-yellow-500 to-emerald-500 text-[#1a1f36]'
+                                  : 'bg-white/10 text-white hover:bg-white/20'
+                              }`}
+                            >
+                              ОГЭ
+                            </button>
                           </div>
                           <button
                             onClick={handleGetTopic}
                             disabled={starting || loadingPending || checking}
-                            className="w-full sm:w-auto px-4 sm:px-6 py-2.5 sm:py-2 bg-gradient-to-r from-yellow-500 to-emerald-500 text-[#1a1f36] font-semibold rounded-lg hover:from-yellow-600 hover:to-emerald-600 transition disabled:opacity-50 text-sm sm:text-base min-h-[44px] touch-manipulation"
+                            className="w-full md:w-auto px-4 md:px-6 py-2 bg-gradient-to-r from-yellow-500 to-emerald-500 text-[#1a1f36] font-semibold rounded-lg hover:from-yellow-600 hover:to-emerald-600 transition disabled:opacity-50 text-sm md:text-base"
                           >
                             Получить тему
                           </button>
@@ -912,26 +904,26 @@
                     <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 overflow-hidden min-h-0">
                       {/* Task column */}
                       <div
-                        className="bg-white/10 backdrop-blur border border-white/20 rounded-xl p-3 sm:p-4 min-h-0 md:h-full md:max-h-full md:overflow-auto overflow-y-auto flex flex-col"
-                        style={{ WebkitOverflowScrolling: 'touch' as any, minHeight: '200px', maxHeight: '40vh' }}
+                        className="bg-white/10 backdrop-blur border border-white/20 rounded-xl p-4 min-h-0 md:h-full md:max-h-full md:overflow-auto h-[25vh] overflow-y-auto"
+                        style={{ WebkitOverflowScrolling: 'touch' as any }}
                       >
-                        <div className="text-white font-semibold mb-3 text-sm sm:text-base flex-shrink-0">Задание</div>
-                        <div className="text-white/90 whitespace-pre-wrap text-sm sm:text-base flex-1 overflow-y-auto">
-                          {currentTopic?.essay_topic || <span className="text-white/50 italic">Получите тему для начала работы</span>}
+                        <div className="text-white font-semibold mb-3">Задание</div>
+                        <div className="text-white/90 whitespace-pre-wrap">
+                          {currentTopic?.essay_topic || ''}
                         </div>
                       </div>
 
                       {/* Essay column */}
                       <div
-                        className="bg-white/10 backdrop-blur border border-white/20 rounded-xl p-3 sm:p-4 flex flex-col min-h-0 md:h-full md:max-h-full overflow-hidden"
-                        style={{ minHeight: '300px', maxHeight: '60vh' }}
+                        className="bg-white/10 backdrop-blur border border-white/20 rounded-xl p-4 flex flex-col min-h-0 md:h-full md:max-h-full overflow-hidden h-[45vh]"
+                        style={{ WebkitOverflowScrolling: 'touch' as any }}
                       >
                         <div className="flex items-center justify-between mb-3 flex-shrink-0">
-                          <div className="text-white font-semibold text-sm sm:text-base">Сочинение</div>
+                          <div className="text-white font-semibold">Сочинение</div>
                           <button
                             onClick={handleCheck}
                             disabled={!essayText.trim() || checking || !currentTopic}
-                            className="px-3 sm:px-4 py-1.5 sm:py-2 bg-gradient-to-r from-yellow-500 to-emerald-500 text-[#1a1f36] font-semibold rounded-lg hover:from-yellow-600 hover:to-emerald-600 transition disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm md:text-base hidden md:block"
+                            className="px-4 py-2 bg-gradient-to-r from-yellow-500 to-emerald-500 text-[#1a1f36] font-semibold rounded-lg hover:from-yellow-600 hover:to-emerald-600 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base hidden md:block"
                           >
                             Проверить
                           </button>
@@ -942,8 +934,7 @@
                           onChange={(e) => setEssayText(e.target.value)}
                           placeholder="Начните писать ваше сочинение..."
                           disabled={checking}
-                          className="flex-1 min-h-[200px] w-full p-3 bg-white/5 border border-white/10 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500 text-white placeholder-white/50 disabled:opacity-50 overflow-auto text-sm sm:text-base md:pb-0 pb-24"
-                          style={{ WebkitOverflowScrolling: 'touch' as any }}
+                          className="flex-1 min-h-0 w-full p-3 bg-white/5 border border-white/10 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500 text-white placeholder-white/50 disabled:opacity-50 overflow-auto md:pb-0 pb-24"
                         />
 
                         {/* Mobile spacer to keep text area above the fixed button */}
@@ -955,16 +946,16 @@
                     {/* Checking animation overlay */}
                     {checking && (
                       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                        <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-4 sm:p-6 md:p-12 w-full max-w-[500px] min-h-[250px] sm:min-h-[300px]">
-                          <div className="flex flex-col items-center space-y-4 sm:space-y-6 h-full">
+                        <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-6 md:p-12 w-full max-w-[500px] min-h-[300px]">
+                          <div className="flex flex-col items-center space-y-6 h-full">
                             <div className="relative">
-                              <div className="w-16 h-16 sm:w-20 sm:h-20 border-4 border-white/20 rounded-full"></div>
-                              <div className="absolute top-0 left-0 w-16 h-16 sm:w-20 sm:h-20 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+                              <div className="w-20 h-20 border-4 border-white/20 rounded-full"></div>
+                              <div className="absolute top-0 left-0 w-20 h-20 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
                             </div>
                             
                             {/* Progress Bar */}
                             <div className="w-full">
-                              <div className="flex justify-between text-xs sm:text-sm text-white/70 mb-2">
+                              <div className="flex justify-between text-sm text-white/70 mb-2">
                                 <span>Прогресс проверки</span>
                                 <span>{smoothProgress.toFixed(0)}%</span>
                               </div>
@@ -981,7 +972,7 @@
                             </div>
 
                             <div className="text-center space-y-2 flex-1 flex items-center justify-center">
-                              <div className="text-sm sm:text-lg font-medium text-white min-h-[60px] flex items-center justify-center px-2 text-center break-words">
+                              <div className="text-lg font-medium text-white min-h-[60px] flex items-center justify-center">
                                 {statusStep === 0 && 'Подготовка...'}
                                 {statusStep === 1 && 'К1: Отражение позиции автора...'}
                                 {statusStep === 2 && 'К2: Комментарий к позиции автора...'}
@@ -1003,7 +994,7 @@
                     )}
 
                     {errorText && (
-                      <div className="mt-4 p-3 sm:p-4 bg-red-500/20 border border-red-500/30 rounded-lg text-red-300 text-xs sm:text-sm break-words">
+                      <div className="mt-4 p-3 bg-red-500/20 border border-red-500/30 rounded-lg text-red-300 text-sm">
                         {errorText}
                             </div>
                     )}
@@ -1012,16 +1003,16 @@
                   /* Review mode - Results */
                   <div className="flex flex-col overflow-hidden min-h-0 h-full">
                     {/* Results grid */}
-                  <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 overflow-hidden min-h-0">
+                  <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-4 overflow-hidden min-h-0">
                     {/* Left column - Task (collapsible) and Essay with unified scroll */}
-                    <div className="lg:col-span-2 flex flex-col gap-3 sm:gap-4 overflow-hidden min-h-0 order-2 lg:order-1">
+                    <div className="lg:col-span-2 flex flex-col gap-4 overflow-hidden min-h-0">
                       {/* Combined Task and Essay container with single scroll */}
-                      <div className="bg-white/10 backdrop-blur border border-white/20 rounded-xl p-3 sm:p-4 flex-1 flex flex-col min-h-0 overflow-hidden">
+                      <div className="bg-white/10 backdrop-blur border border-white/20 rounded-xl p-4 flex-1 flex flex-col min-h-0 overflow-hidden">
                         {/* Task header */}
                         <div className="flex-shrink-0">
                           <button
                             onClick={() => setShowTask(!showTask)}
-                            className="flex items-center justify-between w-full text-white font-semibold text-sm sm:text-base touch-manipulation min-h-[44px]"
+                            className="flex items-center justify-between w-full text-white font-semibold"
                           >
                             <span>Задание</span>
                             <svg className={`w-5 h-5 transition-transform ${showTask ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1033,17 +1024,16 @@
                         {/* Task content gets its own scroll and a max height */}
                         <div
                           className={`${showTask ? 'max-h-[40%] mt-3' : 'h-0'} overflow-auto transition-all duration-300`}
-                          style={{ WebkitOverflowScrolling: 'touch' as any }}
                         >
-                          <div className="bg-white/5 border border-white/10 rounded-lg p-3 sm:p-4 text-white/90 whitespace-pre-wrap text-sm sm:text-base">
+                          <div className="bg-white/5 border border-white/10 rounded-lg p-4 text-white/90 whitespace-pre-wrap">
                             {currentTopic?.essay_topic}
                           </div>
                         </div>
 
                         {/* Essay area always visible and fills the rest */}
                         <div className="flex-1 min-h-0 mt-3 flex flex-col">
-                          <div className="text-white font-semibold mb-3 flex-shrink-0 text-sm sm:text-base">Сочинение</div>
-                          <div className="text-white/90 whitespace-pre-wrap pr-2 overflow-y-auto min-h-0 flex-1 text-sm sm:text-base" style={{ WebkitOverflowScrolling: 'touch' as any }}>
+                          <div className="text-white font-semibold mb-3 flex-shrink-0">Сочинение</div>
+                          <div className="text-white/90 whitespace-pre-wrap pr-2 overflow-y-auto min-h-0 flex-1 md:overflow-y-auto">
                             {analysisData?.errors && analysisData.errors.length > 0 ? (
                               <div dangerouslySetInnerHTML={{ __html: highlightTextWithErrors(essayText, analysisData.errors) }} />
                             ) : (
@@ -1057,18 +1047,16 @@
 
                     {/* Right column - Scrollable criteria with errors first, overall score last */}
                     <div className="flex flex-col overflow-hidden lg:order-2 order-1 min-h-0">
-                      <div className="flex-1 overflow-y-auto space-y-3 pr-2 min-h-0" style={{ WebkitOverflowScrolling: 'touch' as any }}>
+                      <div className="flex-1 overflow-y-auto space-y-3 pr-2 min-h-0">
                         {/* Errors Summary */}
                         {analysisData.errors && analysisData.errors.length > 0 && (
-                          <div className="bg-white/10 backdrop-blur border border-white/20 rounded-xl p-3 sm:p-4">
-                            <div className="text-white font-semibold mb-3 flex items-center gap-2 text-sm sm:text-base">
-                              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-red-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                          <div className="bg-white/10 backdrop-blur border border-white/20 rounded-xl p-4">
+                            <div className="text-white font-semibold mb-3 flex items-center gap-2">
+                              <svg className="w-5 h-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                               </svg>
-                              <span className="break-words">
-                                Найденные ошибки ({analysisData.errors_summary?.total || analysisData.errors?.length || 0}) 
-                                {analysisData.errors && `(показано: ${analysisData.errors.filter((error: any) => error.criterion && error.criterion.trim() !== '').length})`}
-                              </span>
+                              Найденные ошибки ({analysisData.errors_summary?.total || analysisData.errors?.length || 0}) 
+                              {analysisData.errors && `(показано: ${analysisData.errors.filter((error: any) => error.criterion && error.criterion.trim() !== '').length})`}
                             </div>
                             <div className="space-y-2">
                               {analysisData.errors && analysisData.errors.length > 0 ? (
@@ -1100,22 +1088,22 @@
                                       data-error-item
                                       data-error-item-index={index}
                                       onClick={() => handleErrorBoxClick(error, index)}
-                                      className={`rounded-lg p-2.5 sm:p-3 border cursor-pointer transition-all duration-300 active:scale-[0.98] hover:scale-[1.02] hover:shadow-lg touch-manipulation ${getCriterionColor(error.criterion)}`}
+                                      className={`rounded-lg p-3 border cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-lg ${getCriterionColor(error.criterion)}`}
                                     >
-                                      <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-1 gap-2">
-                                        <div className="flex items-start gap-2 flex-1">
-                                          <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0 mt-0.5">
+                                      <div className="flex flex-col md:flex-row md:items-start justify-between mb-1 gap-2">
+                                        <div className="flex items-center gap-2">
+                                          <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0">
                                             {index + 1}
                                           </div>
-                                          <div className="text-xs sm:text-sm font-medium text-white break-words flex-1">
+                                          <div className="text-sm font-medium text-white break-words">
                                             {error.original} → {error.correction}
                                           </div>
                                         </div>
-                                        <div className="text-xs text-white/60 font-semibold flex-shrink-0 ml-8 sm:ml-0">
+                                        <div className="text-xs text-white/60 font-semibold flex-shrink-0">
                                           {error.criterion}
                                         </div>
                                       </div>
-                                      <div className="text-xs text-white/70 break-words mt-1">
+                                      <div className="text-xs text-white/70 break-words">
                                         {error.explanation}
                                       </div>
                                       <div className="text-xs text-white/50 mt-1 break-words">
@@ -1125,7 +1113,7 @@
                                   ));
                                 })()
                               ) : (
-                                <div className="text-white/70 text-center py-4 text-sm">
+                                <div className="text-white/70 text-center py-4">
                                   Ошибки не найдены
                             </div>
                               )}
@@ -1147,30 +1135,30 @@
                         
                         {/* Conclusion */}
                         {analysisData.conclusion && (
-                          <div className="bg-white/10 backdrop-blur border border-white/20 rounded-xl p-3 sm:p-4">
-                            <div className="text-white font-medium mb-2 text-sm sm:text-base">{analysisData.conclusion_title || 'Общий вывод'}</div>
-                            <div className="text-xs sm:text-sm text-white/80 break-words">{analysisData.conclusion}</div>
+                          <div className="bg-white/10 backdrop-blur border border-white/20 rounded-xl p-4">
+                            <div className="text-white font-medium mb-2">{analysisData.conclusion_title || 'Общий вывод'}</div>
+                            <div className="text-sm text-white/80">{analysisData.conclusion}</div>
                         </div>
                         )}
 
                         {/* Overall score - moved to last */}
-                        <div className="bg-white/10 backdrop-blur border border-white/20 rounded-xl p-4 sm:p-6 flex flex-col items-center">
-                          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-emerald-500/20 flex items-center justify-center mb-3 sm:mb-4">
-                            <svg className="w-8 h-8 sm:w-10 sm:h-10 text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
+                        <div className="bg-white/10 backdrop-blur border border-white/20 rounded-xl p-6 flex flex-col items-center">
+                          <div className="w-20 h-20 rounded-full bg-emerald-500/20 flex items-center justify-center mb-4">
+                            <svg className="w-10 h-10 text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
                               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                             </svg>
                           </div>
-                          <div className="text-xs sm:text-sm text-white/70 mb-2">Итоговая оценка</div>
-                          <div className="text-2xl sm:text-3xl font-bold text-white mb-2 sm:mb-3">
+                          <div className="text-sm text-white/70 mb-2">Итоговая оценка</div>
+                          <div className="text-3xl font-bold text-white mb-3">
                             {analysisData.total_score} / {analysisData.max_score}
                           </div>
-                          <div className="w-full bg-white/20 rounded-full h-2.5 sm:h-3 mb-2">
+                          <div className="w-full bg-white/20 rounded-full h-3 mb-2">
                             <div
-                              className={`h-2.5 sm:h-3 rounded-full transition-all ${getScoreColor(analysisData.total_score, analysisData.max_score)}`}
+                              className={`h-3 rounded-full transition-all ${getScoreColor(analysisData.total_score, analysisData.max_score)}`}
                               style={{ width: `${(analysisData.total_score / analysisData.max_score) * 100}%` }}
                             ></div>
                           </div>
-                          <div className="text-xs text-white/70 text-center break-words px-2">{analysisData.overall_quality}</div>
+                          <div className="text-xs text-white/70">{analysisData.overall_quality}</div>
                         </div>
                       </div>
                     </div>
@@ -1183,12 +1171,12 @@
           {/* Mobile fixed action button */}
           <div
             className="md:hidden fixed left-0 right-0 z-50 pointer-events-none"
-            style={{ bottom: Math.max(16, 16 + keyboardInset) }}
+            style={{ bottom: 16 + keyboardInset }}
           >
             <button
               onClick={handleCheck}
               disabled={!essayText.trim() || checking || !currentTopic}
-              className="pointer-events-auto mx-auto w-[90%] max-w-md px-4 py-3.5 bg-gradient-to-r from-yellow-500 to-emerald-500 text-[#1a1f36] font-bold rounded-xl backdrop-blur-md border border-white/30 shadow-[0_4px_10px_rgba(0,0,0,0.25)] transition-all duration-300 ease-out disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation min-h-[48px] text-base"
+              className="pointer-events-auto mx-auto w-[90%] px-4 py-3 bg-white/20 text-white font-bold rounded-xl backdrop-blur-md border border-white/30 shadow-[0_4px_10px_rgba(0,0,0,0.25)] transition-all duration-300 ease-out disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
                 backdropFilter: 'blur(8px)',
               }}
@@ -1208,12 +1196,12 @@
             />
             
             {/* Sidebar */}
-            <div className="w-full sm:w-96 bg-white/10 backdrop-blur border-l border-white/20 p-4 sm:p-6 overflow-auto h-full">
-              <div className="flex items-center justify-between mb-4 sm:mb-6">
-                <h2 className="text-xl sm:text-2xl font-bold text-white">История сочинений</h2>
+            <div className="w-full md:w-96 bg-white/10 backdrop-blur border-l border-white/20 p-4 md:p-6 overflow-auto h-full">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-white">История сочинений</h2>
               <button
                   onClick={() => setShowHistory(false)}
-                  className="text-white/70 hover:text-white transition touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center"
+                  className="text-white/70 hover:text-white transition"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -1223,7 +1211,7 @@
 
               <div className="space-y-3">
                 {essayHistory.length === 0 ? (
-                  <div className="text-white/70 text-center py-8 text-sm sm:text-base">
+                  <div className="text-white/70 text-center py-8">
                     Пока нет сочинений
                   </div>
                 ) : (
@@ -1239,24 +1227,24 @@
                           loadEssayFromHistory(essay);
                           setShowHistory(false);
                         }}
-                        className="bg-white/5 hover:bg-white/10 active:bg-white/15 border border-white/10 rounded-lg p-3 sm:p-4 cursor-pointer transition touch-manipulation"
+                        className="bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg p-4 cursor-pointer transition"
                       >
                         <div className="flex items-center justify-between mb-2">
-                          <div className="text-white font-medium text-sm sm:text-base">
+                          <div className="text-white font-medium">
                             Сочинение #{essayHistory.length - index}
                           </div>
-                          <div className="text-white/70 text-xs sm:text-sm flex-shrink-0 ml-2">
+                          <div className="text-white/70 text-sm">
                             {new Date(essay.created_at).toLocaleDateString('ru-RU')}
                           </div>
                         </div>
-                        <div className="text-white/70 text-xs sm:text-sm mb-2">
+                        <div className="text-white/70 text-sm mb-2">
                           {essay.text_scan ? 'Завершено' : 'В процессе'}
                         </div>
-                        <div className="text-white/60 text-xs mb-2 italic break-words">
+                        <div className="text-white/60 text-xs mb-2 italic">
                           "{previewText}"
                         </div>
                         {essay.score !== null && (
-                          <div className="text-emerald-400 font-medium text-sm sm:text-base">
+                          <div className="text-emerald-400 font-medium">
                             Оценка: {essay.score}
                           </div>
                         )}
