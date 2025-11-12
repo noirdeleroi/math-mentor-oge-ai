@@ -2,7 +2,16 @@
   import { supabase } from '@/integrations/supabase/client';
   import FlyingCyrillicBackground from '@/components/FlyingCyrillicBackground';
   import { Button } from '@/components/ui/button';
-  import { ArrowLeft, History } from 'lucide-react';
+  import { ArrowLeft, History, Menu, X } from 'lucide-react';
+  import { useIsMobile } from '@/hooks/use-mobile';
+  import {
+    Drawer,
+    DrawerClose,
+    DrawerContent,
+    DrawerHeader,
+    DrawerTitle,
+    DrawerTrigger,
+  } from '@/components/ui/drawer';
 
   interface Topic {
     id: string;
@@ -44,6 +53,8 @@
     const [highlightedText, setHighlightedText] = useState<string>('');
     const [smoothProgress, setSmoothProgress] = useState<number>(0);
     const [keyboardInset, setKeyboardInset] = useState<number>(0);
+    const [menuOpen, setMenuOpen] = useState(false);
+    const isMobile = useIsMobile();
 
     const pageBg = useMemo(
       () => ({ background: 'linear-gradient(135deg, #1a1f36 0%, #2d3748 50%, #1a1f36 100%)' }),
@@ -790,55 +801,135 @@
             <div className="max-w-7xl mx-auto flex flex-col h-full">
               {/* Title and Navigation */}
               <div className="flex flex-col md:flex-row items-center justify-between mb-4 gap-4 flex-shrink-0 pt-4">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => window.location.href = '/mydb3'}
-                  className="hover:bg-white/20 text-white order-1 md:order-1"
-                >
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Назад
-                </Button>
+                {/* Mobile Burger Menu */}
+                {isMobile && (
+                  <Drawer open={menuOpen} onOpenChange={setMenuOpen}>
+                    <DrawerTrigger asChild>
+                      <Button 
+                        variant="ghost" 
+                        size="icon"
+                        className="fixed left-4 z-[9999] bg-white/10 backdrop-blur-sm border border-white/20 text-white hover:bg-white/20 shadow-lg"
+                        style={{ 
+                          position: 'fixed',
+                          top: '80px',
+                          zIndex: 9999
+                        }}
+                      >
+                        <Menu className="h-5 w-5" />
+                      </Button>
+                    </DrawerTrigger>
+                    <DrawerContent className="bg-[#1a1f36] border-white/20 max-h-[85vh] flex flex-col">
+                      <DrawerHeader className="border-b border-white/20 flex-shrink-0">
+                        <DrawerTitle className="text-white">Меню</DrawerTitle>
+                        <DrawerClose asChild>
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="absolute right-4 top-4 text-white hover:bg-white/10"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </DrawerClose>
+                      </DrawerHeader>
+                      <div className="p-4 overflow-y-auto flex-1 min-h-0 space-y-3">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            window.location.href = '/mydb3';
+                            setMenuOpen(false);
+                          }}
+                          className="w-full hover:bg-white/20 text-white justify-start"
+                        >
+                          <ArrowLeft className="h-4 w-4 mr-2" />
+                          Назад
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            window.location.href = '/egeruses-analytics';
+                            setMenuOpen(false);
+                          }}
+                          className="w-full hover:bg-white/20 text-white justify-start"
+                        >
+                          Аналитика
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setShowHistory(true);
+                            loadEssayHistory();
+                            setMenuOpen(false);
+                          }}
+                          className="w-full hover:bg-white/20 text-white justify-start"
+                        >
+                          <History className="h-4 w-4 mr-2" />
+                          История сочинений
+                        </Button>
+                      </div>
+                    </DrawerContent>
+                  </Drawer>
+                )}
+
+                {/* Desktop Navigation - Назад button */}
+                {!isMobile && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => window.location.href = '/mydb3'}
+                    className="hover:bg-white/20 text-white order-1 md:order-1"
+                  >
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Назад
+                  </Button>
+                )}
+
                 <h1 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-yellow-500 to-emerald-500 bg-clip-text text-transparent text-center order-2 md:order-2">
                   Проверка сочинения
               </h1>
-                <div className="flex items-center gap-2 order-3 md:order-3">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => window.location.href = '/egeruses-analytics'}
-                    className="hover:bg-white/20 text-white"
-                  >
-                    Аналитика
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      setShowHistory(true);
-                      loadEssayHistory();
-                    }}
-                    className="hover:bg-white/20 text-white"
-                  >
-                    <History className="h-4 w-4 mr-2" />
-                    История сочинений
-                  </Button>
-                  {analysisData && (
+                
+                {/* Desktop Navigation - Right side buttons */}
+                {!isMobile && (
+                  <div className="flex items-center gap-2 order-3 md:order-3">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => window.location.href = '/egeruses-analytics'}
+                      className="hover:bg-white/20 text-white"
+                    >
+                      Аналитика
+                    </Button>
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => {
-                        setAnalysisData(null);
-                        setEssayText('');
-                        setCurrentTopic(null);
-                        setCurrentEssay(null);
+                        setShowHistory(true);
+                        loadEssayHistory();
                       }}
                       className="hover:bg-white/20 text-white"
                     >
-                      Новое сочинение
+                      <History className="h-4 w-4 mr-2" />
+                      История сочинений
                     </Button>
-                  )}
-                </div>
+                    {analysisData && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setAnalysisData(null);
+                          setEssayText('');
+                          setCurrentTopic(null);
+                          setCurrentEssay(null);
+                        }}
+                        className="hover:bg-white/20 text-white"
+                      >
+                        Новое сочинение
+                      </Button>
+                    )}
+                  </div>
+                )}
             </div>
 
               {/* Main content */}
