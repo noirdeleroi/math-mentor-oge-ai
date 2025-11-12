@@ -35,3 +35,4 @@ export interface CallbackResult {
   promocode?: string;
 }
 
+

@@ -45,3 +45,4 @@ ON public.subscriptions(user_id, is_active, end_date DESC);
 CREATE INDEX IF NOT EXISTS idx_subscriptions_course_id 
 ON public.subscriptions(course_id) WHERE course_id IS NOT NULL;
 
+
