@@ -793,6 +793,81 @@
     return (
       <div className="fixed left-0 right-0 bottom-0 top-16 overflow-hidden" style={pageBg}>
         <FlyingCyrillicBackground />
+        
+        {/* Mobile Burger Menu - Outside relative container to avoid stacking context issues */}
+        {isMobile && (
+          <Drawer open={menuOpen} onOpenChange={setMenuOpen}>
+            <DrawerTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="icon"
+                className="fixed left-4 bg-white/30 backdrop-blur-sm border-2 border-white/50 text-white hover:bg-white/40 shadow-xl"
+                style={{ 
+                  position: 'fixed',
+                  top: '80px',
+                  zIndex: 99999,
+                  width: '44px',
+                  height: '44px'
+                }}
+              >
+                <Menu className="h-5 w-5" />
+              </Button>
+            </DrawerTrigger>
+            <DrawerContent className="bg-[#1a1f36] border-white/20 max-h-[85vh] flex flex-col">
+              <DrawerHeader className="border-b border-white/20 flex-shrink-0">
+                <DrawerTitle className="text-white">Меню</DrawerTitle>
+                <DrawerClose asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="absolute right-4 top-4 text-white hover:bg-white/10"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </DrawerClose>
+              </DrawerHeader>
+              <div className="p-4 overflow-y-auto flex-1 min-h-0 space-y-3">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    window.location.href = '/mydb3';
+                    setMenuOpen(false);
+                  }}
+                  className="w-full hover:bg-white/20 text-white justify-start"
+                >
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Назад
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    window.location.href = '/egeruses-analytics';
+                    setMenuOpen(false);
+                  }}
+                  className="w-full hover:bg-white/20 text-white justify-start"
+                >
+                  Аналитика
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setShowHistory(true);
+                    loadEssayHistory();
+                    setMenuOpen(false);
+                  }}
+                  className="w-full hover:bg-white/20 text-white justify-start"
+                >
+                  <History className="h-4 w-4 mr-2" />
+                  История сочинений
+                </Button>
+              </div>
+            </DrawerContent>
+          </Drawer>
+        )}
+
         <div
           className="relative z-10 h-full md:overflow-hidden overflow-y-auto overscroll-contain"
           style={{ WebkitOverflowScrolling: 'touch' as any }}
@@ -801,79 +876,6 @@
             <div className="max-w-7xl mx-auto flex flex-col h-full">
               {/* Title and Navigation */}
               <div className="flex flex-col md:flex-row items-center justify-between mb-4 gap-4 flex-shrink-0 pt-4">
-                {/* Mobile Burger Menu */}
-                {isMobile && (
-                  <Drawer open={menuOpen} onOpenChange={setMenuOpen}>
-                    <DrawerTrigger asChild>
-                      <Button 
-                        variant="ghost" 
-                        size="icon"
-                        className="fixed left-4 bg-white/20 backdrop-blur-sm border-2 border-white/40 text-white hover:bg-white/30 shadow-xl"
-                        style={{ 
-                          position: 'fixed',
-                          top: '80px',
-                          zIndex: 99999,
-                          width: '44px',
-                          height: '44px'
-                        }}
-                      >
-                        <Menu className="h-5 w-5" />
-                      </Button>
-                    </DrawerTrigger>
-                    <DrawerContent className="bg-[#1a1f36] border-white/20 max-h-[85vh] flex flex-col">
-                      <DrawerHeader className="border-b border-white/20 flex-shrink-0">
-                        <DrawerTitle className="text-white">Меню</DrawerTitle>
-                        <DrawerClose asChild>
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            className="absolute right-4 top-4 text-white hover:bg-white/10"
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </DrawerClose>
-                      </DrawerHeader>
-                      <div className="p-4 overflow-y-auto flex-1 min-h-0 space-y-3">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            window.location.href = '/mydb3';
-                            setMenuOpen(false);
-                          }}
-                          className="w-full hover:bg-white/20 text-white justify-start"
-                        >
-                          <ArrowLeft className="h-4 w-4 mr-2" />
-                          Назад
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            window.location.href = '/egeruses-analytics';
-                            setMenuOpen(false);
-                          }}
-                          className="w-full hover:bg-white/20 text-white justify-start"
-                        >
-                          Аналитика
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            setShowHistory(true);
-                            loadEssayHistory();
-                            setMenuOpen(false);
-                          }}
-                          className="w-full hover:bg-white/20 text-white justify-start"
-                        >
-                          <History className="h-4 w-4 mr-2" />
-                          История сочинений
-                        </Button>
-                      </div>
-                    </DrawerContent>
-                  </Drawer>
-                )}
 
                 {/* Desktop Navigation - Назад button */}
                 {!isMobile && (
@@ -940,11 +942,11 @@
                   /* Main mode - Input */
                   <div className="h-full flex flex-col">
                     {/* Essay type selector */}
-                    <div className="mb-4 flex-shrink-0">
-                      <div className="bg-white/10 backdrop-blur border border-white/20 rounded-xl p-4">
-                        <div className="flex flex-col md:flex-row items-center gap-4">
+                    <div className="mb-2 md:mb-4 flex-shrink-0">
+                      <div className="bg-white/10 backdrop-blur border border-white/20 rounded-xl p-2 md:p-4">
+                        <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4">
                           <span className="text-white font-medium text-xs md:text-base">тип сочинения:</span>
-                          <div className="flex gap-2">
+                          <div className="flex gap-1.5 md:gap-2">
                             <button
                               onClick={() => {
                                 setEssayType('ege');
@@ -955,7 +957,7 @@
                                 setErrorText(null);
                               }}
                               disabled={checking}
-                              className={`px-2 md:px-6 py-1.5 md:py-2 rounded-lg font-medium transition text-xs md:text-base ${
+                              className={`px-1.5 md:px-6 py-1 md:py-2 rounded-lg font-medium transition text-xs md:text-base ${
                                 essayType === 'ege'
                                   ? 'bg-gradient-to-r from-yellow-500 to-emerald-500 text-[#1a1f36]'
                                   : 'bg-white/10 text-white hover:bg-white/20'
@@ -973,7 +975,7 @@
                                 setErrorText(null);
                               }}
                               disabled={checking}
-                              className={`px-2 md:px-6 py-1.5 md:py-2 rounded-lg font-medium transition text-xs md:text-base ${
+                              className={`px-1.5 md:px-6 py-1 md:py-2 rounded-lg font-medium transition text-xs md:text-base ${
                                 essayType === 'oge'
                                   ? 'bg-gradient-to-r from-yellow-500 to-emerald-500 text-[#1a1f36]'
                                   : 'bg-white/10 text-white hover:bg-white/20'
@@ -985,7 +987,7 @@
                           <button
                             onClick={handleGetTopic}
                             disabled={starting || loadingPending || checking}
-                            className="w-full md:w-auto px-3 md:px-6 py-1.5 md:py-2 bg-gradient-to-r from-yellow-500 to-emerald-500 text-[#1a1f36] font-semibold rounded-lg hover:from-yellow-600 hover:to-emerald-600 transition disabled:opacity-50 text-xs md:text-base"
+                            className="w-full md:w-auto px-2 md:px-6 py-1 md:py-2 bg-gradient-to-r from-yellow-500 to-emerald-500 text-[#1a1f36] font-semibold rounded-lg hover:from-yellow-600 hover:to-emerald-600 transition disabled:opacity-50 text-xs md:text-base"
                           >
                             Получить тему
                           </button>
