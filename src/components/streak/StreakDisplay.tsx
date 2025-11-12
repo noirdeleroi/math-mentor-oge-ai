@@ -1,5 +1,6 @@
 
 import React, { useEffect, useState, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -54,8 +55,13 @@ export const StreakDisplay = () => {
           const dropdownWidth = isMobile ? Math.min(window.innerWidth - 32, 280) : 256;
           const rightPosition = window.innerWidth - buttonRect.right;
           
+          // Mobile uses closer positioning to nav
+          const topPosition = isMobile 
+            ? Math.max(64, buttonRect.bottom + 4)
+            : Math.max(72, buttonRect.bottom + 8);
+          
           setDropdownPosition({
-            top: Math.max(72, buttonRect.bottom + 8), // Ensure it's below nav (64px) + some margin
+            top: topPosition,
             right: Math.max(8, Math.min(rightPosition, window.innerWidth - dropdownWidth - 8))
           });
         }
@@ -169,7 +175,7 @@ export const StreakDisplay = () => {
   }, []);
 
   return (
-    <div className="relative flex items-center gap-3 group -ml-3 overflow-visible" ref={containerRef}>
+    <div className="relative flex items-center gap-3 group -ml-3 overflow-visible pointer-events-auto" ref={containerRef}>
       {/* Energy Points Animation Container */}
       <div className="relative">
         <EnergyPointsHeaderAnimation
@@ -187,9 +193,10 @@ export const StreakDisplay = () => {
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
+              console.log('[StreakDisplay Mobile] Button clicked, toggling dropdown');
               setShowDropdown((prev) => !prev);
             }}
-            className="flex items-center gap-1 text-sm text-white hover:opacity-80 transition-opacity duration-200 px-1.5 py-1 touch-manipulation"
+            className={`flex items-center gap-1 text-sm text-white hover:opacity-80 active:opacity-60 transition-opacity duration-200 px-1.5 py-1 touch-manipulation ${showDropdown ? 'opacity-80' : ''}`}
           >
             <span className="text-xl">🔥</span>
             <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${showDropdown ? 'rotate-180' : ''}`} />
@@ -221,16 +228,16 @@ export const StreakDisplay = () => {
         </div>
       </div>
 
-      {/* Dropdown Menu */}
-      {showDropdown && (
+      {/* Dropdown Menu - Rendered via Portal */}
+      {showDropdown && createPortal(
         <div 
-          className={`fixed bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-[10000] animate-fade-in ${
+          className={`fixed bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg animate-fade-in pointer-events-auto ${
             isMobile ? 'w-[calc(100vw-2rem)] max-w-[280px]' : 'w-64'
           }`}
           style={{ 
             top: `${dropdownPosition.top}px`,
             right: `${dropdownPosition.right}px`,
-            zIndex: 10000,
+            zIndex: 99999,
             position: 'fixed'
           }}
           ref={dropdownRef}
@@ -279,7 +286,8 @@ export const StreakDisplay = () => {
               )}
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Celebration Message */}
