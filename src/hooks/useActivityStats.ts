@@ -63,7 +63,7 @@ export const useActivityStats = (days: number | null = 30) => {
 
         // 3) Single aggregate query via RPC
         //    Pass days as provided (null => no date filter inside SQL)
-        const { data: rpcData, error: rpcErr } = await supabase.rpc('get_activity_stats', {
+        const { data: rpcData, error: rpcErr } = await supabase.rpc('get_activity_stats' as any, {
           p_user: user.id,
           p_days: days
         });

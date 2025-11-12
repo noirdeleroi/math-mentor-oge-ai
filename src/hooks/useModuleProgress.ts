@@ -61,7 +61,7 @@ export const useModuleProgress = () => {
     fetchProgress();
   }, [user?.id]);
 
-  const getProgressStatus = (itemId: string, activityType: 'exercise' | 'skill_quiz' | 'topic_test' | 'mid_test' | 'exam') => {
+  const getProgressStatus = (itemId: string, activityType: 'exercise' | 'skill_quiz' | 'topic_test' | 'mid_test' | 'exam' | 'test') => {
     const matchingItems = progressData.filter(p => {
       if (p.item_id !== itemId) return false;
       if (p.activity_type === activityType) return true;
