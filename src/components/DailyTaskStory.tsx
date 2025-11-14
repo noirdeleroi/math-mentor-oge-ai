@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import { X } from 'lucide-react';
+import { X, ChevronDown, ChevronUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import ChatRenderer2 from './chat/ChatRenderer2';
@@ -44,6 +44,11 @@ export const DailyTaskStory: React.FC<DailyTaskStoryProps> = ({ courseId }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [learningTopics, setLearningTopics] = useState<string[]>([]);
   const [failedTopics, setFailedTopics] = useState<string[]>([]);
+  const [analysisContent, setAnalysisContent] = useState<string>('');
+  const [planContent, setPlanContent] = useState<string>('');
+  const [greetingContent, setGreetingContent] = useState<string>('');
+  const [isAnalysisOpen, setIsAnalysisOpen] = useState(false);
+  const [isPlanOpen, setIsPlanOpen] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -155,6 +160,32 @@ export const DailyTaskStory: React.FC<DailyTaskStoryProps> = ({ courseId }) => {
     if (name === 'Сакура') return 'Сакуры';
     return name;
   };
+
+  // Parse task text to extract sections
+  const parseTaskSections = (taskText: string) => {
+    if (!taskText) {
+      setGreetingContent('');
+      setAnalysisContent('');
+      setPlanContent('');
+      return;
+    }
+
+    // Extract greeting (everything before ===ANALYSIS===)
+    const analysisMatch = taskText.match(/===ANALYSIS===\s*(.*?)(?=\s*===PLAN===|$)/s);
+    const planMatch = taskText.match(/===PLAN===\s*(.*?)$/s);
+    
+    const analysisIndex = taskText.indexOf('===ANALYSIS===');
+    const greeting = analysisIndex > 0 ? taskText.substring(0, analysisIndex).trim() : '';
+    
+    setGreetingContent(greeting);
+    setAnalysisContent(analysisMatch ? analysisMatch[1].trim() : '');
+    setPlanContent(planMatch ? planMatch[1].trim() : '');
+  };
+
+  // Update parsed sections when task changes
+  useEffect(() => {
+    parseTaskSections(task);
+  }, [task]);
 
   async function handleOpen() {
     setIsOpen(true);
@@ -320,21 +351,108 @@ export const DailyTaskStory: React.FC<DailyTaskStoryProps> = ({ courseId }) => {
 
               {/* Detailed Feedback */}
               <div className="flex-1 overflow-y-auto p-6">
-                <h2 className="text-xl font-bold mb-4 text-foreground">
-                  Подробная обратная связь от {getTutorNameGenitive(tutorName)}:
-                </h2>
-                <div className="max-w-none prose prose-lg dark:prose-invert">
-                  <ChatRenderer2
-                    text={
-                      task ||
-                      (neutral
-                        ? 'Молодец! Продолжай в том же духе 🎯 Зайди в курс, чтобы увидеть сообщение от своего ИИ-репетитора.'
-                        : 'У вас пока нет новых заданий. Продолжайте практиковаться!')
-                    }
-                    isUserMessage={false}
-                    className="text-foreground"
-                  />
-                </div>
+                {/* Greeting message */}
+                {greetingContent && (
+                  <div className="mb-6">
+                    <div className="max-w-none prose prose-lg dark:prose-invert">
+                      <ChatRenderer2
+                        text={greetingContent}
+                        isUserMessage={false}
+                        className="text-foreground"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Analysis Block */}
+                {analysisContent ? (
+                  <div className="mb-4">
+                    <details className="group">
+                      <summary className="list-none cursor-pointer p-4 rounded-lg bg-gradient-to-r from-green-100 to-emerald-100 border-2 border-green-300 hover:border-green-400 transition-all duration-200 [&::-webkit-details-marker]:hidden [&::marker]:hidden">
+                        <div className="flex items-center justify-between">
+                          <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                            Разбор прошлой работы
+                          </h3>
+                          <ChevronDown className="w-5 h-5 text-green-600 group-open:hidden" />
+                          <ChevronUp className="w-5 h-5 text-green-600 hidden group-open:block" />
+                        </div>
+                      </summary>
+                      <div className="p-4 pt-0 rounded-b-lg bg-gradient-to-r from-green-100 to-emerald-100 border-x-2 border-b-2 border-green-300">
+                        <div className="pt-3 border-t border-green-300">
+                          <div className="max-w-none prose prose-lg dark:prose-invert">
+                            <ChatRenderer2
+                              text={analysisContent}
+                              isUserMessage={false}
+                              className="text-foreground"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </details>
+                  </div>
+                ) : null}
+
+                {/* Plan Block */}
+                {planContent ? (
+                  <div className="mb-4">
+                    <details className="group">
+                      <summary className="list-none cursor-pointer p-4 rounded-lg bg-gradient-to-r from-blue-100 to-cyan-100 border-2 border-blue-300 hover:border-blue-400 transition-all duration-200 [&::-webkit-details-marker]:hidden [&::marker]:hidden">
+                        <div className="flex items-center justify-between">
+                          <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                            План на сегодня
+                          </h3>
+                          <ChevronDown className="w-5 h-5 text-blue-600 group-open:hidden" />
+                          <ChevronUp className="w-5 h-5 text-blue-600 hidden group-open:block" />
+                        </div>
+                      </summary>
+                      <div className="p-4 pt-0 rounded-b-lg bg-gradient-to-r from-blue-100 to-cyan-100 border-x-2 border-b-2 border-blue-300">
+                        <div className="pt-3 border-t border-blue-300">
+                          <div className="max-w-none prose prose-lg dark:prose-invert">
+                            <ChatRenderer2
+                              text={planContent}
+                              isUserMessage={false}
+                              className="text-foreground"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </details>
+                  </div>
+                ) : null}
+
+                {/* Fallback: show full task if sections not found */}
+                {!analysisContent && !planContent && task && !neutral && (
+                  <div className="max-w-none prose prose-lg dark:prose-invert">
+                    <ChatRenderer2
+                      text={task}
+                      isUserMessage={false}
+                      className="text-foreground"
+                    />
+                  </div>
+                )}
+
+                {/* Neutral mode fallback */}
+                {neutral && (
+                  <div className="max-w-none prose prose-lg dark:prose-invert">
+                    <ChatRenderer2
+                      text="Молодец! Продолжай в том же духе 🎯 Зайди в курс, чтобы увидеть сообщение от своего ИИ-репетитора."
+                      isUserMessage={false}
+                      className="text-foreground"
+                    />
+                  </div>
+                )}
+
+                {!task && !neutral && (
+                  <div className="max-w-none prose prose-lg dark:prose-invert">
+                    <ChatRenderer2
+                      text="У вас пока нет новых заданий. Продолжайте практиковаться!"
+                      isUserMessage={false}
+                      className="text-foreground"
+                    />
+                  </div>
+                )}
               </div>
 
               {/* Progress bar (decorative) */}
