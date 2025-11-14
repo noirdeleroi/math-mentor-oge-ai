@@ -1,5 +1,6 @@
 interface VideoData {
-  videoId: string;
+  videoId?: string; // YouTube video ID (optional)
+  videoUrl?: string; // Direct video URL (optional, takes precedence over videoId)
   title: string;
   description: string;
 }
@@ -66,14 +67,14 @@ export const modulesRegistry: Record<string, ModuleConfig> = {
         exercises: 2,
         videoData: [
           {
-            videoId: 'WxXZaP8Y8pI',
-            title: 'Натуральные и целые числа - Видео 1',
-            description: 'Изучение основ натуральных и целых чисел'
+            videoUrl: 'https://kbaazksvkvnafrwtmkcw.supabase.co/storage/v1/object/public/videos/Scientific.mp4',
+            title: 'Научная форма числа',
+            description: 'Изучение научной формы записи чисел'
           },
           {
-            videoId: 'fjdeo6anRY4',
-            title: 'Натуральные и целые числа - Видео 2',
-            description: 'Продолжение изучения натуральных и целых чисел'
+            videoUrl: 'https://kbaazksvkvnafrwtmkcw.supabase.co/storage/v1/object/public/videos/NOD%20y%20NOK.mp4',
+            title: 'Нахождение НОД и НОК',
+            description: 'Методы нахождения наибольшего общего делителя и наименьшего общего кратного'
           }
         ]
       },

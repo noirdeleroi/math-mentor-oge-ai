@@ -548,8 +548,13 @@ ${updated.feedback_message}
           Прогресс
         </Button>
         
-
-        
+        <Button 
+          onClick={() => { handleCreateTask(); if (isMobile) setIsSidebarOpen(false); }} 
+          variant="ghost" 
+          className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+        >
+          Создать задание
+        </Button>
 
       </div>
 

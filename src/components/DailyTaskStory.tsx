@@ -106,11 +106,19 @@ export const DailyTaskStory: React.FC<DailyTaskStoryProps> = ({ courseId }) => {
             try {
               const parsedTask = JSON.parse(story.hardcode_task);
               const topics = parsedTask['темы для изучения'];
-              setLearningTopics(Array.isArray(topics) ? topics : []);
-            } catch {
+              if (Array.isArray(topics) && topics.length > 0) {
+                setLearningTopics(topics);
+                console.log('DailyTaskStory: Found learning topics:', topics);
+              } else {
+                console.warn('DailyTaskStory: "темы для изучения" is missing, empty, or not an array:', topics);
+                setLearningTopics([]);
+              }
+            } catch (error) {
+              console.error('DailyTaskStory: Error parsing hardcode_task:', error, story.hardcode_task);
               setLearningTopics([]);
             }
           } else {
+            console.warn('DailyTaskStory: hardcode_task is missing for story:', story.upload_id);
             setLearningTopics([]);
           }
 
@@ -236,7 +244,7 @@ export const DailyTaskStory: React.FC<DailyTaskStoryProps> = ({ courseId }) => {
                                     if (route) {
                                       navigate(`/module/${route.moduleSlug}/topic/${route.topicId}`);
                                     } else {
-                                      navigate(`/learning-platform?topic=${topicIdentifier}`);
+                                      navigate(`/cellard-lp2?topic=${topicIdentifier}`);
                                     }
                                     setIsOpen(false);
                                   }}
@@ -268,7 +276,7 @@ export const DailyTaskStory: React.FC<DailyTaskStoryProps> = ({ courseId }) => {
                                     if (route) {
                                       navigate(`/module/${route.moduleSlug}/topic/${route.topicId}`);
                                     } else {
-                                      navigate(`/learning-platform?topic=${topicIdentifier}`);
+                                      navigate(`/cellard-lp2?topic=${topicIdentifier}`);
                                     }
                                     setIsOpen(false);
                                   }}
@@ -281,7 +289,7 @@ export const DailyTaskStory: React.FC<DailyTaskStoryProps> = ({ courseId }) => {
                           ) : (
                             <button
                               onClick={() => {
-                                navigate('/learning-platform');
+                                navigate('/cellard-lp2');
                                 setIsOpen(false);
                               }}
                               className="w-full text-left px-3 py-2 rounded-md hover:bg-muted"

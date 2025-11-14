@@ -847,10 +847,7 @@ const TopicPage: React.FC = () => {
                   >
                     {topicArticle.article?.article_text ? (
                       <>
-                        <div className="border-b border-gray-200 pb-2 flex items-center justify-between">
-                          <h3 className="text-lg font-semibold text-[#1a1f36]">
-                            Статья {index + 1} (Навык {topicArticle.skillId})
-                          </h3>
+                        <div className="border-b border-gray-200 pb-2 flex items-center justify-end">
                           <span className="text-xs uppercase tracking-wide text-orange-500">
                             Учебник
                           </span>
@@ -862,7 +859,7 @@ const TopicPage: React.FC = () => {
                             art: topicArticle.article.article_text
                           }}
                         />
-                        <div className="flex justify-start pt-2">
+                        <div className="flex justify-center pt-2">
                           <Button
                             onClick={() => {
                               setSelectedArticleQuiz({
@@ -945,7 +942,7 @@ const TopicPage: React.FC = () => {
                 <div className="text-sm text-gray-600">Видео для темы пока нет</div>
               ) : (
                 topic.videoData.map((video, index) => (
-                  <div key={video.videoId} className="space-y-3">
+                  <div key={video.videoUrl || video.videoId || `video-${index}`} className="space-y-3">
                     <div>
                       <h3 className="font-semibold text-[#1a1f36] mb-1 flex items-center gap-2">
                         <Play className="h-4 w-4 text-blue-600" />
@@ -954,15 +951,26 @@ const TopicPage: React.FC = () => {
                       <p className="text-sm text-gray-600">{video.description}</p>
                     </div>
 
-                    {/* Embedded YouTube Player */}
+                    {/* Video Player - supports both YouTube and direct MP4 URLs */}
                     <div className="bg-gray-100 rounded-lg overflow-hidden aspect-video w-full max-w-4xl">
-                      <iframe
-                        className="w-full h-full"
-                        src={`https://www.youtube.com/embed/${video.videoId}`}
-                        title={video.title}
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                      />
+                      {video.videoUrl ? (
+                        <video
+                          className="w-full h-full"
+                          controls
+                          playsInline
+                        >
+                          <source src={video.videoUrl} type="video/mp4" />
+                          Ваш браузер не поддерживает видео.
+                        </video>
+                      ) : video.videoId ? (
+                        <iframe
+                          className="w-full h-full"
+                          src={`https://www.youtube.com/embed/${video.videoId}`}
+                          title={video.title}
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                        />
+                      ) : null}
                     </div>
                   </div>
                 ))
