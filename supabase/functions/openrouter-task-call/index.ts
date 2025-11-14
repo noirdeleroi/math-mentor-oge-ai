@@ -20,6 +20,18 @@ Deno.serve(async (req)=>{
     }
     const { user_id, course_id = 1, target_score, weekly_hours, school_grade, date_string = '29 may 2026', number_of_words } = await req.json();
     console.log(`Processing task call for user: ${user_id}, course_id: ${course_id}`);
+    // === Fetch student full name ===
+    let student_name = "Студент";
+    try {
+      const { data: nameData, error: nameError } = await supabase.from("profiles").select("full_name").eq("user_id", user_id).single();
+      if (nameError) {
+        console.error("Error fetching student name:", nameError.message);
+      } else if (nameData?.full_name) {
+        student_name = nameData.full_name;
+      }
+    } catch (e) {
+      console.error("Exception fetching student full_name:", e);
+    }
     const examDate = new Date(date_string);
     const today = new Date();
     const daysToExam = Math.ceil((examDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
@@ -359,7 +371,9 @@ Deno.serve(async (req)=>{
       console.error('Error fetching homework-related data:', error.message);
     }
     const prompt1 = ragData.task_context || '';
-    const homeworkSection = previous_homework_question_ids.MCQ.length || previous_homework_question_ids.FIPI.length || result_of_prev_homework_completion.length ? `
+    const homeworkSection = previous_homework_question_ids.MCQ.length || previous_homework_question_ids.FIPI.length || result_of_prev_homework_completion.length ? ` ###Имя студента:
+${student_name}
+
 ### Задачи из Прошлого Домашнего Задания и как оно были решены учеником
 {ЗАДАЧИ_ИЗ_ПРОШЛОГО_ДОМАШНЕГО_ЗАДАНИЯ}
 ${JSON.stringify(previous_homework_question_ids, null, 2)}
