@@ -461,7 +461,8 @@ ${updated.feedback_message}
         error
       } = await supabase.functions.invoke('create-task', {
         body: {
-          user_id: user.id
+          user_id: user.id,
+          course_id: 1
         }
       });
 

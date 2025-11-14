@@ -425,7 +425,8 @@ ${updated.feedback_message}
       // Call create-task edge function
       const { data, error } = await supabase.functions.invoke('create-task', {
         body: {
-          user_id: user.id
+          user_id: user.id,
+          course_id: 3
         }
       });
 
