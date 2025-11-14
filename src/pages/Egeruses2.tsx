@@ -62,7 +62,10 @@
     );
 
     // Disable body/html scroll and confine scrolling to the in-page container (mobile bounce fix)
+    // Only disable body scroll on mobile to allow page scrolling
     useEffect(() => {
+      if (!isMobile) return;
+      
       const html = document.documentElement;
       const body = document.body;
       const prevHtmlOverflow = html.style.overflow;
@@ -73,7 +76,7 @@
         html.style.overflow = prevHtmlOverflow;
         body.style.overflow = prevBodyOverflow;
       };
-    }, []);
+    }, [isMobile]);
 
     // Keyboard-safe positioning for the mobile fixed button
     useEffect(() => {
@@ -791,7 +794,7 @@
     }
 
     return (
-      <div className="fixed left-0 right-0 bottom-0 top-16 overflow-hidden" style={pageBg}>
+      <div className={`fixed left-0 right-0 bottom-0 top-16 ${isMobile ? 'overflow-y-auto' : 'overflow-hidden'}`} style={pageBg}>
         <FlyingCyrillicBackground />
         
         {/* Mobile Burger Menu - Outside relative container to avoid stacking context issues */}
@@ -869,11 +872,11 @@
         )}
 
         <div
-          className="relative z-10 h-full md:overflow-hidden overflow-y-auto overscroll-contain"
+          className={`relative z-10 ${isMobile ? 'min-h-full' : 'h-full md:overflow-hidden'}`}
           style={{ WebkitOverflowScrolling: 'touch' as any }}
         >
-          <div className="container mx-auto px-4 md:pb-0 pb-20 h-full overflow-hidden flex flex-col">
-            <div className="max-w-7xl mx-auto flex flex-col h-full">
+          <div className={`container mx-auto px-4 md:pb-0 pb-20 ${isMobile ? 'min-h-full py-4' : 'h-full overflow-hidden'} flex flex-col`}>
+            <div className={`max-w-7xl mx-auto flex flex-col ${isMobile ? '' : 'h-full'}`}>
               {/* Title and Navigation */}
               <div className="flex flex-col md:flex-row items-center justify-between mb-4 gap-4 flex-shrink-0 pt-4">
 
@@ -937,10 +940,10 @@
             </div>
 
               {/* Main content */}
-              <div className="flex-1 overflow-hidden min-h-0">
+              <div className={`flex-1 ${isMobile ? '' : 'overflow-hidden min-h-0'}`}>
                 {!analysisData ? (
                   /* Main mode - Input */
-                  <div className="h-full flex flex-col">
+                  <div className={`${isMobile ? '' : 'h-full'} flex flex-col`}>
                     {/* Essay type selector */}
                     <div className="mb-2 md:mb-4 flex-shrink-0">
                       <div className="bg-white/10 backdrop-blur border border-white/20 rounded-xl p-2 md:p-4">
@@ -996,7 +999,7 @@
                   </div>
 
                     {/* Two column layout: Task left, Essay right */}
-                    <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 overflow-hidden min-h-0">
+                    <div className={`flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 ${isMobile ? '' : 'overflow-hidden min-h-0'}`}>
                       {/* Task column */}
                       <div
                         className="bg-white/10 backdrop-blur border border-white/20 rounded-xl p-4 min-h-0 md:h-full md:max-h-full md:overflow-auto h-[25vh] overflow-y-auto"
@@ -1096,11 +1099,11 @@
                             </div>
                 ) : (
                   /* Review mode - Results */
-                  <div className="flex flex-col overflow-hidden min-h-0 h-full">
+                  <div className={`flex flex-col ${isMobile ? '' : 'overflow-hidden min-h-0 h-full'}`}>
                     {/* Results grid */}
-                  <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-4 overflow-hidden min-h-0">
+                  <div className={`flex-1 grid grid-cols-1 lg:grid-cols-3 gap-4 ${isMobile ? '' : 'overflow-hidden min-h-0'}`}>
                     {/* Left column - Task (collapsible) and Essay with unified scroll */}
-                    <div className="lg:col-span-2 flex flex-col gap-4 overflow-hidden min-h-0">
+                    <div className={`lg:col-span-2 flex flex-col gap-4 ${isMobile ? '' : 'overflow-hidden min-h-0'}`}>
                       {/* Combined Task and Essay container with single scroll */}
                       <div className="bg-white/10 backdrop-blur border border-white/20 rounded-xl p-4 flex-1 flex flex-col min-h-0 overflow-hidden">
                         {/* Task header */}
