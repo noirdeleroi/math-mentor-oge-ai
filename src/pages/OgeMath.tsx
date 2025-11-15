@@ -407,14 +407,14 @@ ${updated.feedback_message}
       
       // Send message to AI and get response with context
       const aiResponse = await sendChatMessage(newUserMessage, messages, isDatabaseMode, user.id, validContext);
+      setIsTyping(false); // Clear typing indicator before adding message to prevent flash
       addMessage(aiResponse);
 
       // Save chat interaction to database
       await saveChatLog(userInput, aiResponse.text, '1');
     } catch (error) {
       console.error('Error saving chat log:', error);
-    } finally {
-      setIsTyping(false);
+      setIsTyping(false); // Clear typing on error too
     }
   };
   const handleNavigateToProfile = () => {
@@ -478,6 +478,7 @@ ${updated.feedback_message}
         isUser: false,
         timestamp: new Date()
       };
+      setIsTyping(false); // Clear typing indicator before adding message to prevent flash
       addMessage(aiMessage);
 
       // Save complete chat log with response
@@ -498,6 +499,7 @@ ${updated.feedback_message}
         isUser: false,
         timestamp: new Date()
       };
+      setIsTyping(false); // Clear typing indicator before adding message to prevent flash
       addMessage(errorMessage);
 
       // Save error response to chat_logs
@@ -508,8 +510,6 @@ ${updated.feedback_message}
         description: "Не удалось создать задание",
         variant: "destructive"
       });
-    } finally {
-      setIsTyping(false);
     }
   };
 
